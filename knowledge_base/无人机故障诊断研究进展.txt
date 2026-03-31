@@ -1,0 +1,256 @@
+文章编号：1671-7848(2022)03-0428-07                                                                          DOI:10.14107/j.cnki.kzgc.20210260
+无人机故障诊断研究进展
+刘 金 富1, 黄2, 王 文 林
+(1. 武汉理工大学自动化学院，湖北武汉430070;
+2. 武汉大学遥感信息工程学院宇航科学与技术研究院，湖北武汉430072)
+　摘  要：无人机是集航空、电子、计算机控制、信息和传感等技术于一体的复杂系统，在 军事和民用领域具有广泛的应用。无人机常见的故障以及诊断方法是研究的热点内容，结 合国内外研究现状，介绍了无人机传感器故障分类及6种传感器故障诊断方法，以及执行 机构故障、推进系统故障和通信故障等内容，旨在为无人机的故障诊断提供参考。
+关键词：无人机；传感器故障；执行机构故障；故障诊断
+中图分类号：TP13                文献标识码：A
+Research Progress of Unmanned Aerial Vehicle Fault Diagnosis
+LIUJin-fu1,HUANG   Di2,WANG    Wen-lin1
+(1.School of Automation,Wuhan University of Technology,Wuhan 430070;2.Institute of Aerospace Science and Technology,
+School of Remote Sensing and Information Engineering,Wuhan University,Wuhan 430072)
+Abstract:    Unmanned   aerial   vehicle    (UAV)is   a    complex   system    integrating   aviation,electronics,computer
+control,information  and  sensing  technologies,and  has  a  wide  range  of  applications  in  military  and  civil  fields.
+Common faults and diagnosis methods of UAVs are hot topics of research.Combined with the current research status  at  home  and  abroad,this  paper  introduces  the  classification  of  UAV  sensor  faults  and  six  sensor  fault diagnosis  methods,as  well  as  actuator  faults,propulsion  system  faults  and  communication  faults,etc.,aiming to provide a reference for the fault diagnosis of UAVs.
+Key  words: Unmanned   aerial  vehicle;sensor  fault;actuator  fault;fault  diagnosis
+1 引  言
+
+
+　　　随着无人机技术的快速进步与发展，无人机开 始在军事和民生等方面扮演着重要角色。无人机是 集航空、电子、计算机控制、信息和传感等技术于 一体的复杂系统[1,其发展历史可以追溯到20世纪 20年代，在1991年海湾战争中得到成功运用并掀起 了世界范围内的研究和发展热潮[2]。21世纪以后， 无人机逐步进入民用领域并形成了巨大的产业3,  但由于故障复杂、频发和难以诊断等原因在应用中 造成了巨大的经济损失。基于当前日益扩大的无人 机产业链和应用范围，对无人机的故障进行系统整 理和有效诊断将有利于减少事故的发生、降低经济 损失。但是目前针对无人机故障诊断的整理和分析 的学术论文较为匮乏，因此本文旨在系统地整理当 前无人机典型故障的类型和诊断方法，力求为无人 机故障诊断的研究提供借鉴。
+
+
+　　　无人机故障主要来源于飞行控制系统、动力推 进系统、通信和人地子系统，其故障类型主要包括 传感器故障、执行机构故障、动力推进系统故障和 通信故障4。基于无人机的故障来源及故障类型， 本文将依次阐述无人机传感器、执行机构、动力推 进系统、通信系统方面的研究进展。
+2无人机传感器故障
+2.1 飞控系统传感器故障
+　　　飞行控制系统作为最为核心的组成部分，能正 常地、可靠地工作是无人机能够安全和顺利飞行的 关键。调查数据表明，由飞行控制系统、推进系统 和人为操作故障导致的无人机事故比例为85%,其 中飞控系统故障的比例最高，而在飞控系统中传感 器故障的比例为70%5]。无人机典型的传感器和其
+
+收稿日期：2021-04-13; 修回日期：2021-06-03
+基金项目：中央军委装备发展部装备预研领域基金资助项目(61403110304)
+作者简介：王文林(1985-),男，山东菏泽人，博士，讲师，主要从事故障诊断等方面的教学与科研工作(本文通信作者， Email:1986946077@qq.com)。
+
+
+
+对应的测量参数[6如图1所示。
+　　　　　
+图1无人机典型传感器及测量参数
+Fig.1 Typical UAV sensors and measurement parameters
+典型的传感器故障分类[6,7见表1。
+表1无人机典型传感器故障分类表
+Tab.1 Fault classification of typical UAV sensors
+
+分类依据	故障类型	故障特征	故障实例
+变化的速率	缓变型故障	故障信号变化速率小	漂移故障
+	突变型故障	故障信号变化速率大	周期性故障
+信号的大小	硬故障	故障信号的幅度较大	漂移故障、偏置故障
+	软故障	故障信号的幅度较小	断路故障、短路故障
+存在的时间	永久性故障	不能恢复正常	断路故障
+	间歇性故障	故障断断续续	冲击故障
+2.2传感器故障诊断方法
+　　　通常无人机传感器的故障诊断方法有硬件冗 余法、解析冗余法、神经网络法、基于知识的方法 和基于信号处理的方法8]。近年来，基于机器学习 理论的故障诊断方法在无人机传感器故障诊断领 域得到了广泛应用。
+2.2.1 硬件冗余法
+　　　硬件冗余法采用多个传感器测量同一物理量， 对传感器输出进行一致性比较和表决，从而确定传 感器故障的来源。硬件冗余法的划分及其特点[9] 如图2所示。
+被 动 冗 余 法 ： 系 统 通 过
+屏 蔽 故 障 而 无 需 采 取 措
+施 实 现 容 错 。
+
+主 动 冗 余 法 ： 容 错 前 先 检 测 故 障 再 从 系 统 中 移 除 故 障 部 件 。
+
+
+
+
+图2硬件冗余法的划分及特点
+Fig.2 Division and features of hardware redundancy method
+硬件冗余法的优点在于原理简单、鲁棒性强、
+
+
+不需要抽象的数学模型、检测速度较快；其缺点在 于设备复杂，所需设备较多且具有较高的硬件成本 和维护费用[10]。硬件冗余法已被许多学者应用于不 用领域的传感器故障诊断中[11~15,通常适用于对可 靠性要求较高的领域如航空航天领域，是传感器诊 断领域中一种重要方法。目前，利用硬件冗余法对 无人机传感器故障进行诊断方面的研究较少。
+2.2.2解析冗余法
+　　　解析冗余法具有较强的实效性和深厚的理论 基础，可分为基于数学模型和基于多传感器的两种 形式，其具体划分形式及原理方法如图3所示。
+
+Fig.3 Principles and methods of analytical redundancy
+method for fault diagnosis
+　　　最初，麻省理工学院的 Beard?    提出用解析冗 余法代替硬件冗余法进行系统故障诊断，标志着以 信息冗余为主导的故障检测与诊断技术的开端。后 来许多学者将解析冗余法用于无人机传感器的故障 检测和诊断，具体的实例有： Abbaspour   等[17基于 扩展卡尔曼滤波器(extended    Kalman    filter,EKF)法 实现了对无人机传感器高效率和高精度的故障检 测 。Hajiyev  等[18使用一种鲁棒自适应卡尔曼滤波 器(robust  adaptive  Kalman  filter,RAKF)法实现了对 无人机传感器故障的检测和隔离。 Saied  等[19比较 实际测量值和估计值，计算残差信号用于多旋翼无 人机的传感器故障诊断问题。 Feng  等[20采用一种 强跟踪卡尔曼滤波方法(a strong tracking Kalman filter   method)估计未测状态和时变参数用于无人机 飞控系统的传感器故障诊断。
+2.2.3神经网络法
+　　　随着神经网络的发展，人工神经网络具有自适 应能力、泛化能力、非线性映射能力和高度并行处 理能力等特性，并逐渐应用于无人机传感器的故障 诊断中。实现对无人机传感器故障的识别和诊断， 可利用神经网络构造故障观测器和预测器。通常， 用于构造传感器故障预测器的神经网络[21]有前馈
+
+
+
+人工神经网络(feedforward   artificial   neural   network) 	(MLP,RBFNN,PNN           等 ) 反 馈 人 工 神 经 网 络 (feedback  artificial  neural  networks)和学习向量量化神 经网络(learning   vector    quantization   neural    network, LVQNN) 等。利用神经网络进行无人机传感器故障诊 断的实例有：张小敏22使用一种基于LM(Levenberg-    Marquardt)  算法的神经网络观测器，通过在线估计 飞行状态参数和线性回归分析方法，实现了对无人 机传感器故障类型的识别。曹杭炜等23基于 RBF  (radial    basis    function)神经网络建立故障预测器实 现了对无人机传感器故障的诊断。
+　　　神经网络法具有自组织性、鲁棒性、记忆性和 并行性等优点，被许多学者作为无人机传感器故障 诊断的重要方法。采用神经网络法进行无人机传感 器的故障诊断，可以避免建立复杂的数学模型，但 也会出现网络阈值、权值对应的物理意义不明确和 算法实现复杂等问题。
+2.2.4 基于知识的方法
+　　　基于知识的方法是通过先验知识建立诊断系 统如专家系统、模糊系统等进行故障诊断。专家系 统可以划分为基于规则、案例、模型和框架4种类 型[24,组成包括一般结构、分布式结构和黑板结构 3类[25,具有启发性、透明性和灵活性等优点，被 广泛应用于无人机的传感器故障诊断中。模糊系统 最初由 Zadeh26 基于模糊逻辑理论提出，后来被许 多学者用于阐明故障的症状、原因、现象和机理[27, 如今在无人机传感器故障诊断领域发挥着重要 作用。
+　　　建立诊断系统用于无人机传感器故障诊断的 实例有：孙学初[28设计了专家系统用于无人机飞控 系统中传感器信号接口板等硬件的故障诊断。王蕊 等[29设计了模糊系统估计不确定项，实现了对四旋 翼无人机传感器的容错控制。
+　　　基于知识的无人机传感器故障诊断方法具有 诊断规则或故障模式易于增加和删除的优点，但实 际中难以获取和表示知识以及实现对故障传感器 的数据重构。同时在无人机传感器故障诊断领域， 传统的基于规则的人工智能专家系统逐渐被基于 模糊逻辑的神经网络专家系统所取代30]。
+2.2.5 基于信号处理的方法
+　　　基于信号处理的方法其理论基础是数理统计 与随机过程，通过小波变换和信息融合等方法分析  可测信号，提取和处理特征，实现对无人机传感器  故障的检测和诊断。基于信号处理对无人机传感器  故障实现诊断的实例有：吴康3基于小波变化法对  微小型无人直升机(mini    unmanned    helicopter,MUV)
+
+
+的传感器故障实现了有效诊断。胡勇32针对无人机 的多传感器系统，提出一种基于信息融合技术的初 值计算方法减小了故障隔离和排除后的恢复时间。
+　　基于信号处理的无人机传感器故障诊断方法 具有实时性好、灵敏度高、克服噪声能力强等优点， 但难以实现数据的重构和容易产生误报，今后研究 重点在于如何有效地从原始信号中提取故障特征。
+2.2.6机器学习混合法
+　　近年来随着机器学习的高速发展，出现了许多 基于机器学习理论与上述5种方法相结合的对无 人机传感器进行故障诊断的新方法。例如先利用小 波对故障信号进行预处理，再利用机器学习算法对 传感器故障进行诊断成为一种有效和值得研究的 新方法[33】。同时现代工业系统中传感器能收集海量 的故障数据，基于深度学习模型使用数据驱动和信 号处理等技术有助于对无人机系统进行故障诊 断34]。越来越多的学者将机器学习算法应用于无人 机传感器故障诊断领域，常用的机器学习算法分类 见表2[35,36]。
+表2机器学习算法类别及实例
+Tab.2 Types and examples of machine learning algorithms
+
+机器学习算法类别	机器学习算法实例
+监督学习	决策树、随机森林、支持向量机、 人工神经网络、K近邻等
+无监督学习	主成分分析、层次聚类、K均值算法、Afinity Propagation聚类等
+强化学习	TD(λ)算法、QLearning算法、 Sarsa算法等
+　　基于机器学习算法对无人机传感器故障进行 诊断的实例有，高云红等37将主元分析法和支持向 量机相结合并应用于小型无人机传感器的故障检 测中。针对无人机传感器故障诊断这个典型的小样 本学习问题，叶惠[38使用了基于小波与多核支持向 量机的故障诊断系统进行故障诊断和类型识别。此 外，舒畅等39将小波特征提取与GBDT 算法相结合 改进了叶惠提出的故障诊断方法，能在故障类型复 杂和信号含有噪声的情形下提高诊断精度。刘瀚 泽[40将专家诊断知识与卷积神经网络相结合，提出 了一种监督式的智能方法用于无人机飞控系统的故 障诊断。任坚等41基于Q_Learning 强化学习算法和 特征提取实现了对飞控系统传感器故障的容错 控制。
+　　无人机传感器故障诊断在机器学习领域属于 分类问题，利用机器学习理论对无人机传感器进行 故障诊断具有巨大的研究价值和潜力。目前有关研究
+
+
+
+只运用了少数的机器学习算法如支持向量机和人工 神经网络，还有大量的机器学习算法有待挖掘。同时 基于机器学习理论进行故障诊断一般适用于拥有大 样本试验数据的设备，而对于无人机传感器故障诊断 这种小样本数据问题，今后如何有效地利用机器学习 理论进行解决，值得更多的学者进行研究和探讨。
+3 无 人 机 执 行 机 构 故 障
+3.1 飞控系统执行机构故障
+　　无人机飞控系统执行机构能够安全正常地工 作将会极大地提高无人机的稳定性，当发生故障时 会对飞行器的飞行姿态造成重大影响，其组成部分 及常见故障类型如图4所示。
+　
+图4执行机构组成及故障类型
+Fig.4  Composition  and  fault  types  of  actuator
+　　许多学者针对无人机的执行机构故障问题进 行了研究，例如彭宇等[42详细分析了无人机执行机 构的故障模式及其数学模型，同时基于数字仿真的 优点将仿真模型用于无人机执行机构的故障数据 生成，改善了当前无人机故障诊断领域缺乏有效数 据的现状。李勇43建立了无人机执行机构的解析模 型，利用基于残差的阈值-改进 SPRT 联合诊断算 法实现了对执行机构故障快速、有效地诊断。
+3.2 多旋翼无人机执行机构故障
+　　执行机构故障是多旋翼无人机的典型故障，主 要包括电机卡死故障和电机失效故障[44]。执行机构 的运行与多旋翼无人机的飞行姿态密切相关，例如 当四旋翼无人机执行机构发生故障时，旋翼的升力 会急剧下降和失衡，同时无人机的三轴姿态、数学 模型和飞行特性发生巨大变化，从而对无人机的飞 行安全造成巨大影响。
+　　针对多旋翼无人机执行机构的故障问题，许多 学者进行了相应研究。例如，宫勋等45针对无人机 执行机构故障的检测与重构问题，通过设计由两个 降维观测器构成的检测与重构算法实现了对无人 机故障的快速检测和分离。邢小军等46针对四旋翼 无人机执行机构的桨叶断裂故障问题，基于积分滑 模控制的主动容错控制方法实现了稳定无人机的 位置和姿态。陈阳[47针对六旋翼无人机执行机构的 故障问题，通过设计一个具有状态反馈功能的电子
+
+
+调速器实现了对电机故障时间和特征的快速检测， 同时基于自适应方法重构故障信息为容错飞行控 制提供数据。程聪[48针对六旋翼无人机的电机故障 问题，通过简化无人机的数学模型和设计滑模容错 控制算法提高了无人机的容错控制性能。姜陶然[49] 针对六旋翼无人机电机卡死和失效故障的问题，通 过建立状态空间模型和设计故障观测器实现了对 执行器故障信号的估计和重构，同时基于重构信息 设计控制分配矩阵减弱了故障部件对飞行姿态的 不 良 影 响 。
+　　　目前，针对多旋翼无人机故障诊断的研究多集 中在电机(执行机构)故障的诊断问题，涉及无人机 传感器故障的研究较少[50,采用的诊断方法大多为 容错控制技术。容错控制技术从20世纪80年代开始 发展起来，逐渐成为当前控制领域用来提高可靠性的 前沿技术，其具体的划分类型和特点见表351]。
+表3容错控制技术类型及特点
+Tab.3  Types   and  characteristics  of  fault-tolerant-control
+technology
+
+容错控制技术类型	特点
+主动容错控制	利用诊断模块提供必要的信息
+被动容错控制	不依赖于故障诊断模块，通过控制器的鲁 棒性抑制故障的影响
+　　　将容错控制技术用于无人机控制系统的设计 中，能够自主补偿故障影响和维持系统的控制效 果。针对多旋翼无人机执行机构的电机故障诊断问 题，目前部分学者使用的容错控制方法仍需要设计 复杂的故障诊断模块，今后如何设计简易的故障诊 断模块来提高诊断效率值得更多的学者去研究和 探 讨 。
+4无人机其他常见故障
+　　　除了上述传感器故障和执行机构故障外，无人 机典型故障还包括动力推进系统故障和通信故障 等。无人机对于动力推进系统的要求包括低单位成 本、低耗油率、低气动阻力和高推重比等[52,53,当 动力推进系统发生故障时，无人机的寿命和可靠性 将会受到巨大的影响。无人机通信故障的表现形式 包括数据包丢失、通信延迟和通信拥堵等，这些通 信故障将会严重影响无人机的正常工作，甚至会导 致多个无人机发生相互撞机和坠毁等严重后果。
+　　　部分学者针对无人机动力推进系统故障和通 信故障进行了相应研究，例如 Rory 等54针对无人 机 电 力 系 统(electrical        power         system,EPS)的 故 障 问 题，概述了基于隐马尔可夫模型(hidden  Markov model,HMM)       的 故 障 分 类 和 诊 断(fault         classification
+
+
+
+and    diagnostic,FCD)系统，有助于检测、分类和确 定 EPS 的故障影响以及改善EPS 的健康管理和开 发 。Zhang   等[5基于多学科优化(multidisciplinary   design    optimization,MDO)的方法，研究了电力推进 系统(electric   propulsion    system,EPS)影响无人机续 航时间和抗风扰能力的问题。 Li  等[56针对无人机 特设网络(unmanned  aerial  vehicles  Ad hoc network, UAANET) 延迟和数据包丢失等通信故障问题，提 出 一种基于优先级的信息调度(prioritizing-based    message    scheduling   algorithm,PMS) 算法用于提供 有效信息和提高通信网络的可靠性。 Kang  等57针 对无人机遭遇通信故障时撤退效率低的问题，提出 一种协作空间撤退(cooperative spatial retreat,CSR) 技术用于实现无人机弹性联网和提高通信可靠性 以及减少疏散时间和电池消耗。
+　　此外，还有部分学者研究了无人机故障诊断领 域的相关问题。例如Mark 等[58针对无人机框架中 材料损伤故障的检测问题，介绍了基于网格结构和 晶片结构等新颖故障检测方法，有助于对无人机框 架的材料开发和健康管理。 Yong  等[59讨论了虚拟 样机技术在无人机故障诊断培训中的应用。 Gino  等[60]基于人工神经网络实现了对无人机螺旋桨叶 片的故障诊断。
+5 结  论
+　　传感器和执行机构是无人机的重要组件，本文 研究内容围绕这两个方面进行展开。整理了典型传 感器的故障分类表，介绍了针对传感器故障诊断的 硬件冗余法、解析冗余法、神经网络法、基于知识 的方法、基于信号处理的方法及机器学习混合法。 另外，在无人机的执行机构方面，主要围绕电机的 故障诊断进行分析。除此之外，本文还介绍了推进 系统故障、通信故障等方面的内容。
+参考文献(References)
+[1]苗建国，王剑宇，张恒，等.无人机故障诊断技术研究进展概述 [J].  仪器仪表学报，2020,41(9):56-69
+Miao  J  G,Wang  JY,Zhang  H,et  al.Review  of  the  Development of Fault  Diagnosis  Technology  for  Unmanned  Aerial  Vehicle[J]. Chinese  Journal   of  Scientific   Instrument,2020,41(9):56-69.
+[2]  林清，王英勋，蔡志浩，等.国外几型无人机事故统计及分析
+[M].  北京：航空工业出版社，2014.
+Lin Q,Wang Y X,Cai ZH,et al.Statistics and Analysis of Several  Types  of  UAV  Accidents  Abroad[M].Beijing:Aviation  Industry Press,2014.
+[3]   晏磊，廖小罕，周成虎，等.中国无人机遥感技术突破与产业发
+展综述[J].  地球信息科学学报，2019,21(4):476-495.
+Yan  L,Liao  XH,Zhou  CH,et  al.The  Impact  of  UAV   Remote Sensing  Technology  on  the   Industrial  Development  of  China:a Review[J].Journal      of      Geo-information      Science,2019,21(4):
+
+
+476-495.
+[4]      United   States   Office   of  the   Secretary   of   Defense.OSD   UAV Reliability  Study[R]United  States  of America,2003.
+[5]  郑见阳.基于 STF  的飞控系统传感器故障诊断研究[D].  沈阳： 沈阳航空航天大学，2015.
+Zheng J Y.Fault Diagnosis for Flight Control System Sensor Based on  STF[D].Shenyang:Shenyang  Aerospace  University,2015.
+[6]  舒畅.无人机传感器故障诊断方法研究[D].  成都：电子科技大 学，2017.
+Shu  C.Research  on  Fault  Diagnosis  Method  of UAV  Sensor[D].  Chengdu:University of Electronic Science and Technology ofChina, 2017.
+[7]   Guillermo   H,Anibal   O,Horst   E.Detection   of   Sensor   Faults   in Small     Helicopter      UAVs     Using      Observer/Kalman      Filter Identification[J].Mathematical    Problems     in     Engineering,2011: 174618.
+[8]  徐涛.传感器故障诊断方法及其在试车台的应用研究[D].  哈 尔 滨 ：哈尔滨工业大学，2006.
+Xu  T.Research  on  Sensor  Fault  Diagnosis  Methods  and  Their  Applications    in     Testing    Bed[D].Harbin:Harbin     Institute    of Technology,2006.
+[9]   Kim M S,Kim M K,Lee JW.Reliability Analysis for Train Control System by Hardware Redundancy Architecture in Fault Tolerance System[J].Journal     of     International     Council      on     Electrical Engineering,2011,1(2):140-144.
+[10]张娅玲，陈伟民，章鹏，等.传感器故障诊断技术概述[J].  传感 器与微系统，2009,28(1):4-6,12.
+Zhang  Y  L,Chen  WM,Zhang  P,et   al.Overview  on  Sensor  Faut Diagnosis   Technology[J].Transducer   and   Microsystem   Techno- logies,2009,28(1):4-6,12.
+[11]孙玉绘，李璐，吴峻.定位传感器异常信号处理的方法[J].  传感 器与微系统，2008(6):56-58.
+Sun  Y  H,LiL,Wu  J.Method  for  Abnormal   Signal  Processing  of Position   Sensor[J].Transducer   and    Microsystem    Technologies, 2008(6):56-58.
+[12]  车录锋，周晓军，程耀东.考虑传感器失效的多传感器加权数据 融合算法[J].  工程设计，1999(1):42-44.
+Che  LFZhou  X  J,Cheng  Y  D.An  Weighed  Average  Method  in  Multisensor   Data   Fusion    Considering   Sensor   Fault[J].Chinese Journal  of  Engineering  Design,1999(1):42-44
+[13] 赵志刚，赵伟.基于动态不确定度理论的多传感器系统传感器失 效检测方法[J].  传感技术学报，2006(6):2723-2726.
+Zhao ZG,Zhao W.A New Sensor Failure Detection Method Based on Dynamic Uncertainty Theory[J].Chinese Journal of Sensors and Actuators,2006(6):2723-2726.
+[14]吴浩中，戴小文，王开文.摆式列车用传感器的故障检测与识别 [J].  测控技术，2001(6):19-21.
+Wu  H  Z,Dai  XW,Wang  KW.Fault  Detection  and  Diagnosis  for Sensors  in  Tilting  Trains[J].Measurement  &Control  Technoogy, 2001(6):19-21.
+[15]Wang  H,Bao   Q,Yang  W,et  al.Sensor  Fault   Tolerant  Control  of  a Fast Steering Mirror System Using Adaptive PI-based Sliding Mode Observer and Hardware Redundancy[J].Mathematical Problems in Engineering,2015(2015):1-14.
+[16]Beard   R   V.Failure   Accommodation   in   Linear   Systems   Through Self-reorganization[D].Boston:Massachusetts    Institute    of    Tech- nology,1971.
+[17]Alireza   A,Payam   A,Kang   KY.Neural   Adaptive   Observer-based Sensor   and   Actuator    Fault   Detection    in   Nonlinear   Systems: Application  in  UAV[J].ISA  Transactions,2017,67:317-329.
+
+
+
+[18]Chingiz  H,Halil  ES.Robust  Adaptive  Kalman  Filter  for  Estimation of UAV  Dynamics  in  the  Presence  of  Sensor/Actuator  Faults[J]. Aerospace  Science  and  Technology,2013,28(1):376-383.
+[19]Saied    M,Mahairy    T,Francis    C,et    al.Differential    Flatness-based Approach for Sensors and Actuators Fault Diagnosis of a Multirotor UAV[J].IFAC    PapersOnLine,2019,52(16):831-836.
+[20]    Feng  TZheng  J  Y,Zhang  T.Sensor  Fault  Diagnosis  for  an  UAV Control  System  Based  on  a  Strong  Tracking  Kalman  Filter[J]. Applied  Mechanics  and  Materials,2014,3634:270-274.
+[21]Renganathan  VOverview  of  Artificial  Neural  Network   Models  in the    Biomedical    Domain[J].Bratislavske    Lekarske     Listy,2019, 120(7):536-540.
+[22]张小敏.基于神经网络的飞控传感器故障诊断[D].  南京：南京 航空航天大学，2012.
+Zhang  X  MSensor  Fault  Diagnosis  for  Flight  Control  System  Based   on   Neural    Network[D].Nanjing:Nanjing   University    of Aeronautics and Astronautics,2012.
+[23]曹杭炜，李秀娟.OLS 算法在无人机传感器故障诊断中的应用[J].
+飞机设计，2006,(2):56-59.
+Cao HW,LiXJ.Application  of OLS Arithmetic to Fault Diagnosis for  Airborne   Sensors  in  Unmanned  Aerial  Vehicles[J].Aircraft Design,2006,(2):56-59.
+[24]袁杰，王福利，王姝，等.基于 D-S  融合的混合专家知识系统故
+障诊断方法[J].自动化学报，2017,43(9):1580-1587.
+Yuan  J,Wang  FL,Wang  S,et  al.A  Fault  Diagnosis  Approach  by D-S Fusion Theory and Hybrid Expert Knowledge System[J].Acta Automatica    Sinica,2017,43(9):1580-1587.
+[25]王文林.基于专家系统的核动力装置故障诊断方法研究[D].  哈 尔滨：哈尔滨工程大学，2016.
+Wang WL.Research on Fault Diagnosis Method Based on Expert System  for  Nuclear  Power   Plants[D].Harbin:Harbin  Engineering University,2016.
+[26]Zedeh     L      A.Fuzzy     Set[J].Information      and      Control,1965(8): 338-353.
+[27]Wang  X,Cui  H,Ji  L,et  al.Design  of  Fault  Diagnosis  System  Based  on  Fuzzy  Inference  for  a  New  Type  Equipment[J].Journal  of Physics:Conference      Series,2020,1549(3):032020.
+[28]孙学初.无人机飞控系统故障诊断专家系统设计[D].  成都：电 子科技大学，2012.
+Sun  X  C.Design  of  Expert  System  for  Fault  Diagnosis  of UAV Flight    Control     System[D].Chengdu:University     of    Electronic Science and Technology of China,2012.
+[29]王蕊，孔国利.传感器故障的四旋翼无人机模糊自适应容错控制 [J].  数学的实践与认识，2020,50(24):116-124.
+Wang  R,Kong  G  L.Fuzzy  Adaptive   Fault  Tolerant  Control  for Sensor  Fault  of  Quadrotor  UAV[J].Mathematics  in  Practice  and  Theory,2020,50(24):116-124.
+[30]Gao  YH,Zhao  D,LiYB.UAV   Sensor   Fault  Diagnosis   Technology: a     Survey[J].Applied     Mechanics      and      Materials,2012,2025:  1833-1837.
+[31]吴康 . 基于SVM 与小波变换的微小型无人直升机传感器故障诊 断[D].  杭州：浙江大学，2010.
+Wu K.Fault Detection and Isolation for Sensors on MUH Based on SVM  and  Wavelet  Transform[D].Hangzhou:Zhejiang  University, 2010.
+[32]胡勇.信息融合技术在无人机中的应用研究[D].  南京：南京航 空航天大学，2008.
+Hu   Y.Research    on   the    Applications   of   Information    Fusion Technology   in   Unmanned   Aerial   Vehicle[D].Nanjing:Nanjing University ofAeronautics and Astronautics,2008.
+
+
+[33]李晴.基于优化机器学习算法的模拟电路故障诊断研究[D].  长 沙：湖南大学，2013.
+LiQ.Research of Machine-learning-based Fault Diagnosis Methods of Analog  Circuits[D].Changsha:Hunan  University,2013.
+[34]    Ren  H,Li  N,Chai   Y,et  al.The  Input  Pattern  Problem  on  Deep Learning  Applied  to  Signal  Analysis  and  Processing  to  Achieve Fault    Diagnosis[J].Science     China(Information     Sciences),2019, 62(12):269-271.
+[35]郭一帆，唐家银.基于机器学习算法的寿命预测与故障诊断技术 的发展综述[J].  计算机测量与控制，2019,27(3):7-13.
+Guo YF,Tang JY.A Review of the Development of Life Prediction and  Fault  Diagnosis  Technology  Based  on  Machine  Learning Algorithm[J].Computer    Measurement    &Control,2019,27(3):7-13.
+[36]胡文伟，胡建强，李湛，等.基于强化学习算法的自适应配对交 易模型[J].  管理科学，2017,30(2):148-160.
+Hu   WW,HuJQ,Li    Z,et    alSelf-adaptive    Pairs   Trading   Model Based    on    Reinforcement     Learning    Algorithm[J].Journal    of Management     Science,2017,30(2):148-160.
+[37]高云红，赵丁，李一波.基于LS_SVM 与 PCA 的小型无人机传 感器故障诊断[J].  火力与指挥控制，2014,39(7):111-114.
+Gao  Y  H,Zhao  D,Li  Y  B.Small  UAV  Sensor  Fault  Diagnosis Based  on  LSSVM  and  PCA[J].Fire  Control  &Command  Control, 2014,39(7):111-114.
+[38]叶慧.基于小波与多核支持向量机的无人机传感器故障诊断系 统研究[D].  南京：南京航空航天大学，2014.
+Ye H.The Application of Wavelet and Multi-kernel  SVM in UAV  Sensors     Fault      Diagnosis[D]Nanjing:Nanjing     University      of Aeronautics and Astronautics,2014.
+[39]舒畅，李辉.基于小波与GBDT 的无人机传感器故障诊断[J].   测 控技术，2017,36(8):41-46.
+Shu C,Li H.Fault Diagnosis of UAV Sensors Based on Wavelet and GDBT[J].Measurement   &Control   Technology,2017,36(8):41-46.
+[40]刘瀚泽.基于机器学习的无人机飞控故障智能诊断系统研究[D]. 成都：电子科技大学，2019
+Liu H Z.Research on Intelligent Diagnosis System of UAV Flight Control Fault Based on Machine Learning[D].Chengdu:University of Electronic Science and Technology of China,2019.
+[41]任坚，刘剑慰，杨蒲.基于增量式策略强化学习算法的飞行控制 系统的容错跟踪控制[J].  控制理论与应用，2020,37(7):1429- 1438.
+Ren   J,Liu    J    W,Yang   P.Fault-tolerant    Tracking    Control   for Continuous   Flight    Control    System   Based    on    Reinforcement Learning Algorithm with Incremental Strategy[J].Control Theory & Applications,2020,37(7):1429-1438.
+[42]彭宇，史书慧，郭凯，等.无人机飞控系统故障仿真及数据生成 [J].  仪器仪表学报，2019,40(7):13-21.
+Peng Y,Shi SH,Guo K,et al.Fault Simulation and Data Generation of  UAV  Flight   Control  System[J].Chinese  Journal   of  Scientific Instrument,2019,40(7):13-21.
+[43]李勇.基于在线模型的飞行控制系统的故障诊断[D].  南京：南 京航空航天大学，2016.
+Li  Y.Fault  Diagnosis  of Flight  Control  System  Based  on  Online Model[D].Nanjing:Nanjing     University     of     Aeronautics     and Astronautics,2016.
+[44]王世勇，陈阳，李少斌，等.多旋翼无人机执行机构故障重构技 术研究[J].  电光与控制，2015,22(3):26-30,49.
+Wang  S  Y,Chen  Y,LiS  B,et  al.Research  on  Fault  Reconstruction for Actuator Faults of Multi-Rotor UAVs[J].Electronics Optics  & Control,2015,22(3):26-30,49.
+[45]宫勋，赵常均，王丽，等.基于双观测器并行结构的四旋翼无人
+
+
+
+机故障检测与重构[J].  控制与决策，2015,30(7):1214-1218.
+Gong    X,Zhao    C    J,Wang    L,et    al.Faults    Detection    and Reconstruction for Quad-rotor Aircraft Based on Double-observers Parallel  Structure[J].Control  and  Decision,2015,30(7):1214-1218.
+[46] 邢小军，陈潇然，黄龙亮，等.面向执行机构故障的四旋翼无人  机主动容错飞行控制方法研究[J].  西北工业大学学报，2018, 36(4):748-753.
+Xing  X  J,Chen  X  R,Huang  L  L,et  al.Study  on  Active  Fault Tolerant Flight Control Systems for Quadrotor UAV with Actuator Failures[J].Journal of Northwestern  Polytechnical University,2018, 36(4):748-753.
+[47]陈阳.六旋翼无人机容错飞行控制研究[D].  南京：南京航空航 天大学，2014.
+Chen   Y.Research   on    Fault-tolerant   Flight   Control    of   Hexa- copters[D]Nanjing:Nanjing     University     of     Aeronautics     and Astronautics,2014.
+[48]程聪.一种多旋翼无人机容错控制技术研究[D].  南京：南京理 工大学，2019.
+Cheng  C.Research  on  a  Fault-tolerant  Control  Technology  of Multi-rotor  UAV[D].Nanjing:Nanjing  University  of  Science  and  Technology,2019.
+[49]姜陶然.多旋翼无人机系统故障重构及容错控制研究[D].  南京：
+南京信息工程大学，2019.
+Jiang  T  R.Research  on  Fault  Reconstruction  and  Fault  Tolerant Control   of   Multi-rotor   Unmanned    Aerial   Vehicle   System[D] Nanjing:Nanjing University  of Information  Science  &Technology 2019.
+[50]Zuo  LF,Yao  LN,Kang  YE.UIO  Based  Sensor  Fault  Diagnosis  and Compensation for Quadrotor UAV[C].Hefei:32nd Chinese Control and  Decision  Conference,2020:6.
+[51]沈毅，李利亮，王振华.航天器故障诊断与容错控制技术研究综 述[J].  宇航学报，2020,41(6):647-656
+Shen  Y,Li  LL,Wang  Z  H.A  Review  of  Fault   Diagnosis   and
+
+
+Fault-tolerant   Control    Techniques   for    Spacecraf[J].Journal   of Astronautics,2020,41(6):647-656.
+[52]胡晓煜.无人机推进系统技术研究[J].  燃气涡轮试验与研究， 2008(1):58 -61.
+Hu  X  Y.UAV  Propulsion  System  Technology  Research[J].Gas Turbine Experiment  and  Research,2008(1):58-61.
+[53]王海斌，葛雪雁，宋玉珍.无人机的发展趋势与技术预测[J].  飞 航导弹，2009(11):46-52.
+Wang  H  B,Ge  X  Y,Song  Y  Z.The  Development  Trend  and Technology  Forecast   of  UAV[J].Aerodynamic   Missile   Journal, 2009(11):46-52.
+[54]Rory   T,Stuart   G.Fault   Classification   and   Diagnostic   System   for Unmanned  Aerial  Vehicle  Electrical  Networks  Based  on  Hidden Markov Models[J].IET Electrical  Systems  in  Transportation,2015, 5(3):103-111.
+[55]Zhang  H,Song  BF,Li  F,et  al.Multidisciplinary  Design  Optimization of an Electric Propulsion System of a Hybrid UAV Considering Wind Disturbance   Rejection    Capability   in    the   Quadrotor    Mode[J]. Aerospace Science and Technology,2020,110:106372.
+[56]Li   J,Chen    M,Dai   F,et    al.Prioritizing-based   Message    Scheduling for   Reliable  Unmanned  Aerial  Vehicles  Ad   Hoc  Network[J]. International   Journal   of   Performability   Engineering,2018,14(9): 2021-2029.
+[57]Kang   JH,Kwon   Y   M,Park   K   J.Cooperative   Spatial   Retreat   for Resilient   Drone   Networks[J].Sensors,2017,17(5):1018.
+[58]Mark   B,Kary   T,Ewen    C.Failure   Detection   of   Composites   with Control System Corrective Response in Drone System Applications [J].Computers,2018,7(2):23.
+[59]Yong  K  J,Li  XM.Study  on  the  Application  of  Virtual  Prototyping Technology to UAV Fault Diagnosis Training[J].Applied Mechanics and    Materials,2013,2560:396-400.
+[60]Gino   I,Giuseppe   C,Amelia    T.Fault   Diagnosis   for   UAV    Blades Using  Artificial  Neural  Network[J].Robotics,2019,8(3):59.

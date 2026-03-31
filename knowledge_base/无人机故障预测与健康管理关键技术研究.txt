@@ -1,0 +1,82 @@
+航空航天工程                                                                                2025 年第 1 卷第 1 期
+Aerospace Engineering                                                                                                                                                    https://ae.oajrc.org/
+无人机故障预测与健康管理关键技术研究
+Shengzhi Xu, Yunbin Yan, Lu Wang, Kai Han*
+中国人民解放军陆军工程大学石家庄校区  河北石家庄
+　　【摘要】无人机在现代国民经济中发挥着越来越重要的作用，应用范围广泛，涉及农业、工业、交通运输、环境监测、医疗救援等各个领域， 已成为经济发展的新动力。故障预测与健康管理的意义在于提高设备的可靠性，故障诊断技术可以准确地找出设备故障的原因和部位，以便及时修复并恢复设备原有的功能，有助于保证设备的稳定运行，提高设备的可靠性。同时， 它提供定制化的维护建议和设备的最佳维修时机，最大限度地减少不必要的维护成本。提前规划维护： 健康预测技术可以评估设备的健康状况，预测性能下降趋势和剩余使用寿命。如何快速诊断无人机故障原因， 准确判断健康状况，结合当前无人机维修保障能力，提出合理化的维修对策建议，确保无人机保修服务既满足成本控制的经济性需求，又能高效地支持其执行的任务要求，因此该研究具有十分现实的经济价值和实际意义。
+【关键词】无人机；国民经济；故障；健康状况；维修保障
+【收稿日期】2025 年 6 月 3  日     【出刊日期】2025 年 7 月 10  日   【DOI】10.12208/j.ae.20250005
+
+Research on key technologies for failure prediction and health management of unmanned aerial vehicles
+
+Shengzhi Xu, Yunbin Yan, Lu Wang, Kai Han
+Shijiazhuang Campus, Army Engineering University, Shijiazhuang, Hebei
+　　【Abstract】Unmanned Aerial Vehicles (UAVs) are playing an increasingly important role in the modern national economy, with a wide range of applications covering a variety of fields such as agriculture, industry, transport, environmental monitoring, medical rescue, and so on, and have become a new driving force for economic development. The significance of fault prediction and health management can improve the reliability of equipment, and fault diagnosis technology can accurately find out the cause and location of equipment failure, so as to repair and restore the original function of the equipment in time. This helps to ensure the stable operation of the equipment and improve its reliability of the equipment. At the same time, it provides customized maintenance recommendations and the best time to repair the equipment, minimizing unnecessary maintenance costs. Plan maintenance ahead of time: Health prediction technology can assess the health of your equipment and predict performance degradation trends and remaining useful life. How to quickly diagnose the cause of UAV failure, accurately determine the health status, combined  with  the   current   UAV  maintenance   guarantee   capacity,   put   forward   rationalised   maintenance countermeasure suggestions, to ensure that the UAV warranty service not only meets the economic demand of cost control, but also can efficiently support the mission requirements of its execution, so the research has a very realistic economic value and practical significance.
+【Keywords】UAVs; National economy; Malfunctions; State of health; Maintenance guarantees
+
+
+1  研究背景
+　　据相关统计，在飞机 A 类事故（飞机毁损或损失超过 200 万美元）中发生的 85 起机械故障中，如
+*通讯作者： Kai Han
+
+
+
+　果采用故障诊断与健康状态评估相关技术， 54  起（63%）事故是可以避免的。它是对传统飞行中测试技术、外部自动化测试设备、故障监测与诊断技术
+
+注：本文于 2025 年发表在 Engineering Advances  期刊 5 卷 2 期，为其授权翻译版本。
+
+
+
+　的扩展，具有状态监测、故障报警、故障诊断、状态评估、维护决策支持、装备大数据管理等功能。美国陆军将其视为信息技术时代的维护方法，列为典型的军民两用技术，并重点发展领域。通过不同类型的传感器，采集装备运行数据信息，进行诊断、健康状态评估和智能维护，并向管理人员提供合理化建议，确保装备安全稳定运行。通过监测无人机发动机性能的退化过程，可以及时发现发动机故障征兆，全面、量化、直观地掌握装备运行状态，显著提高装备的信息化管理水平。通过智能决策支持，增强维修工作的计划性，有效提高设备利用率、保障效率和战斗力（生产率）[1]。
+　　　故障诊断和健康评估具有不确定性，状态监测是设备维护的关键技术之一，是健康管理的“风向标”，是故障预测和健康管理的切入点。故障诊断和健康评估是无人机健康管理的重要组成部分，可以根据情况提供合理化的维护建议，确保飞行任务的圆满完成。无人机及相关无人机是维护国家安全、促进数字化经济社会发展、促进国民经济繁荣、建设强大国防的重要战略装备。当今国际形势复杂动荡，局部战争频发，实践证明，无人机已成为现代战争的颠覆性武器[2]。主要目的是利用当前收集的无人机运行数据和历史数据，对无人机的性能退化和异常工作状态进行分析，并进一步进行发展趋势分析和判断，以便采取有针对性的维护措施，为故障的预防和排除提供充分的技术支持和决策依据。可见，故障诊断与健康状态评估必将成为无人机维修领域发展的一项关键技术，有助于制定最优的发动机更换和维修计划，有针对性地开展故障排除和维修工作。
+　　　无人机故障诊断与健康状态评估方法的研究有助于及时发现无人机故障和动力衰减，评估无人机性能方向。无人机工作环境具有发动机运行状态多变性、复杂性、多样性、机动性强等特点， 由于无人机长期处于恶劣的工作环境中，其零部件的劣化速度加剧，从而增加了发生故障的风险。目前，无人机故障诊断与健康状态评估面临几大挑战：1）无人机种类和型号繁多，不同型号和类型的无人机具有不同的结构和工作特性，需要针对不同型号优化和调整故障诊断与状态评估方法。2）无人机内部结构复杂，运行状态受燃油品质、飞行环境、飞行任务等多
+
+
+种因素的影响。环境、飞行任务等，使得故障诊断和健康状态评估过程需要充分考虑多种因素及其之间复杂的非线性关系。 3）无人机通常在偏远或高风险地区执行任务，直接的人工维护和检查有限，需要依靠先进、智能的故障诊断与评估技术，及时发现和识别故障，保障无人机飞行安全，避免空中安全问题[3]。
+2  无人机发动机无法启动的主要原因分析如下
+2.1  发动机机体
+　　运动部件是故障较多的部件。发动机长期在缺油状态或大负荷及冷却不足的条件下，由于缸内过热会发生活塞咬合故障。发生故障，轻则活塞和活塞环拉伤，重则活塞缸组合体完全损坏。燃油中润滑剂比例不足或分布不均匀时，也会出现此类故障。严重的拉伤还可能拉伤连杆。活塞环开口间隙过大或活塞环咬合不良都会导致发动机功率明显降低，同时过热。活塞环断裂时， 发动机压缩力明显下降，还可能拉伤气缸。连杆大小头的滚针或保持架断裂会烧坏曲轴（曲轴）或活塞销，最终出现咬合现象，甚至拉断连杆。这些故障除了质量问题外，过热、油质不良、润滑剂不足是主要原因，应针对以上原因及时排除[4]。
+2.2  供油系统
+　　机油调节不当，会导致发动机在高低速运转不正常。空燃比过小， 导致火花塞卡死、积碳严重、喷油困难，排气管烟雾特别浓。反之，发动机运转过热，不稳定，动力不降，零件易磨损，尤其容易造成缸套和活塞卡死。燃油中含有水分， 实际供油稀薄，也会导致发动机运转过热。
+　　供油系统中的膜片式油泵，两个阀门（进油阀、出油阀）变形损坏、阀门漏油、油泵膜片破裂等， 都会造成油泵故障，停止供油。恒压变压器的橡胶阀漏油、杠杆卡死、弹簧过强或过弱、油道及喷嘴堵塞，都会导致喷油器供油工作异常，发动机可能出现贫油或富油两种情况，工作不稳定，这些都是油路系统常见的故障。对策建议： （1）检查油箱内是否有油。如果没有油，请确保油管路中有油。（2）检查‘燃油泵’开关。检查电动燃油泵开关是否处于开启状态；如果没有，请将其开启，以确保电动燃油泵总成工作正常[5,6]。
+2.3  点火系统
+
+
+
+　　　点火系统常见的故障是无火花或火花弱。无火花会使发动机停止工作，火花弱会使发动机启动困难、动力不足。火花塞故障也会引起无火花或火花弱。故障来源可能是中心电极积碳较多、电极断裂、瓷柱断裂等。清除火花塞积碳并用汽油清洗后，还可以使用，但当出现电极断裂、瓷柱断裂等故障时，应更换新的火花塞。点火线圈故障是由于内部击穿或接头松动，使点火线圈短路、断路或接触不良，从而导致点火失败。可用万用表检查线圈，如不通电即断路，如电阻值小于规定值，说明有短路击穿。但短路击穿的电阻值往往测不到；不易判断是否发生故障，只能更换新的[7]。
+　　控制盒采用环氧树脂密封，无法检查内部故障。如果其他部件和线路均正常，且没有其他故障，则只能更换新的控制盒进行测试。接头松动通常会导致点火控制盒无火花或火花微弱。检查故障时，应首先检查线路是否松动[8]。
+3  基于物理因素的无人机性能衰退分析
+　　基于无人机实装数据，揭示无人机发动机部件/附件/系统性能衰退规律及机理，细化与发动机性能衰退过程密切相关的表征参数[9] ，研究整机系统衰退的机理与规律。 发动机是一个由多个部件组成的大型复杂非线性系统，理想情况下，发动机从出厂服役到报废的整个运行周期内应保持一致的性能。发动机在工作过程中遵循各部件协同工作的原则，各部件满足流动连续性和压力平衡的工作条件，但发动机的工作条件复杂，特别是对于无人机恶劣的飞行环境，发动机需要在高温、高湿、高盐雾的环境中工作。燃烧过程还可能产生腐蚀性的固体颗粒，这些颗粒来自不同类型的合成燃料，会给发动机带来不同程度的外来损伤。这些颗粒来自不同类型的合成燃料，会对发动机造成不同程度的外部损伤，导致发动机容易发生的结构和气动性能劣化[10, 11]。
+4  基于故障机理的无人机性能衰退分析
+　　　尤其是旋转部件所受的应力更为突出。此外，飞行器在飞行过程中会遭遇强对流、变载荷等恶劣环境。当发动机长期在恶劣环境下工作时，这些部件也会产生磨损、腐蚀，从而出现不同程度的性能下降。分析性能下降对无人机性能的影响，有助于掌握无人机的工作状态，调整无人机的控制策略，确保无人机处于健康状态和稳定的性能。接收前端
+
+
+采集的系统状态数据，经过预处理、数据分析、特征提取等方法，将数据处理成状态监测和故障诊断所需的格式，便于传输和存储，也是选择数据预处理算法的依据[12]。由于系统测试功能较多，需要针对不同测试项目中测得的不同信号设计不同的数据处理方法。数据预处理是增强数据可靠性的重要手段，是在数据分析之前对数据进行规范化的行为，主要包括降噪滤波、异常数据剔除等技术。数据分析主要包括描述性分析技术、动态分析技术、相关性分析技术等数据分析技术；在此基础上 通过分析数据，结合设备状态的影响因素，建立了状态特征指标体系[13]。
+5  讨论与建议
+　　在民用领域，无人机也展现出巨大的应用潜力。例如，无人机在航空摄影、地形测绘、环境监测、农业监测、物流运输、工程巡检等领域发挥着重要作用。此外，无人机在医疗救援、灾情评估等应急响应中发挥着重要作用，减少人员暴露在危险环境中，降低人员伤亡风险。在提升应急响应能力方面，在自然灾害、事故救援等突发事件中，无人机能够快速响应，迅速抵达现场，为救援工作提供关键信息和支撑。无人机适应多种环境，能够灵活部署和改变航线，适应不同的地形和气候条件，执行各种复杂任务。
+　　论文研究为无人机故障诊断与健康状态评估领域提供了一种全新的思路，拓宽了无人机故障诊断与健康状态评估技术的应用范围，有助于准确反映无人机当前的工作状态，不仅可以显著减少维护工作中的资源消耗、降低无人机设备的故障率，而且可以提高无人机使用的完好率和计划任务的完成率。
+参考文献
+[1]    Mabboux J, Pommier-Budinger V, Delbecq  S,  et  al. Co- design of a multirotor UAV with robust control considering handling qualities and motor failure. Aerosp Sci Technol. 2024;144:108778.
+[2]    Lee J, Kwon D, Kim N, et al. PHM-based wiring system damage    estimation    for    near     zero     downtime    in manufacturing     facilities.     Reliab     Eng     Syst     Saf. 2019;184:213-8.
+
+
+
+[3]    Yagnasree   S,   Jain   A.   A   Comprehensive   Review   of Emerging Technologies: Machine Learning and UAV in Crop Management. J Phys Conf Ser. 2022;2327(1):012035.
+[4]    Zhang X, Liu X, Li X,  et al. MMKG: An approach to generate  metallic  materials  knowledge  graph  based  on DBpedia    and    Wikipedia.    Comput    Phys    Commun. 2017;211:98-112.
+[5]    Huang Q, Liang B, Dai X, et al. Unmanned aerial vehicle fault diagnosis based on ensemble deep learning model. Meas Sci Technol. 2024;35(4):046205.
+[6]    Prasshanth   C,   Venkatesh   NS,   Sugumaran   V,   et   al. Enhancing     photovoltaic     module      fault     diagnosis: Leveraging unmanned aerial vehicles and autoencoders in machine   learning.   Sustain   Energy   Technol   Assess. 2024;64:103674.
+[7]    Li  HL,  Meng  JX,  Zhu  WW,  et  al.  Delay-Informed Intelligent   Formation   Control   for   UAV-Assisted   IoT Application. Sensors (Basel). 2023;23(13):6190.
+[8]    Wang  XQ,  Yang   SK.  A  tutorial   and  survey  on   fault knowledge graph. In: Cyberspace Data and Intelligence, and   Cyber-Living,    Syndrome,   and   Health.    Springer Singapore; 2019:256-71.
+[9]    Yanne  A,  Luís  FFM,  Santos  M,  et  al.  Probabilistic and
+
+
+　Statistical Analysis of Aviation Accidents. J Phys Conf Ser. 2023;2526(1):012107.
+[10]  Michal H, Martin B, Andrej N, et al. The Use of UAV with Infrared   Camera   and   RFID   for   Airframe   Condition Monitoring. Appl Sci. 2021;11(9):3737.
+[11]  Hanachi H, Mechefske C, Liu J, et al. Performance-based gas turbine health monitoring, diagnostics, and prognostics: A survey. IEEE Trans Reliab. 2018;67(3):1340-63.
+[12]  Zhao Y, Liu Q, Xu W. Open industrial knowledge graph development    for     intelligent    manufacturing     service matchmaking.   In:   2017    International   Conference   on Industrial Informatics - Computing Technology, Intelligent Technology, Industrial Information Integration (ICIICII). IEEE Comput Soc; 2017:194-8.
+[13]  Demichela M, Baldissone G, Darabnia B. Using field data for energy efficiency based on maintenance and operational optimisation.  a  step  towards  PHM  in  process  plants. Processes. 2018;6(3):25.
+
+
+版权声明：?2025 作者与开放获取期刊研究中心(OAJRC)所有。本文章按照知识共享署名许可条款发表。
+https://creativecommons.org/licenses/by/4.0/
+OPEN ACCESS

@@ -1,0 +1,789 @@
+Review
+A Survey on Fault Diagnosis and Fault-Tolerant Control Methods for Unmanned Aerial Vehicles ?
+George K. Fourlas cand George C. Karras *o
+
+check for
+updates
+　Citation:  Fourlas, G.K.; Karras, G.C. A Survey on Fault Diagnosis and
+Fault-Tolerant Control Methods for
+Unmanned Aerial Vehicles. Machines 2021, 9, 197.  https://doi.org/           10.3390/machines9090197
+Academic Editor: Antonio J. Marques Cardoso
+
+Received: 19 July 2021
+Accepted: 8 September 2021
+Published: 13 September 2021
+
+　Publisher’s Note: MDPI stays neutral with regard to jurisdictional claims in published maps and institutional af?l- iations.
+
+
+　Copyright:  ?  2021  by  the  authors. Licensee  MDPI,   Basel,   Switzerland. This  article  is  an  open  access  article distributed   under   the   terms    and conditions of the Creative Commons Attribution (CC BY) license (https:// creativecommons.org/licenses/by/
+4.0/).
+
+
+
+RCS-Robotics & Control Systems Lab, Department of Computer Science and Telecommunications, School of Science, University of Thessaly, 35100 Lamia, Greece; gfourlas@uth.gr
+*   Correspondence: gkarras@uth.gr; Tel.: +30-22310-60186
+?  George K. Fourlas and George Karras, “A Survey on Fault Diagnosis Methods for UAVs”, 2021 International Conference on Unmanned Aircraft Systems, ICUAS’21, Athens, Greece,15–18 June 2021.
+
+　Abstract: The continuous evolution of modern technology has led to the creation of increasingly complex and advanced systems.   This has been also re?ected in the technology of Unmanned Aerial Vehicles (UAVs), where the growing demand for more reliable performance necessitates the development of sophisticated techniques that provide fault diagnosis and fault tolerance in a timely and accurate manner. Typically, a UAV consists of three types of subsystems: actuators, main structure and sensors.  Therefore, a fault-monitoring system must be speci?cally designed to supervise and debug each of these subsystems, so that any faults can be addressed before they lead to disastrous consequences. In this survey article, we provide a detailed overview of recent advances and studies regarding fault diagnosis, Fault-Tolerant Control (FTC) and anomaly detection for UAVs. Concerning fault diagnosis, our interest is mainly focused on sensors and actuators, as these subsystems are mostly prone to faults, while their healthy operation usually ensures the smooth and reliable performance of the aerial vehicle.
+Keywords: fault diagnosis; fault tolerant control; anomaly detection; unmanned aerial vehicles
+
+
+1. Introduction
+　　　From their ?rst appearance until today, the utilization of Unmanned Aerial Vehicles (UAVs) has exhibited a rapid increase. Their use ranges from military applications to enter- tainment, photography, product transportation, inspection and surveillance, agricultural applications, wireless communication networks and more. Considering their astonishing evolution in recent years, UAVs have become an important ?eld of research.
+　　　Nowadays, UAVs are used in a variety of civilian applications [1]. This is mainly due to their mechanical construction which makes them ?exible and ef?cient as well as their reasonable cost. They are mainly distinguished for operating in various modes such as ?ying at different speeds, hovering over a target, maintaining a stable position, performing complex maneuvers, avoiding obstacles, etc. They also have the ability to ?y and perform missions in both indoors and outdoors environments.
+　　　Their supremacy makes them convenient in replacing humans in tasks that can be monotonous, dif?cult or even dangerous for people to undertake. At the same time, the standards for their reliability and performance are increasing.  Regrettably, despite any technological advances, the appearance of faults is inevitable. This is primarily attributable to the fact that UAVs embed a variety of subsystems, sensors, actuators and components that are susceptible to failures. In addition, unforeseeable conditions and events can occur in their operating environment [2].  This reality poses new demands for designing and applying fault diagnosis approaches, that will contribute timely and accurately in the fault detection and isolation process both at the sensor and actuation levels of UAVs.
+　　　Moreover, an important factor that poses further challenges and dif?culties in fault diagnosis is that all ?ight and mission tasks are integrated into the vehicle’s embedded
+
+
+
+Machines 2021, 9, 197. https://doi.org/10.3390/machines9090197                                                                        https://www.mdpi.com/journal/machines
+
+
+　control systems, while any intervention by the ground operator is usually limited, most likely insuf?cient or even overdue. Thus, it is crucial for the UAV to self-track its operation, so that any faults can be addressed before they lead to disastrous consequences.
+　　　UAVs are classi?ed into three major categories [3]:  rotary wing, ?xed wing and ?apping wings, as shown in Figure 1. Rotary wings also known as vertical take-off and landing (VTOL) UAVs and are usually employed for missions that involve hovering. For long-range missions and high altitudes, ?xed-wing UAVs are most frequently used. They are usually suitable for research and military purposes.  Finally, ?apping-wing UAVs attempt to imitate the way that birds and insects ?y. They are characterized by limited payload capabilities and low endurance.
+
+　　　　　　　　　　　　　
+Figure 1. Unmanned aerial vehicles classi?cation.
+1.1. Glossary
+　　　In order to facilitate the introduction of the readers to the relevant concepts reviewed by this survey study, and helping them identify the relevant references that might become useful in their specialized research, it is brie?y presented below a glossary of the most relevant terms:
+?     Fault: An unpermitted deviation from the normal, acceptable, usual, and standard behavior [4].
+?     Failure: A permanent interruption of a system’s ability to perform a require function under speci?ed operating conditions [4].
+?     Malfunction: An intermittent irregularity in the ful?llment of a system’s desired function [4].
+The overall concept of Fault Diagnosis consists in the following essential tasks [2]:
+?     Fault detection:  detection of the occurrence of faults in the functional units of the process, which lead to undesired or intolerable behavior of the whole system.
+?      Fault isolation: localization (classi?cation) of different faults.
+In Figure 2, the general scheme of fault detection and isolation architecture is illustrated.
+　　　Diagnostic techniques are classi?ed in a variety of ways, depending on the study ?eld [2,4,5]. The suggested categorization in this survey is depicted in Figure 3and is divided into three categories: hardware redundancy, analytical redundancy and signal processing.
+?      Hardware redundancy: consists in the reconstruction of the process components us- ing the identical (redundant) hardware components. A fault in the process component is then detected if the output of the process component is different from the one of its redundancy. The main advantage of this scheme is its high reliability and the direct fault isolation.
+?      Analytical redundancy: makes use of the model of the process where process model is a quantitative or a qualitative description of the process dynamic and steady behavior.
+
+
+
+　In this review the analytical redundancy is divided into two categories: model-based methods and knowledge-based.
+–     Model-based methods are based on a mathematical model obtained through physical laws or system identi?cation methods and fault diagnosis is achieved using residual that are formed by the difference between the measured signals and the signals generated by the mathematical model.
+–     Knowledge-based methods are not dependent on the system model and require a signi?cant amount of previous system performance data while the expert knowledge and expertise may be effectively used in the diagnostic procedure.
+?      Signal processing: uses signal measurements instead of a system model. The mea- sured signals are considered to contain information about faults that exist in the system in a form of symptoms. From these signals, their characteristics are extracted and the fault diagnosis is made with appropriate signal processing, symptom analysis and prior knowledge of the symptoms of healthy systems [6].
+
+　　　
+Figure 2. General Scheme of Fault Detection and Isolation (FDI) Architecture.
+　　　　　　　　　　　　　
+Figure 3. Fault Detection and Isolation (FDI) Methods Classi?cation.
+
+
+
+　　　Fault diagnosis is the ?rst of two steps of an integrated approach to the robust and reliable operation of an unmanned aerial vehicle. The next equally important step concerns fault accommodation and it is achieved through fault tolerant control. It comprises different sophisticated control algorithms that provide possible solutions for fault compensation and controlling the system with acceptable performance. The general scheme of fault tolerant control architecture is depicted in Figure 4.
+　　　
+Figure 4. General Scheme of Fault-Tolerant Control (FTC) Architecture.
+There are two types of FTC systems: passive and active systems.
+?      Passive FTC: A control system that does not rely on faulty information to control the system and is closely related to robust control where a ?xed controller is designed tobe robust against a prede?ned fault in the system and usually redundancy is integrated into the passive FTC scheme to make it resilient against faults [7].
+?     Active FTC: A control system that uses an FDI module to detect and isolate the fault while a supervisory controller decides how to modify the control structure and parameters to compensate for the occurred fault in the system [7].
+　　　In this survey article, we make an attempt to provide the latest research studies on fault diagnosis and fault tolerant control methods in the ?eld of UAVs, which are classi?ed as shown in Figures 3and 5respectively.
+　　　　　　　　　　　　　
+Figure 5. Fault-Tolerant Control (FTC) Techniques.
+
+
+
+　　　In addition to the classic methodologies for fault diagnosis in unmanned aerial vehicles sensors and actuators, a UAV contains various others subsystems such as components, structures, communication and data transmission systems, etc. The proper operation of all the above is considered extremely important, and it is crucial for the system to be able to detect any malfunctions, in a timely manner, that could cause deviation from the vehicle’s acceptable and expected ?ight.
+　　　In this direction, and given the large volume of data and the tendency towards higher levels of UAVs autonomy, intelligent methodologies and techniques are being developed that aim to detect anomalies, i.e., to detect operations and events that are abnormal.
+　　　Anomaly detection refers to the problem of ?nding patterns in data that do not conform to expected behavior.  These nonconforming patterns are often referred to as anomalies, outliers, discordant observations, exceptions, aberrations, surprises, peculiari- ties or contaminants in different application domains [8].
+　　　The requirement in the direction of higher levels of UAVs autonomy, forged the path for intelligent methodologies and techniques able to detect anomalies in the vehicle behavior, and through this perspective our review extends in this area as well. The most common anomaly detection techniques are brie?y presented in Figure 6.  More details regarding these techniques including their de?nitions can be found in [9].
+
+　　　　　　　　　　　　　
+Figure 6. Anomaly Detection Techniques.
+　　　We concentrated our survey in associated studies starting from 2010 and afterwards. Conference and Journal papers were examined on the subject. The databases and keywords for this survey are presented in Table 1.
+1.2. Outline
+　　　The remainder of the paper is structured as follows.  Section 2 addresses detailed surveys in fault diagnosis and FTC of UAVs. Section 3reviews the most recent research studies in the area of sensors fault diagnosis. Section 4includes a comprehensive survey of the various methods for actuators fault diagnosis. Section 5presents methodologies of FTC for UAVs. Research studies regarding anomaly detection for UAVs are presented in Section 6. Finally, Section 7concludes the paper.
+
+
+
+Table 1. Search procedure.
+
+
+
+Databases	IEEE Xplore
+ScienceDirect
+Web of Science
+Semantic Scholar
+ENGnetBASE
+Google Scholar
+
+
+Keywords	Fault Diagnosis and UAV
+Survey and Fault Diagnosis and UAV
+Survey and UAV
+Sensors and Fault Diagnosis and UAV
+Actuators and Fault Diagnosis and UAV
+Fault-Tolerant Control and UAV
+Anomaly Detection and UAV
+Search Date	January–August 2021
+2. Existing Survey Studies
+　　　In the area of fault diagnosis there is a great development of research efforts in various scienti?c ?elds. Particularly, in the case of UAVs, there has also been an increase of relative research work. However, after extensive literature research, limited research surveys have been found, which we will present in this section and are summarized in Table 2.
+Table 2. Existing surveys.
+
+Reference	Brief Summary	Objective
+Shraim et al. [3]	
+A Survey on Quadrotors	Sensors and Actuators
+Fault Diagnosis and
+Fault-Tolerant Control
+Gao et al. [10]	UAV Sensor Fault Diagnosis	Sensor Fault Diagnosis and Tolerant Control
+Qi et al. [11]	Fault Diagnosis and
+Fault-Tolerant Control Methods	Single-Rotor Aerial Vehicles
+Sadeghzadeh et al. [12]	A Review on Fault-Tolerant Control	Unmanned Aerial Vehicles (UAVs)
+
+　　　In [3], the authors present a survey that concerns different research aspects of quadro- tors which constitute a speci?c class of UAVs. Among them, there exist a limited section referring to fault diagnosis and fault-tolerant control. In particular, the authors cite various research papers related to fault diagnosis on sensors (mainly for IMUs) and actuators.
+　　　The survey paper in [10] provides a comprehensive report of methodologies for sensors fault diagnosis. These faults are categorized according to their generation reason and a relative mathematical expression is provided. In the sequel, the three major methods regarding sensors fault detection and isolation that can be employed in UAVs are explained: model-based, signal processing and knowledge-based. Last, challenges and future research directions are discussed.
+　　　The review article in [11] offers an outline of research efforts regarding fault diagnosis and fault-tolerant control techniques on single-rotor vehicles such as helicopters.  The papers include references for both unmanned and manned vehicles.  Furthermore, the fault diagnosis methods concern both sensors and actuators. Furthermore, the approaches categorized according to the three fault diagnosis types (analytical model-based, signal processing-based and knowledge-based) are provided. As it turns out, most research efforts for unmanned vehicles concern model-based as well as signal processing-based methods, while only one work is related to the knowledge-based approach.
+
+
+
+　　　Finally, the authors of [12] provide an overview of the progress and important issues of existing studies in the ?eld of UAVs fault tolerant control. In addition, they present a brief overview of concepts related to FTC Systems as well as de?nitions and categorizations.
+3. Sensors Fault Diagnosis
+　　　In order to strengthen their operation capabilities or for data collection purposes, aerial vehicles employ a wide variety of navigation and payload sensors. The performance of these vehicles signi?cantly depends on the proper and reliable operation of the on-board sensor suite. The provided measurements are used for control, navigation, monitoring, supervision, etc.   The UAVs sensors, however, are frequently exposed to unexpected condition changes and in combination with the demanding ?ight environment the risk of failure inevitably increases, a fact that might lead to total loss of the vehicle.  As an example, incorrect ?ight altitude measurements may result in a vehicle crash, with major consequences, such as vehicle destruction, property damage and/or human injuries. To ensure the safety of a ?ight, reliable operation and accomplishment of planned missions must be guaranteed via timely sensor fault diagnosis.  Next, we present an overview of the research work related to fault diagnosis in UAV sensors. A categorization of the methods is provided in Table 3while the recording of the research works is in line with the classi?cation of FDI methods in Figure 3.
+　　　In [13], an algorithm for fault diagnosis and FTC on a quadrotor altitude sensor is displayed. In the suggested technique, three altitude sensors’ hardware redundancy was used. The three altitude measurements produced the corresponding residuals that served for the isolation of the malfunctioned sensor. The performance of the suggested approach was achieved through ?ight experiments.
+　　　A redundant system consisting of three gyroscopes is presented in [14]. The parity test approach was used to diagnose faulty gyroscopes, and a relative algorithm was sug- gested. Simulation results illustrate that the approach can reliably detect the malfunction of the gyroscope.
+　　　In [15], the authors suggest a fault diagnosis algorithm based on adaptive nonlinear proportional-integral (PI) observer for continuous time system applied to a ?xed-wing unmanned aerial vehicle. Their approach was evaluated through simulation.
+　　　In [16], the authors address the issue of fault diagnosis for Inertial Measurement Units (IMU) employed in the attitude control system. They propose a model-based Fault Detection and Isolation (FDI) approach, while they use the Unknown Input Observer (UIO) methodology in order to provide the FDI system with state observations.
+　　　In [17], a scheme that provides analytical redundancy using the differential ?atness property of ?at systems was presented.  This approach is able to provide the required residuals for fault diagnosis on sensors as well as actuators for multi-rotor vehicles. Both simulation and real experiments certi?ed the proposed method.
+　　　The authors of [18] designed an LPV robust observer to diagnose sensors faults for a quadrotor aerial vehicle. For this purpose, a bank of observers was created, which generates a set of residuals in a way that every residual is affected only by one fault. The performance of their proposition is realized through simulation.
+　　　In [19], an approach based on state and input estimation for sensors fault diagnosis was proposed. The method uses the proportional and multiple integral (PMI) for input estimation and a fault detection ?lter (FDF) for states estimation. Five malfunctioned sen- sors were considered throughout the study during UAV ?ight experiments. The proposed technique was assessed on Pitot tube and accelerometers.
+　　　The work in [20] addresses the issue of sensor anomaly detection in a ?x-wing aircraft using maximum likelihood and particle ?lters method. To demonstrate the ef?cacy of the proposed algorithm, simulation results are presented.
+
+
+
+Machines 2021, 9, 197                                                                                                                                                                                                                                                                                                                                                                       8 of 34
+
+Table 3. Sensors fault diagnosis research works.
+
+Reference	Sensor Type	FDI Method	UAV Type
+Hardware Redundancy
+Drak et al. [13]	Altitude Sensor	Hardware Redundancy	Quadrotor
+Shi et al. [14]	Gyroscope	Hardware Redundancy	Quadrotor
+Analytical Redundancy
+Model-Based
+Miao et al. [15]	Inertial Measurement Units (IMU)	Model-Based/Adaptive Nonlinear
+Proportional Integral (PI) Observer	Fix-Wing
+Zuo et al. [16]	Inertial Measurement Units (IMU)	Model-Based/Unknown Input Observer (UIO)	Quadrotor
+Saied et al. [17]	Position-Orientation and Motors	Model-Based	Hexarotor
+López-Estrada et al. [18]	Position-Orientation	Model-Based/Bank of Observers	Quadrotor
+Guo et al. [19]	Pitot Tube and Accelerometers	Model-Based/Kalman-Based	Quadrotor
+Deghat et al. [20]	Roll	Model-Based/Particle Filter, Maximum Likelihood	Delta-Wing
+Samy et al. [21]	Pitch Gyro, Angle
+of Attack, Normal Accelerometer	Model-Based/NN	Fix-Wing
+Younes et al. [22]	Position	Model-Based	Quadrotor
+Xu et al. [23]	X-axis and Y-axis Angular Velocity	Model-Based	Single-Rotor
+D’Amato et al. [24]	Inertial Measurement Units (IMU)	Model-Based	Multi-Rotor, Tricopter
+Avram et al. [25]	Inertial Measurement Units (IMU)	Model-Based/Sliding Mode Observer	Quadrotor
+Simlinger et al. [26]	Gyroscope	Model-Based/KF	Fix-Wind
+Sun et al. [27]	Wheel Velocity of ABS	Model-Based/Sliding Mode Observer	Fix-Wing
+Tan et al. [28]	Airborne Sensor
+(IMU, GPS, Attitude, Angle of Attack)	Model-Based/Kalman-Bussy	unde?ned UAV
+Mouhssine et al. [29]	Inertial Measurement Units (IMU)	Model-Based	Quadrotor
+Suarez et al. [30]	Position	Model-Based/EKF	Quadrotor
+D’Amato et al. [31]	Inertial Measurement Units (IMU)	Model-Based	Quadrotor
+
+
+
+
+Table 3. Cont.
+
+Reference	Sensor Type	FDI Method	UAV Type
+Hansen et al. [32]	Airspeed	Model-Based	Fix-Wing
+Fravolini et al. [33]	Airspeed	Model-Based	Fix-Wing
+Vitanov et al. [34]	Inertial Navigation System (INS)	Model-Based/Unscented H∞ Filter (UHF)	Quadrotor
+Yoon et al. [35]	Inertial Measurement Units (IMU)	Model-Based/Parity Space and Signal-Based	Fix-Wing
+Knowledge-Based
+Guo et al. [36]	Gyroscope	Knowledge-Based	Quadrotor
+Fravolini et al. [37]	Airspeed, Angle of Attack, Sideslip angle	Knowledge-Based	Fix-Wing, Semi-Autonomous
+Crispoltoni et al. [38]	Inertial Measurement Units (IMU)	Knowledge-Based/Fuzzy Logic	Fix-Wing, Semi-Autonomous
+Sun et al. [39]	Navigation GPS/IMU	Knowledge-Based/Adaptive Neuron
+Fuzzy Inference System (ANFIS)	Quadrotor
+Chen et al. [40,41]	Gyroscope	Knowledge-Based	unde?ned UAV
+Olyaei et al. [42]	Angle of Attack, Pitch Angle, Pitch Angular Rate, Height	Knowledge-Based/Deep Learning	Fix-Wing
+Gao et al. [43]	
+Angular Rate	Knowledge-Based/Least Squares
+　Support Vector Machine (LS-SVM), Principal Component Analysis (PCA)	
+Fix-Wing, Aerosonde
+
+
+
+　　　In [21], an Extended Minimum Resource Allocating Network (EMRAN) Radial Basis Function (RBF) Neural Network (NN) was selected for multiple fault detection at the angle of attack, the pitch gyro and the normal accelerometer sensors of a fixed-wing UAV model. The achievability of the considered method was demonstrated via Matlab/Simulink simulations.
+　　　An intelligent output estimator (iOE) for residual generators was used to achieve sensor fault detection and isolation in [22]. The proposed estimator is applied to estimate the output in contrast to the observers that estimate the state. The proposed scheme was evaluated for bias sensor faults on the vehicle position, through real ?ight tests using a Qball-X4 quadrotor.
+　　　In [23], the authors present an observer-based controller. The aim is to accomplish at the same time the control of the ducted coaxial-rotor UAV and the low-frequency sensor fault detection. The methodology was tested by simulations in MATLAB.
+　　　According to the proposed methodology in [24], the sensors fault detection can be achieved by comparing similar sensors output while an extended Kalman ?lter (EKF) was applied for the biases of gyroscopes. The measurement of the biases norms provided by EKFs, serves to gyros fault isolation.  Regarding fault isolation on magnetometers and accelerometers, a set-based technique involving the solution of a Linear Programming (LP) problem on a moving time window was employed.  A series of simulations containing experimental data obtained during ?ights of a tricopter UAV was explored in order to illustrate the realistic applicability and robustness against measurement noise and various kinds of faults.
+　　　The authors of [25], based on sliding-mode observer technique, propose a fault diag- nosis approach for bias fault on inertial measurement unit of a quadrotor. The effectiveness of the discussed scheme was proved on data from real ?ights of a quadrotor.
+　　　A vision-based fault diagnosis scheme for UAV is introduced in [26] for applications in real-time. At ?rst step, the attitude of the UAV is calculated independently of every other sensor using visual data from a horizon tracking algorithm. At the second level, two Kalman ?lters are used for fault diagnosis in two gyroscopes. The methodology was tested through ROS in a real-time framework.
+　　　A sliding mode observer for fault diagnosis of a wheel velocity sensor in an anti- skid braking system (ABS) of the landing system of a UAV was proposed in [27].  The methodology was combined with a fault-tolerant control scheme. The feasibility of the suggested approach was illustrated via simulation.
+　　　In [28], a malfunction modeling and analysis of sensor device is conducted using aerody- namic parameters of UAV, and a state estimator using the Kalman–Bussy filter was developed. The findings of the simulation indicate the effectiveness of the discussed approach.
+　　　The work in [29] addresses the fault detection and isolation of faults on sensors in a quadrotor UAV. The suggested architecture is developed based on nonlinear analytical redundancy (NLAR) relations.  Simulations that conducted in MATLAB environment adopting faults on the IMU, showed the feasibility of this approach.
+　　　A Fault Detection, Identi?cation and Recovery (FDIR) framework for Multi-UAV operations is developed in [30]. In order to detect malfunctions in the attitude and location sensors of the participating vehicles, the system utilizes data generated on-board by the sensors of the UAVs group. The proposed approach has been experimentally tested with quadrotors in indoors environment.
+　　　In [31], the authors investigate the use of an Unscented Kalman Filter (UKF) for fault diagnosis of Hardware Duplex IMU as a different solution regarding the common Hard- ware Triplex IMU. The experiments performed on real ?ights con?rming the effectiveness of their method.
+　　　The work in [32] deals with the fault diagnosis of airspeed sensor. The approach is based on adaptive observers to produce analytical redundancies and to create residuals. The technique was tested using simulations as well as actual data of the airspeed sensor of the UAV.
+
+
+
+　　　In [33], a research for fault diagnosis of airspeed sensor was performed. The authors presented two solutions, the ?rst one adopted model-based technique while in the second, the parameters were identi?ed from ?ight data. The fault was detected using the ‘CUSUM’ ?lter. A simulation analysis performed on a WVU YF-22 aircraft, assessed the ef?ciency of the developed scheme.
+　　　An implementation of the Unscented H∞ Filter (UHF) to a bank of observers for the fault diagnosis of an inertial navigation system (INS) was proposed in [34]. The suggested method was evaluated via simulations on real navigation data.
+　　　The proposed research in [35] refers to an experimental assessment of a fault diagnosis method for three consecutive faults at inertial sensors of a ?xed-wing UAV. The approach combines the parity space method with the in-lane monitoring method based on the discrete wavelet transform. The experiments were conducted on a ?xed-wing aircraft.
+　　　The research study in [36] suggests a sensor fault detection strategy using a classi?er without negative samples, which can be used as a local density regulated optimization in a single class support vector approach. Simulation ?ndings were used to demonstrate its ef?cacy and supremacy on a real ?ight control system platform for gyroscope faults.
+　　　The authors of [37] designed a fault detection method for the Air Data Sensors (ADS) using Interval Models (IMs) and a nonlinear-in-the-parameter Neural Network.   The proposed approach was validated on real ?ight data from a semi-autonomous aircraft.
+　　　The work in [38] introduces interval fuzzy models as a data-based method for applica- tion on the fault detection of the IMU. The method was tested on real ?ight data from a semi-autonomous aircraft.
+　　　The authors of [39] proceed with the the development of a data-driven Adaptive Neuron Fuzzy Inference System (ANFIS) for fault detection of navigation sensors. The approach provides the ability for fast and precise fault detection, and therefore may be used in real-time applications.
+　　　The authors of [40] developed a backpropagation (BP) neural network that uses a Genetic Algorithm (GA) for its optimization. As input to the neural network for its training, wavelet packets were used for the extraction of the fault energy characteristics. The method was applied to the pitch rate signal of speed gyroscope, while MATLAB simulations proved its effectiveness.
+　　　A similar methodology of wavelet entropy energy feature extraction was proposed in [41], in order to acquire the fault feature vector, as well as for updating the weight and threshold of the neural network the authors adopt the adaptive ?reworks algorithm. Simulations demonstrate the accuracy and robustness of the AFWA-BP neural network.
+　　　The authors of [42] present a fault detection and identi?cation method for sensors and actuators on a ?xed-wind vehicle, based on deep learning. For faults classi?cation, they introduced an algorithm called Color Images obtained from Time-Frequency-Amplitude (CITFA) while the simulations give accuracy of 98%.
+　　　In [43], a combination of principal component analysis (PCA) and least squares sup- port vector machine (LS-SVM) was used in order to conduct fault diagnosis and signal reconstruction of an angular rate sensor.  Initially, the LS-SVM approach produced the residuals for fault detection. Then, PCA carried out the fault isolation. The methodology was evaluated through simulations on a aerosonde UAV.
+4. Actuators Fault Diagnosis
+　　　Actuators are critical electromechanical components which are responsible for the control of the unmanned aerial vehicle. Possible malfunctions can cause ?ight problems that in turn may lead to vehicle crashing with possible disasters and serious injuries to civilians. Therefore, it becomes obvious that the diagnosis of faults in actuators is crucial and the development of appropriate methodologies is required. In the continuation of this section, we will present research results related to the detection and isolation of faults in actuators. These are also summarized in Table 4.
+
+
+
+Machines 2021, 9, 197                                                                                                                                                                                                                                                                                                                                                                     12 of 34
+
+Table 4. Actuators fault diagnosis research works.
+
+Reference	Actuator Type	FDI Method	UAV Type
+Hardware Redundancy
+Lieret et al. [44]	Rotor	Hardware Redundancy	Multirotor
+Analytical Redundancy
+Model-Based
+Xiao-Lu Ren [45]	Rotor	Model-Based/H∞ Observer	Quadrotor
+Zhang et al. [46]	Rotor	Model-Based/KF	Quadrotor
+Guzmán-Rabasa et al. [47]	Rotor	Model-Based/H∞ Observer	Quadrotor
+Lijia et al. [48]	
+Altitude System (Ailerons, Elevators, Rudder)	Model-Based/Robust Adaptive
+Observer & Radial Basis Function
+Neural Network (RBFNN)	
+Fixed-Wing
+Yin et al. [49]	Rotor	Model-Based/Interval Observer	VTOL
+Li et al. [50]	Rotor	Model-Based	Fix-Wing
+Ma et al. [51]	Biases in Position Sensors and
+Balance Sensors/External Inputs,
+Electric Regulator, Bias in Motor Torques	
+Model-Based/Observer-Based	
+Quadrotor
+Zhong et al. [52]	Motor & Altitude Sensor	Model-Based/Interacting Multiple Model (IMM)	Quadrotor
+Zhong et al. [53]	Propellers, Motors	Model-Based, Adaptive Augmented State KF	Quadrotor
+Hajiyev [54]	Elevator, Ailerons, Rudder	Model-Based	Fix-Wing
+Hasan et al. [55]	Motors	Model-Based/Nonlinear
+Thau Observer & Linearized KF	Multi-Rotor, Quadrotor
+Bauer et al. [56]	Elevons	Model-Based/Multiple Model Adaptive Estimation	Fixed-Wing
+Su et al. [57]	Rotor	Analytical Redundancy	Hexacopter
+Avram et al. [58]	Rotor	Model-Based/Adaptive Estimators	Quadrotor
+Ortiz-Torres et al. [59]	Propellers, Motors	Model-Based	Planar VTOL
+Cao et al. [60]	Rotor	Model-Based	Fix-Wing
+Rotondo et al. [61]	Rotor, Icing	Model-Based/PI-UIO	Fix-Wing
+
+
+
+
+Table 4. Cont.
+
+Reference	Actuator Type	FDI Method	UAV Type
+Liu et al. [62]	Control Vanes (CVs)	Model-Based, UKFs	Ducted Fan
+Saied et al. [63]	Rotor	Model-Based/Sliding Mode Observer	Octorotor
+Kugler et al. [64]	Sensors and Actuators	Model-Based	Fix-Wing
+Yang et al. [65]	Aileron and Elevator	Model-Based/Unscented Kalman Filter (UKF)	Fix-Wing
+Zhaohui et al. [66]	Rotor	Model-Based/Nonlinear Observer	Quadrotor
+Cen et al. [67]	Rotor	Model-Based, Adaptive Thau Observer (ATO)	Quadrotor
+Ducard [68]	Ailerons, Elevators, Rudder	Model-Based	Fix-Wing
+Tousi et al. [69]	Rotor, Icing	Model-Based/Observer	Fix-Wing, Aerosonde
+Ma et al. [70]	Elevators	Model-Based/Dual Unscented Kalman Filter (DUKF)	Fix-Wing
+Knowledge-Based
+Fu et al. [71]	Rotor	Knowledge-Based/CNN-LSTM	Six-Rotor
+Younes et al. [72]	Rotor	Knowledge-Based/Output Estimator	Quadrotor
+Hansen et al. [73]	Airspeed & Control Surface Actuator	Knowledge-Based	unde?ned UAV
+
+
+
+　　　Using a redundant ?ight control architecture, the authors of [44] present a fault detection architecture for autonomous multirotor systems. They designed and implement an inexact voter to continuously compare the states and functionalities of each one of three different ?ight control units (FCU). The proposed scheme was evaluated on real ?ights of an hexarotor.
+　　　In [45], the authors deal with the fault estimation of a quadrotor actuator, proposing a scheme with an H∞ observer that at the same time can estimate the faulty actuator and the system state. The methodology was evaluated through simulations.
+　　　In [46], a method for faulty actuator diagnosis based on Interacting Multiple Model (UIMM) using Kalman ?lters is presented. The simulation ?ndings con?rm that a single actuator fault can be diagnosed.
+　　　An FDI architecture for partial and total actuator faults of a quadrotor was proposed at [47]. An H∞ observer was used to residual generations while the UAV was modeled as an LPV system. The scheme ef?cacy was demonstrated via simulations.
+　　　In [48], the authors proposed a combination of a robust adaptive observer and a Radial Basis Function Neural Network (RBFNN) for fault detection on the attitude mechanism of a ?xed-wing aircraft. Simulations were performed to demonstrate the effectiveness of the control law.
+　　　A fault detection approach that uses an interval observer for actuators faults in UAVs formation is developed in [49]. Within this scheme, residuals as well as thresholds can be created. MATLAB simulations in a formation of ?ve VTOLs, proved the performance of the proposed method.
+　　　As in previous work, the work in [50] refers to the actuator fault diagnosis of only one UAV that participates to a formation. The proposed method involves the unknown input observer and a distributed fault detection technique. The proposed architecture was assessed through simulations in MATLAB environment.
+　　　Both sensors and actuators faults were taken into account in [51], where authors applied an adaptive observer for fault estimation. Furthermore, a fault-tolerant control scheme for fault accommodation was developed.  Both simulations and actual vehicle ?ights were realized to support the ef?cacy of the method.
+　　　Using the Interacting Multiple model (IMM) methodology, the authors of [52] ad- dressed the multiple fault diagnosis issue for actuators and sensors of a quadrotor vehicle. The usefulness of the proposed architecture was con?rmed by simulations.
+　　　The work in [53] introduces a comprehensive actuator fault diagnosis scheme of a quadrotor vehicle in the existence of extraneous disruptions. More speci?cally, the authors developed an adaptive three-state Kalman ?lter, which in addition to the diagnosis of actuator defects, was also able to evaluate magnitudes, even when external disruptions impacted the vehicle.  The simulation ?ndings showed the reliability of the suggested approach and the ef?ciency of the method was tested in various fault scenarios.
+　　　In [54], additional changes to the system model were adopted and an algorithm with Multiple System Noise scale Factors (MSNSF) was presented. This methodology, given that the actuator/surface faults produce the additive changes in the mathematical model of the UAV, may be used for actuator/surface fault diagnosis. The simulations demonstrate the effectiveness of the method in simultaneously diagnosing actuator/surface faults.
+　　　A nonlinear Thau observer combined in a cascaded form with a linearized Kalman ?lter was introduced in [55], in order to diagnose faulty actuators on a multi-rotor UAV. Simulation analysis demonstrated that the suggested procedure may diagnose a faulty actuator within a reasonable degree of precision.
+　　　In [56], the issue of the stuck control surface (elevon) of a ?xed-wing unmanned aerial vehicle is presented. The diagnosis is achieved by applying the Multiple Model Adaptive Estimation method, using LTI Kalman Filters and a Posterior Probability Evaluator that processes their residuals. The method was evaluated via simulations.
+　　　In [57], a Nonlinear Analytical Redundancy (NLAR) method was proposed for resid- ual generation regarding fault diagnosis on the actuators of a hexacopter. Authors also
+
+
+
+employed a Butterworth ?lter for signal reconstruction. The method was evaluated through real experiments.
+　　　The work in [58] describes the application of adaptive estimation techniques for Fault Diagnosis and Accommodation (FDA) on a quadrotor actuator system. Real experiments conducted with a quadrotor in an indoors environment which demonstrated the ef?cacy of the algorithm.
+　　　An approach employing a linear observer was developed in [59], in order to diagnose Planar Vertical Take-off and Landing (PVTOL) aircraft actuator faults. The approach was evaluated through simulations.
+　　　The research work in [60] introduces an improvement of the Sequence Probability Ratio Test (SPRT) algorithm, which can be applied for actuators fault diagnosis. Its speed and ef?ciency were demonstrated through simulations.
+　　　In [61], a linear parameter varying Proportional Integral Unknown Input Observer (PI-UIO) was proposed for diagnosing both actuator faults and vehicles icing. The data obtained from a simulator were used to verify the feasibility of the suggested solution.
+　　　Based on unscented Kalman ?lters, an Unscented Multiple Model Adaptive Estimation (UMMAE) method was developed in [62]. The suggested approach offers a parallel bank of ?lters that are in charge for tracking the operating mode of the respective actuator. Through simulation tests it turns out that the proposed method provides minor uncertainty in fault diagnosis, fast response and low computational load.
+　　　A sliding mode observer was proposed in [63] for actuators fault diagnosis in an octarotor. This approach utilizes the characteristics of the output for calculating the equiva- lent uncertain inputs. Simulations in Matlab/Simulink as well as a true experiments on an octarotor demonstrated the ef?cacy of this method.
+　　　In [64], the authors present and explain the characteristics of the integrated auto ?ight system software of the SAGITTA Demonstrator UAV. The system has been enriched with a fault diagnostic unit to monitor the operation of various subsystems such as sensors and actuators, in order to enhance the reliability of the vehicle.
+　　　Using an Unscented Kalman Filter (UKF), in combination with the Bayesian Classi?er (BC) method, the authors in [65] present an algorithm for actuator fault diagnosis of ?xed-wing unmanned aerial systems.  The effectiveness of the proposed scheme was demonstrated via simulations.
+　　　A nonlinear observer is used in [66] for actuator fault diagnosis on a quadrotor. The method was applied on a real system using data from real experiments. The results prove that the method displays reasonable fault diagnosis precision.
+　　　The aim of the work in [67] is to detect faults concerning partial loss of effectiveness of quadrotor actuators using the adaptive Thau observer technique. Various simulations were performed to demonstrate the method’s ef?cacy and reliability.
+　　　In [68], the author discussed an expansion of his previous work relevant to Single Model Active Fault Detection and Isolation System (SMAC-FDI) for actuators fault diagno- sis of small unmanned aerial vehicles. The proposed scheme was evaluated via simulation in MATLAB.
+　　　Using observer based methods, a fault detection and isolation architecture was pre- sented in [69] for application to an aerosonde UAV. The study on the ef?ciency of the method was carried out through simulations.
+　　　A fault diagnosis approach for application to the NASA Generic Transport Model (GTM) unmanned aerial vehicle was described in [70]. The methodology was implemented using a Dual Unscented Kalman Filter (DUKF) and a Baysian rule.  The experimental simulations con?rmed the ef?ciency of the method for successful and timely diagnosis of faulty actuators.
+　　　A deep learning approach that utilized a hybrid Convolutional Neural Network and Long Short-Term Memory (CNN-LSTM) technique was developed in [71], for the fault diagnosis of actuators on a six-rotor vehicle. Experimental results proved the effectiveness of the technique.
+
+
+
+　　　Concerning the diagnosis of a faulty actuator, the study in [72] proceeds to the design of an algorithm that comes from the combination of a model free method and a state observer, called intelligent Output Estimator (iOE). The proposed algorithm was evaluated through real experiments on a quadrotor vehicle.
+　　　In [73], a methodology that provides the ability to diagnose faults in control surfaces and air system sensors using data from a swarm of UAVs was discussed.
+5. Fault Tolerant Control Methods in UAVs
+　　　After the successful diagnosis of a fault, the next stage refers to the implementation of an appropriate fault tolerant methodology. Fault-Tolerant Control (FTC) is related to a control strategy that is capable to compensate the appearance of faults in such a way, so that the unmanned aerial vehicle continues its ?ight mission (even in an acceptable degradation mode) or to land safely.   Therefore, in order to improve the autonomy, viability and reliability of UAVs, sophisticated control methodologies are necessary. In the following, the ?ndings of this survey related to the FTC methods are presented.  These are also summarized in Tables 5and 6.
+　　　In [74], using chaos particle swarm technique for PID controller parameter optimiza- tion, an architecture of a fault-tolerant control methodology was proposed. According to simulation tests, the proposed solution has positive effects on the standard UAV ?ight, and also a high fault tolerance impact on actuator faults.
+　　　The piecewise linear assumption that allows the fault tolerant control problem to be cast as a nonlinear control allocation problem was presented in [75]. The approach was applied to the Solar-Powered HALE UAV, with control effectors failures. The ef?ciency of the method was evaluated through simulations.
+　　　Using fuzzy logic, a FTC approach for Micro Aerial Vehicles (MAV) was presented in [76]. As inputs, two constraints were used: the degree of ability to hover and the battery percentage.  The goal was to develop a Fuzzy Logic Controller to determine whether a MAV must abort or continue its mission in accordance with the aforementioned restrictions.
+The methodology was evaluated through simulations in MATLAB.
+　　　In [77], a FTC technique that splits the dynamics of the system to a fully actuated subsystem and an under-actuated subsystem in a cascaded structure was proposed. The method uses two corresponding controllers: one Nonsingular Fast Terminal Sliding Mode Controller (NFTSMC) and an Under-actuated Sliding Mode Controller (USSMC). The Particle Swarm optimization (PSO) algorithm was used to set the controllers’ parameters. Simulations proved the robustness and the effectiveness of the suggested approach.
+　　　A similar approach, where the FTC scheme is based on a Super-Twisting (STW) algorithm with an Integral Terminal sliding mode controller, was proposed in [78] with simulations on the same quadrotor as in [77].
+　　　Additionally, in [79], a fault tolerance scheme for actuator faults of a quadrotor using a Backstepping Integral Nonsingular Fast Terminal Sliding Mode Controller (BINFT-SMC) was presented. Simulations proved the effectiveness of the suggested approach.
+　　　A nonlinear FTC structure was designed in [80] in order to keep the tri-rotor UAV’s attitude stable when the rear servo is stuck. The fault was estimated using an adaptive sliding mode based observer while the accommodation was performed using a feedback linearization controller.  The effectiveness of the proposed scheme was validated with numerical simulations.
+　　　The work in [81] studies the attitude stabilization control for a quadrotor aerial vehicle using integral-type sliding mode control in the presence of external disturbances and actuator faults. The proposed methodology was veri?ed through simulations.
+
+
+
+Machines 2021, 9, 197                                                                                                                                                                                                                                                                                                                                                                     17 of 34
+
+Table 5. Fault-tolerant control research efforts.
+
+Reference	Method Type	FTC Method	UAV Type
+Passive FTC
+Jun et al. [74]	Passive	PID Controller Parameter Optimization	Quadrotor
+Wang et al. [75]	Passive	Nonlinear Control Allocation	Fixed-Wing
+Padilla et al. [76]	Passive	Fuzzy-Based	Micro AV (Quadrotor)
+Mallavalli et al. [77,78]	
+Passive	Nonsingular Fast Terminal Sliding Mode
+Controller (NFTSMC) & Under-actuated
+Sliding Mode Controller (USSMC)	
+Quadrotor
+Mallavalli et al. [79]	Passive	Nonsingular Fast Terminal Sliding Mode Controller (NFTSMC)	Quadrotor
+Hao et al. [80]	Passive	Adaptive Sliding Mode-Based Observer
+& Feedback Linearization-Based Controller	Tri-rotor
+Gong et al. [81]	Passive	Sliding Mode	Quadrotor
+Xian et al. [82]	Passive	Robust Integral of the Signum of the Error (RISE)	Tri-rotor
+Qu et al. [83]	Passive	Dynamic Surface Control	Fix-Wing
+Mallavalli et al. [84]	Passive	Sliding Mode	Quadrotor
+Khattab et al. [85]	Passive	Sliding Mode & Online Control Allocation	Spherical
+Sorensen et al. [86]	Passive	L1 Adaptive Backstepping Control & Control Allocation (CA)	Fix-Wing
+Yu et al. [87]	Passive	Recurrent Wavelet Fuzzy Neural Network (RWFNN)	Fix-Wing
+Yu et al. [88]	Passive	Fractional-Order Sliding-Mode Fault-Tolerant Neural Adaptive Control	Fix-Wing
+Tan et al. [89]	Passive	Adaptive Control	Quadrotor
+Zou et al. [90],	Passive	Hierarchical Framework	VTOL
+Qian et al. [91]	Passive	Adaptive Backstepping Controller	Fix-Wing
+Song et al. [92]	Passive	Indirect Neuroadaptive	Quadrotor
+Avram et al. [93]	Passive	Adaptive Control	Quadrotor
+Xue et al. [94]	Passive	Adaptive Control	Fix-Wing
+Vural et al. [95]	Passive	Dynamic Inversion (DI) & Robust Integral of the Signum of Error (RISE)	Fix-Wing
+
+
+
+
+Table 5. Cont.
+
+Reference	Method Type	FTC Method	UAV Type
+Hybrid FTC
+Xing et al. [96]	Passive & Active	Sliding Mode Theory	Quadrotor
+Merheb et al. [97]	Passive & Active	Sliding Mode	Quadrotor
+Zhaohui et al. [98]	Passive & Active	Adaptive Control	Quadrotor
+
+Table 6. Fault-tolerant control research efforts (Table 5cont.).
+
+Reference	Method Type	FTC Method	UAV Type
+Active FTC
+Xulin et al. [99]	Active	Control Allocation	Quadrotor
+Sadeghzadeh et al. [100]	Active	Gain-Scheduled PID (GS-PID) Controller	Quadrotor
+Jun et al. [101]	Active	PID Controller Parameter Optimization
+& Support Vector Machine (SVM)	Quadrotor
+Sadeghzadeh et al. [102]	Active	Gain-Scheduled PID (GS-PID) Controller	Fix-Wing
+Zhong et al. [103]	Active	Adaptive Control	Quadrotor
+Cheng et al. [104]	Active	Sliding Mode	Fix-Wing
+Hasanshahi et al. [105]	Active	Adaptive Estimation	Quadrotor
+Hajiyev [106]	Active	Recon?gurable Active Controller	Fix-Wing
+Rudin et al. [107]	Active	DK-iteration	Fix-Wing
+Umm-e-Aimen et al. [108]	Active	Linear Quadratic Gaussian & Integral Recon?guration Control	Fix-Wing, Aerosonde
+Vey et al. [109]	Active	Bank of Observers & Virtual Actuator	Hexrotor
+Abbaspour et al. [110]	Active	Nonlinear Dynamic Inversion Controller
+& Adaptive Fault Compensation Feedback Controller	Fix-Wing
+Nguyen et al. [111]	Active	Gain-Scheduling, Structured H-In?nity Synthesis	Hexacopter
+Nguyen et al. [112]	Active	Control Allocation, Gain-Scheduling, Structured H-In?nity Synthesis	Hexacopter
+
+
+
+
+Table 6. Cont.
+
+Reference	Method Type	FTC Method	UAV Type
+F. Liu et al. [113]	Active	Neuroadaptive sliding Mode Control (SMC)	Quadrotor
+Younes et al. [22,72]	Active	intelligent Output-Estimator (iOE)	Quadrotor
+Hou et al. [114]	Active	Nonsingular Terminal Sliding Mode Control (NTSMC)	Quadrotor
+Guiatni et al. [115]	Active	Fuzzy Logic, Fuzzy PID Controller	Quadrotor
+Shi et al. [116]	Active	Radical Basis Function (RBF) Neural Network & Sliding Mode Control (SMC)	Quadrotor
+Chung et al. [117]	Active	Optimal Control	Quadrotor
+Ge et al. [118]	Active	Integral Sliding Mode	Fix-Wing
+Erg??men et al. [119]	Active	(PID)-State-Dependent Riccati Equation
+(SDRE) algorithm or PID-Linear Quadratic Tracking/Regulator (LQT/R)	Fix-Wing
+Yu et al. [120]	Active	Model Predictive Control (MPC)	Quadrotor
+Saied et al. [121]	Active	Sliding Mode	Octorotor
+Bateman et al. [122]	Active	State Feedback Controllers	Fix-Wing, Aerosonde
+Shari? et al. [123]	Active	Sliding Mode	Quadrotor
+Nguyen et al. [124]	Active	Adaptive Control	Multirotor
+Cheng et al. [125]	Active	Non-Singular Fast Terminal Sliding Mode (NFTSM)	Fix-Wing
+Boche et al. [126]	Active	Recon?gurable Control	Fix-Wing
+Wang et al. [127]	Active	Adaptive Sliding Mode Control	Quadrotor
+Baldini et al. [128]	Active	Control Recon?guration	Quadrotor
+Pedro et al. [129]	Active	PID Control, Control Allocation	Fix-Wing
+
+
+
+　　　A continuous nonlinear robust FTC structure for handling rear servo’s stuck fault in conjunction with unknown exogenous disturbances of a trirotorUAV was developed in [82]. The stuck fault and the disturbances were estimated using a supertwisting-based observer while the fault accommodation was performed using a Robust Integral of the Signum of the Error (RISE)-based fault-tolerant controller. Real-time testing on an HILS test bed was carried out in order to con?rm the performance of the introduced fault tolerant approach.
+　　　The work in [83] presents a ?nite-time FTC for attitude dynamical systems of a hypersonic unmanned aerial vehicle (UAV) with actuator loss-of-effectiveness fault. The FTC that was proposed was derived from the dynamic surface control strategy.   For the attitude dynamical system, a ?nite-time controller utilizing the nonsingular terminal sliding mode (NTSM) control method was used. Simulation ?ndings demonstrated the effectiveness of the suggested approach.
+　　　The work in [84] conducts a comparative analysis of three Sliding Mode Control (SMC)-based fault-tolerant schemes for observing the trajectory of a quadrotor UAV in the presence of actuator faults. To evaluate the controllers’ ef?ciency, simulations were performed and a variety of fault situations were considered. Results concluded that Integral Terminal SMC was more stable and offered better FTC performance than Conventional SMC or Integral SMC.
+　　　In [85], a FTC scheme for a spherical UAV was studied. The developed FTC method combines sliding mode control with online control allocation. Simulation ?ndings indicated good tracking ef?ciency for a variety of fault/failure situations.
+　　　A control allocation scheme combined with an L1 adaptive backstepping controller was proposed in [86], as a strategy to achieve fault tolerance in an aircraft’s nonlinear longitudinal motion control. Simulations were performed on a Cessna 182 platform and showed remarkable outcomes for nominal as well as defective cases.
+　　　The work in [87] refers to networked ?xed-wing UAVs and a fractional-order (FO) fault-tolerant synchronization tracking control (FOFTSTC) scheme was proposed to cope with actuator and sensor faults simultaneously using a recurrent wavelet fuzzy neural network (RWFNN) learning system with feedback loops.  In order to demonstrate the feasibility of the proposed control system, simulations and hardware-in-the-loop tests were carried out.
+　　　A fractional order sliding-mode fault-tolerant tracking control algorithm with pre- scribed performance was developed in [88] for a ?xed-wing aerial vehicle. To demonstrate the ef?cacy of the suggested approach simulation ?ndings were presented.
+　　　The work in [89] proposes an adaptive control approach which provides reasonable trajectory ef?ciency for a quadrotor vehicle subjected to actuators failures and with time- varying center of gravity (COG). The results of the simulation show that the proposed adaptive algorithm is reliable, ef?cient and robust.
+　　　In [90], a robust FTC scheme is presented for a VTOL aerial vehicle subject to both thrust and torque failures and also disturbances.  The algorithm was developed by ap- plying the hierarchical system stability theory. The proposed method was validated by simulation results.
+　　　An adaptive backstepping control scheme was developed in [91], for a ?x-wing aerial vehicle subject to multiple actuator faults and disturbances. Simulation ?ndings veri?ed the feasibility of the proposed technique.
+　　　In [92], the authors developed an indirect neural network (NN) based adaptive control scheme, for handling modeling uncertainties and actuator faults. Simulations con?rm the ef?ciency and advantages of the proposed system.
+　　　The work in [93] presents a nonlinear robust adaptive fault-tolerant altitude and atti- tude tracking scheme to accommodate actuator faults in a quadrotor aircraft without using a failure diagnostic module. The FTC was designed utilizing back-stepping techniques. The ef?ciency of the algorithm was demonstrated by experiments.
+
+
+
+　　　In [94], the authors designed an FTC method using an adaptive control methodology for application to the automatic carrier landing system subjected to actuators failures. Simulation results on a ?x-wing aircraft veri?ed the suggested approach.
+　　　In [95], the dynamic inversion (DI) approach in combination with robust integral of the signum of the error (RISE) approach was used to introduce a passive FTC scheme for a ?x-wing UAV subject to actuators fault. The ef?ciency of the algorithm was demonstrated through simulations.
+　　　The work in [96] presents both passive and active FTC laws for actuators in a quadrotor UAV. Both controllers were developed using the integral sliding mode theory. Simulations results proved that the two FTC laws can attain a certain degree of fault tolerance, but the active FTC has better stability and fault tolerance.
+　　　Using sliding mode control methods and combining passive and active FTC schemes, the authors of [97] designed an integrated fault tolerant controller for actuator faults on a quadrotor UAV. The methodology was tested via simulations in MATLAB.
+　　　In [98], a mixed architecture that combines passive and active FTC was proposed for actuator faults compensation for a quadrotor. Concerning the fault estimation, an adaptive Thau observer was employed. The suggested approach was evaluated through simulations.
+　　　In [99], the authors present a fuzzy active disturbance rejection control method for controlling a quadrotor UAV with actuator faults and external disturbances.  Using an Luenberger linear state estimator, an actuator fault can be diagnosed from external dis- ruptions. As fault tolerant control technique the control allocation algorithm was used. The applicability of the proposed fault-tolerant control scheme was demonstrated by simulations.
+　　　In [100], a Gain-Scheduled Proportional-Integral Derivative (GS-PID) controller was combined with an on-line Fault Detection and Diagnosis (FDD) module to create an active FTC. The designed scheme was tested experimentally to a quadrotor helicopter UAV.
+　　　The work in [101] discusses a collaborative approach that combines optimization of a PID controller parameters with a support vector machine (SVM) for partial failure diagnosis of a quadrotor and a fault-tolerant controller. The potency of the method was investigated through simulations in MATLAB.
+　　　Similarly to their previous work in [100], the authors of [102] concentrated on a Gain-Scheduled PID (GS-PID) control strategy for handling actuator faults of a ?xed wing unmanned vehicle. The effectiveness of the proposed approach was demonstrated experimentally on the HK Bixler UAV.
+　　　An active fault-tolerant tracking control (AFTTC) approach for actuator faults on a quadrotor was discussed in [103]. The structure includes a fault detection and diagnosis (FDD) unit that consists from an adaptive two-stage Kalman ?lter estimator, a basic con- troller and an adaptive fault compensator. Simulations validate that the proposed scheme is effective.
+　　　In [104], the authors propose an active fault tolerant controller for the attitude control system of a ?xed wing UAV having actuator faults and external disturbances.   Their approach is based on a neural network-based fault estimation observer and a nonsingular fast terminal sliding mode control method. The performance of the proposed system was demonstrated using simulation results.
+　　　A robust FTC framework for actuator faults in the presence of external disturbances of a quadrotor was proposed in [105]. The fault-tolerant controller was designed on basis of adaptive estimation for actuator faults. The results from simulations showed the ef?ciency of the developed technique.
+　　　In [106], an active FTC for a Fix-Wing UAV was proposed.  Using Kalman Filter, the elements of the control distribution matrix were identi?ed and thus actuators faults were diagnosed and a linear quadratic regulator (LQR) controller was recon?gured. The linearized model of the longitudinal dynamics of the ZAGI UAV was taken into account in simulations, where the ef?ciency of the suggested recon?gurable control techniques was evaluated.
+
+
+
+　　　The work in [107] investigates the design of an active FTC algorithm which is resilient against small actuator failures that may be undetected so that the controller ensures that reliability of the FTC forms. The proposed framework was based in three assumptions while the feasibility of the method was showed by real ?ight tests.
+　　　In [108], a Linear Quadratic Gaussian (LQG) controller with integral action was proposed as an FTC algorithm to monitor an unmanned aerial vehicle (UAV) with actuator faults. In order to demonstrate the feasibility of the proposed scheme, simulations were conducted on an Aerosonde UAV model.
+　　　An active FTC scheme was applied to a hexrotor with actuator faults in [109], where experimental ?ndings were obtained. The approach combines a bank of observers for fault diagnosis and a virtual actuator for control recon?guration. Real tests showed that the suggested FTC system was applicable.
+　　　The work in [110] presents an active FTC architecture for actuator faults on a Fix-Wing UAV. In the developed scheme the FDI, along with a nonlinear dynamic inversion strategy, was applied for actuator fault accommodation by means of a neural network adaptive structure. The simulation results indicate that the proposed architecture can effectively diagnose and compensate actuators faults.
+　　　Two active fault-tolerant controllers were introduced in [111].  The suggested archi- tectures were based on gain-scheduling control as well as on the structured H∞ synthesis. Furthermore, in [112] the authors studied the application of a control allocation (CA) al- gorithm for the FTC of actuators faults on a multicopter.  The algorithm is also based on gain-scheduling control in the context of structured H∞ synthesis. Simulations and experi- ments on a hexacopter UAV demonstrate the usefulness and robustness of these approaches.
+　　　In [113], an FTC scheme blends the bene?ts of the Radial Basis Function (RBF) neural network with adaptive sliding mode control (SMC), which has advantages in terms of quadrotor uncertainty and external disturbances. The proposed method was con?rmed by simulation results.
+　　　An active FTC algorithm for both sensors and actuator faults on a quadrotor was proposed in [22,72], respectively.  The method includes a fault detection and diagnosis (FDD) estimator that is called intelligent Output Estimator (iOE). Real ?ight tests veri?ed the performance of the proposed methodologies.
+　　　The work in [114] proposes a fault-tolerant ?ight controller for a quadrotor with a complete rotor loss relying on nonsingular terminal sliding mode control (NTSMC). Simulation ?ndings indicated the performance of the proposed ?ight control method.
+　　　A Fuzzy PID controller was applied in [115] to the framework of an FTC approach for a quadrotor subject to Loss of Actuator Effectiveness (LOE) faults. The nominal controller was developed using fuzzy logic and a model based motor speed analysis was used for the fault diagnosis system. The proposed method was validated experimentally.
+　　　A method relying on adaptive Radical Basis Function (RBF) neural network and sliding mode control for designing an actuator fault tolerant controller was presented in [116]. The simulation ?ndings on a quadrotor showed that the proposed approach was ef?cient and robust.
+　　　The authors of [117] designed an FTC scheme able to recon?gure the thrust system based on optimal control in case failures occur to the motors of a quadrotor. To demonstrate the FTC’s ef?cacy, both simulations and experiments were conducted.
+　　　An active FTC algorithm that uses an adaptive fault estimation observer for actuator faults and integral sliding mode (ISM) was proposed in [118]. The usefulness of the active FTC approach was demonstrated via simulations.
+　　　In [119], an active fault-tolerant ?ight control (FTFC) based on state-dependent Ric- cati equation (SDRE) algorithm was proposed in order to accommodate abrupt compo- nent/control surface faults.  The effectiveness of the proposed technique was veri?ed through simulations.
+　　　The work in [120] uses a model predictive control technique for the development of an FTC algorithm on a quadrotor vehicle, in order to accommodate actuator malfunctions
+
+
+
+regarding the partial loss of its effectiveness.  The simulation ?ndings showed that the suggested fault-tolerant method performs well in handling actuator faults.
+　　　The work in [121] introduces an FTC approach, utilizing an of?ine control mixing for actuator failures of an octarotor UAV. Within this method the FDI unit is built around a sliding mode observer and furthermore successive failures can be accommodated. The feasibility of this technique was showed via real experiments on a coaxial octarotor.
+　　　An FTC system that uses state feedback controllers was proposed in [122], in order to compensate failures on control surfaces of a ?xed-wing, aerosonde UAV. The fault diagnosis was achieved using a set of unknown input decoupled functional observers (UIDFO). Simulation of a nonlinear aircraft model demonstrated the performance of the proposed scheme.
+　　　The work in [123] proposed an FTC methodology that was elicited from sliding mode control, for a quadrotor aerial vehicle exposed to actuator failures and outside disruptions. The accuracy and ef?ciency of the proposed system was evaluated with simulations executed on MATLAB.
+　　　The work in [124] presents an active FTC scheme that utilizes an adaptive control methodology to a multicopter that was submitted to actuator faults and system uncer- tainties.  This approach uses one inner and one outer loop while the FTC method was formulated on gain-scheduling control within the context of structured H∞ synthesis. The ?ndings of both simulation and ?ight experiments were used to validate the feasibility of the designed technique.
+　　　Making use of radial basis function neural network (RBFNN) for actuator fault evalua- tion and in combination with non-singular fast terminal sliding mode (NFTSM) technique, researchers in [125], proposed a new FTC scheme for a UAV that is vulnerable to different restrictions, such as actuator malfunction, actuator saturation and external perturbations. The designed architecture was validated through simulations.
+　　　The work in [126] presents an FTC design to deal with actuators faults on a ?xed-wing vehicle. The suggested approach incorporates a discrete structure for the recon?guration and a continuous one during control and estimation levels. The effectiveness of the adopted method was proven via simulations.
+　　　In [127], using adaptive sliding mode control and a recurrent neural network, an active FTC algorithm was presented to handle actuator faults and model uncertainties of a quadrotor. The feasibility of the proposed methodology was proven by real tests.
+　　　In [128], an active fault diagnosis scheme that was combined with control recon?gu- ration was discussed as a solution to actuators faults on a variable pitch quadrotor. The performance of the proposed solution was studied through simulations.
+　　　The authors of [129] presented an approach that incorporates PID controllers and a sequential least squares control allocation strategy as an effective FTC method for a ?xed-wing UAV subjected to actuator failures. The ef?ciency of the suggested framework was veri?ed by simulations.
+6. Anomaly Detection in UAVs
+　　　Modern unmanned aerial vehicles contain various subsystems such as sensors, actu- ators, components, structures, communication and data transmission systems, etc. The proper operation of all the above is considered extremely important. In addition to the classic methodologies for fault diagnosis in vehicle sensors and actuators mentioned in the previous sections, it is crucial for the system to be able to detect any malfunctions, in a timely manner, that could cause deviation from the vehicle’s acceptable and expected ?ight. In this direction, and given the large volume of data and the tendency towards higher levels of UAVs autonomy, intelligent methodologies and techniques are being developed that aim to detect anomalies, i.e., to detect operations and events that are abnormal. In the following, we will quote various research papers that deal with anomaly detection in UAVs. These are also summarized in Table 7.
+
+
+
+　　　Using a data-driven method, a scheme for fault diagnosis of Fixed-wing UAV was proposed in [130].   Two shared nearest neighbor-based algorithms—SNND-DBSCAN and SNND-KNN—were proposed for condition classi?cation and condition recognition, respectively, while two modi?ed DKPCA algorithms—M-DKPCAandWM-DKPCA—were used for fault diagnosis considering the UAV as multiple operation condition processes. The proposed approach was evaluated on real ?ight data sets.
+　　　In [131], a Beacon Exception Analysis Method (BEAM) was applied to conduct fault de- tection on the data regarding UAV wing health and various damage states. The developed approach was veri?ed thought ?nite element simulation analysis.
+　　　The authors of [132] proposed a semi-supervised support vector machine (S3VM) clas- si?cation method for anomaly detection of UAVs. The detection of anomalies is achieved by comparing the predicted value with the classi?cation uncertainty interval. For experi- mental testing, three sets of UAV channel telemetry data were used. The ef?ciency of the algorithm was checked through MS active learning and the ameliorated S3VM algorithm in different UAV data sets.
+　　　An approach for real-time fault diagnosis and anomaly detection on ?xed-wing UAVs was investigated in [133]. In order to classify the vehicle behavior during nominal ?ight and default phases, the method uses the Support Vector Machine (SVM) data-driven algorithm.  The capability of real-time defect prediction was demonstrated during real ?ight experiments.
+　　　A fault identi?cation and an alerting system was suggested in [134] in order to enhance the reliability of UAVs.  The system can be used to inform the pilot of any failure after analyzing UAV ?ight parameters and this results to the reduction of UAV failures. The early warning about mission failure can prevent potential damage. The method was evaluated via real experiments.
+
+
+
+Machines 2021, 9, 197                                                                                                                                                                                                                                                                                                                                                                     25 of 34
+
+Table 7. Anomaly detection research works.
+
+Reference	Subsystem Type	Anomaly Detection Technique/Method	UAV Type
+Liang et al. [130]	Sensor Data	Classi?cation-based/Shared Nearest Neighbor-Based Algorithms	Fix-Wing
+Chen et al. [131]	Wing Structure	Classi?cation-based/Beacon Exception Analysis Method (BEAM)	Fix-Wing
+Pan et al. [132]	Sensor Data	Classi?cation-based/Active Learning & S3VM	UAV
+Bronz et al. [133]	Actuator Failure	Classi?cation-based/Support Vector Machine (SVM)	Fixed-Wing
+Varigonda et al. [134]	Flight parameters	Model-based	Quadrotor
+Titouna et al. [135]	Altitude System	Statistics-based & Classi?cation-based	Fix-Wing
+Keipour et al. [136]	Actuator and Engine Faults	Statistics-based/Recursive Least Squares	Fix-Wing
+Khan et al. [9]	Sensors	Clustering-based & Classi?cation-based & Statistics-based	Quadrotor
+Wang et al. [137]	Bias and Drift Anomaly on Flight Data	Statistics-based	UAV
+Wang et al. [138]	Sensor Data	Classi?cation-based	UAV
+Ahn et al. [139]	Drone Failure of a Swarm	Clustering-based & Classi?cation-based & Spectral-based	Quadrotor
+Pourpanah et al. [140]	Motors and Propellers	Classi?cation-based	Quadrotor
+Lu et al. [141]	Motor	Classi?cation-based	Quadrotor
+Chen et al. [142]	Vertical Speed	Classi?cation-based	Fix-Wing
+Pan et al. [143]	Sensor Data	Classi?cation-based & Spectral-based	UAV
+Freeman et al. [144]	Actuators	Model-Based	Fix-Wind
+Afridi et al. [145]	Altitude Control Unit	Classi?cation-based	Fix-Wing
+Lin et al. [146]	Sensors	Statistics-based	UAV
+
+
+
+　　　The main objective of the work in [135] was to detect anomalies in an unmanned aircraft.  For this purpose, the authors developed algorithms based on Kullback–Leiler Divergence (KLD) and Arti?cial Neural Networks (ANN). The suggested methodology was demonstrated via simulations on real datasets.
+　　　The work in [136] proposed a real-time solution to detect anomalies in the operation of a ?xed-wing UAV, utilizing the Recursive Least Squares technique. The discussed method was veri?ed through experiments.
+　　　In [9], the authors discuss various approaches and solutions through machine learning regarding the detection of anomalies in unmanned aerial vehicles. They also performed real- time experiments in order to examine the isolation forest approach as an effective solution.
+　　　A data-driven anomaly detection approach based on Multimodal Regression Model for UAVs was developed in [137], in order to improve model adaptability when addressing the issue of ?ight data multimodality. Real ?ight data were used for evaluation experiments, while the results showed that the suggested approach is adaptable and performs well for anomaly detection.
+　　　A Long Short-Term Memory (LSTM) Recurrent Neural Network approach for UAV sensor data anomaly detection was designed in [138].   Using the LSTM technique, a prediction model was formulated and the point anomaly detection was estimated for the uncertainty interval. The effectiveness of the proposed method was veri?ed by real UAV sensor data containing anomalies.
+　　　The work in [139] discusses anomaly detection and monitoring on swarm drone ?ights and provides a machine-based learning framework to detect abnormal conduct of a wide range of ?ying drones. The approach operates in two stages and the anomaly detection system was validated on actual ?ight test data, while its ability to run online has been emphasized.
+　　　A method for fault detection and monitoring of UAV motors and propellers was discussed in [140].  Motor current signature analysis (MCSA) and vibration signature analysis (VSA) techniques were used to inspect stator current signals of UAV motors and propellers vibration.  Following this, statistical features of vibration and harmonics of current signals were used to train unsupervised and supervised NN. The results from real experiments showed the ef?ciency of the discussed approach.
+　　　Using a reinforcement learning technique, the authors of [141] developed a motor temperature anomaly detection system for an aerial vehicle, given that motor failures is a major reason for drone crashes. The proposed approach was tested by both experiments and simulations.
+　　　In [142], an embedded anomaly detection system (EADS) was proposed for a UAV that operates in a challenging environment. The designed scheme consists of a hardware part and an on-line anomaly detection part that uses a least squares support vector machine (LS-SVM). Results from the experiment showed the effectiveness of the presented approach.
+　　　The work in [143] suggests a data-driven hybrid approach for detecting anomalies of a system or sensor for a UAV. The proposed framework employed on time series segmentation, associated rules mining and associated anomaly detection. The method was evaluated through simulations and real ?ight data.
+　　　In [144], two different and complementary methods for anomaly detection of small, low-cost UAVs were presented.  The ?rst one was a model-based residual generation method, while the second was a data-driven one which was designed to operate solely on raw ?ight test data, with no detailed system knowledge. The performance of the proposed scheme was validated with simulations and real ?ight data.
+　　　For anomalies detection on the adaptive altitude control module of an Aerosonde UAV, as a result of wind gusts, the authors of [145] designed an autonomous tool detector using a machine learning technique. The ef?cacy of the proposed methodology was showed via experiments.
+
+
+
+　　　The work in [146] presents a model-free method for anomaly detection of unmanned autonomous vehicles using readings from their internal and external sensors. The effective- ness of the developed method was proved by experiments.
+7. Discussion and Conclusions
+　　　In this survey article, we provide a detailed overview of recent advances and studies of fault diagnostic methodologies, fault-tolerant control techniques and anomaly detection approaches for unmanned aerial vehicles over the past decade.
+　　　As concerning the diagnosis, the majority of the proposed methodologies belong to one of the three following categories: model-based, signal processing and knowledge-based. The review focused mainly on the research area of fault diagnosis in vehicles sensors and actuators. For each paper, a brief report and description of the proposed technique, fault type and UAV type was made, as shown in Tables 3and 4.
+　　　Based on our study, we proceed to a comparative statistical presentation of the examined works.  Initially, for sensors faults diagnosis (Table 8), the following conclu- sions emerge:
+?     in a percentage of 51% the research works concern Rotary Wing vehicles, while the remaining 39% concern Fix-Wing and Misc. 10%;
+?      regarding the type of sensor, 39% concerns IMU; and, ?nally,
+?     the most commonly used methods are Model-Based with a percentage of 71%.
+Table 8. Sensors fault diagnosis comparative results.
+
+UAV Type	Sensor Type	Method Type
+Rotary Wing: 51%	IMU: 39%	Model-Based: 71%
+Fix-Wing: 39%	Position: 16%	Knowledge-Based: 23%
+Misc: 10%	Gyroscope: 13%	Hardware Redundancy: 6%
+Misc.: 32%
+
+　　　We made a similar comparison for studies on actuators faults diagnosis (Table 9), where the following ?ndings arise:
+?     in a percentage of 50% the research works concern Rotary Wing vehicles, while the 37% concern Fix-Wing, 7% VTOL  and 7% Misc.;
+?     regarding the type of actuator, 67% concerns Rotor/Motor, 23% Elevator, Ailerons, Rudder and a percentage of 10% Misc. and ?nally;
+?     the most commonly used methods are Model-Based with a percentage of 87%.
+Table 9. Actuators fault diagnosis comparative results.
+
+UAV Type	Actuator Type	Method Type
+Rotary-Wing: 50%	Rotor/Motor: 67%	Model-Based: 87%
+Fix-Wing: 37%	Elevator, Ailerons, Rudder: 23%	Knowledge-Based: 10%
+VTOL: 7%	Misc.: 10%	Hardware-Based: 3%
+Misc.: 7%
+
+　　　As far as fault tolerance (Table 10) is concerned, most research efforts are focused on rotary-wing UAV type with percentage of 60%. Furthermore, the predominant method appears to be the Sliding Mode with percentage of 29%, while the most common type of fault-tolerant control system is the active one with 57%.
+
+
+
+Table 10. Fault tolerance comparative results.
+
+UAV Type	Method Type	FTC Method
+Rotary-Wing: 60%	Active: 57%	Sliding Mode: 29%
+Fix-Wing: 34%	Passive: 38%	Adaptive Control: 16%
+Misc.: 6%	Hybrid-FTC: 5%	Misc.: 55%
+
+　　　Last, in Section 6, the analysis of the research papers related to anomaly detection (Table 11) showed that most of the approaches use classi?cation-based methods with percentage of 55% while regarding the type of vehicle, the most prevalent is that of the ?xed wing with a percentage of 44%. In addition, in terms of the type of subsystem the sensors show the highest percentage of 44%.
+
+Table 11. Anomaly detection comparative results.
+
+UAV Type	Subsystem Type	Method Type
+Fix-Wing: 44%	Sensors: 44%	Classi?cation-based: 55%
+Rotary-Wing: 28%	Actuators: 33%	Statistics-based: 22%
+Undi?ned UAV: 28%	Misc.: 22%	Model-based: 11%
+Spectral-based: 6%
+Clustering-based: 6%
+
+　　　According to the statistical analysis provided in Tables 8and 9, we observe that the most commonly used methods are model-based, and a huge number of academics have performed extensive studies on UAV control systems and developed excellent mathemat- ical models that can be utilized for fault diagnosis. Furthermore, the knowledge-based techniques appear quite promising; however, their performance is highly dependent on the quality of the available data, thus their employment is still limited.
+　　　Furthermore, the growing demand for safe ?ights of unmanned aerial vehicles requires sophisticated fault diagnosis methods not only for faults in sensors and actuators, but also in other aircraft subsystems.  In this regard, a promising approach that seems to have attracted the attention of researchers in recent years is the anomaly detection that holistically address the issue of abnormal behavior of an unmanned aerial vehicle.
+Author Contributions: Conceptualization, G.K.F. and G.C.K.; writing—original draft preparation, G.K.F.; writing—review and editing, G.C.K. and G.K.F.; supervision, G.K.F. Both authors have read and agreed to the published version of the manuscript.
+Funding: This research received no external funding.
+Institutional Review Board Statement: Not applicable.
+Informed Consent Statement: Not applicable.
+Data Availability Statement: Not applicable.
+Con?icts of Interest: The authors declare no con?ict of interest.
+References
+1.      Chen, M.; Zhang, X.; Xiong, X.; Zeng, F.; Zhuang, W. Transformer: A Multifunctional Fast Unmanned Aerial Vehicles–Unmanned Surface Vehicles Coupling System. Machines 2021, 9, 146. [CrossRef]
+2.      Ding, S.X. Model-Based Fault Diagnosis Techniques: Design Schemes, Algorithms and Tools; Springer: London, UK, 2013.
+3.      Shraim, H.; Awada, A.; Youness, R.  A survey on quadrotors: Con?gurations, modeling and identi?cation, control, collision avoidance, fault diagnosis and tolerant control. IEEE Aerosp. Electron. Syst. Mag. 2018, 33, 14–33.  [CrossRef]
+4.      Isermann, R. Fault-Diagnosis Systems; Springer: Berlin, Germany, 2006.
+5.      Mouzakitis, A. Classi?cation of Fault Diagnosis Methods for Control Systems. Meas. Control. 2013, 46, 303–308.  [CrossRef]
+
+
+
+6.     Yuan, H.; Wu, N.; Chen, X. Mechanical Compound Fault Analysis Method Based on Shift Invariant Dictionary Learning and Improved FastICA Algorithm. Machines 2021, 9, 144. [CrossRef]
+7.      Abbaspour, A.; Mokhtari, S.; Sargolzaei, A.; Yen, K.K. A Survey on Active Fault-Tolerant Control Systems.  Electronics 2020, 9, 1513. [CrossRef]
+8.      Chandola, V.; Banerjee, A.; Kumar, V. Anomaly Detection: A Survey. ACM Comput. Surv. 2009, 41. [CrossRef]
+9.      Khan, S.; Liew, C.F.; Yairi, T.; McWilliam, R. Unsupervised anomaly detection in unmanned aerial vehicles. Appl. Soft Comput. 2019, 83, 105650. [CrossRef]
+10.    Gao, Y.; Zhao, D.; Li, Y.  UAV Sensor Fault Diagnosis Technology:  A Survey.   Appl. Mech. Mater.  2012, 220–223, 1833–1837. [CrossRef]
+11.    Qi, X.; Qi, J.; Theilliol, D.; Zhang, Y.; Han, J.; Song, D.; Hua, C. A review on fault diagnosis and fault tolerant control methods for single-rotor aerial vehicles. J. Intell. Robot. Syst. 2014, 73, 535–555.  [CrossRef]
+12.    Sadeghzadeh, I.; Zhang, Y. A Review on Fault-Tolerant Control for Unmanned Aerial Vehicles (UAVs). In Proceedings of the Infotech@Aerospace 2011, St. Louis, Mo, USA, 29–31 March 2011.
+13.    Drak, A.; Noura, H.; Hejase, M.; AL Younes, Y. Sensor fault diagnostic and Fault-Tolerant Control for the altitude control of a quadrotor UAV. In Proceedings of the 2015 IEEE 8th GCC Conference Exhibition, Muscat, Oman, 1–4 February 2015; pp. 1–5.
+14.    Shi, H.; Hu, S.; Zhang, J. Research on Fault Diagnosis of Three Degrees of Freedom Gyroscope Redundant System. In Proceedings of the 2019 CAA Symposium on Fault Detection, Supervision and Safety for Technical Processes (SAFEPROCESS), Xiamen, China, 5–7 July 2019; pp. 232–239.  [CrossRef]
+15.    Miao, Q.; Wei, J.; Wang, J.; Chen, Y.  Fault Diagnosis Algorithm Based on Adjustable Nonlinear PI State Observer and Its Application in UAV Fault Diagnosis. Algorithms 2021, 14, 119. [CrossRef]
+16.    Zuo, L.; Yao, L.; Kang, Y. UIO Based Sensor Fault Diagnosis and Compensation for Quadrotor UAV. In Proceedings of the 2020
+Chinese Control And Decision Conference (CCDC), Hefei, China, 22–24 August 2020; pp. 4052–4057.  [CrossRef]
+17.    Saied, M.; Mahairy, T.; Francis, C.; Shraim, H.; Mazeh, H.; Rafei, M.E.  Differential Flatness-Based Approach for Sensors and Actuators Fault Diagnosis of a Multirotor UAV. IFAC-PapersOnLine 2019, 52, 831–836.  [CrossRef]
+18.    López-Estrada, F.R.; Ponsart, J.C.; Theilliol, D.; Zhang, Y.; Astorga Zaragoza, C.M. LPV model-based tracking control and robust sensor fault diagnosis for a quadrotor UAV. J. Intell. Robot. Syst. 2016, 84, 163–177.  [CrossRef]
+19.    Guo, D.; Wang, Y.; Zhong, M.; Zhao, Y. Fault detection and isolation for Unmanned Aerial Vehicle sensors by using extended PMI ?lter. IFAC-PapersOnLine 2018, 51, 818–823. [CrossRef]
+20.    Deghat, M.; Lampiri, E. Sensor Anomaly Detection and Recovery in the Roll Dynamics of a Delta-Wing Aircraft via Monte Carlo and Maximum Likelihood Methods. IFAC-PapersOnLine 2017, 50, 12791–12796.  [CrossRef]
+21.    Samy, I.; Postlethwaite, I.; Gu, D..; Fan, I.S.  Detection of multiple sensor faults using neural networks- demonstrated on a unmanned air vehicle (UAV) model. In Proceedings of the UKACC International Conference on Control 2010, England, UK, 7–10 September 2010; pp. 1–7. [CrossRef]
+22.    Younes, Y.A.; Rabhi, A.; Noura, H.; Hajjaji, A.E. Sensor fault diagnosis and fault tolerant control using intelligent-output-estimator applied on quadrotor UAV.  In Proceedings of the 2016 International Conference on Unmanned Aircraft Systems (ICUAS), Arlington, VA, USA, 7–10 June 2016; pp. 1117–1123.  [CrossRef]
+23.    Xu, C.; Jia, H.; Chen, Z. Simultaneous Robust Control and Sensor Fault Detection for a Ducted Coaxial-Rotor UAV. IEEE Access 2019, 7, 167739–167753.  [CrossRef]
+24.    D’Amato, E.; Mattei, M.; Notaro, I.; Scordamaglia, V.  UAV Sensor FDI in Duplex Attitude Estimation Architectures Using a Set-Based Approach. IEEE Trans. Instrum. Meas. 2018, 67, 2465–2475.  [CrossRef]
+25.    Avram, R.C.; Zhang, X.; Campbell, J.; Muse, J.   IMU Sensor Fault Diagnosis and Estimation for Quadrotor UAVs.   IFAC- PapersOnLine 2015, 48, 380–385. [CrossRef]
+26.    Simlinger, B.; Ducard, G. Vision-based Gyroscope Fault Detection for UAVs. In Proceedings of the 2019 IEEE Sensors Applications Symposium (SAS), Sophia Antipolis, France, 11–13 March 2019; pp. 1–6.  [CrossRef]
+27.    Sun, H.; Yan, J.; Qu, Y.; Ren, J.  Sensor fault-tolerant observer applied in UAV anti-skid braking control under control input constraint. J. Syst. Eng. Electron. 2017, 28, 126–136.  [CrossRef]
+28.    Tan, J.; Chen, X.; Cao, D. An Airborne Sensor Fault Diagnosis Method Based on Analytic Model Parameter Identi?cation.  In Proceedings of the 2019 5th International Conference on Control Science and Systems Engineering (ICCSSE), Shanghai, China, 14–16 August 2019; pp. 25–29.  [CrossRef]
+29.    Mouhssine, N.; Kabbaj, M.N.; Benbrahim, M.; Bekkali, C.E. Sensor fault detection of quadrotor using nonlinear parity space relations. In Proceedings of the 2017 International Conference on Electrical and Information Technologies (ICEIT), Rabat, Morocco, 15–18 November 2017; pp. 1–6.  [CrossRef]
+30.    Suarez, A.; Heredia, G.; Ollero, A. Cooperative sensor fault recovery in multi-UAV systems.  In Proceedings of the 2016 IEEE
+International Conference on Robotics and Automation (ICRA), Stockholm, Sweden, 16–20 May 2016; pp. 1188–1193.  [CrossRef]
+31.    D’Amato, E.; Mattei, M.; Mele, A.; Notaro, I.; Scordamaglia, V. Fault tolerant low cost IMUS for UAVs.  In Proceedings of the 2017
+IEEE International Workshop on Measurement and Networking (M N), Naples, Italy, 27–29 September 2017; pp. 1–6.  [CrossRef]
+32.    Hansen, S.; Blanke, M. Diagnosis of Airspeed Measurement Faults for Unmanned Aerial Vehicles. IEEE Trans. Aerosp. Electron. Syst. 2014, 50, 224–239.  [CrossRef]
+
+
+
+33.    Fravolini, M.L.; Pastorelli, M.; Pagnottelli, S.; Valigi, P.; Gururajan, S.; Chao, H.; Napolitano, M.R. Model-based approaches for the airspeed estimation and fault monitoring of an Unmanned Aerial Vehicle.  In Proceedings of the 2012 IEEE Workshop on Environmental Energy and Structural Monitoring Systems (EESMS), Perugia, Italy, 28 September 2012; pp. 18–23.  [CrossRef]
+34.    Vitanov, I.; Aouf, N.   Fault detection and isolation in an inertial navigation system using a bank of unscented H∞ ?lters. In Proceedings of the 2014 UKACC International Conference on Control (CONTROL), Loughborough, UK, 9–11 July 2014; pp. 250–255.  [CrossRef]
+35.    Yoon, S.; Kim, S.; Bae, J.; Kim, Y.; Kim, E. Experimental evaluation of fault diagnosis in a skew-con?gured UAV sensor system. Control. Eng. Pract. 2011, 19, 158–173.  [CrossRef]
+36.    Guo, K.; Liu, L.; Shi, S.; Liu, D.; Peng, X. UAV Sensor Fault Detection Using a Classi?er without Negative Samples: A Local Density Regulated Optimization Algorithm. Sensors 2019, 19, 771. [CrossRef]
+37.    Fravolini, M.L.; Napolitano, M.R.; Core, G.D.; Papa, U. Experimental interval models for the robust Fault Detection of Aircraft Air Data Sensors. Control. Eng. Pract. 2018, 78, 196–212.  [CrossRef]
+38.    Crispoltoni, M.; Fravolini, M.L.; Balzano, F.; D’Urso, S.; Napolitano, M.R. Interval Fuzzy Model for Robust Aircraft IMU Sensors Fault Detection. Sensors 2018, 18, 2488. [CrossRef] [PubMed]
+39.    Sun, R.; Cheng, Q.; Wang, G.; Ochieng, W.Y. A Novel Online Data-Driven Algorithm for Detecting UAV Navigation Sensor Faults. Sensors 2017, 17, 2243. [CrossRef]
+40.    Chen, Y.; Zhang, C.; Zhang, Q.; Hu, X. UAV fault detection based on GA-BP neural network. In Proceedings of the 2017 32nd Youth Academic Annual Conference of Chinese Association of Automation (YAC), Hefei, China, 19–21 May 2017; pp. 806–811. [CrossRef]
+41.    Chen, Y.; Hu, X.; Zhang, Q.; Zhang, C. Research on multi-classi?cation method of UAV sensor fault based on wavelet entropy and AFWA-BP neural network. In Proceedings of the 2017 32nd Youth Academic Annual Conference of Chinese Association of Automation (YAC), Hefei, China, 19–21 May 2017; pp. 837–842.  [CrossRef]
+42.    Olyaei, M.H.; Jalali, H.; Noori, A.; Eghbal, N. Fault Detection and Identi?cation on UAV System with CITFA Algorithm Based on Deep Learning. In Proceedings of the Iranian Conference on Electrical Engineering (ICEE), Mashhad, Iran, 8–10 May 2018; pp. 988–993.  [CrossRef]
+43.    Gao, Y.H.; Zhao, D.; Li, Y.B. Small UAV sensor fault detection and signal reconstruction.  In Proceedings of the 2013 International Conference on Mechatronic Sciences, Electric Engineering and Computer (MEC), Shengyang, China, 20–22 December 2013; pp. 3055–3058.  [CrossRef]
+44.    Lieret, M.; Fertsch, J.; Franke, J. Fault detection for autonomous multirotors using a redundant ?ight control architecture.  In Proceedings of the 2020 IEEE 16th International Conference on Automation Science and Engineering (CASE), Hong Kong, China, 20–21 August 2020; pp. 29–34.  [CrossRef]
+45.    Ren, X.L.  Observer Design for Actuator Failure of a Quadrotor.   IEEE Access 2020, 8, 152742–152750.   [CrossRef]
+46.    Zhang, H.; Gao, Q.; Pan, F. An Online Fault Diagnosis Method For Actuators Of Quadrotor UAV With Novel Con?guration Based On IMM.   In Proceedings of the 2020 Chinese Automation Congress (CAC), Shanghai, China, 6–8 November 2020; pp. 618–623.  [CrossRef]
+47.    Guzmán-Rabasa, J.A.; López-Estrada, F.R.; González-Contreras, B.M.; Valencia-Palomo, G.; Chadli, M.; Pérez-Patricio, M. Actuator fault detection and isolation on a quadrotor unmanned aerial vehicle modeled as a linear parameter-varying system. Meas. Control 2019, 52, 1228–1239.  [CrossRef]
+48.    Lijia, C.; Yu, T.; Guo, Z. Adaptive observer-based fault detection and active tolerant control for unmanned aerial vehicles attitude system. IFAC-PapersOnLine 2019, 52, 47–52.  [CrossRef]
+49.    Yin, L.; Liu, J.; Yang, P. Interval Observer-based Fault Detection for UAVs Formation with Actuator Faults.  In Proceedings of the
+　2019 CAA Symposium on Fault Detection, Supervision and Safety for Technical Processes (SAFEPROCESS), Xiamen, China, 5–7 July 2019; pp. 901–905.  [CrossRef]
+50.    Li, D.; Yang, P.; Liu, Z.; Liu, J.  Fault Diagnosis for Distributed UAVs Formation Based on Unknown Input Observer.   In
+Proceedings of the 2019 Chinese Control Conference (CCC), Guangzhou, China, 27–30 July 2019; pp. 4996–5001.  [CrossRef]
+51.    Ma, H.; Liu, Y.; Li, T.; Yang, G. Nonlinear High-Gain Observer-Based Diagnosis and Compensation for Actuator and Sensor Faults in a Quadrotor Unmanned Aerial Vehicle. IEEE Trans. Ind. Inform. 2019, 15, 550–562.  [CrossRef]
+52.    Zhong, Y.; Zhang, Y.; Zhang, W.; Zhan, H.  Actuator and Sensor Fault Detection and Diagnosis for Unmanned Quadrotor Helicopters. IFAC-PapersOnLine 2018, 51, 998–1003.  [CrossRef]
+53.    Zhong, Y.; Zhang, Y.; Zhang, W.; Zuo, J.; Zhan, H. Robust Actuator Fault Detection and Diagnosis for a Quadrotor UAV With External Disturbances. IEEE Access 2018, 6, 48169–48180.  [CrossRef]
+54.    Hajiyev, C. An Innovation Approach Based Model Change Detection Applied to UAV Actuator/Surface FDI. IFAC-PapersOnLine 2018, 51, 77–82.  [CrossRef]
+55.    Hasan, A.; Johansen, T.A. Model-Based Actuator Fault Diagnosis in Multirotor UAVs. In Proceedings of the 2018 International Conference on Unmanned Aircraft Systems (ICUAS), Dallas, TX, USA, 12–15 June 2018; pp. 1017–1024.  [CrossRef]
+56.    Bauer, P.; Venkataraman, R.; Vanek, B.; Seiler, P.J.; Bokor, J. Fault Detection and Basic In-Flight Recon?guration of a Small UAV Equipped with Elevons. IFAC-PapersOnLine 2018, 51, 600–607.  [CrossRef]
+
+
+
+57.    Su, J.; He, J.; Cheng, P.; Chen, J.  Actuator fault diagnosis of a Hexacopter: A nonlinear analytical redundancy approach.  In Proceedings of the 2017 25th Mediterranean Conference on Control and Automation (MED), Valletta, Malta, 3–6 July 2017; pp. 413–418.  [CrossRef]
+58.    Avram, R.C.; Zhang, X.; Muse, J. Quadrotor Actuator Fault Diagnosis and Accommodation Using Nonlinear Adaptive Estimators. IEEE Trans. Control Syst. Technol. 2017, 25, 2219–2226.  [CrossRef]
+59.    Ortiz-Torres, G.; López-Estrada, F.; Reyes-Reyes, J.; García-Beltrán, C.; Theilliol, D. An Actuator Fault Detection and Isolation method design for Planar Vertical Take-off and Landing Unmanned Aerial Vehicle modelled as a qLPV system. IFAC-PapersOnLine 2016, 49, 272–277.  [CrossRef]
+60.    Cao,  D.;  Fu, J.;  Li,  Y.   Fault  diagnosis of actuator of Flight Control System based on analytic model.     In Proceedings of the 2016 IEEE Chinese Guidance, Navigation and Control Conference (CGNCC), Nanjing, China,  12–14 August 2016; pp. 397–400.  [CrossRef]
+61.    Rotondo, D.; Cristofaro, A.; Johansen, T.A.; Nejjari, F.; Puig, V. Detection of icing and actuators faults in the longitudinal dynamics of small UAVs using an LPV proportional integral unknown input observer.  In Proceedings of the 2016 3rd Conference on Control and Fault-Tolerant Systems (SysTol), Barcelona, Spain, 7–9 September 2016; pp. 690–697.  [CrossRef]
+62.    Liu, L.; Ma, Y.; Xu, B.; Xiang, C.; Yang, X. Fault detection and isolation based on UKFs for a novel ducted fan UAV. In Proceedings of the 2016 IEEE International Conference on Aircraft Utility Systems (AUS), Beijing, China, 10–12 October 2016; pp. 212–218. [CrossRef]
+63.    Saied, M.; Shraim, H.; Francis, C.; Fantoni, I.; Lussier, B.  Actuator fault diagnosis in an octorotor UAV using sliding modes technique: Theory and experimentation. In Proceedings of the 2015 European Control Conference (ECC), Linz, Austria, 15–17 July 2015; pp. 1639–1644.  [CrossRef]
+64.    Kugler, M.E.; Holzapfel, F. Enhancing the auto ?ight system of the SAGITTA Demonstrator UAV by fault detection and diagnosis. In Proceedings of the 2015 IEEE International Conference on Aerospace Electronics and Remote Sensing Technology (ICARES), Bali, Indonesia, 3–5 December 2015; pp. 1–7.  [CrossRef]
+65.    Yang, X.; Mejias, L.; Warren, M.; Gonzalez, F.; Upcroft, B.  Recursive Actuator Fault Detection and Diagnosis for Emergency Landing of UASs. IFAC Proc. Vol. 2014, 47, 2495–2502.  [CrossRef]
+66.    Zhaohui, C.; Noura, H.; Susilo, T.B.; Younes, Y.A.  Engineering implementation on fault diagnosis for quadrotors based on nonlinear observer. In Proceedings of the 2013 25th Chinese Control and Decision Conference (CCDC), Guiyang, China, 25–27 May 2013; pp. 2971–2975.  [CrossRef]
+67.    Cen, Z.; Noura, H. An Adaptive Thau Observer for estimating the time-varying LOE fault of quadrotor actuators. In Proceedings
+of the 2013 Conference on Control and Fault-Tolerant Systems (SysTol), Nice, France, 9–11 October 2013; pp. 468–473.  [CrossRef]
+68.    Ducard, G.  The SMAC Fault Detection and Isolation Scheme:  Discussions, improvements, and application to a UAV.  In Proceedings of the 2013 Conference on Control and Fault-Tolerant Systems (SysTol), Nice, France, 9–11 October 2013; pp. 480–485. [CrossRef]
+69.    Tousi, M.M.; Khorasani, K. Robust observer-based fault diagnosis for an unmanned aerial vehicle. In Proceedings of the 2011 IEEE International Systems Conference, Montreal, QC, Canada, 4–7 April 2011; pp. 428–434.  [CrossRef]
+70.    Ma, L.; Zhang, Y. DUKF-based GTM UAV fault detection and diagnosis with nonlinear and LPV models. In Proceedings of the
+　2010 IEEE/ASME International Conference on Mechatronic and Embedded Systems and Applications, Qingdao, China, 15–17 July 2010; pp. 375–380.  [CrossRef]
+71.    Fu, J.; Sun, C.; Yu, Z.; Liu, L. A hybrid CNN-LSTM model based actuator fault diagnosis for six-rotor UAVs. In Proceedings of
+the 2019 Chinese Control And Decision Conference (CCDC), Hefei, China, 21–23 May 2019; pp. 410–414.  [CrossRef]
+72.    Younes, Y.A.; Noura, H.; Rabhi, A.; Hajjaji, A.E. Actuator Fault-Diagnosis and Fault-Tolerant-Control using intelligent-Output- Estimator Applied on Quadrotor UAV. In Proceedings of the 2019 International Conference on Unmanned Aircraft Systems (ICUAS), Atlanta, GA, USA, 11–14 June 2019; pp. 413–420.  [CrossRef]
+73.    Hansen, S.; Blanke, M.; Adrian, J. A Framework for Diagnosis of Critical Faults in Unmanned Aerial Vehicles. IFAC Proc. Vol. 2014, 47, 10555–10561.  [CrossRef]
+74.    Jun, W.; Xiong-Dong, Y.; Yu-Yang, T. Fault-Tolerant Control Design of Quadrotor UAV Based on CPSO. In Proceedings of the
+2018 IEEE 4th International Conference on Control Science and Systems Engineering (ICCSSE), Wuhan, China, 21–23 August 2018; pp. 279–283.  [CrossRef]
+75.    Wang, P.; Jia, G.; Chen, Q.; Wang, Y.; Wang, J.  A Fault Tolerant Control Approach for the Solar-Powered HALE UAV.   In Proceedings of the 2019 International Conference on Control, Automation and Diagnosis (ICCAD), Grenoble, France, 2–4 July 2019; pp. 1–5.  [CrossRef]
+76.    Padilla, M.L.F.; Lao, S.J.C.; Baldovino, R.G.; Bandala, A.A.; Dadios, E.B. Fuzzy-based fault-tolerant control of Micro Aerial Vehicles (MAV) — A preliminary study. In Proceedings of the 2017 IEEE 9th International Conference on Humanoid, Nanotechnology, Information Technology, Communication and Control, Environment and Management (HNICEM), Manila, Philippines, 1–3 December 2017; pp. 1–4.  [CrossRef]
+77.    Mallavalli, S.; Fekih, A. An SMC-based fault tolerant control design for a class of underactuated unmanned aerial vehicles. In Proceedings of the 2018 4th International Conference on Control, Automation and Robotics (ICCAR), Auckland, New Zealand, 20–23 April 2018; pp. 152–155.  [CrossRef]
+
+
+
+78.    Mallavalli, S.; Fekih, A. Adaptive Fault Tolerant Control Design for Actuator Fault Mitigation in Quadrotor UAVs. In Proceedings of the 2018 IEEE Conference on Control Technology and Applications (CCTA), Copenhagen, Denmark, 21–24 August 2018; pp. 193–198.  [CrossRef]
+79.    Mallavalli, S.; Fekih, A. A Fault Tolerant Control Design for Actuator Fault Mitigation in Quadrotor UAVs. In Proceedings of the
+2019 American Control Conference (ACC), Philadelphia, PA, USA, 10–12 July 2019; pp. 5111–5116.  [CrossRef]
+80.    Hao, W.; Xian, B. Nonlinear fault tolerant control for a tri-rotor UAV against rear servo’s stuck fault. In Proceedings of the 2017 36th Chinese Control Conference (CCC), Dalian, China, 26–28 July 2017; pp. 7109–7114.  [CrossRef]
+81.    Gong, W.; Zhang, J.; Li, B.; Yang, Y. Integral-type Sliding Mode based Fault-tolerant Attitude Stabilization of A Quad-rotor UAV. In Proceedings of the 2018 International Symposium in Sensing and Instrumentation in IoT Era (ISSI), Shanghai, China, 6–7 September 2018; pp. 1–6.  [CrossRef]
+82.    Xian, B.; Hao, W. Nonlinear Robust Fault-Tolerant Control of the Tilt Trirotor UAV Under Rear Servo’s Stuck Fault: Theory and Experiments. IEEE Trans. Ind. Inform. 2019, 15, 2158–2166.  [CrossRef]
+83.    Qu, Q.; Gao, S.; Huang, D.; Mei, J.; Zhai, B. Fault tolerant control for UAV with ?nite-time convergence. In Proceedings of the 26th Chinese Control and Decision Conference (2014 CCDC), Changsha, China, 31 May–2 June 2014; pp. 2857–2862.  [CrossRef]
+84.    Mallavalli, S.; Fekih, A.   Sliding mode-based fault tolerant control designs for quadrotor UAVs-A comparative study.   In Proceedings of the 2017 13th IEEE International Conference on Control Automation (ICCA), Ohrid, Macedonia, 3–6 July 2017; pp. 154–159.  [CrossRef]
+85.    Khattab, A.; Alwi, H.; Edwards, C. Fault Tolerant Control of a Spherical UAV. In Proceedings of the 2019 4th Conference on Control and Fault Tolerant Systems (SysTol), Casablanca, Morocco, 18–20 September 2019; pp. 92–97.  [CrossRef]
+86.    S?rensen, M.E.N.; Breivik, M. UAV fault-tolerant control by combined L1 adaptive backstepping and fault-dependent control allocation. In Proceedings of the 2015 IEEE Conference on Control Applications (CCA), Sydney, Australia, 21–23 September 2015; pp. 1880–1886.  [CrossRef]
+87.    Yu, Z.; Zhang, Y.; Jiang, B.; Su, C.Y.; Fu, J.; Jin, Y.; Chai, T. Fractional-Order Adaptive Fault-Tolerant Synchronization Tracking Control of Networked Fixed-Wing UAVs Against Actuator-Sensor Faults via Intelligent Learning Mechanism. IEEE Trans. Neural Netw. Learn. Syst. 2021, 1–15.  [CrossRef]
+88.    Yu, Z.; Badihi, H.; Zhang, Y.; Ma, Y.; Jiang, B.; Su, C.Y. Fractional-Order Sliding-Mode Fault-Tolerant Neural Adaptive Control of Fixed-Wing UAV With Prescribed Tracking Performance. In Proceedings of the 2020 2nd International Conference on Industrial Arti?cial Intelligence (IAI), Shenyang, China, 23–25 October 2020; pp. 1–6.  [CrossRef]
+89.    Tan, L.; Shen, Z.; Yu, S.  Adaptive fault-tolerant ?ight control for a quadrotor UAV with slung payload and varying COG. In Proceedings of the 2019 3rd International Symposium on Autonomous Systems (ISAS), Shanghai, China, 29–31 May 2019; pp. 227–231.  [CrossRef]
+90.    Zou, Y.; Xia, K. Robust Fault-Tolerant Control for Underactuated Takeoff and Landing UAVs. IEEE Trans. Aerosp. Electron. Syst. 2020, 56, 3545–3555.  [CrossRef]
+91.    Qian, M.; Zhai, L.; Zhong, G.; Gao, Z. Adaptive Backstepping Fault Tolerant Controller Design for UAV with Multiple Actuator Faults.    In Proceedings of the 2019 CAA Symposium on Fault Detection, Supervision and Safety for Technical Processes (SAFEPROCESS), Xiamen, China, 5–7 July 2019; pp. 682–688.  [CrossRef]
+92.    Song, Y.; He, L.; Zhang, D.; Qian, J.; Fu, J. Neuroadaptive Fault-Tolerant Control of Quadrotor UAVs: A More Affordable Solution. IEEE Trans. Neural Netw. Learn. Syst. 2019, 30, 1975–1983.  [CrossRef]
+93.    Avram, R.C.; Zhang, X.; Muse, J. Nonlinear Adaptive Fault-Tolerant Quadrotor Altitude and Attitude Tracking With Multiple Actuator Faults. IEEE Trans. Control. Syst. Technol. 2018, 26, 701–707.  [CrossRef]
+94.    Xue, Y.; Zhen, Z.; Yang, L.; Wen, L.  Adaptive fault-tolerant control for carrier-based UAV with actuator failures.  Aerosp. Sci. Technol. 2020, 107, 106227. [CrossRef]
+95.    Vural, S.Y.; Dasdemir, J.; Hajiyev, C.  Passive Fault Tolerant Lateral Controller Design For an UAV.  IFAC-PapersOnLine 2018, 51, 446–451.  [CrossRef]
+96.    Xing, X.; Ma, Z.; Chen, X.; Huang, L. Fault-tolerant ?ight control of quad-rotor UAV based on sliding mode theory. In Proceedings
+of the 2018 Chinese Control And Decision Conference (CCDC), Shenyang, China, 9–11 June 2018; pp. 298–303.  [CrossRef]
+97.    Merheb, A.; Noura, H.; Bateman, F.; Al-Jaroodi, J. Fault severity based Integrated Fault Tolerant Controller for quadrotor UAVs. In Proceedings of the 2015 International Conference on Unmanned Aircraft Systems (ICUAS), Denver, CO, USA, 9–12 June 2015; pp. 660–668.  [CrossRef]
+98.    Zhaohui, C.; Noura, H.  A composite Fault Tolerant Control based on fault estimation for quadrotor UAVs.  In Proceedings of the 2013 IEEE 8th Conference on Industrial Electronics and Applications (ICIEA), Melbourne, Australia, 19–21 June 2013; pp. 236–241.  [CrossRef]
+99.    Xulin, L.; Yuying, G. Fault tolerant control of a quadrotor UAV using control allocation.  In Proceedings of the 2018 Chinese Control And Decision Conference (CCDC), Shenyang, China, 9–11 June 2018; pp. 1818–1824.  [CrossRef]
+100.  Sadeghzadeh, I.; Mehta, A.; Chamseddine, A.; Zhang, Y.  Active Fault Tolerant Control of a quadrotor UAV based on gain scheduled PID control.  In Proceedings of the 2012 25th IEEE Canadian Conference on Electrical and Computer Engineering (CCECE), Montreal, QC, USA, 29 April–2 May 2012; pp. 1–4.  [CrossRef]
+
+
+
+101.  Jun, W.; Tian, Y. Fault Tolerant Control of Quadrotor UAV Based on Support Vector Machine.  In Proceedings of the 2019 5th International Conference on Control Science and Systems Engineering (ICCSSE), Shanghai, China, 14–16 August 2019; pp. 10–13. [CrossRef]
+102.  Sadeghzadeh, I.; Zhang, Y. Actuator fault-tolerant control based on Gain-Scheduled PID with application to ?xed-wing Unmanned Aerial Vehicle. In Proceedings of the 2013 Conference on Control and Fault-Tolerant Systems (SysTol), Nice, France, 9–11 October 2013; pp. 342–346.  [CrossRef]
+103.  Zhong, Y.; Zhang, Y.; Zhang, W.  Active Fault-Tolerant Tracking Control of a Quadrotor UAV.  In Proceedings of the 2018 International Conference on Sensing,Diagnostics, Prognostics, and Control (SDPC), Xi’an, China, 15–17 August 2018; pp. 497–502. [CrossRef]
+104.  Cheng, P.; Gao, Z.; Qian, M.; Lin, J. Active fault tolerant control design for UAV using nonsingular fast terminal sliding mode approach.  In Proceedings of the 2018 Chinese Control And Decision Conference (CCDC), Shenyang, China, 9–11 June 2018; pp. 292–297.  [CrossRef]
+105.  Hasanshahi, M.; Ahmadi, A.; Amjadifard, R. Robust Fault Tolerant Position Tracking Control for a Quadrotor UAV in Presence of Actuator Faults. In Proceedings of the 2019 6th International Conference on Control, Instrumentation and Automation (ICCIA), Kurdistan, Iran, 30–31 October 2019; pp. 1–6.  [CrossRef]
+106.  Hajiyev, C. Recon?gurable fault-tolerant UAV ?ight control against actuator faults. In Proceedings of the 2016 Australian Control Conference (AuCC), Newcastle, Australia, 3–4 November 2016; pp. 323–328.  [CrossRef]
+107.  Rudin, K.; Ducard, G.J.J.; Siegwart, R.Y. Active Fault-Tolerant Control With Imperfect Fault Detection Information: Applications to UAVs. IEEE Trans. Aerosp. Electron. Syst. 2020, 56, 2792–2805.  [CrossRef]
+108.  E-Aimen, U.; Liaquat, M. Fault tolerant tracking control of Unmanned Aerial Vehicle using Linear Quadratic Gaussian with integral recon?guration control.  In Proceedings of the 2017 International Automatic Control Conference (CACS), Pingtung, Taiwan, 12–15 November 2017; pp. 1–4.  [CrossRef]
+109.  Vey, D.; Lunze, J. Experimental evaluation of an active fault-tolerant control scheme for multirotor UAVs.  In Proceedings of the 2016 3rd Conference on Control and Fault-Tolerant Systems (SysTol), Barcelona, Spain, 7–9 September 2016; pp. 125–132. [CrossRef]
+110.  Abbaspour, A.; Yen, K.K.; Forouzannezhad, P.; Sargolzaei, A. A Neural Adaptive Approach for Active Fault-Tolerant Control Design in UAV. IEEE Trans. Syst. Man Cybern. Syst. 2020, 50, 3401–3411.  [CrossRef]
+111.  Nguyen, T.; Saussie, D.; Saydy, L. Design and Experimental Validation of Robust Self-Scheduled Fault-Tolerant Control Laws for a Multicopter UAV. IEEE/ASME Trans. Mechatron. 2020. [CrossRef]
+112.  Nguyen, D.; Saussié, D.; Saydy, L. Fault-Tolerant Control of a Hexacopter UAV based on Self-Scheduled Control Allocation. In Proceedings of the 2018 International Conference on Unmanned Aircraft Systems (ICUAS), Dallas, TX, USA, 12–15 June 2018; pp. 385–393.  [CrossRef]
+113.  Liu, F.; Hou, X.; Wang, R.; Yu, Y.  Actuator Fault Tolerant Control based on Neuroadaptive SMC for Quadrotor UAVs.   In Proceedings of the 2020 35th Youth Academic Annual Conference of Chinese Association of Automation (YAC), Zhanjiang, China, 16–18 October 2020; pp. 144–149.  [CrossRef]
+114.  Hou, Z.; Lu, P.; Tu, Z. Nonsingular terminal sliding mode control for a quadrotor UAV with a total rotor failure.  Aerosp. Sci. Technol. 2020, 98, 105716. [CrossRef]
+115.  Guiatni, M.; Saidani, H.; Bouzid, Y.  Fault Tolerant Control Design for Actuator Loss of Effectiveness in Quadrotor Uavs.  In Proceedings of the 2019 International Russian Automation Conference (RusAutoCon), Sochi, Russia, 6–12 September 2019; pp. 1–7.  [CrossRef]
+116.  Shi, X.; Cheng, Y.; Yin, C.; Shi, H.; Huang, X. Actuator fault tolerant controlling using adaptive radical basis function neural network SMC for quadrotor UAV. In Proceedings of the 2019 Chinese Control And Decision Conference (CCDC), Nanchang, China, 3–5 June 2019; pp. 5409–5414.  [CrossRef]
+117.  Chung, W.; Son, H. Fault-Tolerant Control of Multirotor UAVs by Control Variable Elimination. IEEE/ASME Trans. Mechatronics 2020, 25, 2513–2522.  [CrossRef]
+118.  Ge, Z.; Liu, J.; Yang, P. Integral Sliding Mode Active Fault-Tolerant Control for Unmanned Aerial Vehicles. In Proceedings of the
+2019 Chinese Automation Congress (CAC), Hangzhou, China, 22–24 November 2019; pp. 2216–2220.  [CrossRef]
+119.  Erg??men, B.; Yavrucuk, I. Active Hybrid Fault Tolerant Flight Control of an UAV under Control Surface Damage. In Proceedings of the 2020 American Control Conference (ACC), Denver, CO, USA, 1–3 July 2020; pp. 4169–4174.  [CrossRef]
+120.  Yu, B.; Zhang, Y.; Qu, Y. MPC-based FTC with FDD against actuator faults of UAVs. In Proceedings of the 2015 15th International Conference on Control, Automation and Systems (ICCAS), Busan, Korea, 13–16 October 2015; pp. 225–230.  [CrossRef]
+121.  Saied, M.; Lussier, B.; Fantoni, I.; Francis, C.; Shraim, H. Fault tolerant control for multiple successive failures in an octorotor: Architecture and experiments. In Proceedings of the 2015 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), Hamburg, Germany, 28 September–2 October 2015; pp. 40–45.  [CrossRef]
+122.  Bateman, F.; Noura, H.; Ouladsine, M. Fault Diagnosis and Fault-Tolerant Control Strategy for the Aerosonde UAV. IEEE Trans. Aerosp. Electron. Syst. 2011, 47, 2119–2137.  [CrossRef]
+123.  Shari?, F.; Mirzaei, M.; Gordon, B.W.; Zhang, Y.  Fault tolerant control of a quadrotor UAV using sliding mode control.   In Proceedings of the 2010 Conference on Control and Fault-Tolerant Systems (SysTol), Nice, France, 6–8 October 2010; pp. 239–244. [CrossRef]
+
+
+
+124.  Nguyen, D.T.; Saussié, D.; Saydy, L. Universal Adaptive Fault-Tolerant Control of a Multicopter UAV**This work was supported by NSERC under grant numbers RGPIN-2014-03942 and RGPIN-2012-122106. IFAC-PapersOnLine 2020, 53, 9340–9347.  [CrossRef]
+125.  Cheng, P.; Cai, C.; Zou, Y.  Finite Time Fault Tolerant Control Design for UAV Attitude Control Systems with Actuator Fault and Actuator Saturation**This work is jointly supported by the National Natural Science Foundation of China under Grant No.61573186 and No.61773214. IFAC-PapersOnLine 2019, 52, 53–58.  [CrossRef]
+126.  Boche, A.; Farges, J.L.; De Plinval, H. Recon?guration control method for multiple actuator faults on UAV. IFAC-PapersOnLine 2017, 50, 12691–12697.  [CrossRef]
+127.  Wang, B.; Shen, Y.; Zhang, Y. Active fault-tolerant control for a quadrotor helicopter against actuator faults and model uncertainties. Aerosp. Sci. Technol. 2020, 99, 105745. [CrossRef]
+128.  Baldini, A.; Felicetti, R.; Freddi, A.; Longhi, S.; Monteriù, A. Actuator Fault Tolerant Control of Variable Pitch Quadrotor Vehicles. IFAC-PapersOnLine 2020, 53, 4095–4102.  [CrossRef]
+129.  Pedro, J.O.; Tshabalala, T.B. PI-Based Fault Tolerant Control For Fixed-Wing UAVs Using Control Allocation. IFAC-PapersOnLine 2017, 50, 181–186.  [CrossRef]
+130.  Liang, S.; Zhang, S.; Huang, Y.; Zheng, X.; Cheng, J.; Wu, S.  Data-driven fault diagnosis of FW-UAVs with consideration of multiple operation conditions. ISA Trans. 2021. [CrossRef]
+131.  Chen, M.; Pan, Z.; Chi, C.; Ma, J.; Hu, F.; Wu, J.  Research on UAV Wing Structure Health Monitoring Technology Based on Finite Element Simulation Analysis. In Proceedings of the 2020 11th International Conference on Prognostics and System Health Management (PHM-2020 Jinan), Jinan, China, 23–25 October 2020; pp. 86–90.  [CrossRef]
+132.  Pan, D.; Nie, L.; Kang, W.; Song, Z. UAV Anomaly Detection Using Active Learning and Improved S3VM Model.  In Proceedings of the 2020 International Conference on Sensing, Measurement Data Analytics in the era of Arti?cial Intelligence (ICSMD), Xi’an, China, 15–17 October 2020; pp. 253–258.  [CrossRef]
+133.  Bronz, M.; Baskaya, E.; Delahaye, D.; Puechmore, S.  Real-time Fault Detection on Small Fixed-Wing UAVs using Machine Learning.  In Proceedings of the 2020 AIAA/IEEE 39th Digital Avionics Systems Conference (DASC), San Antonio, TX, USA, 11–15 October 2020; pp. 1–10.  [CrossRef]
+134.  k. Varigonda, V.; Agrawal, B.; Annamalai, V.K. IoT based Automatic Fault Identi?cation and Alerting System for Unmanned Aerial Vehicles. In Proceedings of the 2020 Fourth International Conference on Inventive Systems and Control (ICISC), Coimbatore, India, 6–7 January 2020; pp. 20–24.  [CrossRef]
+135.  Titouna, C.; Na?t-Abdesselam, F.; Moungla, H. An Online Anomaly Detection Approach For Unmanned Aerial Vehicles.  In Proceedings of the 2020 International Wireless Communications and Mobile Computing (IWCMC), Limassol, Cyprus, 15–19 June 2020; pp. 469–474.  [CrossRef]
+136.  Keipour, A.; Mousaei, M.; Scherer, S. Automatic Real-time Anomaly Detection for Autonomous Aerial Vehicles. In Proceedings of the 2019 International Conference on Robotics and Automation (ICRA), Montreal, QC, Canada, 20–24 May 2019; pp. 5679–5685. [CrossRef]
+137.  Wang, B.; Liu, D.; Peng, X.; Wang, Z.  Data-Driven Anomaly Detection of UAV based on Multimodal Regression Model.  In Proceedings of the 2019 IEEE International Instrumentation and Measurement Technology Conference (I2MTC), Ottawa, ON, Canada, 16–19 May 2019; pp. 1–6.  [CrossRef]
+138.  Wang, B.; Wang, Z.; Liu, L.; Liu, D.; Peng, X. Data-Driven Anomaly Detection for UAV Sensor Data Based on Deep Learning Prediction Model.   In Proceedings of the 2019 Prognostics and System Health Management Conference (PHM-Paris), Paris, France, 2–5 May 2019; pp. 286–290.  [CrossRef]
+139.  Ahn, H.; Choi, H.L.; Kang, M.; Moon, S. Learning-Based Anomaly Detection and Monitoring for Swarm Drone Flights. Appl. Sci. 2019, 9, 5477 [CrossRef]
+140.  Pourpanah, F.; Zhang, B.; Ma, R.; Hao, Q. Anomaly Detection and Condition Monitoring of UAV Motors and Propellers.  In Proceedings of the 2018 IEEE SENSORS, New Delhi, India, 28–31 October 2018; pp. 1–4.  [CrossRef]
+141.  Lu, H.;  Li, Y.; Mu, S.; Wang, D.; Kim, H.; Serikawa, S.   Motor Anomaly Detection for Unmanned Aerial Vehicles Using Reinforcement Learning. IEEE Internet Things J. 2018, 5, 2315–2322.  [CrossRef]
+142.  Chen, Y.; Wang, B.; Liu, W.; Liu, D.  On-line and non-invasive anomaly detection system for unmanned aerial vehicle.   In Proceedings of the 2017 Prognostics and System Health Management Conference, Harbin, China, 9–12 July 2017; pp.  1–7. [CrossRef]
+143.  Pan, D.  Hybrid data-driven anomaly detection method to improve UAV operating reliability.   In Proceedings of the 2017 Prognostics and System Health Management Conference, Harbin, China, 9–12 July 2017; pp. 1–4.  [CrossRef]
+144.  Freeman, P.; Pandita, R.; Srivastava, N.; Balas, G.J. Model-Based and Data-Driven Fault Detection Performance for a Small UAV. IEEE/ASME Trans. Mechatron. 2013, 18, 1300–1309.  [CrossRef]
+145.  Afridi, M.J.; Awan, A.J.; Iqbal, J. AWG-Detector: A machine learning tool for the accurate detection of Anomalies due to Wind Gusts (AWG) in the adaptive Altitude control unit of an Aerosonde unmanned Aerial Vehicle.   In Proceedings of the 2010 10th International Conference on Intelligent Systems Design and Applications, Cairo, Egypt, 29 November–1 December 2010; pp. 1125–1130.  [CrossRef]
+146.  Lin, R.; Khalastchi, E.; Kaminka, G.A. Detecting anomalies in unmanned vehicles using the Mahalanobis distance. In Proceedings of the 2010 IEEE International Conference on Robotics and Automation, Anchorage, Alaska, 3–8 May 2010; pp.  3038–3044. [CrossRef]

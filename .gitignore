@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Data (large, can be regenerated)
+data/csv_raw/
+data/processed/online_cache/
+data/processed/seq_cache/
+data/processed/*.sqlite
+data/processed/*.db
+
+# Model weights (can be retrained)
+models/**/*.pt
+models/**/*.joblib
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+.pytest_cache/
+.ruff_cache/
+.venv-cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups
+models_backup_*/
+
+# Dashboard
+dashboard/frontend/node_modules/
+dashboard/frontend/dist/
+dashboard/frontend/.env
+dashboard/backend/.venv/
+dashboard/backend/runtime/
+dashboard/backend/*.db
+dashboard/backend/logs/
+dashboard/backend/instance/
+dashboard/backend/.env
+
+# Local docs / assets not for GitHub
+docs/
+/data/
+/models/
+/logs/
+tests/
+competition/
+results/
+tmp/
+vendor/
+%LOG_ROOT%/
+%OUTPUT%/
+AGENTS.md
+WORK_LOG.md
+shadcn-analytics.tsx
+.superpowers/
+Git规范.md
+/关于举办*.pdf
+/无人机故障检测系统.txt

@@ -1,0 +1,270 @@
+第 45 卷    第 11 期                                      兵 器 装 备 工 程 学 报                                          2024 年 11  月
+=============================================== doi :  10. 11809/bqzbgcxb2024 . 11 . 036
+基于深度强化学习的无人机集群
+预测性维修决策算法
+吴其隆，冯    强，任    羿，孙    博
+（北京航空航天大学 可靠性与系统工程学院，北京   100191)
+　摘要：预测性维修是提升无人机(unmanned aerial vehicles , UAV)集群可靠性的关键工作之一。其难点在于 UAV 集群结构上的多层级、部件退化的不均衡性以及维修时序的高影响性。本文分析了 UAV 集群运行与维护过程，提出了UAV 集群预测性维修的问题模型，剖析了其 NP - hard 特征。构建了基于深度 Q 网络(deep Q-network , DQN) 的解决框架，给出了相应的深度强化学习算法。最后以 10 个编队，每队 14 架 UAV 的集群为例开展了案例验证工作，实验表明，所提出的方法在长期运行过程中，能够高效稳定地提供预测性维修决策方案，提升了在高维非线性状态动作空间下的维修收益。
+关键词：无人机集群；预测性维修；深度强化学习；决策规划；可靠性
+本文引用格式：吴其隆，冯强，任羿，等．基于深度强化学习的无人机集群预测性维修决策算法[ J] . 兵器装备工程学报，2024 , 45(11) :283 - 290 .
+　Citation format: WU Qilong ,  FENG  Qiang ,  REN  Yi ,  et  al. A  predictive  maintenance  decision  algorithm for UAV  swarms based on deep reinforcement learning[J] . Journal of Ordnance Equipment Engineering, 2024 , 45(11) :283 - 290 .
+中图分类号：TJ85 ;  TB114 . 3                             文献标识码：A                       文章编号：2096 - 2304(2024) 11  - 0283 - 08
+
+A predictive maintenance decision algorithm for UAV swarms
+based on deep reinforcement learning
+WU Qilong ,  FENG Qiang ,  REN Yi ,  SUN  Bo
+(School of Reliability and Systems Engineering ,  Beihang University ,  Beijing  100191 ,  China)
+Abstract :  Predictive  maintenance  is  one  of  the  key  technologies  to  improve the reliability of  unmanned aerial vehicles  ( UAV)   swarms .  The  difficulty  lies in the multi-level structure of  the UAV swarm ,   the uneven degradation  of  UAV  components ,   and  the  high impact of  maintenance timing.  By analyzing the UAV swarm  operation  and  maintenance process ,   this paper  proposes a problem model for UAV swarm predictive maintenance and  analyzes  its  NP-hard  characteristics .  A  solution  framework  based  on  deep Q- network  (DQN)  is constructed ,  then the corresponding deep reinforcement learning algorithm is given . The case verification is carried out using a swarm of 10 groups and 14 UAVs in each group as an example . The case  results  show  that  the   proposed  method  can  efficiently  and  stably  provide  predictive  maintenance decision-making   solutions   during  long-term    operation ,   and   improve   maintenance    benefits   in   high- dimensional nonlinear state action space .
+Key  words :   unmanned  aerial  vehicle  swarm;   predictive  maintenance;   deep  reinforcement  learning;
+decision and planning; reliability
+
+收稿日期：2023 - 12 - 14；修回日期：2024 - 01 - 12；录用日期：2024 - 02 - 21
+通信作者：冯强(1980—) , 男，博士，副研究员，E-mail:fengqiang@ buaa. edu. cn。
+
+　284                                                       兵 器 装 备 工 程 学 报                           http: //bzxb . cqut. edu . cn/ 〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+
+
+0    引言
+　　无人机(unmanned aerial vehicles , UAV)集群作为典型的多智能体系统，在侦察、监视、搜救、作战等多方面具有应用优势[ 1 - 2] 。现有 UAV 集群研究侧重于提升任务执行能力或性能[3 - 4]  , 对于长期运行阶段 UAV 集群性能退化条件下预测性维修工作的研究相对较少。UAV 集群的预测性维修是一个集群维修决策问题，通过制定维修决策方案实现集群的优化目标，该问题时提升集群可用度并减少维修费用和任务风险[5]  的一类组合优化问题。这类问题通常需要综合考虑集群中的各类约束条件，对集群维修过程进行管理和规划，以实现集群维修费用和维修资源的优化。
+　　目前，集群维修决策问题的解决方法主要分为以下几类：建模与仿真方法、数据驱动方法、混合整数规划方法以及启发式算法等。利用建模与仿真方法解决集群维修决策问题时[6 - 7]  , 根据不同对象的集群规模、操作要求、维修策略等不同特征，考虑面向任务操作、多层次维修组织、多种类型失效模式等因素，借助模型工具对系统进行多模块建模，最终通过离散事件仿真对模型的多种维护策略进行分析。应用数据驱动方法解决集群维修决策问题[8 - 9]  , 将设备状态、维修活动、产品活动和备件信息等数据作为输入，利用数据挖掘技术将其进行聚类分析，在故障模式、预防性维修类型、维修政策的约束下，对集群设备进行维修规划。在利用混合整数规划方法解决集群维修决策问题的相关研究[10]  中，通过建立一个集群维修决策问题的混合整数规划模型，并利用经典的割平面法或者分支定界法求解其松弛问题，确定最优目标函数的有效上界，逐步减小这个界限以找到其最优解，并满足集群维修决策问题的整数条件。启发式算法通过构造启发式规则[ 11 - 12]  , 根据环境状态及集群部件的剩余寿命和维修费用选择集群及其各部件的维修决策方案，应用博弈等相关算法对集群维修策略进行优化。
+　　综上所述，学者们从建模、求解和优化算法等方面对集群维修策略问题进行了大量的研究，但目前的几种主流算法都存在着一定的不适用性。例如对于大规模复杂集群由于对集群规模和约束条件的敏感性，可能会出现计算量过大甚至不收敛的情况；此外，虽可保证在一定的计算时间内得到优化结果，但其容易陷入到局部最优，无法保证其与最优解的偏离程度。
+　　针对 UAV 集群的预测性维修决策问题，其难点在于集群通常具备多层级组成形态，且涉及大规模的 UAV 及其部件，与此同时，由于材料、制造工艺和其他环境因素，每个部件之间仍然存在细微差异，导致长期运行阶段各个 UAV 及其部件在性能退化上表现出不尽相同的退化状态。因此，对于预测性维修方案而言，需考虑不同退化状态下的 UAV 及其部件维修收益的不均衡性，UAV 及部件修复时序对集群性能恢复的高影响，从而形成高维度的集群退化状态空间和预测性维修动作空间，进而导致集群系统预测性维修决策问题
+
+
+　整体的 NP-hard 特征。近年来，随着深度强化学习方法的提出，使得求解高维状态空间和动作空间的决策问题成为了可能 [13] 。与此同时，深度强化学习的方法也在 UAV 集群的各类问题中得到广泛应用[14] 。
+　　针对上述问题，本文提出了一种基于深度 Q 网络( deep Q-network , DQN) [13]  的预测性维修决策方法，通过训练一个DQN 神经网络模型，对预测性维修动作的最优价值函数进行函数逼近，提供对该价值函数的估计，评估 UAV 集群系统退化状态；在此基础上通过 ε-greedy 算法选择面向当前 UAV集群退化状态的最优维修动作。在案例分析部分通过对
+　14 ×10 ×6 的 UAV 集群进行预测性维修的仿真分析，验证了所提出的方法在集群长期运行过程中，能够高效稳定地提供预测性维修决策方案，提升了在高维非线性状态动作空间下的维修收益。
+1    无人机集群预测性维修
+1 . 1    无人机集群退化描述
+　　在长期运行阶段，集群中的 UAV 由于疲劳和耗损等缘故，UAV 的各个功能模块会出现不同程度的退化状态，从而影响 UAV 集群的可靠性水平。
+　　在这个背景下，考虑 UAV 集群通常由多编队组成，首先建立一个编队集 ζ, 可以表示为
+ζ=  {G1  , G2 , … , Gm , … , GM }                    (1)
+式(1)中：m ∈ { 1 , 2 , … , M}  表示编队  Gm 在集群中的编号。
+假设每个编队由N 个 UAV 组成，则编队 Gm 可以表示为
+Gm   =  { UA V( m , 1)  , UA V( m , 2)  , … , UA V( m , n)  , … , UA V( m , N)  }
+(2)
+　式(2)中：n ∈ { 1 , 2 , … , N}  表示 UAV 在编队 Gm   中的编号。假设每个 UAV 均由 K 个现场可更换模块( line replaceable module , LRM)组成，则 UAV( m , n) 可以表示为
+UA V( m , n)    =   { LRM( m , n , 1)  , LRM( m , n , 2)  , … ,
+LRM( m , n , k)  , … , LRM( m , n , K)  }                      (3)
+　式(3)中：k ∈ { 1 , 2 , … , K}  表示 LRM 在 UAV( m , n)  中的编号。定义剩余使用寿命(remain useful life , RUL) 来描述在长期运行阶段每个 LRM 的退化状态。
+1 . 2   预测性维修问题假设
+　　基于上一小节的描述，本文的无人机集群预测性维修问题考虑无人机集群由 M ×N 个 UAV 组成，每个 UAV 中的LRM 的退化状态由其 RUL 描述。预测性维修问题将维修费用作为约束条件，优化目标是无人机集群可靠性水平，控制变量是预测性维修策略。本文所研究的预测性维修问题考虑如下假设：
+　　1) 针对 UAV 集群的预测性维修，重点关注 UAV 集群在其运行阶段随着累积任务时间的增加 UAV 及其 LRM 的退化趋势，进而分析集群中各编队的可靠性水平，最终从集群- 编队 - UAV - LRM 四个层级进行预测性维修决策规划。
+
+吴其隆，等：基于深度强化学习的无人机集群预测性维修决策算法                        285
+〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+
+
+　　2)  每个 UAV 的所有 LRM 的剩余寿命 RUL 作为输入，不同的 UAV 由于材料、制造工艺以及在不同的工作条件下运行，导致其 RUL 各不相同，RUL 在运行初始时刻可以通过观测得到。无人机集群的预测性维修通常考虑配备故障预测与健康管理(prognostics and health management , PHM) 功能的组件，以跟踪和管理其剩余寿命 RUL 的演变，现有的方法中，基于数据驱动、基于模型以及两者结合的故障预测方法都可以预测 RUL。
+　　3)  本文中所考虑的 LRM 均为集群中每个 UAV 的关键功能模块。假设每个 UAV 中所有 LRM 按照一定的串并联关系组成；因此，将单个 UAV 的可靠性模型视为一个串并联模型。在无人机集群的实际工作运行中，通常以多编队建制，每个编队都会有一定的余度设计；因此，将单个 UAV 编队的可靠性模型视为 kg/ng  冗余模型，该模型要求编队中的ng  个 UAV 在其运行阶段，至少有 kg   个 UAV 正常工作。此外，本文中将 UAV 集群的可靠性模型也视为一个多编队的ks /ns  冗余模型来简化 UAV 集群的可靠性评估问题，该模型要求集群中的 ns  个编队在其运行阶段，至少有 ks  个编队正常工作。
+　　4)  对于每个 UAV 的维修方法采用 LRM 备件维修更换，维修更换后假设该 LRM 的状态跟新设备的状态一样。因此，可以认为被更换 LRM 在其平均故障间隔时间( mean time to failure , MTTF)之前的失效概率接近于 0 。
+　　5)  考虑每个 UAV 均由 K 个不同类型的 LRM 组成，不同 UAV 中的相同类型 LRM 的维修费用相同。
+6)  用于预测性维修的 LRM 备件储备充足。
+1 . 3    维修决策问题描述
+　　基于上一小节对于无人机集群预测性维问题的假设，所研究的预测性维修问题需要从集群 －编队-UAV-LRM 四个层级进行决策规划，要从 LRM 层面解决问题。因此，基本决策变 量 为 每 个 UAV( m , n)   中 LRM( m , n , k)   的 预 测 性 维 修 状 态ms ( m , n , k)  , 当 ms ( m , n , k)   =  1  时，对该节点执行维修更换工作，当ms ( m , n , k)   =  0 时，不对该节点执行维修更换。从决策变量的性质来看，该问题是用二进制变量进行整数规划。对于每个UAV 编队而言，策略数量为 2M；对于整个 UAV 集群，策略的总数为 2M ×N ×K , 因此该问题是一个 NP-hard 问题。综上所述，考虑一个 M ×N ×K 的UAV 集群，其维修策略 MS 可以表示为
+MS  =  [MS1  , MS2 , … , MS m , … , MSM ]            (4)
+式(4)中：MS m  是编队 Gm   的维修策略矩阵，可以表示为
+Γ ms ( m , 1 , 1)        ms ( m , 1 , 2)        …   ms ( m , 1 , K)  1
+
+式(5)中：维修策略矩阵的每个元素 s ( m , n , k) 均仅有 2 种状态(0 - 正常使用状态，1 - 维修更换状态），可以描述为
+
+
+
+　　此外，维修费用与维修状态变量 s( m , n , k) 相关，且执行预测性维修后的无人机集群的可靠性与所有 UAV 及其 LRM的退化状态相关。因此，UAV 集群的预测性维修决策问题可
+以表示为
+max RS ( ms ( m , n , k)  )
+s . t.  CTotal ( ms ( m , n , k)  )  ≤ Cthr ms ( m , n , k)    ∈ {0 , 1}
+　式(7)中：CTotal 为预期的总维修费用；Cthr 是总维修费用的阈值；RS  是 UAV 集群的可靠度。预测性维修预期的总维修费用 CTotal 的计算方法如下：
+
+式(8)中：Cm  是编队 Gm   的总维修费用；C( m , n)  是 UAV( m , n)  的维修费用；C( m , n , k) 是 LRM( m , n , k)  的维修费用。预测性维修决策问题中 UAV 集群的可靠度 RS  计算方法可以表示为
+RS    =      g    (Rm )   =      g    (    h   (R( m , n)  ))  =
+K (R ( m , n , k)  )))
+K ( 1  - ( 1  - ms
+(9)
+　式(9)中：Rm  表示编队 Gm   的可靠度；g(Rm )  表示多编队集群的可靠度函数，即假设(2)中所描述的 ks /ns  冗余模型的可靠度函数；R( m , n) 表示 UAV( m , n)  的可靠度；h( R( m , n)  )  表示编队的可靠度函数，即假设(2) 中所描述的 kg/ng  冗余模型的可靠度函数；o ( R( m , n , k)  )  表示 UAV 的可靠度函数，即假设(2)  中 所 描 述 的 串 并 联 模 型 的 可 靠 度 函 数；F( m , n , k)  是LRM( m , n , k)  的失效概率，可以表示为
+
+式(10)中：f( m , n , k)  ( τ) 表示 LRM( m , n , k)  的 RUL 概率密度函数(probability density  function , PDF) , 其 中  τ表 示 持 续 运 行时间。
+　　预测性维修决策问题的约束 CTotal 与决策变量 s ( m , n , k) 呈线性关系，易于计算。然而，UAV 集群的可靠度 RS   与所有LRM( m , n , k) 的退化状态之间的关系是复杂非线性的。决策变量  s ( m , n , k)   取 决 于  LRM( m , n , k)    的 退 化 状 态。 对 于 每 个LRM( m , n , k) 而言，可以依据其 RUL 的概率密度函数f( m , n , k)  ( τ)和决策变量 s ( m , n , k)  , 计算该 LRM 累积运行时间达到 τ的时候失效概率的数值，然后依据式(9)可以计算 UAV 集群可靠度，式(9)中的可靠度函数都可以使用可靠性框图(reliability block diagram , RBD)的方法进行计算。然而，如果在策略优化过程中对每组预测性维修策略 S 中的决策变量 s( m , n , k)  都进行总维修费用 CTotal 和 UAV 集群可靠度 RS   的验证，则计算效率会非常低并且计算负荷也会过大。
+2   基于 DQN 的维修决策算法
+由于在 UAV 集群的预测性维修需考虑集群-编队-UAV-
+
+
+
+　LRM 四个层级的决策规划，在集群长期运行过程中规模为 M ×N ×K 的 LRM 退化状态不尽相同，导致 UAV 集群具有超大规模退化状态空间，此外维修动作空间的每一个决策变量都会影响维修费用和集群可靠度，因此在面向不同退化状态时不同的维修动作带来的维修收益存在较大差异。
+　　本文中提出了一种基于 DQN 的 UAV 集群预测性维修决策算法，设计了一个 DQN 来描述退化状态空间、维修动作空间与维修收益的映射关系，以此作为动作价值函数 Q( s , a) , 从而设计基于 DQN 的 UAV 集群预测性维修决策算法框架，如图 1 所示。
+　
+图 1    基于 DQN 的 UAV 集群预测性维修决策算法框架
+Fig. 1  UAV  swarm predictive maintenance decision algorithm
+framework based on DQN
+　　该算法框架是通过预测性维修 Agent 与算法仿真环境的交互完成强化学习的策略迭代( policy iteration , PI) , 其中仿真环境可以描述 UAV 集群运行过程中 LRM 的退化状态并评估其集群可靠度，而预测性维修 Agent 则是一个生成预测性维修方案的决策者，它可以通过执行一个预测性维修过程(predictive maintenance decision process , PMDP) 生成一系列的维修动作。在执行 PMDP 过程时，预测性维修 Agent 基于 DQN 对于动作价值函数的最优估计 Q * ( s , a) , 使用 ε- greedy 策略选择每一个维修动作。所提出的算法框架中强化学习的主要思想体现在：在 PI 过程中迭代执行 PMDP。每完成一次 PI 过程则结束一个 episode , 如图 1 所示每次 PI 过程包括 4 个步骤：首先，仿真环境生成 UAV 集群初始退化状态。然后，预测性维修 Agent 执行 PMDP 过程生成一系列维修动作。接着，算法仿真环境使用式(9) 计算执行维修策略
+
+
+　之后的 UAV 集群可靠度，评估维修收益进而计算奖励，并且存储训练数据至缓存中。最后，DQN 基于经验重放技术从缓存中的训练样本数据集调取 Mini-batch , 基于梯度下降的方法训练其网络参数，新的 DQN 将用于下一次 PI 过程估计最优动作价值函数。
+　　综上所述，图 1  中所设计的基于 DQN 的 UAV 集群预测性维修决策算法框架包括 4 个模块：退化状态初始化、PMDP过程、可靠性评估与奖励、以及 DQN 学习训练，具体细节如下文所述。
+2. 1    退化状态初始化
+　　在执 行 PMDP 之 前，算 法 仿 真 环 境 会 随 机 生 成 每 个LRM( m , n , k)  的 RUL 概 率 密 度 函 数 f( m , n , k)   ( τ) 的 参 数，作 为UAV 集群持续运行时间 τ= 0 时的初始状态，在此基础上持续运行时间 τ每增加 Δτ基于式(9) 计算 UAV 集群可靠度RS , 直到持续运行时间 τ= τ′时集群可靠度小于规定阈值Rthr 时，需对 UAV 集群开展预测性维修工作。基于 RUL 概率密度函数f( m , n , k)  ( τ)可以计算出持续运行时间 τ= τ′时每个LRM( m , n , k) 的失效概率 F( m , n , k) 。在此基础上，定义 UAV 集群的初始退化状态张量 s0 , 可以表示为
+s0    =  [F1  , F2  , … , Fm , … , FM ]                 (11)
+式(11)中：Fm  是编队 Gm   的退化状态矩阵，可以表示为
+
+式(12)中：F( m , n , k) 表示持续运行时间 τ= τ（ 时 LRM( m , n , k)  的失效概率。
+2. 2   维修决策过程
+　　以 UAV 集群的初始退化状态张量 s0   作为预测性维修Agent 的输入，执行 PMDP 之后生成完整的预测性维修策略。 PMDP 的主要步骤如下：
+1)  生成维修动作
+　　在预测性维修 Agent 执行 PMDP 期间的每一时刻 t , DQN使用退化状态－维修动作特征 (st , at )  作为其输入，并输出退化状态－维修动作的价值 Q(st , at ) 。维修动作 at  定义为一个与退化状态 st  具有相同维度的特征张量，即一个 M × N ×K 的特征张量，其中每一个张量元素 a( m , n , k)  与 LRM( m , n , k)的预测性维修状态 ms ( m , n , k) 具有同样的内涵，但是整个维修动作特征张量 at 中仅有一个元素等于 1 , 其他元素均为 0 。因此上述 DQN 可以表示为
+　式(13)中：DQN 的参数 θi- 1 是第 i - 1 次 PI 过程结束训练学习后保存的网络参数。初始的 DQN 网络参数 θ0 随机初始化生成的。所设计的 DQN 由多个残差模块组成，每个残差模块由带有 ReLU 函数的卷积层和恒等映射函数组成。基于 DQN 对于退化状态－维修动作价值的估计，预测性维修 Agent使用 ε- greedy 算法选择最优维修动作 at*  |  a ( m *，n *，k *） = 1 。
+
+2)  更新集群状态
+　　在 执 行  PMDP  期 间  t   时 刻 的 最 优 维 修 动 作at* |  a ( m *，n *，k * ） = 1 后，LRM( m *，n *，k *）被新的备件更换，依据假设(4)可以认为维修更换后该 LRM 在其 MTTF 之前的失效概率接近于 0 。因此，对当前 t 时刻下的退化状态张量 st做出基于维修动作 at*  |  a ( m *，n *，k * ）的效果进行修正，以生成t + 1 时刻的退化状态张量 st + 1  , 如下所示：
+
+式(14)中：F( m , n , k)  ( t )  表示 PMDP 期间 t 时刻 LRM( m , n , k)  的失效概率。
+3)  检查循环条件
+计算 PMDP 期间 t 时刻的累积维修费用，如下所示：
+CTotal ( t )  =  CTotal ( t - 1)  + C( m *，n *，k * ）                  (15)
+　式(15)中：CTotal ( t )  表示 t 时刻的累积维修费用，且初始时刻的累 积 维 修 费 用  CTotal    ( t   =  0 )   =  0 ;  C( m *，n *，k * ）  是LRM( m *，n *，k * ）的维修费用。如果此时 CTotal ( t )   <  Cthr , 则返回到 PMDP 的第(1) 步。假设在 PMDP 执行到 T 时刻，此时CTotal (T)  ≤ Cthr , 则结束当前循环进入 PMDP 的第(4)步。
+4)  生成预测性维修策略
+　　基于上述 PMDP 过程中 T 个时刻所选择的每一个维修动作 at*  |  a ( m *，n *，k * ） = 1 , 生成公式(4)所示的预测性维修策略 MS 。
+2. 3    可靠性评估与奖励
+　　基于 PMDP 过程中的 UAV 集群退化状态张量 s0  , s 1  , … , sT, 根据式(9) 计算各个时刻下 UAV 集群可靠度 RS  ( s0 ) , RS (s 1 ) , … , RS (sT ) , 以评估预测性维修策略 MS 中维修动作的恢复效果。此外，奖励函数针对 UAV 集群可靠度进行定义，如下所示：
+
+式(16)中：rt  表示 PMDP 期间 t 时刻的奖励；γ表示奖励函数的折扣因子，0  ≤ γ≤ 1;δ是一个经验奖励系数；l 是一个计数变量。
+2. 4   DQN 学习训练
+　　基于 PMDP 过程以及可靠性评估与奖励，存储训练样本et  = (st , at , rt , st + 1 )  至训练数据集 D 中。在 DQN 学习训练的时候，首先从训练样本数据集 D 中随机均匀采样 Mini-batch: { (s , a , r , s ′) } , 其中 s ′表示 s 的下一刻状态。应用经验重放技术，基于梯度下降的方法训练 DQN 网络参数。在第 i 个 PI过程，DQN 的训练目标是通过调整网络参数 θi 以最小化贝尔曼方程中的均方差( mean-squared error , MSE) , 其中最优目标价值将被目标价值的估计替代，目标价值的估计由上一个PI 过程中网络参数为 θi-   的 DQN 生成。因此，第 i 个 PI 过程的损失函数可以表示为
+Li ( θi)  = E (s , a , r , s ′) ~ D [( r + γmaa′xQ(s ′,a ′;θi- )  - Q(s , a;θi)) 2 ]
+(17)
+
+
+　式(17)中：θi表示 DQN 在第 i 个 PI 过程时的网络参数；θi- 表示在第 i 个 PI 过程时目标 DQN 的网络参数，如图 2 所示；γ表示折扣因子。式(17)的损失函数对网络参数 θi微分得到梯度如下所示：
+▽θiLi ( θi)  = Es , a , r , s ′[( r + γmaa′x Q(s ′,a ′;θi- )  -
+Q(s , a;θi)) ▽θiQ(s , a;θi) ]                  (18)
+式(18)中：目标 DQN 的网络参数设置为第 i - 1 个 PI 过程的网络参数，θi-  = θi- 1 。结束学习训练之后，新的 DQN 网络参数将用于下一次 PI 过程估计最优价值函数。通常情况下，当平均动作价值和 DQN 的 MSE 趋于稳定时，预测性维修Agent可以有效支持各种退化状态下 UAV 集群预测性维修策略生成，提高 UAV 集群状态。此外，完成学习训练的 DQN在 UAV 集群运行期间规划预测性维修管理工作时不需要再进行学习训练。
+3    结果与分析
+3. 1    仿真实验设计与结果
+　　考虑一个 UAV 集群由 14 个编队组成，每个编队由 10架 UAV 组成，每个 UAV  由 6 个具有可预测 RUL 的 LRM 组成。 由于本文针对 UAV 集群长期运行阶段，随着 UAV 集群累积运行时间的增加，主要考虑实际运行环境下 LRM 的疲劳和耗损等故障现象，因此假设所有 LRM 在长期运行阶段其 RUL 服从正态分布 ( μ,σ2 ) , 正态分布的参数 μ和 σ可以基于 PHM 方法得到。此外，本文中所提出的方法依然适用于可预测 RUL 服从其他退化规律的 LRM 。针对上述 UAV集群中 14 ×10 ×6 的 LRM , 在基于所提出算法框架分析其预测性维修问题时，首先由仿真环境随机生成所有 LRM 的RUL 正太分布参数 μ和 σ, 如表 1 所示给出了部分 LRM 的参数，本文案例部分分析 UAV 集群运行时间相关数据的单位均为小时。
+表 1    UAV 集群中 LRM 的剩余寿命分布
+Table 1  The RUL probability density of each LRM
+
+编队 G1	UAV	UAV	…	UAV
+LRM1	(250 ,  12)	( 180 , 28)	…	(200 ,24)
+LRM2	(240 , 22)	(270 ,  10)	…	(60 ,22)
+…	…	…	…	…
+LRM6	(190 ,  19)	(210 , 25)	…	(280 , 6)
+编队 G14	UAV	UAV	…	UA V(14 , 10)
+LRM1	( 170 , 25)	(210 , 21)	…	(140 , 14)
+LRM2	( 140 , 22)	(90 , 10)	…	(260 , 6)
+…	…	…	…	…
+LRM6	(80 , 17)	(240 , 24)	…	(170 , 18)
+
+基于以上由仿真环境生成的 UAV 集群中 14 ×10 ×6 个
+
+
+
+　LRM 的剩余寿命分布，使用公式(9) 可以计算当前的 UAV集群可靠度为 99 . 856% , 以当前时间 τ= 0 表示作为 UAV 集群累积运行的初始时间，分析在累积运行 300 h 期间的剩余寿命分布如图 2 所示，本文所分析的累积运行时间是针对UAV 集群多波次任务的累积任务时间。
+　　　
+图 2    UAV(1 , 1)  中各 LRM 的剩余寿命分布
+Fig. 2 The  RUL probability density of each LRM in UA V(1 , 1)
+　　假设规定 UAV 集群可靠度低于 90% 的时候需要执行预测性维修工作。从 τ= 0 开始，每增加 Δτ= 10 h 的持续运行时间，使用式(9)计算 UAV 集群可靠度，实际中可以根据具体的任务需求等因素对 Δτ进行取值。在持续运行时间 τ= 80 h 的时候，UAV 集群可靠度为 89 . 273% , 此时需开展预测性维修工作，计算 τ= 80 h 的时候所有 LRM( m , n , k) 的失效概率F( m , n , k)  , 进而生成 UAV 集群的初始退化状态张量 s0 。此外， UAV 中上述 6 个类别 LRM 的维修费用设置如表 2 所示，假设用于此次总维修费用的阈值为 Cthr  = 120 000 RMB , LRM的维修费用以及预测性维修的总费用阈值可依据实际情况具体设定。
+表 2    UAV 集群中 LRM 的维修费用
+Table 2 The maintenance cost of each LRM
+
+LRM1	LRM2	LRM3	LRM4	LRM5	LRM 6
+1  500	1  200	2 200	2 000	1 100	1 800
+表 3    UAV 集群的预测性维修策略
+Table 3 The predictive maintenance strategy of UAV swarm
+
+UAV 集群	LRM1	LRM2	LRM3	LRM4	LRM5	LRM 6
+编  队	UAV
+UA V(1 ,2)	0
+0	0
+0	0
+0
+　	1
+0	0
+1	0
+0
+1
+UA V(1 , 10)	0	1	1	0	0	0
+…
+编  队	UAV
+UA V(14 ,2)	0
+0	0
+1	0
+0
+　	0
+0	0
+0	1
+0
+14
+UA V(14 , 10)	1	0	0	0	1	0
+
+
+
+　　针对上述案例，所提出的预测性维修 Agent 生成维修策略，如表 3 所示描述了维修策略中部分维修动作，表中数值为 1 则表示对应的 LRM 需要进行维修更换。 由于所提出的DQN 方法将预测性维修决策问题视为一个序列决策问题，维修策略中各维修动作依次生成，图 3 按照各维修动作在Agent生成过程中的时序描述了 UAV 集群可靠度的提升以及累积维修费用的增加，完成预测性维修之后，UAV 集群可靠度为99 . 572% , 累积维修费用为 119 100 RMB , 实际执行预测性维修工作时可以根据维修策略安排多维修团队同时执行维修任务。
+　　
+图 3    UAV 集群可靠度和维修费用
+Fig. 3 The reliability and maintenance cost of UAV swarm
+3. 2   讨论分析
+　　在预测性维修 Agent 学习训练过程中，本文使用了一台配备 4 块 RTX2080 TI-A11G 显卡和 Intel i9 7980XE CPU 的服务器，在 Ubuntu 系统环境下使用 Python 语言开发了基于DQN 的预测性维修 Agent 以及 UAV 集群仿真运行环境，其中神经网络模型调用了 TensorFlow 和 Keras 工具，整个训练过程从完全随机初始化的 DQN 开始，训练过程持续了大约27 h , 相关的超参数设置如表 4 所示。
+表 4    DQN 超参数
+Table 4 The hyperparameters of DQN
+
+变量	描述	数值
+capacity	经验池容量	107
+lr	学习率	0. 002
+γ	折扣因子	0. 9
+ε	贪婪系数	0. 9
+episode number	训练回合数	10  100
+batch size	批量训练规模	512
+
+　　整个训练过程中，预测性维修 Agent 一共执行了 10  100个 episodes , 生成每个维修动作所需的思考时间约为 0 . 12 s 。此外，图 3 中所示完成训练后的预测性维修 Agent 生成每个维修动作的思考时间同样约为 0 . 12 s 。图 4 描述了整个训
+
+
+
+　练过程的平均奖励，实线表示奖励的均值，阴影表示奖励的标准差，可以看出大概在 5 000 个 episodes 之后训练取得了收敛效果，奖励的均值曲线稳定在一个区间内呈现小范围波动状态。此时的预测性维修 Agent 已经可以很好的分析UAV 集群运行期间的退化状态，并生成优化的维修策略。
+　　
+图 4    DQN 的预测性维修学习曲线
+Fig. 4 The learning curve from DQN on the predictive
+maintenance
+　　在预测性维修 Agent完成其 DQN 的学习训练之后，针对UAV 集群长期运行阶段的多阶段预测性维修任务进行分析，此外本文还应用启发式博弈( heuristic game , HG) [12]  和蒙特卡洛树搜索( Monte  Carlo  tree  search , MCTS) [15]  分析同样的问题。考虑 14 ×10 ×6 的 UAV 集群长期运行阶段依据其退化状态开展预测性维修工作，假定每次预测性维修工作的总维修费用阈值为 Cthr  = 120 000 RMB , 每间隔 10 h 的累积运行时间计算集群可靠度，当集群可靠度低于 90% 的时候，由DQN、MCTS 和 HG 三种方法在总维修费用阈值的约束下分别生成维修策略，仿真环境依据 3 种维修策略分别更新集群状态，进而继续进入运行阶段，直到 3 种方法下各自的集群可靠度低于 90% 后再次生成维修策略。在上述 UAV 集群仿真运行过程中，集群可靠度随累积运行时间的变化曲线如图 5所示。
+　　　
+图 5    不同维修策略下 UAV 集群可靠度曲线
+Fig. 5  The UAV swarm reliability curves under different
+maintenance strategies
+
+
+　　由图 5 可以看出，所提出的 DQN 方法在每次预测性维修工作中能够实现更好的可靠度恢复效果，并且在长期运行阶段 UAV 集群能保持更好的可靠性水平，所需部署的预测性维修工作的次数也更少，由于部署每次预测性维修工作的总费用基本相同，因此所提出 DQN 方法在 UAV 集群长期运行阶段的预测性维修工作中能够实现更好的经济效益。
+4    结论
+　　1)  DQN 维修决策算法能够在有限的维修费用约束下有效的提升 UAV 集群的可靠性水平。
+　　2)  在每次预测性维修工作中都能实现更好的可靠性恢复效果，因此相比于其他方法，能够在一定阶段内执行更少的预测性维修工作，并且依然保持 UAV 集群具备较高的可靠性水平。
+　　为了全面验证本文方法的有效性，下一步将基于数字孪生的技术，针对所提出的 UAV 集群预测性维修方法，探索和开展其仿真验证研究，拓展和完善相关方法的工程实用性。
+参考文献：
+
+[1]    向锦武，董希旺，丁文锐，等．复杂环境下无人集群系统自主协 同 关 键 技 术 [ J ] .  航 空 学 报，2022 , 4 ( 10 ) :
+527 - 570.
+XIANG Jinwu , DONG  Xiwang , DING  Wenrui , et   al.  Key technologies for autonomous cooperation of unmanned swarm systems in  complex  environments[ J] .  Acta  Aeronautica  et Astronautica Sinica ,2022 ,43(10) :527 - 570.
+[2]     LIANG  L , DENG  F , WANG  J  A , et  al.  A  reconnaissance penetration game  with  territorial-constrained  defender[ J] . IEEE Transactions  on  Automatic  Control , 2022 , 67 (11) : 6295 - 6302.
+[3]     FENG  Q , LIU  M , DUI  H , et  al. Importance  measure-based phased mission reliability and UAV number optimization for swarm [J] . Reliability  Engineering &  System Safety , 2022 , 223:108479 .
+[4]    贾永楠，田似营，李擎．无人机集群研究进展综述[J] . 航空学报，2020 ,41(S1) :723 - 738 .
+JIA  Yongnan , TIAN  Siying , LI   Qing.  Development  of  un- maned aerial vehicle swarms[J] . Acta Aeronautica et Astro- nautica Sinica ,2020 ,41(S1) :723 - 738 .
+[5]     DUAN  C , DENG C , GHARAEI  A , et al. Selective mainte- nance scheduling under stochastic maintenance quality with multiple maintenance  actions [ J] .  International Journal  of Production Research ,2018 ,56(23) :7160 - 7178 .
+
+290                                                       兵 器 装 备 工 程 学 报                           http: //bzxb . cqut. edu . cn/
+〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+
+
+[6]     CHEN  Y , BOUFERGUENE  A , AL-HUSSEIN  M .  Analytic hierarchy process-simulation framework for lighting mainte- nance decision-making based on the clustered network[J] . Journal  of  Performance  of  Constructed  Facilities , 2018 , 32 (1) :04017114 .
+[7]     SHENG J , PRESCOTT D . A hierarchical coloured Petri net model of fleet maintenance with cannibalisation[J] . Relia- bility Engineering & System Safety,2017 , 168:290 - 305 .
+[8]     ZHOU  Y , KOU G , ERGU D .  Analysing  operating  data  to measure the maintenance performance[J] . Quality & Relia- bility Engineering International ,2015 ,31(2) :251 - 263 .
+[9]     YU  Z. Data  mining-based  maintenance  management  frame- work of multi-component system[J] . Journal of Donghua U- niversity,2015 ,32(6) :950 - 953 .
+[10]   GAVRANIS A , KOZANIDIS G. An exact solution algorithm for maximizing the fleet availability of a unit of aircraft sub- ject to  flight  and  maintenance  requirements[ J] .  European Journal of Operational Research ,2015 ,242(2) :631 - 643 .
+[11]   YANG  D , WANG  H , FENG  Q , et  al.  Fleet-level  selective maintenance problem under  a  phased  mission  scheme  with
+
+
+short  breaks :  a  heuristic   sequential  game  approach [ J ] . Computers & Industrial Engineering,2018 , 119:404 - 415 .
+[12]   FENG Q , ZHAO  X , CHEN Y , et al. Heuristic hybrid game approach  for  fleet  condition-based  maintenance  planning [J] .  Reliability  Engineering  & System  Safety , 2017 , 157 : 166 - 176 .
+[13]  ARULKUMARAN K , DEISENROTH M P , BRUNDAGE M ,
+et al. Deep reinforcement learning : a brief survey [J] . IEEE Signal Processing Magazine ,2017 ,34(6) :26 - 38 .
+[14]   MOU Z Y , ZHANG Y , GAO F F , et al. Deep reinforcement learning based  three-dimensional  area  coverage with UAV swarm [J] . IEEE Journal on Selected Areas  in Communica- tions ,2021 ,39(10) :3160 - 3176 .
+[15]   BROWNE  C  B , POWLEY  E , WHITEHOUSE  D , et al.  A survey of monte carlo tree search methods[J] . IEEE Trans- actions  on  Computational  Intelligence  and  AI  in  Games , 2012 ,4:1 - 43 .
+
+科学编辑   曹立佳 博士（ 四川轻化工大学 副教授）
+责任编辑   刘   洋

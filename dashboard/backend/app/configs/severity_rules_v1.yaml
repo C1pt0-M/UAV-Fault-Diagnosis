@@ -1,0 +1,376 @@
+version: rule_v1
+severity_levels:
+  light_max: 0.45
+  medium_max: 0.72
+defaults:
+  confidence_metric:
+    key: prediction_confidence
+    direction: high
+    medium: 0.6
+    heavy: 0.85
+    weight: 0.1
+    required_for_decision: false
+faults:
+  normal:
+    mode: fixed
+    level: none
+    recommendations:
+      - title: 保持例行巡检与校准
+        priority: P3
+        reason_codes: [normal_detected]
+      - title: 继续监控电池与振动趋势
+        priority: P3
+        reason_codes: [preventive_check]
+  battery_failure:
+    primary_metric:
+      key: fault_severity_p95
+      direction: high
+      light_max: 0.2
+      medium_max: 0.55
+    min_required_metrics: 2
+    metrics:
+      - key: battery_warning_max
+        direction: high
+        medium: 1.0
+        heavy: 2.0
+        weight: 0.4
+        required_for_decision: true
+      - key: battery_remaining_min
+        direction: low
+        medium: 35.0
+        heavy: 18.0
+        weight: 0.35
+        required_for_decision: true
+      - key: battery_voltage_drop_ratio
+        direction: high
+        medium: 0.08
+        heavy: 0.18
+        weight: 0.25
+        required_for_decision: true
+    recommendations:
+      light:
+        - title: 检查电池固定与连接器接触
+          priority: P3
+          reason_codes: [battery_light_connection]
+        - title: 增加电压波动监控频率
+          priority: P3
+          reason_codes: [battery_light_monitor]
+      medium:
+        - title: 执行电池健康诊断并复测内阻
+          priority: P2
+          reason_codes: [battery_medium_health]
+        - title: 排查线束压降并检查供电冗余
+          priority: P2
+          reason_codes: [battery_medium_harness]
+      heavy:
+        - title: 立即更换电池包并暂停高负载任务
+          priority: P1
+          reason_codes: [battery_heavy_replace]
+        - title: 全链路检查电源分配与保护模块
+          priority: P1
+          reason_codes: [battery_heavy_power_chain]
+      fallback:
+        - title: 优先执行电池与供电系统人工复核
+          priority: P2
+          reason_codes: [battery_fallback]
+  motor_failure:
+    primary_metric:
+      key: fault_severity_p95
+      direction: high
+      light_max: 0.2
+      medium_max: 0.28
+    min_required_metrics: 2
+    metrics:
+      - key: motor_imbalance_ratio
+        direction: high
+        medium: 0.12
+        heavy: 0.25
+        weight: 0.5
+        required_for_decision: true
+      - key: gyro_vibration_p95
+        direction: high
+        medium: 0.6
+        heavy: 1.2
+        weight: 0.3
+        required_for_decision: true
+      - key: accel_vibration_p95
+        direction: high
+        medium: 1.5
+        heavy: 3.0
+        weight: 0.2
+        required_for_decision: true
+    recommendations:
+      light:
+        - title: 校验电机与ESC参数一致性
+          priority: P3
+          reason_codes: [motor_light_tuning]
+        - title: 复测短航段振动谱
+          priority: P3
+          reason_codes: [motor_light_retest]
+      medium:
+        - title: 检查可疑电机温升与轴承磨损
+          priority: P2
+          reason_codes: [motor_medium_temp]
+        - title: 排查ESC通道输出与相线接触
+          priority: P2
+          reason_codes: [motor_medium_esc]
+      heavy:
+        - title: 立即停飞并更换异常电机总成
+          priority: P1
+          reason_codes: [motor_heavy_replace]
+        - title: 执行动力链路全面体检
+          priority: P1
+          reason_codes: [motor_heavy_chain]
+      fallback:
+        - title: 优先进行电机/ESC联合人工诊断
+          priority: P2
+          reason_codes: [motor_fallback]
+  motor:
+    primary_metric:
+      key: fault_severity_p95
+      direction: high
+      light_max: 0.2
+      medium_max: 0.28
+    min_required_metrics: 2
+    metrics:
+      - key: motor_imbalance_ratio
+        direction: high
+        medium: 0.12
+        heavy: 0.25
+        weight: 0.5
+        required_for_decision: true
+      - key: gyro_vibration_p95
+        direction: high
+        medium: 0.6
+        heavy: 1.2
+        weight: 0.3
+        required_for_decision: true
+      - key: accel_vibration_p95
+        direction: high
+        medium: 1.5
+        heavy: 3.0
+        weight: 0.2
+        required_for_decision: true
+    recommendations:
+      light:
+        - title: 校验电机与ESC参数一致性
+          priority: P3
+          reason_codes: [motor_light_tuning]
+        - title: 复测短航段振动谱
+          priority: P3
+          reason_codes: [motor_light_retest]
+      medium:
+        - title: 检查可疑电机温升与轴承磨损
+          priority: P2
+          reason_codes: [motor_medium_temp]
+        - title: 排查ESC通道输出与相线接触
+          priority: P2
+          reason_codes: [motor_medium_esc]
+      heavy:
+        - title: 立即停飞并更换异常电机总成
+          priority: P1
+          reason_codes: [motor_heavy_replace]
+        - title: 执行动力链路全面体检
+          priority: P1
+          reason_codes: [motor_heavy_chain]
+      fallback:
+        - title: 优先进行电机/ESC联合人工诊断
+          priority: P2
+          reason_codes: [motor_fallback]
+  prop_imbalance:
+    primary_metric:
+      key: fault_severity_p95
+      direction: high
+      light_max: 0.3
+      medium_max: 0.55
+    min_required_metrics: 2
+    metrics:
+      - key: gyro_vibration_p95
+        direction: high
+        medium: 0.6
+        heavy: 1.2
+        weight: 0.4
+        required_for_decision: true
+      - key: motor_imbalance_ratio
+        direction: high
+        medium: 0.1
+        heavy: 0.2
+        weight: 0.35
+        required_for_decision: true
+      - key: accel_vibration_p95
+        direction: high
+        medium: 1.5
+        heavy: 3.0
+        weight: 0.25
+        required_for_decision: true
+    recommendations:
+      light:
+        - title: 检查桨叶紧固与轻微损伤
+          priority: P3
+          reason_codes: [prop_light_check]
+        - title: 低速工况复测振动
+          priority: P3
+          reason_codes: [prop_light_retest]
+      medium:
+        - title: 更换可疑桨叶并进行动平衡
+          priority: P2
+          reason_codes: [prop_medium_replace]
+        - title: 校验电机轴向偏摆
+          priority: P2
+          reason_codes: [prop_medium_alignment]
+      heavy:
+        - title: 立即停飞并更换整套桨叶组件
+          priority: P1
+          reason_codes: [prop_heavy_stop]
+        - title: 排查机臂与电机安装结构疲劳
+          priority: P1
+          reason_codes: [prop_heavy_structure]
+      fallback:
+        - title: 优先执行桨叶与振动人工复核
+          priority: P2
+          reason_codes: [prop_fallback]
+  propeller:
+    primary_metric:
+      key: fault_severity_p95
+      direction: high
+      light_max: 0.3
+      medium_max: 0.55
+    min_required_metrics: 2
+    metrics:
+      - key: gyro_vibration_p95
+        direction: high
+        medium: 0.6
+        heavy: 1.2
+        weight: 0.4
+        required_for_decision: true
+      - key: motor_imbalance_ratio
+        direction: high
+        medium: 0.1
+        heavy: 0.2
+        weight: 0.35
+        required_for_decision: true
+      - key: accel_vibration_p95
+        direction: high
+        medium: 1.5
+        heavy: 3.0
+        weight: 0.25
+        required_for_decision: true
+    recommendations:
+      light:
+        - title: 检查桨叶紧固与轻微损伤
+          priority: P3
+          reason_codes: [prop_light_check]
+        - title: 低速工况复测振动
+          priority: P3
+          reason_codes: [prop_light_retest]
+      medium:
+        - title: 更换可疑桨叶并进行动平衡
+          priority: P2
+          reason_codes: [prop_medium_replace]
+        - title: 校验电机轴向偏摆
+          priority: P2
+          reason_codes: [prop_medium_alignment]
+      heavy:
+        - title: 立即停飞并更换整套桨叶组件
+          priority: P1
+          reason_codes: [prop_heavy_stop]
+        - title: 排查机臂与电机安装结构疲劳
+          priority: P1
+          reason_codes: [prop_heavy_structure]
+      fallback:
+        - title: 优先执行桨叶与振动人工复核
+          priority: P2
+          reason_codes: [prop_fallback]
+  sensor:
+    min_required_metrics: 1
+    metrics:
+      - key: gyro_vibration_p95
+        direction: high
+        medium: 0.8
+        heavy: 1.6
+        weight: 0.35
+        required_for_decision: false
+      - key: accel_vibration_p95
+        direction: high
+        medium: 2.0
+        heavy: 4.0
+        weight: 0.25
+        required_for_decision: false
+    recommendations:
+      light:
+        - title: 复核 IMU/姿态传感器标定结果
+          priority: P3
+          reason_codes: [sensor_light_calibration]
+        - title: 检查传感器安装与线束固定
+          priority: P3
+          reason_codes: [sensor_light_mount]
+      medium:
+        - title: 进行传感器健康检查并复测关键通道
+          priority: P2
+          reason_codes: [sensor_medium_health]
+        - title: 对照飞控日志排查异常漂移与噪声
+          priority: P2
+          reason_codes: [sensor_medium_noise]
+      heavy:
+        - title: 暂停任务并更换可疑传感器模块
+          priority: P1
+          reason_codes: [sensor_heavy_replace]
+        - title: 执行飞控与传感器链路联合排障
+          priority: P1
+          reason_codes: [sensor_heavy_chain]
+      fallback:
+        - title: 优先进行传感器链路人工复核
+          priority: P2
+          reason_codes: [sensor_fallback]
+  thrust_loss:
+    primary_metric:
+      key: fault_severity_p95
+      direction: high
+      light_max: 0.15
+      medium_max: 0.35
+    min_required_metrics: 2
+    metrics:
+      - key: thrust_saturation_ratio
+        direction: high
+        medium: 0.25
+        heavy: 0.45
+        weight: 0.4
+        required_for_decision: true
+      - key: vz_down_p95
+        direction: high
+        medium: 0.8
+        heavy: 1.8
+        weight: 0.4
+        required_for_decision: true
+      - key: motor_imbalance_ratio
+        direction: high
+        medium: 0.08
+        heavy: 0.15
+        weight: 0.2
+        required_for_decision: false
+    recommendations:
+      light:
+        - title: 检查推力指令与执行链路一致性
+          priority: P3
+          reason_codes: [thrust_light_check]
+        - title: 复测中等负载爬升工况
+          priority: P3
+          reason_codes: [thrust_light_retest]
+      medium:
+        - title: 排查推进系统阻滞与传动损耗
+          priority: P2
+          reason_codes: [thrust_medium_drag]
+        - title: 校验控制参数并执行短程验证
+          priority: P2
+          reason_codes: [thrust_medium_tuning]
+      heavy:
+        - title: 立即停飞并执行推进链路全面检修
+          priority: P1
+          reason_codes: [thrust_heavy_stop]
+        - title: 检查执行机构饱和与负载异常
+          priority: P1
+          reason_codes: [thrust_heavy_saturation]
+      fallback:
+        - title: 优先进行推力链路人工排障
+          priority: P2
+          reason_codes: [thrust_fallback]
