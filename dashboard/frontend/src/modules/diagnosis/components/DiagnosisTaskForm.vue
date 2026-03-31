@@ -1,13 +1,14 @@
 <template>
-  <article class="section-card">
+  <article class="section-card diagnosis-launch">
     <div class="section-card__header">
       <div>
         <div class="section-card__title">{{ diagnosisCopy.formTitle }}</div>
         <div class="section-card__desc">{{ diagnosisCopy.formDescription }}</div>
       </div>
+      <span class="diagnosis-launch__badge">{{ assets.length }} 个可用资产</span>
     </div>
     <div class="section-card__body">
-      <el-form label-position="top">
+      <el-form label-position="top" class="diagnosis-form-grid">
         <el-form-item :label="diagnosisCopy.assetLabel">
           <el-select
             v-model="selectedAssetId"
@@ -37,16 +38,16 @@
             />
           </el-select>
         </el-form-item>
-
-        <div class="diagnosis-actions">
-          <el-button type="primary" :loading="running" @click="$emit('submit')">
-            {{ diagnosisCopy.submitButton }}
-          </el-button>
-          <el-button @click="$emit('refresh')">
-            {{ diagnosisCopy.refreshButton }}
-          </el-button>
-        </div>
       </el-form>
+
+      <div class="diagnosis-actions">
+        <el-button type="primary" size="large" :loading="running" @click="$emit('submit')">
+          {{ diagnosisCopy.submitButton }}
+        </el-button>
+        <el-button plain @click="$emit('refresh')">
+          {{ diagnosisCopy.refreshButton }}
+        </el-button>
+      </div>
     </div>
   </article>
 </template>
@@ -85,9 +86,30 @@ const selectedModel = defineModel('selectedModel', {
 </script>
 
 <style scoped>
+.diagnosis-launch {
+  overflow: hidden;
+}
+
+.diagnosis-launch__badge {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.diagnosis-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .diagnosis-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  margin-top: 8px;
 }
 </style>

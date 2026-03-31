@@ -5,7 +5,8 @@ import { assetApi, diagnosisReportApi, modelApi, runApi, telemetryApi } from '@/
 import {
   diagnosisCopy,
   formatPercentage,
-  normalizeDiagnosisResult
+  normalizeDiagnosisResult,
+  resolveDiagnosisStage
 } from '@/modules/diagnosis/diagnosisView'
 
 export function useDiagnosisWorkspace() {
@@ -21,11 +22,21 @@ export function useDiagnosisWorkspace() {
   const running = ref(false)
   const reportCreating = ref(false)
   const activeSessionId = ref('')
+  const latestReportId = ref(null)
 
   let pollTimer = null
 
   const progressPercentage = computed(() => Math.round(Number(currentRun.value?.progress || 0) * 100))
   const confidenceText = computed(() => formatPercentage(resultData.value?.prediction?.confidence))
+  const stage = computed(() => resolveDiagnosisStage({
+    currentRun: currentRun.value,
+    resultData: resultData.value
+  }))
+  const selectedAssetName = computed(() => {
+    const asset = assets.value.find((item) => item.id === selectedAssetId.value)
+    return asset?.filename || diagnosisCopy.unselectedAsset
+  })
+  const selectedModelName = computed(() => selectedModel.value || diagnosisCopy.unselectedModel)
   const probabilityRows = computed(() => {
     const probabilities = resultData.value?.probs || {}
 
@@ -102,6 +113,7 @@ export function useDiagnosisWorkspace() {
 
     running.value = true
     resultData.value = null
+    latestReportId.value = null
 
     try {
       const response = await runApi.createOfflineDetection({
@@ -155,13 +167,33 @@ export function useDiagnosisWorkspace() {
 
     try {
       const response = await diagnosisReportApi.create(currentRun.value.id)
+      latestReportId.value = response.data?.id || latestReportId.value
       ElMessage.success(response.message || diagnosisCopy.reportCreated)
-      router.push('/reports')
     } catch (error) {
       ElMessage.error(`生成报告失败：${error.message || '未知错误'}`)
     } finally {
       reportCreating.value = false
     }
+  }
+
+  function openReportsCenter() {
+    const assetId = currentRun.value?.asset_id || selectedAssetId.value
+    router.push({
+      path: '/reports',
+      query: assetId ? { asset_id: String(assetId) } : {}
+    })
+  }
+
+  function openReportAssistant() {
+    if (!latestReportId.value) return
+
+    router.push({
+      path: '/ai',
+      query: {
+        scene: 'report_analysis',
+        report_id: String(latestReportId.value)
+      }
+    })
   }
 
   onMounted(async () => {
@@ -177,15 +209,21 @@ export function useDiagnosisWorkspace() {
     confidenceText,
     createReport,
     currentRun,
+    latestReportId,
     loadMeta,
     models,
+    openReportAssistant,
+    openReportsCenter,
     probabilityRows,
     progressPercentage,
     reportCreating,
     resultData,
     running,
     selectedAssetId,
+    selectedAssetName,
     selectedModel,
+    selectedModelName,
+    stage,
     startDiagnosis
   }
 }

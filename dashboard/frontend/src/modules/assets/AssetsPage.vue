@@ -10,6 +10,8 @@
       @refresh="loadAssets"
       @upload="handleUpload"
       @download="downloadAsset"
+      @open-reports-center="openReportsCenter"
+      @open-reports="openReports"
       @prepare="prepareAsset"
       @show-detail="showDetail"
       @remove="removeAsset"
@@ -37,6 +39,8 @@ const {
   handleUpload,
   loadAssets,
   loading,
+  openReports,
+  openReportsCenter,
   prepareAsset,
   preparingMap,
   removeAsset,

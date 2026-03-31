@@ -26,6 +26,10 @@
             {{ assetsCopy.uploadButton }}
           </el-button>
         </el-upload>
+
+        <el-button plain @click="$emit('open-reports-center')">
+          {{ assetsCopy.reportsCenterAction }}
+        </el-button>
       </div>
     </div>
 
@@ -53,10 +57,13 @@
           </template>
         </el-table-column>
         <el-table-column prop="created_at" label="上传时间" width="180" />
-        <el-table-column label="操作" width="300">
+        <el-table-column label="操作" width="360">
           <template #default="{ row }">
             <el-button link type="primary" @click="$emit('download', row)">
               {{ assetsCopy.downloadAction }}
+            </el-button>
+            <el-button link type="success" @click="$emit('open-reports', row)">
+              {{ assetsCopy.reportAction }}
             </el-button>
             <el-button
               v-if="row.kind === 'ulg'"
@@ -116,7 +123,16 @@ defineProps({
   }
 })
 
-defineEmits(['refresh', 'upload', 'download', 'prepare', 'show-detail', 'remove'])
+defineEmits([
+  'refresh',
+  'upload',
+  'download',
+  'open-reports-center',
+  'open-reports',
+  'prepare',
+  'show-detail',
+  'remove'
+])
 
 const selectedKind = defineModel('activeKind', {
   type: String,

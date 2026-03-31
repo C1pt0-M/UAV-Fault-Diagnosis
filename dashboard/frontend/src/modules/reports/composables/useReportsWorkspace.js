@@ -1,10 +1,11 @@
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { assetApi, diagnosisReportApi } from '@/shared/services'
 import { createDefaultReportFilters, reportsCopy } from '@/modules/reports/reportsView'
 
 export function useReportsWorkspace() {
+  const route = useRoute()
   const router = useRouter()
   const loading = ref(false)
   const reports = ref([])
@@ -39,6 +40,16 @@ export function useReportsWorkspace() {
       ElMessage.error(`加载报告失败：${error.message || '未知错误'}`)
     } finally {
       loading.value = false
+    }
+  }
+
+  function syncFiltersFromRoute() {
+    const routeAssetId = Number(route.query.asset_id || 0)
+    if (routeAssetId > 0) {
+      filters.value = {
+        ...filters.value,
+        assetId: routeAssetId
+      }
     }
   }
 
@@ -97,6 +108,7 @@ export function useReportsWorkspace() {
   onMounted(async () => {
     try {
       await loadAssets()
+      syncFiltersFromRoute()
       await loadReports()
     } catch (error) {
       ElMessage.error(`初始化报告页失败：${error.message || '未知错误'}`)
@@ -106,6 +118,7 @@ export function useReportsWorkspace() {
   return {
     assetNameMap,
     assetOptions,
+    detailTarget,
     detailJson,
     detailVisible,
     downloadReport,

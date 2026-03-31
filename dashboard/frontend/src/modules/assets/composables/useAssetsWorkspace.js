@@ -1,9 +1,11 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { assetApi, runApi } from '@/shared/services'
 import { assetsCopy } from '@/modules/assets/assetsView'
 
 export function useAssetsWorkspace() {
+  const router = useRouter()
   const activeKind = ref('all')
   const assets = ref([])
   const loading = ref(false)
@@ -119,6 +121,19 @@ export function useAssetsWorkspace() {
     }
   }
 
+  function openReportsCenter() {
+    router.push('/reports')
+  }
+
+  function openReports(row) {
+    router.push({
+      path: '/reports',
+      query: {
+        asset_id: String(row.id)
+      }
+    })
+  }
+
   function showDetail(row) {
     detailTarget.value = row
     detailVisible.value = true
@@ -169,6 +184,8 @@ export function useAssetsWorkspace() {
     handleUpload,
     loadAssets,
     loading,
+    openReports,
+    openReportsCenter,
     prepareAsset,
     preparingMap,
     removeAsset,

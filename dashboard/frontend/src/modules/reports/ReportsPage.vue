@@ -16,6 +16,7 @@
 
     <ReportDetailDialog
       v-model:visible="detailVisible"
+      :report="detailTarget"
       :detail-json="detailJson"
     />
   </div>
@@ -29,6 +30,7 @@ import { useReportsWorkspace } from '@/modules/reports/composables/useReportsWor
 const {
   assetNameMap,
   assetOptions,
+  detailTarget,
   detailJson,
   detailVisible,
   downloadReport,
