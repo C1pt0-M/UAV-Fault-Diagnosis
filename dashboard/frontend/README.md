@@ -1,48 +1,74 @@
 # Dashboard Frontend
 
-Vue3 + Vite + Element Plus 前端，当前包含：
+Vue 3 + Vite + Element Plus 前端。
+
+当前页面模块包括：
 
 - 登录
-- 首页
-- 日志管理
-- 故障检测
-- 数据分析
+- 总览
+- 实时监测
+- 诊断中心
+- 日志资产
 - 诊断报告
+- AI 助手
 
-## 开发依赖
+## 安装依赖
 
 ```powershell
 cd D:\UAV-Fault-Diagnosis\dashboard\frontend
 npm install
 ```
 
-## Windows 主环境启动
+## 启动开发环境
 
 从仓库根目录启动：
 
 ```powershell
+cd D:\UAV-Fault-Diagnosis
 powershell -ExecutionPolicy Bypass -File .\scripts\start_dashboard_frontend.ps1
 ```
 
-如果先安装依赖，建议完整命令如下：
+如果已经进入前端目录，也可以直接运行：
 
 ```powershell
 cd D:\UAV-Fault-Diagnosis\dashboard\frontend
-npm install
-cd ..\..
-powershell -ExecutionPolicy Bypass -File .\scripts\start_dashboard_frontend.ps1
-```
-
-如果你已经进入 `dashboard/frontend`，也可以直接运行：
-
-```powershell
 npm run frontend
 ```
 
-默认端口：`5173`
+默认端口：
 
-## 构建
+- `http://localhost:5173`
+
+默认会将 `/api` 和 `/health` 代理到：
+
+- `http://localhost:5000`
+
+也可以通过环境变量覆盖：
+
+- `VITE_BACKEND_TARGET`
+
+## 常用命令
 
 ```powershell
+npm run frontend
+npm run test
 npm run build
+```
+
+## 当前前端结构
+
+```text
+src/
+├─ app/
+├─ layouts/
+├─ modules/
+│  ├─ ai/
+│  ├─ assets/
+│  ├─ auth/
+│  ├─ diagnosis/
+│  ├─ monitoring/
+│  ├─ overview/
+│  └─ reports/
+├─ shared/
+└─ styles/
 ```
