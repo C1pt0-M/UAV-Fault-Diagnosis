@@ -89,7 +89,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { ElTable, ElTableColumn } from 'element-plus/es/components/table/index.mjs'
 import { ElMessage } from 'element-plus'
-import { overviewApi } from '@/utils/api'
+import { overviewApi } from '@/shared/services'
 
 const overview = ref({})
 const recentRuns = ref([])

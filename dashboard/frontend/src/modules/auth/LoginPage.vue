@@ -49,7 +49,7 @@ import { ElForm, ElFormItem } from 'element-plus/es/components/form/index.mjs'
 import ElInput from 'element-plus/es/components/input/index.mjs'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { authApi } from '@/utils/api'
+import { authApi } from '@/shared/services'
 import { checkBackend, getConnectionStatus } from '@/utils/request'
 
 const router = useRouter()
