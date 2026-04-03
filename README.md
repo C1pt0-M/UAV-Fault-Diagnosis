@@ -43,7 +43,7 @@ UAV-Fault-Diagnosis/
 
 仓库已保留当前运行所需模型，位于 `models/`：
 
-- `models/transfer3_cnnlstm_fewshot/`
+- `models/transfer3_cnnlstm_normalproto/`
   用于离线诊断主流程
 - `models/online_detector_cnn1d_rfly/`
   用于在线检测主流程
