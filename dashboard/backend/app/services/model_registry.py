@@ -7,7 +7,16 @@ from pathlib import Path
 from typing import Any
 
 
-SUPPORTED_OFFLINE_ARCHITECTURES = {"lstm", "transformer", "textcnn", "cnn_lstm"}
+SUPPORTED_OFFLINE_ARCHITECTURES = {
+    "lstm",
+    "transformer",
+    "textcnn",
+    "cnn_lstm",
+    "cnn_lstm_v2",
+    "cnn_lstm_v2_normalproto",
+    "cnn_lstm_v2_dg",
+    "bilstm_normalproto",
+}
 SUPPORTED_ONLINE_ARCHITECTURES = {"bilstm", "cnn1d", "transformer", "mstca"}
 
 
@@ -81,6 +90,7 @@ def _default_label_names(task: str, num_classes: int) -> list[str]:
 def _metrics_bundle(config: dict[str, Any], metrics: dict[str, Any]) -> dict[str, Any]:
     return {
         "macro_f1": metrics.get("macro_f1"),
+        "balanced_accuracy": metrics.get("balanced_accuracy"),
         "accuracy": metrics.get("accuracy"),
         "weighted_f1": metrics.get("weighted_f1"),
         "precision": metrics.get("precision"),
@@ -125,6 +135,14 @@ def _build_metadata(model_dir: Path) -> dict[str, Any] | None:
         except Exception:
             metrics = {}
 
+    metrics_external_path = model_dir / "metrics_external_test.json"
+    metrics_external = {}
+    if metrics_external_path.exists():
+        try:
+            metrics_external = _read_json(metrics_external_path)
+        except Exception:
+            metrics_external = {}
+
     norm_stats_path = model_dir / "norm_stats.json"
     norm_stats = None
     if norm_stats_path.exists():
@@ -166,6 +184,7 @@ def _build_metadata(model_dir: Path) -> dict[str, Any] | None:
         "num_classes": num_classes,
         "label_names": label_names,
         "metrics": _metrics_bundle(config, metrics),
+        "metrics_external": _metrics_bundle(config, metrics_external),
         "capabilities": capabilities,
         "has_norm_stats": norm_stats_path.exists(),
         "norm_stats_path": str(norm_stats_path) if norm_stats_path.exists() else None,
@@ -201,6 +220,19 @@ def list_registered_models(
         items.append(meta)
 
     items.sort(key=lambda item: (_model_score(item), item.get("updated_at", 0), item["name"]), reverse=True)
+
+    preferred_names: list[str] = []
+    if task == "online_binary" or capability in {"realtime_detection", "fault_prob_curve"}:
+        preferred_names.extend(_as_name_list(config.get("DEFAULT_ONLINE_MODEL")))
+        preferred_names.extend(_as_name_list(config.get("ONLINE_MODEL_PRIORITY")))
+    elif capability == "offline_detection" or task in {"offline_multiclass", "offline_5class"}:
+        preferred_names.extend(_as_name_list(config.get("DEFAULT_OFFLINE_MODEL")))
+
+    if preferred_names:
+        preferred_set = {name for name in preferred_names if name}
+        items.sort(
+            key=lambda item: (item["name"] not in preferred_set, ),
+        )
     return items
 
 

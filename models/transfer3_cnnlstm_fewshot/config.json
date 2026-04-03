@@ -1,13 +1,16 @@
 {
   "mode": "fewshot",
-  "model": "cnn_lstm",
+  "model": "cnn_lstm_v2",
+  "architecture": "cnn_lstm_v2",
+  "num_classes": 3,
+  "task": "offline_multiclass",
   "label_names": [
     "normal",
     "motor",
     "sensor"
   ],
-  "best_val_f1": 0.9766152179074855,
-  "epochs_trained": 75,
+  "best_val_f1": 0.9736205529039216,
+  "epochs_trained": 56,
   "split_recipe": {
     "train": [
       "train",
@@ -24,8 +27,5 @@
       "real_holdout_test"
     ]
   },
-  "in_channels": 31,
-  "num_classes": 3,
-  "architecture": "cnn_lstm",
-  "task": "offline_multiclass"
+  "in_channels": 31
 }

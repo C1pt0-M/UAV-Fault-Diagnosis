@@ -35,9 +35,6 @@
         </el-button>
       </el-form>
 
-      <div class="login-card__footer">
-        <span>默认管理员账号：admin / admin123</span>
-      </div>
     </section>
   </div>
 </template>
@@ -59,8 +56,8 @@ const checkingConnection = ref(false)
 const connectionStatus = ref(getConnectionStatus())
 
 const form = reactive({
-  username: 'admin',
-  password: 'admin123'
+  username: '',
+  password: ''
 })
 
 const rules = {
@@ -189,9 +186,4 @@ onMounted(refreshConnection)
   margin-top: 8px;
 }
 
-.login-card__footer {
-  margin-top: 18px;
-  color: var(--text-tertiary);
-  font-size: 13px;
-}
 </style>

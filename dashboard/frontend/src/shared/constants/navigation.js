@@ -29,6 +29,13 @@ export const navigationItems = [
     matchPaths: ['/diagnosis']
   },
   {
+    key: 'model-compare',
+    label: '模型对比',
+    path: '/model-compare',
+    icon: DataAnalysis,
+    matchPaths: ['/model-compare']
+  },
+  {
     key: 'workspace',
     label: '资产与报告',
     path: '/assets',
@@ -56,6 +63,10 @@ export const pageMeta = {
   '/diagnosis': {
     title: '诊断中心',
     description: '执行离线诊断任务，联动会话追溯与诊断报告生成。'
+  },
+  '/model-compare': {
+    title: '模型对比',
+    description: '对比当前重点离线模型在测试集与真实域上的关键指标。'
   },
   '/assets': {
     title: '资产中心',

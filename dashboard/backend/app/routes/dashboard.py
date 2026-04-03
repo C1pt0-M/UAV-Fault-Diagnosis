@@ -1,7 +1,7 @@
 from datetime import datetime
 import hashlib
 import uuid
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 from flask import Blueprint, current_app, jsonify, request, send_file
 from werkzeug.utils import secure_filename
@@ -17,6 +17,7 @@ from app.services.model_registry import list_registered_models, resolve_register
 from app.services.severity_recommendation import evaluate_severity_and_recommendations
 from app.services.task_manager import mark_run_progress, submit_background_run
 from app.utils.jwt_utils import token_required
+from app.utils.path_store import resolve_local_path, serialize_local_path
 
 bp = Blueprint("dashboard", __name__)
 
@@ -57,42 +58,11 @@ def _get_asset_or_404(asset_id: int):
     return asset, None
 
 
-def _resolve_runtime_compatible_path(raw_path: str | None) -> str:
-    path_value = str(raw_path or "").strip()
-    if not path_value:
-        return ""
-
-    direct_path = Path(path_value)
-    if direct_path.exists():
-        return str(direct_path)
-
-    normalized = path_value.replace("\\", "/")
-    runtime_dir = Path(current_app.config["RUNTIME_DIR"])
-
-    for marker in ("/dashboard/backend/runtime/", "/runtime/"):
-        idx = normalized.find(marker)
-        if idx < 0:
-            continue
-        suffix = normalized[idx + len(marker):].strip("/")
-        if not suffix:
-            continue
-        candidate = runtime_dir.joinpath(*PurePosixPath(suffix).parts)
-        if candidate.exists():
-            current_app.logger.warning(
-                "Resolved legacy runtime path %s -> %s",
-                path_value,
-                candidate,
-            )
-            return str(candidate)
-
-    return path_value
-
-
 def _resolved_csv_path(asset: Asset, *, strict_prepare: bool = True) -> str:
     if asset.kind == "csv":
-        return _resolve_runtime_compatible_path(asset.stored_path)
+        return resolve_local_path(asset.stored_path, current_app.config)
     meta = asset.get_meta()
-    csv_path = _resolve_runtime_compatible_path(meta.get("prepared_csv_path"))
+    csv_path = resolve_local_path(meta.get("prepared_csv_path"), current_app.config)
     if csv_path and Path(csv_path).exists():
         return csv_path
     if strict_prepare:
@@ -105,21 +75,22 @@ class SessionCsvUnavailableError(RuntimeError):
 
 
 def _get_or_create_session_asset(session, created_by: int | None):
-    csv_path = _resolve_runtime_compatible_path(session.csv_path)
+    csv_path = resolve_local_path(session.csv_path, current_app.config)
     if not csv_path:
         raise SessionCsvUnavailableError("session_csv_unavailable")
     csv_file = Path(csv_path)
     if not csv_file.exists():
         raise SessionCsvUnavailableError("session_csv_unavailable")
 
-    asset = Asset.query.filter_by(stored_path=str(csv_file)).first()
+    serialized_csv_path = serialize_local_path(csv_file, current_app.config)
+    asset = Asset.query.filter_by(stored_path=serialized_csv_path).first()
     if asset is not None:
         return asset
 
     asset = Asset(
         filename=csv_file.name,
         kind="csv",
-        stored_path=str(csv_file),
+        stored_path=serialized_csv_path,
         size_bytes=csv_file.stat().st_size,
         sha256=_sha256_file(csv_file),
         created_by=created_by,
@@ -144,7 +115,10 @@ def _prepare_ulg_worker(run_id: int, asset_id: int):
     output_dir.mkdir(parents=True, exist_ok=True)
     output_csv = output_dir / f"{Path(asset.filename).stem}_prepared.csv"
 
-    bridge_info = run_ulg_to_csv(asset.stored_path, str(output_csv))
+    bridge_info = run_ulg_to_csv(
+        resolve_local_path(asset.stored_path, current_app.config),
+        str(output_csv),
+    )
     if not output_csv.exists():
         raise RuntimeError("转换完成但未生成CSV")
     mark_run_progress(run_id, 0.85)
@@ -167,7 +141,7 @@ def _prepare_ulg_worker(run_id: int, asset_id: int):
 
     return {
         "asset_id": asset.id,
-        "output_csv": str(output_csv),
+        "output_csv": serialize_local_path(output_csv, current_app.config),
         "n_rows": n_rows,
         "columns": columns,
         "bridge": bridge_info,
@@ -382,7 +356,7 @@ def upload_asset(current_user):
     asset = Asset(
         filename=file.filename,
         kind=kind,
-        stored_path=str(stored_path),
+        stored_path=serialize_local_path(stored_path, current_app.config),
         size_bytes=stored_path.stat().st_size,
         sha256=sha256,
         created_by=getattr(current_user, "id", None),
@@ -429,7 +403,7 @@ def download_asset(current_user, asset_id: int):
     asset, error = _get_asset_or_404(asset_id)
     if error:
         return error
-    file_path = Path(_resolve_runtime_compatible_path(asset.stored_path))
+    file_path = Path(resolve_local_path(asset.stored_path, current_app.config))
     if not file_path.exists():
         return jsonify({"success": False, "message": "文件不存在"}), 404
     return send_file(file_path, as_attachment=True, download_name=asset.filename)
@@ -460,10 +434,10 @@ def delete_asset(current_user, asset_id: int):
 
     file_paths: list[Path] = []
     if asset.stored_path:
-        file_paths.append(Path(_resolve_runtime_compatible_path(asset.stored_path)))
+        file_paths.append(Path(resolve_local_path(asset.stored_path, current_app.config)))
     prepared_csv_path = asset.get_meta().get("prepared_csv_path")
     if prepared_csv_path:
-        prepared_path = Path(_resolve_runtime_compatible_path(prepared_csv_path))
+        prepared_path = Path(resolve_local_path(prepared_csv_path, current_app.config))
         if prepared_path not in file_paths:
             file_paths.append(prepared_path)
 
@@ -511,7 +485,10 @@ def prepare_asset(current_user, asset_id: int):
     if asset.kind != "ulg":
         return jsonify({"success": False, "message": "仅ULG文件需要prepare"}), 400
 
-    csv_path = asset.get_meta().get("prepared_csv_path")
+    csv_path = resolve_local_path(
+        asset.get_meta().get("prepared_csv_path"),
+        current_app.config,
+    )
     if csv_path and Path(csv_path).exists():
         return jsonify(
             {

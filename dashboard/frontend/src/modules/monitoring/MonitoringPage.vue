@@ -6,6 +6,8 @@
       v-model:selected-model="selectedModel"
       v-model:selected-replay-asset-id="selectedReplayAssetId"
       :action-loading="actionLoading"
+      :backend-options="backendOptions"
+      :blind-test-enabled="blindTestEnabled"
       :current-state="currentState"
       :online-models="onlineModels"
       :replay-assets="replayAssets"
@@ -48,6 +50,8 @@ import { useMonitoringDashboard } from '@/modules/monitoring/composables/useMoni
 const {
   actionLoading,
   alerts,
+  backendOptions,
+  blindTestEnabled,
   currentState,
   detailVisible,
   loadSessions,

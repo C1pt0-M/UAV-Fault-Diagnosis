@@ -16,6 +16,7 @@ from app import db
 from app.models.asset import Asset
 from app.models.diagnosis_report import DiagnosisReport
 from app.models.run_record import RunRecord
+from app.utils.path_store import serialize_local_path
 
 COMPATIBLE_OFFLINE_TASKS = {"offline_5class", "offline_multiclass"}
 
@@ -682,7 +683,7 @@ def create_or_get_diagnosis_report(
         model_name=model_name,
         prediction_label=prediction_label,
         confidence=confidence,
-        pdf_path=str(report_path),
+        pdf_path=serialize_local_path(report_path),
         created_by=created_by,
     )
     report.set_probs(probs)

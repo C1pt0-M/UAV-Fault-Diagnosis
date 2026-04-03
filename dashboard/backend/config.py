@@ -23,6 +23,20 @@ def _get_env(name: str, default: str | None = None) -> str | None:
     return value if value else default
 
 
+def _get_env_bool(name: str, default: bool = False) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return bool(default)
+    return value.strip().lower() in {'1', 'true', 'yes', 'on'}
+
+
+def _get_env_list(name: str, default: str | None = None) -> tuple[str, ...]:
+    raw_value = _get_env(name, default)
+    if raw_value in (None, ''):
+        return ()
+    return tuple(item.strip() for item in str(raw_value).split(',') if item.strip())
+
+
 def _resolve_path(raw_value: str | Path, *, base_dir: Path) -> Path:
     path = Path(raw_value).expanduser()
     return path if path.is_absolute() else (base_dir / path).resolve()
@@ -60,8 +74,9 @@ class Config:
 
     # Flask配置
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
-    DEBUG = os.getenv('FLASK_DEBUG', 'True') == 'True'
+    DEBUG = _get_env_bool('FLASK_DEBUG', False)
     TESTING = False
+    APP_ENV = _get_env('APP_ENV', 'development')
 
     # API配置
     API_PREFIX = os.getenv('API_PREFIX', '/api')
@@ -162,10 +177,22 @@ class Config:
     MAX_CONTENT_LENGTH = int(os.getenv('MAX_CONTENT_LENGTH', str(128 * 1024 * 1024)))
 
     # CORS配置
-    CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*')
+    CORS_ORIGINS = _get_env(
+        'CORS_ORIGINS',
+        'http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174',
+    )
+    CORS_ORIGIN_LIST = _get_env_list('CORS_ORIGINS', CORS_ORIGINS)
 
     # 任务执行配置
     TASK_MAX_WORKERS = int(os.getenv('TASK_MAX_WORKERS', '2'))
+    ALLOW_AUTO_BOOTSTRAP_ADMIN = _get_env_bool('ALLOW_AUTO_BOOTSTRAP_ADMIN', DEBUG)
+    ENABLE_SETUP_API = _get_env_bool('ENABLE_SETUP_API', DEBUG)
+    ENABLE_PUBLIC_REGISTER = _get_env_bool('ENABLE_PUBLIC_REGISTER', DEBUG)
+    ENABLE_TELEMETRY = _get_env_bool('ENABLE_TELEMETRY', True)
+    ENABLE_BLIND_TEST = _get_env_bool('ENABLE_BLIND_TEST', False)
+    TELEMETRY_ALLOWED_BACKENDS = _get_env_list('TELEMETRY_ALLOWED_BACKENDS', 'replay')
+    ENABLE_AI = _get_env_bool('ENABLE_AI', True)
+    EXPOSE_SERVER_PATHS = _get_env_bool('EXPOSE_SERVER_PATHS', DEBUG)
 
     # 桥接配置
     REPO_ROOT = str(RESOLVED_REPO_ROOT)
@@ -196,10 +223,10 @@ class Config:
     )
     OFFLINE_NORM_STATS = _resolve_optional_path(
         'OFFLINE_NORM_STATS',
-        'models/transfer3_cnnlstm_fewshot/norm_stats.json',
+        'models/transfer3_cnnlstm_normalproto/norm_stats.json',
         base_dir=_REPO_ROOT_PATH,
     )
-    DEFAULT_OFFLINE_MODEL = os.getenv('DEFAULT_OFFLINE_MODEL', 'transfer3_cnnlstm_fewshot')
+    DEFAULT_OFFLINE_MODEL = os.getenv('DEFAULT_OFFLINE_MODEL', 'transfer3_cnnlstm_normalproto')
     DEFAULT_ONLINE_MODEL = os.getenv('DEFAULT_ONLINE_MODEL', 'online_detector_cnn1d_rfly')
     ONLINE_MODEL_PRIORITY = tuple(
         item.strip()
@@ -246,12 +273,22 @@ class Config:
 class DevelopmentConfig(Config):
     """开发环境配置"""
     DEBUG = True
+    ALLOW_AUTO_BOOTSTRAP_ADMIN = True
+    ENABLE_SETUP_API = True
+    ENABLE_PUBLIC_REGISTER = True
+    ENABLE_BLIND_TEST = True
+    TELEMETRY_ALLOWED_BACKENDS = ('replay', 'px4')
 
 
 class ProductionConfig(Config):
     """生产环境配置"""
     DEBUG = False
     SQLALCHEMY_ECHO = False
+    ALLOW_AUTO_BOOTSTRAP_ADMIN = False
+    ENABLE_SETUP_API = False
+    ENABLE_PUBLIC_REGISTER = False
+    ENABLE_BLIND_TEST = False
+    TELEMETRY_ALLOWED_BACKENDS = ('replay',)
 
 
 class TestingConfig(Config):
@@ -259,6 +296,8 @@ class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     WTF_CSRF_ENABLED = False
+    SQLALCHEMY_ENGINE_OPTIONS = {}
+    SQLALCHEMY_ECHO = False
 
 
 # 配置字典

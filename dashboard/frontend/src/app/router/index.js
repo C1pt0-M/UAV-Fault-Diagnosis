@@ -40,6 +40,12 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
+        path: 'model-compare',
+        name: 'ModelCompare',
+        component: () => import('@/views/ModelCompare.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
         path: 'assets',
         name: 'Assets',
         component: () => import('@/views/Logs.vue'),

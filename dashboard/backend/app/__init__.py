@@ -52,20 +52,20 @@ def create_app(config_class=Config):
     from app.utils.error_handler import register_error_handlers
     register_error_handlers(app)
 
+    cors_origins = list(app.config.get('CORS_ORIGIN_LIST') or [])
     CORS(
         app,
         resources={
             r"/*": {
-                "origins": [
-                    "http://localhost:3000",
-                    "http://127.0.0.1:3000",
-                    "http://localhost:5173",
-                    "http://127.0.0.1:5173",
-                    "http://localhost:5174",
-                    "http://127.0.0.1:5174",
-                ],
+                "origins": cors_origins or [],
                 "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-                "allow_headers": ["Content-Type", "Authorization", "X-Request-ID", "Accept", "Origin"],
+                "allow_headers": [
+                    "Content-Type",
+                    "Authorization",
+                    "X-Request-ID",
+                    "Accept",
+                    "Origin",
+                ],
                 "expose_headers": ["Content-Length", "Content-Range"],
                 "supports_credentials": True,
                 "max_age": 3600,
@@ -73,28 +73,27 @@ def create_app(config_class=Config):
         },
     )
 
-    @app.after_request
-    def after_request(response):
-        origin = request.headers.get('Origin')
-        if origin:
-            response.headers['Access-Control-Allow-Origin'] = origin
-        response.headers['Access-Control-Allow-Credentials'] = 'true'
-        return response
-
     app.after_request(log_request)
     signal.signal(signal.SIGINT, lambda sig, frame: app.logger.info('应用关闭'))
 
     from app.routes import ai, auth, dashboard, diagnosis_reports, health, setup, users
     from app.routes import telemetry
 
-    app.register_blueprint(auth.bp, url_prefix=f'{Config.API_PREFIX}/auth')
-    app.register_blueprint(users.bp, url_prefix=f'{Config.API_PREFIX}/users')
-    app.register_blueprint(setup.bp, url_prefix=f'{Config.API_PREFIX}/setup')
-    app.register_blueprint(dashboard.bp, url_prefix=f'{Config.API_PREFIX}')
-    app.register_blueprint(diagnosis_reports.bp, url_prefix=f'{Config.API_PREFIX}/reports/diagnosis')
-    app.register_blueprint(ai.bp, url_prefix=f'{Config.API_PREFIX}/ai')
+    api_prefix = app.config['API_PREFIX']
+
+    app.register_blueprint(auth.bp, url_prefix=f'{api_prefix}/auth')
+    app.register_blueprint(users.bp, url_prefix=f'{api_prefix}/users')
+    if app.config.get('ENABLE_SETUP_API', True):
+        app.register_blueprint(setup.bp, url_prefix=f'{api_prefix}/setup')
+    app.register_blueprint(dashboard.bp, url_prefix=f'{api_prefix}')
+    app.register_blueprint(
+        diagnosis_reports.bp, url_prefix=f'{api_prefix}/reports/diagnosis'
+    )
+    if app.config.get('ENABLE_AI', True):
+        app.register_blueprint(ai.bp, url_prefix=f'{api_prefix}/ai')
     app.register_blueprint(health.bp)
-    app.register_blueprint(telemetry.bp, url_prefix=f'{Config.API_PREFIX}/telemetry')
+    if app.config.get('ENABLE_TELEMETRY', True):
+        app.register_blueprint(telemetry.bp, url_prefix=f'{api_prefix}/telemetry')
 
     @app.route('/health')
     def health_check():
@@ -106,25 +105,29 @@ def create_app(config_class=Config):
 
     @app.route('/')
     def index():
-        return jsonify({
+        payload = {
             'message': '无人机故障诊断系统后端API',
             'version': '2.0.0',
             'status': 'running',
-            'api_prefix': Config.API_PREFIX,
+            'api_prefix': api_prefix,
             'endpoints': {
                 'health': '/health',
                 'auth': '/api/auth/*',
-                'setup': '/api/setup/*',
                 'overview': '/api/overview',
                 'models': '/api/models',
                 'assets': '/api/assets',
                 'runs': '/api/runs',
                 'analysis': '/api/analysis/*',
                 'diagnosis_reports': '/api/reports/diagnosis/*',
-                'ai': '/api/ai/*',
-                'telemetry': '/api/telemetry/*',
             },
-        })
+        }
+        if app.config.get('ENABLE_SETUP_API', True):
+            payload['endpoints']['setup'] = '/api/setup/*'
+        if app.config.get('ENABLE_AI', True):
+            payload['endpoints']['ai'] = '/api/ai/*'
+        if app.config.get('ENABLE_TELEMETRY', True):
+            payload['endpoints']['telemetry'] = '/api/telemetry/*'
+        return jsonify(payload)
 
     backup_path = backup_sqlite_database(app.config)
     if backup_path is not None:
@@ -137,11 +140,14 @@ def create_app(config_class=Config):
         persistence_snapshot = audit_runtime_persistence(app.config)
         for warning in persistence_snapshot.get('warnings', []):
             app.logger.warning(warning)
-        # 初始化遥测管理器
-        from app.services.telemetry_manager import telemetry_manager
-        telemetry_manager.init_app(app)
-        from app.services.ai_assistant import ai_assistant_service
-        ai_assistant_service.init_app(app)
+        if app.config.get('ENABLE_TELEMETRY', True):
+            from app.services.telemetry_manager import telemetry_manager
+
+            telemetry_manager.init_app(app)
+        if app.config.get('ENABLE_AI', True):
+            from app.services.ai_assistant import ai_assistant_service
+
+            ai_assistant_service.init_app(app)
 
     app.logger.info('应用初始化完成')
     return app

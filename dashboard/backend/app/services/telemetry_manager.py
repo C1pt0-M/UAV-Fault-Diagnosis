@@ -32,6 +32,7 @@ from app.services.diagnosis_contract import (
 )
 from app.services.model_registry import resolve_registered_model
 from app.services.telemetry_backends import PX4ScenarioBackend, ReplayScenarioBackend
+from app.utils.path_store import resolve_local_path, serialize_local_path
 from telemetry.receiver import TelemetryReceiver
 from telemetry.replay_metrics import gt_event_metrics
 from telemetry.schema_adapter import (
@@ -130,9 +131,9 @@ class TelemetryPersistence:
                     session_type=session_type,
                     scenario_backend=backend_name,
                     schema_version=schema_version,
-                    source_path=source_path,
+                    source_path=serialize_local_path(source_path, self.manager.app.config),
                     start_time=datetime.now(),
-                    csv_path=csv_path,
+                    csv_path=serialize_local_path(csv_path, self.manager.app.config),
                     status="running",
                 )
                 session.set_meta(meta or {})
@@ -326,6 +327,8 @@ class TelemetryProcessManager:
 
     def init_app(self, app):
         self.app = app
+        self._sessions_dir = Path(app.config["RUNTIME_DIR"]) / "telemetry_sessions"
+        self._sessions_dir.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
     def _get_detection_runner_cls():
@@ -640,15 +643,20 @@ class TelemetryProcessManager:
                 from app.models.telemetry_session import TelemetrySession
 
                 session = db.session.get(TelemetrySession, session_id)
+                resolved_csv_path = (
+                    resolve_local_path(session.csv_path, self.app.config)
+                    if session is not None and session.csv_path
+                    else ''
+                )
                 if (
                     session is None
-                    or not session.csv_path
-                    or not os.path.exists(session.csv_path)
+                    or not resolved_csv_path
+                    or not os.path.exists(resolved_csv_path)
                 ):
                     return None
                 import pandas as pd
 
-                df = pd.read_csv(session.csv_path)
+                df = pd.read_csv(resolved_csv_path)
         except Exception as e:
             print(f"[telemetry_manager] 计算 replay metrics 失败: {e}")
             return None
@@ -1014,10 +1022,10 @@ class TelemetryProcessManager:
         return {
             "session_id": session_id,
             "status": "running",
-            "csv_path": csv_path,
+            "csv_path": serialize_local_path(csv_path, self.app.config),
             "planned_duration_s": sim_time,
             "scenario_backend": backend_name,
-            "replay_path": replay_path,
+            "replay_path": serialize_local_path(replay_path, self.app.config),
         }
 
     def stop_collection(self) -> dict:

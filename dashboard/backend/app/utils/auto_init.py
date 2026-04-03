@@ -1,3 +1,5 @@
+from flask import current_app
+
 from app import db
 from app.models.user import User
 from app.routes.auth import hash_password
@@ -9,6 +11,9 @@ logger = get_logger(__name__)
 def initialize_if_needed():
     """首次启动自动创建默认管理员账号。"""
     try:
+        if not current_app.config.get('ALLOW_AUTO_BOOTSTRAP_ADMIN', False):
+            logger.info('已禁用默认管理员自动创建，跳过自动初始化')
+            return False
         if User.query.count() > 0:
             logger.info('数据库已初始化，跳过默认账号创建')
             return False

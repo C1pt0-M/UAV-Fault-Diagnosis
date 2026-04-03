@@ -1,6 +1,8 @@
 from datetime import datetime
 import json
 
+from flask import current_app, has_app_context
+
 from app import db
 from app.services.diagnosis_contract import build_diagnosis_payload
 
@@ -58,7 +60,7 @@ class DiagnosisReport(db.Model):
             },
             time_range=None,
         )
-        return {
+        payload = {
             'id': self.id,
             'run_id': self.run_id,
             'asset_id': self.asset_id,
@@ -68,8 +70,10 @@ class DiagnosisReport(db.Model):
             'probs': self.get_probs(),
             'summary': summary,
             'diagnosis': diagnosis,
-            'pdf_path': self.pdf_path,
             'created_by': self.created_by,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None,
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S') if self.updated_at else None,
         }
+        if has_app_context() and current_app.config.get('EXPOSE_SERVER_PATHS', False):
+            payload['pdf_path'] = self.pdf_path
+        return payload

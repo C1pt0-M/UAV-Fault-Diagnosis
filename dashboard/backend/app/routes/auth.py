@@ -112,6 +112,14 @@ def login():
 def register():
     """用户注册"""
     try:
+        from flask import current_app
+
+        if not current_app.config.get('ENABLE_PUBLIC_REGISTER', False):
+            return jsonify({
+                'success': False,
+                'message': 'public_registration_disabled'
+            }), 403
+
         data = request.get_json()
 
         # 验证必填字段

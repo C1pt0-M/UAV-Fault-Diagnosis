@@ -11,7 +11,7 @@
         <div class="monitoring-controls__inputs">
           <el-select v-model="selectedBackend" style="width: 150px">
             <el-option
-              v-for="option in monitoringBackendOptions"
+              v-for="option in backendOptions"
               :key="option.value"
               :label="option.label"
               :value="option.value"
@@ -76,6 +76,7 @@
             启动检测
           </el-button>
           <el-button
+            v-if="blindTestEnabled"
             type="warning"
             plain
             :loading="actionLoading.startBlindTest"
@@ -111,7 +112,6 @@
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import { ElOption, ElSelect } from 'element-plus/es/components/select/index.mjs'
 import {
-  monitoringBackendOptions,
   monitoringCopy,
   monitoringDurationOptions
 } from '@/modules/monitoring/monitoringView'
@@ -128,6 +128,14 @@ defineProps({
   onlineModels: {
     type: Array,
     default: () => []
+  },
+  backendOptions: {
+    type: Array,
+    default: () => []
+  },
+  blindTestEnabled: {
+    type: Boolean,
+    default: false
   },
   replayAssets: {
     type: Array,

@@ -34,6 +34,8 @@ def add_import_paths(repo_root: Path):
 
 def create_model(model_name: str, in_channels: int, num_classes: int):
     from cnn.cnn_lstm import CNNLSTMClassifier
+    from cnn.cnn_lstm_v2 import CNNLSTMv2Classifier
+    from cnn.cnn_lstm_v2_normalproto import CNNLSTMv2NormalProtoClassifier
     from cnn.lstm import BiLSTMClassifier
     from cnn.textcnn import TextCNN1d
     from cnn.transformer import TransformerClassifier
@@ -71,6 +73,30 @@ def create_model(model_name: str, in_channels: int, num_classes: int):
             lstm_hidden=128,
             lstm_layers=2,
             num_classes=num_classes,
+            dropout=0.3,
+        )
+    if model_name == 'cnn_lstm_v2':
+        return CNNLSTMv2Classifier(
+            in_channels=in_channels,
+            num_classes=num_classes,
+            target_steps=512,
+            raw_proj_dim=32,
+            branch_channels=32,
+            cnn_out_channels=128,
+            lstm_hidden=128,
+            lstm_layers=2,
+            dropout=0.3,
+        )
+    if model_name == 'cnn_lstm_v2_normalproto':
+        return CNNLSTMv2NormalProtoClassifier(
+            in_channels=in_channels,
+            num_classes=num_classes,
+            target_steps=512,
+            raw_proj_dim=32,
+            branch_channels=32,
+            cnn_out_channels=128,
+            lstm_hidden=128,
+            lstm_layers=2,
             dropout=0.3,
         )
     raise ValueError(f'不支持的模型类型: {model_name}')

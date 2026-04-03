@@ -55,6 +55,18 @@ export function resolveMonitoringState(runStatus = {}) {
   return 'IDLE'
 }
 
+export function resolveMonitoringBackendOptions(capabilities = {}) {
+  const allowed = new Set(capabilities?.allowed_backends || [])
+  if (!allowed.size) {
+    return monitoringBackendOptions
+  }
+  return monitoringBackendOptions.filter((item) => allowed.has(item.value))
+}
+
+export function shouldShowBlindTest(capabilities = {}) {
+  return Boolean(capabilities?.blind_test_enabled)
+}
+
 export function formatLatestValue(values, formatter = (value) => value) {
   if (!Array.isArray(values) || values.length === 0) {
     return monitoringCopy.noValue

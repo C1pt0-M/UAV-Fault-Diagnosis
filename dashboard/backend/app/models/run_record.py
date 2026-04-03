@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 
 from app import db
+from app.utils.path_store import sanitize_path_payload
 
 
 class RunRecord(db.Model):
@@ -43,7 +44,11 @@ class RunRecord(db.Model):
             return None
 
     def set_result(self, data):
-        self.result_json = json.dumps(data, ensure_ascii=False) if data is not None else None
+        self.result_json = (
+            json.dumps(sanitize_path_payload(data), ensure_ascii=False)
+            if data is not None
+            else None
+        )
 
     def to_dict(self):
         return {

@@ -5,8 +5,10 @@ import { assetApi, modelApi, telemetryApi } from '@/shared/services'
 import {
   formatLatestValue,
   monitoringCopy,
+  resolveMonitoringBackendOptions,
   monitoringStateLabels,
-  resolveMonitoringState
+  resolveMonitoringState,
+  shouldShowBlindTest
 } from '@/modules/monitoring/monitoringView'
 
 const actionKeys = [
@@ -35,7 +37,7 @@ export function useMonitoringDashboard() {
   const sessionDetail = ref(null)
   const detailVisible = ref(false)
   const realtime = ref({ times: [] })
-  const selectedBackend = ref('px4')
+  const selectedBackend = ref('replay')
   const selectedDuration = ref(60)
   const selectedModel = ref('')
   const selectedReplayAssetId = ref(null)
@@ -43,6 +45,9 @@ export function useMonitoringDashboard() {
   let pollTimer = null
 
   const currentState = computed(() => resolveMonitoringState(runStatus))
+  const telemetryCapabilities = computed(() => runStatus.telemetry_capabilities || {})
+  const backendOptions = computed(() => resolveMonitoringBackendOptions(telemetryCapabilities.value))
+  const blindTestEnabled = computed(() => shouldShowBlindTest(telemetryCapabilities.value))
   const stateLabel = computed(() => monitoringStateLabels[currentState.value] || monitoringStateLabels.IDLE)
   const alerts = computed(() => runStatus.fault_events || [])
   const riskScore = computed(() => Number(runStatus.risk_score || 0).toFixed(2))
@@ -109,6 +114,10 @@ export function useMonitoringDashboard() {
   async function fetchStatus() {
     const response = await telemetryApi.status()
     Object.assign(runStatus, response.data || {})
+    const allowedValues = new Set(backendOptions.value.map((item) => item.value))
+    if (!allowedValues.has(selectedBackend.value)) {
+      selectedBackend.value = backendOptions.value[0]?.value || 'replay'
+    }
   }
 
   async function fetchRealtime() {
@@ -299,6 +308,8 @@ export function useMonitoringDashboard() {
   return {
     actionLoading,
     alerts,
+    backendOptions,
+    blindTestEnabled,
     continueDiagnosis,
     currentState,
     detailVisible,

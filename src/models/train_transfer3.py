@@ -10,7 +10,9 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score, classificat
 from torch.utils.data import ConcatDataset, DataLoader, Dataset
 
 from cnn.cnn_lstm import CNNLSTMClassifier
+from cnn.cnn_lstm_v2 import CNNLSTMv2Classifier
 from cnn.focal_loss import FocalLoss
+from cnn.lstm import BiLSTMClassifier
 from cnn.textcnn import TextCNN1d
 from cnn.transformer import TransformerClassifier
 
@@ -78,6 +80,14 @@ def build_model(model_name: str, in_channels: int, num_classes: int):
         )
     if model_name == "textcnn":
         return TextCNN1d(in_channels=in_channels, num_classes=num_classes, num_filters=128, kernel_sizes=(3, 5, 7, 11, 21), dropout=0.3)
+    if model_name == "lstm":
+        return BiLSTMClassifier(
+            in_channels=in_channels,
+            hidden_size=128,
+            num_layers=2,
+            num_classes=num_classes,
+            dropout=0.3,
+        )
     if model_name == "cnn_lstm":
         return CNNLSTMClassifier(
             in_channels=in_channels,
@@ -85,6 +95,18 @@ def build_model(model_name: str, in_channels: int, num_classes: int):
             lstm_hidden=128,
             lstm_layers=2,
             num_classes=num_classes,
+            dropout=0.3,
+        )
+    if model_name == "cnn_lstm_v2":
+        return CNNLSTMv2Classifier(
+            in_channels=in_channels,
+            num_classes=num_classes,
+            target_steps=512,
+            raw_proj_dim=32,
+            branch_channels=32,
+            cnn_out_channels=128,
+            lstm_hidden=128,
+            lstm_layers=2,
             dropout=0.3,
         )
     raise ValueError(f"Unknown model: {model_name}")
@@ -229,6 +251,9 @@ def train(args):
     config = {
         "mode": args.mode,
         "model": args.model,
+        "architecture": args.model,
+        "num_classes": len(LABEL_NAMES),
+        "task": "offline_multiclass",
         "label_names": LABEL_NAMES,
         "best_val_f1": best_val_f1,
         "epochs_trained": trained_epochs,
@@ -241,7 +266,11 @@ def train(args):
 def main():
     parser = argparse.ArgumentParser(description="transfer 3class 训练入口")
     parser.add_argument("--mode", choices=["baseline", "fewshot"], required=True)
-    parser.add_argument("--model", choices=["transformer", "textcnn", "cnn_lstm"], default="transformer")
+    parser.add_argument(
+        "--model",
+        choices=["transformer", "textcnn", "lstm", "cnn_lstm", "cnn_lstm_v2"],
+        default="transformer",
+    )
     parser.add_argument("--cache-dir", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--epochs", type=int, default=120)

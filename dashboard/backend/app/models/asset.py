@@ -1,7 +1,10 @@
 from datetime import datetime
 import json
 
+from flask import current_app, has_app_context
+
 from app import db
+from app.utils.path_store import sanitize_path_payload
 
 
 class Asset(db.Model):
@@ -28,7 +31,10 @@ class Asset(db.Model):
             return {}
 
     def set_meta(self, data: dict):
-        self.meta_json = json.dumps(data or {}, ensure_ascii=False)
+        self.meta_json = json.dumps(
+            sanitize_path_payload(data or {}),
+            ensure_ascii=False,
+        )
 
     @property
     def prepared_csv_path(self):
@@ -41,11 +47,10 @@ class Asset(db.Model):
 
     def to_dict(self):
         meta = self.get_meta()
-        return {
+        payload = {
             'id': self.id,
             'filename': self.filename,
             'kind': self.kind,
-            'stored_path': self.stored_path,
             'size_bytes': self.size_bytes,
             'sha256': self.sha256,
             'meta': meta,
@@ -53,3 +58,6 @@ class Asset(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None,
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S') if self.updated_at else None,
         }
+        if has_app_context() and current_app.config.get('EXPOSE_SERVER_PATHS', False):
+            payload['stored_path'] = self.stored_path
+        return payload
