@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+﻿import { createRouter, createWebHistory } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import Layout from '@/components/Layout.vue'
 import { parseStoredUser } from '@/shared/utils/user'
@@ -14,6 +14,12 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('@/views/Login.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('@/views/Register.vue'),
     meta: { requiresAuth: false }
   },
   {
@@ -84,12 +90,12 @@ router.beforeEach((to, from, next) => {
   const user = parseStoredUser(localStorage.getItem('user'))
 
   if (to.meta.requiresAuth && (!token || !user)) {
-    ElMessage.warning('请先登录')
+    ElMessage.warning('璇峰厛鐧诲綍')
     next('/login')
     return
   }
 
-  if (to.path === '/login' && token && user) {
+  if ((to.path === '/login' || to.path === '/register') && token && user) {
     next('/')
     return
   }
@@ -98,3 +104,4 @@ router.beforeEach((to, from, next) => {
 })
 
 export default router
+

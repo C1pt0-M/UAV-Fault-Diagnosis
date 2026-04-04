@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="login-page">
     <section class="login-card">
       <div class="login-card__hero">
@@ -35,6 +35,10 @@
         </el-button>
       </el-form>
 
+      <div class="auth-card__footer">
+        <span>还没有账号？</span>
+        <el-button link type="primary" @click="router.push('/register')">去注册</el-button>
+      </div>
     </section>
   </div>
 </template>
@@ -186,4 +190,13 @@ onMounted(refreshConnection)
   margin-top: 8px;
 }
 
+.auth-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 18px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
 </style>
