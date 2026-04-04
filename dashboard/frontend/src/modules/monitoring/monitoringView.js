@@ -36,6 +36,7 @@ export const monitoringCopy = {
   noSession: '暂无会话',
   noSelection: '未选择',
   noValue: '暂无',
+  backendNotAllowed: '当前环境未开放该后端，请使用 Replay CSV',
   replayAssetRequired: '请选择回放资产',
   startCollectionSuccess: '遥测采集已启动',
   startDetectionSuccess: '在线检测已启动',
@@ -56,11 +57,7 @@ export function resolveMonitoringState(runStatus = {}) {
 }
 
 export function resolveMonitoringBackendOptions(capabilities = {}) {
-  const allowed = new Set(capabilities?.allowed_backends || [])
-  if (!allowed.size) {
-    return monitoringBackendOptions
-  }
-  return monitoringBackendOptions.filter((item) => allowed.has(item.value))
+  return monitoringBackendOptions
 }
 
 export function shouldShowBlindTest(capabilities = {}) {

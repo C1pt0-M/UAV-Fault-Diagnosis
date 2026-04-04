@@ -161,6 +161,12 @@ export function useMonitoringDashboard() {
 
   async function startCollection() {
     await runAction('startCollection', async () => {
+      const allowedBackends = telemetryCapabilities.value?.allowed_backends || []
+      if (allowedBackends.length && !allowedBackends.includes(selectedBackend.value)) {
+        ElMessage.warning(monitoringCopy.backendNotAllowed)
+        return
+      }
+
       if (selectedBackend.value === 'replay' && !selectedReplayAssetId.value) {
         ElMessage.warning(monitoringCopy.replayAssetRequired)
         return
