@@ -4,9 +4,6 @@
       <div class="login-card__hero">
         <span class="login-card__tag">注册入口</span>
         <h1>创建新账号</h1>
-        <p>
-          使用最小信息完成注册。创建成功后会自动跳转到登录页，使用新账号进入系统。
-        </p>
       </div>
 
       <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
@@ -20,12 +17,6 @@
             show-password
             placeholder="请输入密码"
           />
-        </el-form-item>
-        <el-form-item label="姓名" prop="real_name">
-          <el-input v-model="form.real_name" placeholder="请输入姓名" />
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱" />
         </el-form-item>
         <el-button type="primary" size="large" class="login-button" :loading="submitting" @click="submit">
           创建账号
@@ -55,16 +46,12 @@ const submitting = ref(false)
 
 const form = reactive({
   username: '',
-  password: '',
-  real_name: '',
-  email: ''
+  password: ''
 })
 
 const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-  real_name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-  email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }]
+  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 }
 
 async function submit() {
@@ -77,9 +64,7 @@ async function submit() {
     try {
       await authApi.register({
         username: form.username,
-        password: form.password,
-        real_name: form.real_name,
-        email: form.email
+        password: form.password
       })
       ElMessage.success('注册成功，请使用新账号登录')
       router.push('/login')
