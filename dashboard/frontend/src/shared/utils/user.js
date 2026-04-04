@@ -1,4 +1,4 @@
-export function parseStoredUser(rawValue) {
+﻿export function parseStoredUser(rawValue) {
   if (!rawValue) return null
 
   try {
@@ -16,4 +16,9 @@ export function getDisplayName(user) {
 export function getRoleLabel(user) {
   if (user?.role === 'admin') return '管理员'
   return user?.role || '演示账号'
+}
+
+export function clearStoredSession(storage = localStorage) {
+  storage.removeItem('token')
+  storage.removeItem('user')
 }

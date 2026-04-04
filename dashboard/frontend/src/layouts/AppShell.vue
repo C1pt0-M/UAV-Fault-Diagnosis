@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="app-shell">
     <aside class="shell-sidebar">
       <div class="brand-card">
@@ -37,6 +37,9 @@
             <strong>{{ displayName }}</strong>
             <small>{{ roleLabel }}</small>
           </div>
+          <button class="shell-user__logout" type="button" @click="logout">
+            退出登录
+          </button>
         </div>
       </header>
 
@@ -50,11 +53,18 @@
 <script setup>
 import { computed } from 'vue'
 import ElIcon from 'element-plus/es/components/icon/index.mjs'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { authApi } from '@/shared/services'
 import { navigationItems, resolvePageMeta } from '@/shared/constants/navigation'
-import { getDisplayName, getRoleLabel, parseStoredUser } from '@/shared/utils/user'
+import {
+  clearStoredSession,
+  getDisplayName,
+  getRoleLabel,
+  parseStoredUser
+} from '@/shared/utils/user'
 
 const route = useRoute()
+const router = useRouter()
 
 const currentMeta = computed(() => resolvePageMeta(route.path))
 const storedUser = computed(() => parseStoredUser(localStorage.getItem('user')))
@@ -63,6 +73,17 @@ const roleLabel = computed(() => getRoleLabel(storedUser.value))
 
 function isActive(item) {
   return item.matchPaths.some((path) => route.path === path || route.path.startsWith(`${path}/`))
+}
+
+async function logout() {
+  try {
+    await authApi.logout()
+  } catch {
+    // local state cleanup is sufficient for frontend session reset
+  } finally {
+    clearStoredSession()
+    router.push('/login')
+  }
 }
 </script>
 
@@ -218,6 +239,20 @@ function isActive(item) {
 .shell-user__card small {
   margin-top: 4px;
   color: var(--text-tertiary);
+}
+
+.shell-user__logout {
+  padding: 12px 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: 18px;
+  background: #fff;
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.shell-user__logout:hover {
+  background: var(--bg-accent-soft);
 }
 
 .shell-content {
