@@ -25,6 +25,7 @@ try:
     from models.cnn.lstm import (
         OnlineBiLSTM,
         OnlineCNN1D,
+        OnlineKGMSTCA,
         OnlineMSTCA,
         OnlineTransformer,
     )
@@ -32,6 +33,7 @@ except ModuleNotFoundError:
     from cnn.lstm import (
         OnlineBiLSTM,
         OnlineCNN1D,
+        OnlineKGMSTCA,
         OnlineMSTCA,
         OnlineTransformer,
     )
@@ -54,6 +56,7 @@ _MODEL_REGISTRY = {
     "cnn1d": OnlineCNN1D,
     "transformer": OnlineTransformer,
     "mstca": OnlineMSTCA,
+    "kg_mstca": OnlineKGMSTCA,
 }
 
 

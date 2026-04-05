@@ -168,6 +168,7 @@ def build_cache(
     extra_normal_split: str = "train",
     extra_normal_limit_files: int = 0,
     max_windows_per_file: int = MAX_WINDOWS_PER_FILE,
+    manifest_path: str | None = None,
 ):
     csv_dir = Path(csv_dir)
     output_dir = Path(output_dir)
@@ -181,11 +182,28 @@ def build_cache(
     with open(splits_path) as f:
         splits = json.load(f)
 
-    manifest_path = csv_dir / 'manifest.csv'
-    if not manifest_path.exists():
-        manifest_path = csv_dir.parent / 'processed' / 'manifest.csv'
-    manifest = pd.read_csv(manifest_path)
-    fname_to_label = dict(zip(manifest['filename'], manifest['label']))
+    resolved_manifest_path = Path(manifest_path) if manifest_path else (csv_dir / 'manifest.csv')
+    if not resolved_manifest_path.exists():
+        resolved_manifest_path = csv_dir.parent / 'processed' / 'manifest.csv'
+    if not resolved_manifest_path.exists():
+        resolved_manifest_path = csv_dir.parent / 'manifest' / 'manifest_v2.csv'
+    manifest = pd.read_csv(resolved_manifest_path)
+    label_col = None
+    for candidate in ("label", "label_binary", "label_main_6class"):
+        if candidate in manifest.columns:
+            label_col = candidate
+            break
+    if label_col is None:
+        raise ValueError(
+            f"manifest 缺少标签列，期望包含 label / label_binary / label_main_6class 之一: {resolved_manifest_path}"
+        )
+    fname_to_label = dict(zip(manifest['filename'], manifest[label_col]))
+    fname_to_source = {}
+    if 'source_csv_path' in manifest.columns:
+        fname_to_source = {
+            str(row['filename']): str(row['source_csv_path'])
+            for _, row in manifest[['filename', 'source_csv_path']].dropna().iterrows()
+        }
 
     stats = {split: {'normal': 0, 'fault': 0, 'files': 0, 'source_normal_files': 0, 'source_fault_files': 0} for split in splits}
 
@@ -211,7 +229,7 @@ def build_cache(
         example = None
         for split in ("train", "val", "test"):
             for fname in splits.get(split, []):
-                p = csv_dir / fname
+                p = Path(fname_to_source.get(fname, str(csv_dir / fname)))
                 if p.exists():
                     example = p
                     break
@@ -249,7 +267,7 @@ def build_cache(
         all_x, all_y = [], []
 
         for idx, fname in enumerate(filenames):
-            csv_path = csv_dir / fname
+            csv_path = Path(fname_to_source.get(fname, str(csv_dir / fname)))
             if not csv_path.exists():
                 print(f"[WARN] 跳过: {fname}")
                 continue
@@ -377,6 +395,8 @@ if __name__ == '__main__':
     parser.add_argument('--csv-dir', default='data/processed')
     parser.add_argument('--splits', default='data/processed/splits.json')
     parser.add_argument('--output', default='data/processed/online_cache_rfly')
+    parser.add_argument('--manifest-path', default='',
+                        help='可选：显式指定 manifest 或 manifest_v2 CSV 路径')
     parser.add_argument('--window-size', type=int, default=WINDOW_SIZE)
     parser.add_argument('--stride', type=int, default=STRIDE)
     parser.add_argument('--target-hz', type=float, default=TARGET_HZ,
@@ -409,5 +429,5 @@ if __name__ == '__main__':
                 extra_normal_glob=args.extra_normal_glob,
                 extra_normal_split=args.extra_normal_split,
                 extra_normal_limit_files=args.extra_normal_limit_files,
-                max_windows_per_file=args.max_windows_per_file)
-
+                max_windows_per_file=args.max_windows_per_file,
+                manifest_path=(args.manifest_path if args.manifest_path else None))

@@ -17,7 +17,7 @@ SUPPORTED_OFFLINE_ARCHITECTURES = {
     "cnn_lstm_v2_dg",
     "bilstm_normalproto",
 }
-SUPPORTED_ONLINE_ARCHITECTURES = {"bilstm", "cnn1d", "transformer", "mstca"}
+SUPPORTED_ONLINE_ARCHITECTURES = {"bilstm", "cnn1d", "transformer", "mstca", "kg_mstca"}
 
 
 def _as_name_set(value: Any) -> set[str]:
