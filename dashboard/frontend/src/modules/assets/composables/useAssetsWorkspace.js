@@ -1,7 +1,7 @@
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { assetApi, runApi } from '@/shared/services'
+import { analysisApi, assetApi, runApi } from '@/shared/services'
 import { assetsCopy } from '@/modules/assets/assetsView'
 
 export function useAssetsWorkspace() {
@@ -15,10 +15,40 @@ export function useAssetsWorkspace() {
   const preparingMap = reactive({})
   const deletingMap = reactive({})
   const pollTimers = new Map()
+  const analysisAssetId = ref(null)
+  const analysisFields = ref([])
+  const analysisFieldOptions = ref([])
+  const analysisStartT = ref()
+  const analysisEndT = ref()
+  const analysisMaxPoints = ref(2000)
+  const analysisChartTimes = ref([])
+  const analysisChartSeries = ref([])
+  const analysisLoadingFields = ref(false)
+  const analysisLoadingSeries = ref(false)
+  const analysisErrorMessage = ref('')
+  const analysisDisplayMap = ref({})
 
   let activeUploads = 0
 
   const detailJson = computed(() => JSON.stringify(detailTarget.value || {}, null, 2))
+  const analyzableAssets = computed(() => {
+    return (assets.value || []).filter((item) => ['csv', 'ulg'].includes(String(item.kind || '').toLowerCase()))
+  })
+
+  function resetAnalysisSeries() {
+    analysisChartTimes.value = []
+    analysisChartSeries.value = []
+  }
+
+  function pickDefaultFields(options = []) {
+    const preferred = ['motor1', 'motor2', 'motor3', 'motor4', 'roll', 'pitch', 'yaw', 'pos_z']
+    const available = new Set(options.map((item) => item.value))
+    const selected = preferred.filter((field) => available.has(field))
+    if (selected.length > 0) {
+      return selected.slice(0, 4)
+    }
+    return options.slice(0, 4).map((item) => item.value)
+  }
 
   async function loadAssets() {
     loading.value = true
@@ -26,10 +56,95 @@ export function useAssetsWorkspace() {
     try {
       const response = await assetApi.list(activeKind.value)
       assets.value = response.data || []
+      if (
+        analysisAssetId.value === null ||
+        !analyzableAssets.value.some((item) => item.id === analysisAssetId.value)
+      ) {
+        analysisAssetId.value = analyzableAssets.value[0]?.id ?? null
+      }
     } catch (error) {
       ElMessage.error(`加载资产失败：${error.message || '未知错误'}`)
     } finally {
       loading.value = false
+    }
+  }
+
+  async function loadAnalysisFields() {
+    if (!analysisAssetId.value) {
+      analysisFieldOptions.value = []
+      analysisFields.value = []
+      analysisDisplayMap.value = {}
+      resetAnalysisSeries()
+      return
+    }
+    analysisLoadingFields.value = true
+    analysisErrorMessage.value = ''
+
+    try {
+      const response = await analysisApi.fields(analysisAssetId.value)
+      const groups = response.data?.field_groups || []
+      const flatOptions = groups.flatMap((group) =>
+        (group.fields || []).map((field) => ({
+          label: `${group.group} / ${field.display_name || field.field}`,
+          value: field.field,
+          displayName: field.display_name || field.field,
+          group: group.group
+        }))
+      )
+      analysisFieldOptions.value = flatOptions
+      analysisDisplayMap.value = flatOptions.reduce((mapping, item) => {
+        mapping[item.value] = item.displayName
+        return mapping
+      }, {})
+
+      const validFields = analysisFields.value.filter((field) =>
+        flatOptions.some((item) => item.value === field)
+      )
+      analysisFields.value = validFields.length > 0 ? validFields : pickDefaultFields(flatOptions)
+      analysisStartT.value = response.data?.time?.min
+      analysisEndT.value = response.data?.time?.max
+      await loadAnalysisSeries()
+    } catch (error) {
+      analysisFieldOptions.value = []
+      analysisFields.value = []
+      analysisDisplayMap.value = {}
+      resetAnalysisSeries()
+      analysisErrorMessage.value = error.message || assetsCopy.analysisLoadFieldsFailed
+    } finally {
+      analysisLoadingFields.value = false
+    }
+  }
+
+  async function loadAnalysisSeries() {
+    if (!analysisAssetId.value || analysisFields.value.length === 0) {
+      resetAnalysisSeries()
+      return
+    }
+    analysisLoadingSeries.value = true
+    analysisErrorMessage.value = ''
+
+    try {
+      const response = await analysisApi.timeseries({
+        assetId: analysisAssetId.value,
+        fields: analysisFields.value,
+        startT: analysisStartT.value,
+        endT: analysisEndT.value,
+        maxPoints: analysisMaxPoints.value
+      })
+      const payload = response.data || {}
+      analysisChartTimes.value = payload.x || []
+      analysisChartSeries.value = (payload.series || []).map((series) => ({
+        name: analysisDisplayMap.value[series.field] || series.field,
+        data: series.values || []
+      }))
+      if (analysisChartSeries.value.length === 0) {
+        analysisErrorMessage.value = assetsCopy.analysisNoSeries
+      }
+    } catch (error) {
+      resetAnalysisSeries()
+      analysisErrorMessage.value = error.message || assetsCopy.analysisLoadSeriesFailed
+    } finally {
+      analysisLoadingSeries.value = false
     }
   }
 
@@ -167,6 +282,11 @@ export function useAssetsWorkspace() {
     }
   }
 
+  watch(analysisAssetId, async (value, oldValue) => {
+    if (value === oldValue) return
+    await loadAnalysisFields()
+  })
+
   onMounted(loadAssets)
 
   onUnmounted(() => {
@@ -176,6 +296,17 @@ export function useAssetsWorkspace() {
 
   return {
     activeKind,
+    analysisAssetId,
+    analysisChartSeries,
+    analysisChartTimes,
+    analysisEndT,
+    analysisErrorMessage,
+    analysisFieldOptions,
+    analysisFields,
+    analysisLoadingFields,
+    analysisLoadingSeries,
+    analysisMaxPoints,
+    analysisStartT,
     assets,
     deletingMap,
     detailJson,
@@ -183,6 +314,8 @@ export function useAssetsWorkspace() {
     downloadAsset,
     handleUpload,
     loadAssets,
+    loadAnalysisFields,
+    loadAnalysisSeries,
     loading,
     openReports,
     openReportsCenter,

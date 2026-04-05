@@ -19,6 +19,17 @@ const actionKeys = [
   'stopCollection'
 ]
 
+const realtimeFieldOptions = [
+  { label: 'Motor 1', value: 'motor1' },
+  { label: 'Motor 2', value: 'motor2' },
+  { label: 'Motor 3', value: 'motor3' },
+  { label: 'Motor 4', value: 'motor4' },
+  { label: 'Roll', value: 'roll' },
+  { label: 'Pitch', value: 'pitch' },
+  { label: 'Yaw', value: 'yaw' },
+  { label: 'Position Z', value: 'pos_z' }
+]
+
 function createActionLoadingState() {
   return actionKeys.reduce((state, key) => {
     state[key] = false
@@ -37,6 +48,7 @@ export function useMonitoringDashboard() {
   const sessionDetail = ref(null)
   const detailVisible = ref(false)
   const realtime = ref({ times: [] })
+  const realtimeChartFields = ref(['motor1', 'motor2', 'motor3', 'motor4'])
   const selectedBackend = ref('replay')
   const selectedDuration = ref(60)
   const selectedModel = ref('')
@@ -63,6 +75,26 @@ export function useMonitoringDashboard() {
   })
   const latestPitch = computed(() => {
     return formatLatestValue(realtime.value?.pitch, (value) => `${Number(value).toFixed(2)}°`)
+  })
+  const realtimeFieldLabelMap = computed(() => {
+    return realtimeFieldOptions.reduce((mapping, item) => {
+      mapping[item.value] = item.label
+      return mapping
+    }, {})
+  })
+  const realtimeChartTimes = computed(() => {
+    return Array.isArray(realtime.value?.times) ? realtime.value.times : []
+  })
+  const realtimeChartSeries = computed(() => {
+    return realtimeChartFields.value
+      .map((field) => {
+        const values = Array.isArray(realtime.value?.[field]) ? realtime.value[field] : []
+        return {
+          name: realtimeFieldLabelMap.value[field] || field,
+          data: values
+        }
+      })
+      .filter((item) => item.data.length > 0)
   })
 
   const metrics = computed(() => [
@@ -128,7 +160,6 @@ export function useMonitoringDashboard() {
   async function loadModels() {
     const response = await modelApi.getModels({ capability: 'realtime_detection' })
     onlineModels.value = response.data || []
-
     if (!selectedModel.value && onlineModels.value.length > 0) {
       selectedModel.value = onlineModels.value[0].name
     }
@@ -154,7 +185,7 @@ export function useMonitoringDashboard() {
       try {
         await refreshDashboard()
       } catch {
-        // 轮询错误在用户主动操作时再提示，避免持续刷屏。
+        // 轮询错误延迟到用户主动操作时提示，避免持续刷屏
       }
     }, 4000)
   }
@@ -166,14 +197,12 @@ export function useMonitoringDashboard() {
         ElMessage.warning(monitoringCopy.backendNotAllowed)
         return
       }
-
       if (selectedBackend.value === 'replay' && !selectedReplayAssetId.value) {
         ElMessage.warning(monitoringCopy.replayAssetRequired)
         return
       }
 
       const replayAsset = replayAssets.value.find((item) => item.id === selectedReplayAssetId.value)
-
       try {
         await telemetryApi.startCollection({
           drone_id: 'DRONE-001',
@@ -184,7 +213,6 @@ export function useMonitoringDashboard() {
             ? replayAsset?.meta?.prepared_csv_path || replayAsset?.stored_path
             : undefined
         })
-
         ElMessage.success(monitoringCopy.startCollectionSuccess)
         await refreshDashboard()
         startPolling()
@@ -227,9 +255,7 @@ export function useMonitoringDashboard() {
         stopPolling()
         await refreshDashboard()
 
-        if (Number(response.data?.fault_events_count || 0) <= 0) {
-          return
-        }
+        if (Number(response.data?.fault_events_count || 0) <= 0) return
 
         try {
           await ElMessageBox.confirm(
@@ -241,7 +267,6 @@ export function useMonitoringDashboard() {
               cancelButtonText: '稍后处理'
             }
           )
-
           router.push({
             path: '/diagnosis',
             query: {
@@ -324,6 +349,10 @@ export function useMonitoringDashboard() {
     onlineModels,
     openSessionDetail,
     replayAssets,
+    realtimeChartFields,
+    realtimeChartSeries,
+    realtimeChartTimes,
+    realtimeFieldOptions,
     sampleSummaryItems,
     selectedBackend,
     selectedDuration,

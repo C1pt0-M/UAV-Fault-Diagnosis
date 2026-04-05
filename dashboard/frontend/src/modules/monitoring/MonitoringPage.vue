@@ -20,6 +20,13 @@
 
     <MonitoringMetrics :metrics="metrics" />
 
+    <MonitoringRealtimeChartPanel
+      v-model:selected-fields="realtimeChartFields"
+      :field-options="realtimeFieldOptions"
+      :chart-times="realtimeChartTimes"
+      :chart-series="realtimeChartSeries"
+    />
+
     <MonitoringInsightsPanel
       :alerts="alerts"
       :sample-summary-items="sampleSummaryItems"
@@ -43,6 +50,7 @@
 import MonitoringControlPanel from '@/modules/monitoring/components/MonitoringControlPanel.vue'
 import MonitoringInsightsPanel from '@/modules/monitoring/components/MonitoringInsightsPanel.vue'
 import MonitoringMetrics from '@/modules/monitoring/components/MonitoringMetrics.vue'
+import MonitoringRealtimeChartPanel from '@/modules/monitoring/components/MonitoringRealtimeChartPanel.vue'
 import MonitoringSessionDialog from '@/modules/monitoring/components/MonitoringSessionDialog.vue'
 import MonitoringSessionsPanel from '@/modules/monitoring/components/MonitoringSessionsPanel.vue'
 import { useMonitoringDashboard } from '@/modules/monitoring/composables/useMonitoringDashboard'
@@ -59,6 +67,10 @@ const {
   onlineModels,
   openSessionDetail,
   replayAssets,
+  realtimeChartFields,
+  realtimeChartSeries,
+  realtimeChartTimes,
+  realtimeFieldOptions,
   sampleSummaryItems,
   selectedBackend,
   selectedDuration,

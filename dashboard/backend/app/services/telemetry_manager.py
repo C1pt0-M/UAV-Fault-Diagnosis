@@ -970,7 +970,14 @@ class TelemetryProcessManager:
         session_id = _generate_id("TS")
         csv_path = str(self._sessions_dir / f"{session_id}.csv")
         backend_name = (backend or "px4").strip().lower()
-        backend_options = {"replay_path": replay_path}
+        replay_path_resolved = replay_path
+        if backend_name == "replay" and replay_path is not None:
+            replay_path_resolved = (
+                resolve_local_path(replay_path, self.app.config)
+                if self.app
+                else str(replay_path).strip()
+            )
+        backend_options = {"replay_path": replay_path_resolved}
         backend_cls = {"px4": PX4ScenarioBackend, "replay": ReplayScenarioBackend}.get(
             backend_name
         )
@@ -1007,7 +1014,7 @@ class TelemetryProcessManager:
             session_type,
             csv_path,
             backend_name,
-            source_path=replay_path,
+            source_path=replay_path_resolved,
             meta={"backend": backend_name},
         )
         self._write_log(drone_id, "telemetry", f"开始遥测数据采集，会话 {session_id}")
@@ -1025,7 +1032,9 @@ class TelemetryProcessManager:
             "csv_path": serialize_local_path(csv_path, self.app.config),
             "planned_duration_s": sim_time,
             "scenario_backend": backend_name,
-            "replay_path": serialize_local_path(replay_path, self.app.config),
+            "replay_path": serialize_local_path(
+                replay_path_resolved, self.app.config
+            ),
         }
 
     def stop_collection(self) -> dict:

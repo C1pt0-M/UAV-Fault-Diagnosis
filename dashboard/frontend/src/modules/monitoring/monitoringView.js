@@ -26,8 +26,12 @@ export const monitoringCopy = {
   alertsEmpty: '当前没有故障告警',
   sampleTitle: '实时样本摘要',
   sampleDescription: '读取最近一批实时数据并展示关键字段。',
+  realtimeCurveTitle: '实时字段曲线',
+  realtimeCurveDescription: '按采集时间连续展示关键飞行字段，便于观察动态波动与异常拐点。',
+  realtimeCurveFieldPlaceholder: '选择要展示的实时字段',
+  realtimeCurveEmpty: '当前会话暂无可绘制的实时曲线',
   sessionsTitle: '监测会话',
-  sessionsDescription: '跟踪采集历史，必要时直接承接到离线诊断中心。',
+  sessionsDescription: '跟踪采集历史，必要时可直接承接到离线诊断中心。',
   sessionsEmpty: '暂无监测会话',
   sessionDetailTitle: '会话详情',
   sessionDetailEmpty: '暂无会话详情',
@@ -68,6 +72,5 @@ export function formatLatestValue(values, formatter = (value) => value) {
   if (!Array.isArray(values) || values.length === 0) {
     return monitoringCopy.noValue
   }
-
   return formatter(values[values.length - 1])
 }
