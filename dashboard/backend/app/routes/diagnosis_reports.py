@@ -11,7 +11,7 @@ from app.utils.path_store import resolve_local_path
 
 bp = Blueprint('diagnosis_reports', __name__)
 
-COMPATIBLE_OFFLINE_TASKS = {'offline_5class', 'offline_multiclass'}
+OFFLINE_MULTICLASS_TASK = 'offline_multiclass'
 
 
 @bp.route('/', methods=['POST'], strict_slashes=False)
@@ -28,7 +28,7 @@ def create_diagnosis_report(current_user):
         return jsonify({'success': False, 'message': 'run_id 格式错误'}), 400
     if run is None:
         return jsonify({'success': False, 'message': '任务不存在'}), 404
-    if run.task not in COMPATIBLE_OFFLINE_TASKS:
+    if run.task != OFFLINE_MULTICLASS_TASK:
         return jsonify({'success': False, 'message': '仅支持离线分类诊断任务'}), 400
     if run.status != 'success':
         return jsonify({'success': False, 'message': '仅可为成功任务生成报告'}), 409

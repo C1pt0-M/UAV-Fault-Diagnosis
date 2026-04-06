@@ -65,7 +65,7 @@ def _infer_task(
     if num_classes == 2 or label_names == ["normal", "fault"]:
         return "online_binary"
     if num_classes == 5:
-        return "offline_5class"
+        return "offline_multiclass"
     if num_classes > 2:
         return "offline_multiclass"
     if norm_stats and norm_stats.get("columns"):
@@ -78,7 +78,7 @@ def _infer_task(
 def _default_label_names(task: str, num_classes: int) -> list[str]:
     if task == "online_binary" and num_classes == 2:
         return ["normal", "fault"]
-    if task == "offline_5class" and num_classes == 5:
+    if task == "offline_multiclass" and num_classes == 5:
         return ["normal", "battery_failure", "motor_failure", "prop_imbalance", "thrust_loss"]
     if task == "offline_multiclass" and num_classes == 3:
         return ["normal", "motor", "sensor"]
@@ -160,7 +160,7 @@ def _build_metadata(model_dir: Path) -> dict[str, Any] | None:
 
     capabilities = {
         "offline_detection": (
-            task in {"offline_5class", "offline_multiclass"}
+            task == "offline_multiclass"
             and architecture in SUPPORTED_OFFLINE_ARCHITECTURES
         ),
         "realtime_detection": (
@@ -225,7 +225,7 @@ def list_registered_models(
     if task == "online_binary" or capability in {"realtime_detection", "fault_prob_curve"}:
         preferred_names.extend(_as_name_list(config.get("DEFAULT_ONLINE_MODEL")))
         preferred_names.extend(_as_name_list(config.get("ONLINE_MODEL_PRIORITY")))
-    elif capability == "offline_detection" or task in {"offline_multiclass", "offline_5class"}:
+    elif capability == "offline_detection" or task == "offline_multiclass":
         preferred_names.extend(_as_name_list(config.get("DEFAULT_OFFLINE_MODEL")))
 
     if preferred_names:

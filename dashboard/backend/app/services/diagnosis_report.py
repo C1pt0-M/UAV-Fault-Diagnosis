@@ -18,7 +18,7 @@ from app.models.diagnosis_report import DiagnosisReport
 from app.models.run_record import RunRecord
 from app.utils.path_store import serialize_local_path
 
-COMPATIBLE_OFFLINE_TASKS = {"offline_5class", "offline_multiclass"}
+OFFLINE_MULTICLASS_TASK = "offline_multiclass"
 
 
 LEGACY_RECOMMENDATIONS = {
@@ -608,7 +608,7 @@ def create_or_get_diagnosis_report(
     if existing is not None:
         return existing, False
 
-    if run.task not in COMPATIBLE_OFFLINE_TASKS:
+    if run.task != OFFLINE_MULTICLASS_TASK:
         raise ValueError("仅支持离线分类诊断任务")
     if run.status != "success":
         raise ValueError("仅可为成功任务生成报告")

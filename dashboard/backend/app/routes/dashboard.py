@@ -27,13 +27,11 @@ ALLOWED_EXTS = {
 }
 
 OFFLINE_MULTICLASS_TASK = "offline_multiclass"
-LEGACY_OFFLINE_TASK = "offline_5class"
-COMPATIBLE_OFFLINE_TASKS = {OFFLINE_MULTICLASS_TASK, LEGACY_OFFLINE_TASK}
 FAULT_PROB_CURVE_CACHE_VERSION = "v2"
 
 
-def _is_compatible_offline_task(task: str | None) -> bool:
-    return str(task).strip() in COMPATIBLE_OFFLINE_TASKS
+def _is_offline_multiclass_task(task: str | None) -> bool:
+    return str(task).strip() == OFFLINE_MULTICLASS_TASK
 
 
 class AssetNotPreparedError(RuntimeError):
@@ -264,7 +262,7 @@ def get_overview(current_user):
 
     successful_runs = RunRecord.query.filter(
         RunRecord.status == "success",
-        RunRecord.task.in_(tuple(COMPATIBLE_OFFLINE_TASKS)),
+        RunRecord.task == OFFLINE_MULTICLASS_TASK,
     ).all()
     for run in successful_runs:
         result = run.get_result()
@@ -529,7 +527,7 @@ def prepare_asset(current_user, asset_id: int):
 def create_run(current_user):
     payload = request.get_json() or {}
     task = str(payload.get("task") or OFFLINE_MULTICLASS_TASK).strip()
-    if not _is_compatible_offline_task(task):
+    if not _is_offline_multiclass_task(task):
         return jsonify({"success": False, "message": f"不支持的任务类型: {task}"}), 400
 
     asset_id = payload.get("asset_id")
@@ -620,8 +618,8 @@ def list_runs(current_user):
 
     if task:
         task = str(task).strip()
-        if _is_compatible_offline_task(task):
-            query = query.filter(RunRecord.task.in_(tuple(COMPATIBLE_OFFLINE_TASKS)))
+        if _is_offline_multiclass_task(task):
+            query = query.filter_by(task=OFFLINE_MULTICLASS_TASK)
         else:
             query = query.filter_by(task=task)
     if status:

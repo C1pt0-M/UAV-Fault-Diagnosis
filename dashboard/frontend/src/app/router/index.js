@@ -7,19 +7,19 @@ const routes = [
   {
     path: '/setup',
     name: 'Setup',
-    component: () => import('@/views/Setup.vue'),
+    component: () => import('@/modules/setup/SetupPage.vue'),
     meta: { requiresAuth: false }
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/Login.vue'),
+    component: () => import('@/modules/auth/LoginPage.vue'),
     meta: { requiresAuth: false }
   },
   {
     path: '/register',
     name: 'Register',
-    component: () => import('@/views/Register.vue'),
+    component: () => import('@/modules/auth/RegisterPage.vue'),
     meta: { requiresAuth: false }
   },
   {
@@ -30,53 +30,47 @@ const routes = [
       {
         path: '',
         name: 'Overview',
-        component: () => import('@/views/Home.vue'),
+        component: () => import('@/modules/overview/OverviewPage.vue'),
         meta: { requiresAuth: true }
       },
       {
         path: 'monitoring',
         name: 'Monitoring',
-        component: () => import('@/views/Telemetry.vue'),
+        component: () => import('@/modules/monitoring/MonitoringPage.vue'),
         meta: { requiresAuth: true }
       },
       {
         path: 'diagnosis',
         name: 'Diagnosis',
-        component: () => import('@/views/FaultDetection.vue'),
+        component: () => import('@/modules/diagnosis/DiagnosisPage.vue'),
         meta: { requiresAuth: true }
       },
       {
         path: 'model-compare',
         name: 'ModelCompare',
-        component: () => import('@/views/ModelCompare.vue'),
+        component: () => import('@/modules/competition/ModelComparePage.vue'),
         meta: { requiresAuth: true }
       },
       {
         path: 'assets',
         name: 'Assets',
-        component: () => import('@/views/Logs.vue'),
+        component: () => import('@/modules/assets/AssetsPage.vue'),
         meta: { requiresAuth: true }
       },
       {
         path: 'reports',
         name: 'Reports',
-        component: () => import('@/views/DiagnosisReports.vue'),
+        component: () => import('@/modules/reports/ReportsPage.vue'),
         meta: { requiresAuth: true }
       },
       {
         path: 'ai',
         name: 'AIAssistant',
-        component: () => import('@/views/AIAssistant.vue'),
+        component: () => import('@/modules/ai/AIAssistantPage.vue'),
         meta: { requiresAuth: true }
       }
     ]
   },
-  { path: '/telemetry', redirect: '/monitoring' },
-  { path: '/fault-detection', redirect: '/diagnosis' },
-  { path: '/logs', redirect: '/assets' },
-  { path: '/diagnosis-reports', redirect: '/reports' },
-  { path: '/ai-assistant', redirect: '/ai' },
-  { path: '/data-analysis', redirect: '/diagnosis' },
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 
