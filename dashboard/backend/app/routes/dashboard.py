@@ -728,6 +728,7 @@ def get_fault_prob_curve(current_user):
     import subprocess
 
     asset_id = request.args.get("asset_id", type=int)
+    requested_model = request.args.get("model", default="", type=str).strip()
     if not asset_id:
         return jsonify({"success": False, "message": "asset_id 为必填"}), 400
     asset = db.session.get(Asset, asset_id)
@@ -747,6 +748,7 @@ def get_fault_prob_curve(current_user):
 
     model_meta = resolve_registered_model(
         current_app.config,
+        requested_name=requested_model or None,
         task="online_binary",
         capability="fault_prob_curve",
     )

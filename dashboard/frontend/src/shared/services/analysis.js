@@ -15,9 +15,12 @@ export const analysisApi = {
       }
     })
   },
-  faultProbCurve(assetId) {
+  faultProbCurve(assetId, modelName) {
     return request.get('/analysis/fault_prob_curve', {
-      params: { asset_id: assetId }
+      params: {
+        asset_id: assetId,
+        model: modelName
+      }
     })
   }
 }
