@@ -66,6 +66,7 @@ DISPLAY_NAME_OVERRIDES = {
     "rpm4": "Motor RPM 4",
     "fault_state": "Fault State",
     "true_fault_state": "Ground Truth Fault State",
+    "flight_phase": "故障发生阶段",
 }
 REQUEST_ALIAS_MAP = {
     alias: field
@@ -266,6 +267,28 @@ def build_fields_response(csv_path: str) -> dict:
     ]
     field_groups.sort(key=lambda item: item['group'])
 
+    annotation_fields = []
+    for column in ('flight_phase', 'fault_state', 'true_fault_state'):
+        if column not in source_df.columns:
+            continue
+        series = source_df[column].dropna()
+        if series.empty:
+            continue
+        values = []
+        for value in series.astype(str).tolist():
+            text = value.strip()
+            if text and text not in values:
+                values.append(text)
+            if len(values) >= 8:
+                break
+        annotation_fields.append({
+            'field': column,
+            'display_name': DISPLAY_NAME_OVERRIDES.get(column, column),
+            'group': '故障发生阶段',
+            'sample_values': values,
+            'available': True,
+        })
+
     time_info = {'key': time_key, 'available': time_key in df.columns}
     
     n_rows_total = sum(1 for _ in open(csv_path, 'r', encoding='utf-8')) - 1
@@ -292,6 +315,7 @@ def build_fields_response(csv_path: str) -> dict:
 
     return {
         'field_groups': field_groups,
+        'annotations': annotation_fields,
         'time': time_info,
         'sample_rows': max(n_rows_total, len(df)),
         'numeric_only': True,

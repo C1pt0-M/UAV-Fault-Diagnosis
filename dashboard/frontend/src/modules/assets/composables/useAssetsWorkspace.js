@@ -18,6 +18,7 @@ export function useAssetsWorkspace() {
   const analysisAssetId = ref(null)
   const analysisFields = ref([])
   const analysisFieldOptions = ref([])
+  const analysisAnnotations = ref([])
   const analysisStartT = ref()
   const analysisEndT = ref()
   const analysisMaxPoints = ref(2000)
@@ -74,6 +75,7 @@ export function useAssetsWorkspace() {
       analysisFieldOptions.value = []
       analysisFields.value = []
       analysisDisplayMap.value = {}
+      analysisAnnotations.value = []
       resetAnalysisSeries()
       return
     }
@@ -83,6 +85,7 @@ export function useAssetsWorkspace() {
     try {
       const response = await analysisApi.fields(analysisAssetId.value)
       const groups = response.data?.field_groups || []
+      analysisAnnotations.value = response.data?.annotations || []
       const flatOptions = groups.flatMap((group) =>
         (group.fields || []).map((field) => ({
           label: `${group.group} / ${field.display_name || field.field}`,
@@ -108,6 +111,7 @@ export function useAssetsWorkspace() {
       analysisFieldOptions.value = []
       analysisFields.value = []
       analysisDisplayMap.value = {}
+      analysisAnnotations.value = []
       resetAnalysisSeries()
       analysisErrorMessage.value = error.message || assetsCopy.analysisLoadFieldsFailed
     } finally {
@@ -303,6 +307,7 @@ export function useAssetsWorkspace() {
     analysisErrorMessage,
     analysisFieldOptions,
     analysisFields,
+    analysisAnnotations,
     analysisLoadingFields,
     analysisLoadingSeries,
     analysisMaxPoints,

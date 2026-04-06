@@ -8,6 +8,16 @@
     </div>
 
     <div class="section-card__body">
+      <div v-if="annotationItems.length" class="analysis-annotations">
+        <div class="analysis-annotations__label">故障发生阶段</div>
+        <div class="analysis-annotations__list">
+          <span v-for="item in annotationItems" :key="item.field" class="analysis-annotations__item">
+            <strong>{{ item.displayName }}</strong>
+            <small v-if="item.sample_values?.length">{{ item.sample_values.join(' / ') }}</small>
+          </span>
+        </div>
+      </div>
+
       <div class="analysis-controls">
         <el-select
           v-model="assetIdModel"
@@ -99,6 +109,10 @@ defineProps({
   errorMessage: {
     type: String,
     default: ''
+  },
+  annotationItems: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -138,5 +152,47 @@ const maxPointsModel = defineModel('analysisMaxPoints', {
 .analysis-error {
   margin: 0 0 12px;
   color: var(--danger);
+}
+
+.analysis-annotations {
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(16, 50, 64, 0.08);
+  background: #f7fbfc;
+}
+
+.analysis-annotations__label {
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  letter-spacing: 0.08em;
+}
+
+.analysis-annotations__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.analysis-annotations__item {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: white;
+  border: 1px solid rgba(16, 50, 64, 0.08);
+}
+
+.analysis-annotations__item strong {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.analysis-annotations__item small {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 </style>

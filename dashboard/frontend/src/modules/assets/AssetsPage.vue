@@ -24,6 +24,7 @@
       v-model:analysis-end-t="analysisEndT"
       v-model:analysis-max-points="analysisMaxPoints"
       :assets="assets"
+      :annotation-items="analysisAnnotations"
       :field-options="analysisFieldOptions"
       :chart-times="analysisChartTimes"
       :chart-series="analysisChartSeries"
@@ -54,6 +55,7 @@ const {
   analysisChartTimes,
   analysisEndT,
   analysisErrorMessage,
+  analysisAnnotations,
   analysisFieldOptions,
   analysisFields,
   analysisLoadingFields,
