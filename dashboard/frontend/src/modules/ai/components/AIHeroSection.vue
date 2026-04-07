@@ -1,7 +1,7 @@
 <template>
   <section class="section-card ai-hero">
     <div class="ai-hero__main">
-      <div>
+      <div class="ai-hero__content">
         <span class="ai-hero__tag">{{ aiCopy.heroTag }}</span>
         <h2>{{ aiCopy.heroTitle }}</h2>
         <p class="page-description">{{ aiCopy.heroDescription }}</p>
@@ -41,6 +41,11 @@ import { aiCopy } from '@/modules/ai/aiView'
   grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.95fr);
   gap: 18px;
   align-items: stretch;
+  padding: 26px 28px 24px;
+}
+
+.ai-hero__content {
+  padding: 10px 0 0 8px;
 }
 
 .ai-hero__tag {
@@ -100,6 +105,11 @@ import { aiCopy } from '@/modules/ai/aiView'
 @media (max-width: 1480px) {
   .ai-hero__main {
     grid-template-columns: 1fr;
+    padding: 24px 24px 22px;
+  }
+
+  .ai-hero__content {
+    padding-left: 4px;
   }
 }
 </style>
