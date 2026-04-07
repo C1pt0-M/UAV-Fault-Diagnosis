@@ -4,8 +4,8 @@
       <div class="brand-card">
         <div class="brand-mark">U</div>
         <div>
-          <div class="brand-title">故障诊断系统</div>
-          <div class="brand-subtitle">无人机数据驱动监测与诊断工作台</div>
+          <div class="brand-title">智诊天眸</div>
+          <div class="brand-subtitle">基于数据驱动的无人机故障检测系统</div>
         </div>
       </div>
 
@@ -90,36 +90,37 @@ async function logout() {
 <style scoped>
 .app-shell {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 24px;
   min-height: 100vh;
-  padding: 18px;
+  padding: 24px;
 }
 
 .shell-sidebar,
 .shell-header,
 .shell-content {
-  border: 1px solid var(--line-soft);
+  border: 1px solid rgba(0,0,0,0.04);
   border-radius: var(--radius-xl);
   background: var(--bg-panel);
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
 }
 
 .shell-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 20px 18px;
+  gap: 24px;
+  padding: 24px 20px;
 }
 
 .brand-card {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px;
+  gap: 16px;
+  padding: 20px;
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, #11323f 0%, #0f766e 100%);
   color: #f4fbfb;
+  box-shadow: 0 8px 24px rgba(15, 118, 110, 0.12);
 }
 
 .brand-mark {
@@ -127,8 +128,8 @@ async function logout() {
   place-items: center;
   width: 48px;
   height: 48px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.15);
   font-size: 24px;
   font-weight: 800;
 }
@@ -136,87 +137,94 @@ async function logout() {
 .brand-title {
   font-size: 18px;
   font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 .brand-subtitle {
-  margin-top: 4px;
+  margin-top: 6px;
   font-size: 12px;
-  line-height: 1.6;
-  color: rgba(244, 251, 251, 0.82);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .shell-nav {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 16px;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 12px;
   color: var(--text-secondary);
+  font-weight: 500;
   text-decoration: none;
-  transition: 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .nav-item:hover {
   color: var(--text-primary);
-  background: var(--bg-accent-soft);
+  background: rgba(16, 50, 64, 0.04);
 }
 
 .nav-item.is-active {
-  color: #effafa;
-  background: linear-gradient(135deg, #0b4f59 0%, #0f766e 100%);
+  color: #ffffff;
+  background: linear-gradient(135deg, #103240 0%, #0f766e 100%);
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);
 }
 
 .shell-main {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 24px;
 }
 
 .shell-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding: 22px 24px;
+  gap: 24px;
+  padding: 32px 36px;
 }
 
 .shell-caption {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.18em;
   color: var(--text-tertiary);
+  text-transform: uppercase;
 }
 
 .shell-title {
-  margin: 10px 0 0;
-  font-size: 34px;
-  line-height: 1.1;
+  margin: 12px 0 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .shell-description {
-  margin: 10px 0 0;
-  max-width: 720px;
-  font-size: 14px;
-  line-height: 1.8;
+  margin: 12px 0 0;
+  max-width: 600px;
+  font-size: 15px;
+  line-height: 1.6;
   color: var(--text-secondary);
 }
 
 .shell-user {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .shell-user__status {
-  padding: 10px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
-  background: #e8f5ef;
+  background: rgba(22, 121, 76, 0.1);
   color: var(--success);
   font-size: 13px;
   font-weight: 600;
@@ -225,38 +233,44 @@ async function logout() {
 .shell-user__card {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding: 12px 14px;
-  border-radius: 18px;
-  background: #f7fafb;
-  border: 1px solid var(--line-soft);
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: #f8f9fa;
+  border: 1px solid rgba(0,0,0,0.04);
 }
 
 .shell-user__card strong {
   font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .shell-user__card small {
-  margin-top: 4px;
+  margin-top: 2px;
+  font-size: 12px;
   color: var(--text-tertiary);
 }
 
 .shell-user__logout {
-  padding: 12px 16px;
-  border: 1px solid var(--line-soft);
-  border-radius: 18px;
-  background: #fff;
+  padding: 12px 20px;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  background: #ffffff;
   color: var(--text-primary);
-  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 .shell-user__logout:hover {
-  background: var(--bg-accent-soft);
+  background: #f1f3f5;
 }
 
 .shell-content {
-  padding: 24px;
+  padding: 36px;
+  flex: 1;
 }
 
 @media (max-width: 1280px) {

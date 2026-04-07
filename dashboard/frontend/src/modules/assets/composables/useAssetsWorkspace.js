@@ -8,6 +8,8 @@ export function useAssetsWorkspace() {
   const router = useRouter()
   const activeKind = ref('all')
   const assets = ref([])
+  const currentPage = ref(1)
+  const pageSize = 10
   const loading = ref(false)
   const uploading = ref(false)
   const detailVisible = ref(false)
@@ -22,6 +24,7 @@ export function useAssetsWorkspace() {
   const analysisStartT = ref()
   const analysisEndT = ref()
   const analysisMaxPoints = ref(2000)
+  const analysisFaultProbCurve = ref([])
   const analysisChartTimes = ref([])
   const analysisChartSeries = ref([])
   const analysisLoadingFields = ref(false)
@@ -32,13 +35,72 @@ export function useAssetsWorkspace() {
   let activeUploads = 0
 
   const detailJson = computed(() => JSON.stringify(detailTarget.value || {}, null, 2))
+  const sortedAssets = computed(() => {
+    return [...(assets.value || [])].sort((left, right) => {
+      const leftTime = Date.parse(left?.created_at || '') || 0
+      const rightTime = Date.parse(right?.created_at || '') || 0
+      if (leftTime !== rightTime) {
+        return leftTime - rightTime
+      }
+      return Number(left?.id || 0) - Number(right?.id || 0)
+    })
+  })
+  const totalAssets = computed(() => (assets.value || []).length)
+  const paginatedAssets = computed(() => {
+    const start = (currentPage.value - 1) * pageSize
+    return sortedAssets.value.slice(start, start + pageSize)
+  })
   const analyzableAssets = computed(() => {
-    return (assets.value || []).filter((item) => ['csv', 'ulg'].includes(String(item.kind || '').toLowerCase()))
+    return sortedAssets.value.filter((item) => ['csv', 'ulg'].includes(String(item.kind || '').toLowerCase()))
+  })
+  const analysisChartFaultProb = computed(() => {
+    return alignFaultProbCurve(analysisChartTimes.value, analysisFaultProbCurve.value)
   })
 
   function resetAnalysisSeries() {
     analysisChartTimes.value = []
     analysisChartSeries.value = []
+  }
+
+  function resetAnalysisFaultProbCurve() {
+    analysisFaultProbCurve.value = []
+  }
+
+  function alignFaultProbCurve(times, curve) {
+    const timeValues = Array.isArray(times) ? times.map((value) => Number(value)) : []
+    const points = (Array.isArray(curve) ? curve : [])
+      .map((item) => ({
+        time: Number(item?.time_s),
+        value: Number(item?.fault_prob)
+      }))
+      .filter((item) => Number.isFinite(item.time) && Number.isFinite(item.value))
+      .sort((left, right) => left.time - right.time)
+
+    if (!timeValues.length || points.length === 0) {
+      return []
+    }
+
+    let cursor = 0
+    return timeValues.map((time) => {
+      if (!Number.isFinite(time)) {
+        return null
+      }
+      while (cursor < points.length - 2 && points[cursor + 1].time < time) {
+        cursor += 1
+      }
+
+      const left = points[cursor]
+      const right = points[Math.min(cursor + 1, points.length - 1)]
+      if (!right || right.time === left.time || time <= left.time) {
+        return left.value
+      }
+      if (time >= right.time) {
+        return right.value
+      }
+
+      const ratio = (time - left.time) / (right.time - left.time)
+      return left.value + (right.value - left.value) * ratio
+    }).map((value) => (Number.isFinite(value) ? value : null))
   }
 
   function pickDefaultFields(options = []) {
@@ -57,6 +119,7 @@ export function useAssetsWorkspace() {
     try {
       const response = await assetApi.list(activeKind.value)
       assets.value = response.data || []
+      currentPage.value = 1
       if (
         analysisAssetId.value === null ||
         !analyzableAssets.value.some((item) => item.id === analysisAssetId.value)
@@ -70,12 +133,27 @@ export function useAssetsWorkspace() {
     }
   }
 
+  async function loadAnalysisFaultProbCurve() {
+    if (!analysisAssetId.value) {
+      resetAnalysisFaultProbCurve()
+      return
+    }
+
+    try {
+      const response = await analysisApi.faultProbCurve(analysisAssetId.value)
+      analysisFaultProbCurve.value = Array.isArray(response.data) ? response.data : []
+    } catch {
+      resetAnalysisFaultProbCurve()
+    }
+  }
+
   async function loadAnalysisFields() {
     if (!analysisAssetId.value) {
       analysisFieldOptions.value = []
       analysisFields.value = []
       analysisDisplayMap.value = {}
       analysisAnnotations.value = []
+      resetAnalysisFaultProbCurve()
       resetAnalysisSeries()
       return
     }
@@ -106,12 +184,14 @@ export function useAssetsWorkspace() {
       analysisFields.value = validFields.length > 0 ? validFields : pickDefaultFields(flatOptions)
       analysisStartT.value = response.data?.time?.min
       analysisEndT.value = response.data?.time?.max
+      await loadAnalysisFaultProbCurve()
       await loadAnalysisSeries()
     } catch (error) {
       analysisFieldOptions.value = []
       analysisFields.value = []
       analysisDisplayMap.value = {}
       analysisAnnotations.value = []
+      resetAnalysisFaultProbCurve()
       resetAnalysisSeries()
       analysisErrorMessage.value = error.message || assetsCopy.analysisLoadFieldsFailed
     } finally {
@@ -286,6 +366,14 @@ export function useAssetsWorkspace() {
     }
   }
 
+  function setCurrentPage(page) {
+    currentPage.value = Math.max(1, Number(page) || 1)
+  }
+
+  watch(activeKind, () => {
+    currentPage.value = 1
+  })
+
   watch(analysisAssetId, async (value, oldValue) => {
     if (value === oldValue) return
     await loadAnalysisFields()
@@ -301,6 +389,7 @@ export function useAssetsWorkspace() {
   return {
     activeKind,
     analysisAssetId,
+    analysisChartFaultProb,
     analysisChartSeries,
     analysisChartTimes,
     analysisEndT,
@@ -313,6 +402,7 @@ export function useAssetsWorkspace() {
     analysisMaxPoints,
     analysisStartT,
     assets,
+    currentPage,
     deletingMap,
     detailJson,
     detailVisible,
@@ -324,10 +414,14 @@ export function useAssetsWorkspace() {
     loading,
     openReports,
     openReportsCenter,
+    paginatedAssets,
+    pageSize,
     prepareAsset,
     preparingMap,
     removeAsset,
+    setCurrentPage,
     showDetail,
+    totalAssets,
     uploading
   }
 }

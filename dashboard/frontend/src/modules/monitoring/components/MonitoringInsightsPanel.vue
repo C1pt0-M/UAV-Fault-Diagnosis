@@ -1,5 +1,5 @@
 <template>
-  <section class="two-column">
+  <section class="two-column monitoring-insights">
     <article class="section-card">
       <div class="section-card__header">
         <div>
@@ -25,7 +25,7 @@
             <template #default>
               <div class="alert-item__content">
                 <span>时间窗口：{{ item.start_time || '-' }} ~ {{ item.end_time || '-' }}</span>
-                <span>严重度：{{ item.diagnosis?.severity || item.severity || monitoringCopy.pendingSeverity }}</span>
+                <span>严重程度：{{ item.diagnosis?.severity || item.severity || monitoringCopy.pendingSeverity }}</span>
               </div>
             </template>
           </el-alert>
@@ -62,14 +62,8 @@ import ElEmpty from 'element-plus/es/components/empty/index.mjs'
 import { monitoringCopy } from '@/modules/monitoring/monitoringView'
 
 defineProps({
-  alerts: {
-    type: Array,
-    default: () => []
-  },
-  sampleSummaryItems: {
-    type: Array,
-    default: () => []
-  }
+  alerts: { type: Array, default: () => [] },
+  sampleSummaryItems: { type: Array, default: () => [] }
 })
 </script>
 

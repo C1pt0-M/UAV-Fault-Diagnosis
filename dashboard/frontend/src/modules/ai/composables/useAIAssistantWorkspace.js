@@ -50,6 +50,18 @@ export function useAIAssistantWorkspace() {
     }
   })
 
+  function resetConversationState({ resetBindings = true } = {}) {
+    currentConversationId.value = null
+    currentConversation.value = null
+    messages.value = []
+    composer.value = ''
+
+    if (resetBindings) {
+      scene.value = 'general'
+      reportIdInput.value = ''
+    }
+  }
+
   async function loadConversations() {
     loadingConversations.value = true
     try {
@@ -89,10 +101,7 @@ export function useAIAssistantWorkspace() {
   }
 
   function startFreshConversation() {
-    currentConversationId.value = null
-    currentConversation.value = null
-    messages.value = []
-    composer.value = ''
+    resetConversationState({ resetBindings: true })
   }
 
   function applyRouteQuery({ resetConversation = false } = {}) {
@@ -100,11 +109,14 @@ export function useAIAssistantWorkspace() {
     const routeReportId = String(route.query.report_id || '').trim()
 
     if (!routeScene && !routeReportId) {
+      if (resetConversation) {
+        resetConversationState({ resetBindings: true })
+      }
       return
     }
 
     if (resetConversation) {
-      startFreshConversation()
+      resetConversationState({ resetBindings: true })
     }
 
     if (routeScene && aiCopy.sceneLabels[routeScene]) {

@@ -2,6 +2,7 @@ import {
   ChatDotRound,
   DataAnalysis,
   Document,
+  Files,
   House,
   Odometer
 } from '@element-plus/icons-vue'
@@ -36,11 +37,18 @@ export const navigationItems = [
     matchPaths: ['/model-compare']
   },
   {
-    key: 'workspace',
-    label: '资产与报告',
+    key: 'assets',
+    label: '资产中心',
     path: '/assets',
+    icon: Files,
+    matchPaths: ['/assets']
+  },
+  {
+    key: 'reports',
+    label: '诊断报告',
+    path: '/reports',
     icon: Document,
-    matchPaths: ['/assets', '/reports']
+    matchPaths: ['/reports']
   },
   {
     key: 'ai',
@@ -54,7 +62,7 @@ export const navigationItems = [
 export const pageMeta = {
   '/': {
     title: '总览',
-    description: '查看系统总体状态、离线诊断统计、最近任务与风险分布。'
+    description: '查看系统整体状态、离线诊断统计、最近任务与风险分布。'
   },
   '/monitoring': {
     title: '实时监测',
@@ -74,7 +82,7 @@ export const pageMeta = {
   },
   '/reports': {
     title: '诊断报告',
-    description: '查看、筛选与下载离线诊断报告，连接报告与资产上下文。'
+    description: '查看、筛选与下载离线诊断报告，串联报告与资产上下文。'
   },
   '/ai': {
     title: 'AI 助手',

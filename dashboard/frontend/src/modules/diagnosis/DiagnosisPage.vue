@@ -78,5 +78,12 @@ const {
 <style scoped>
 .diagnosis-command-grid {
   align-items: start;
+  grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+}
+
+@media (max-width: 1480px) {
+  .diagnosis-command-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

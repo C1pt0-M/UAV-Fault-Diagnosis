@@ -16,11 +16,14 @@ export const analysisApi = {
     })
   },
   faultProbCurve(assetId, modelName) {
+    const params = {
+      asset_id: assetId
+    }
+    if (modelName) {
+      params.model = modelName
+    }
     return request.get('/analysis/fault_prob_curve', {
-      params: {
-        asset_id: assetId,
-        model: modelName
-      }
+      params
     })
   }
 }

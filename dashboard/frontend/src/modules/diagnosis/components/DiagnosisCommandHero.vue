@@ -8,7 +8,7 @@
     </div>
 
     <div class="diagnosis-hero__summary">
-      <div class="diagnosis-summary-card">
+      <div class="diagnosis-summary-card diagnosis-summary-card--accent">
         <span>{{ diagnosisCopy.stageLabel }}</span>
         <strong>{{ stage.label }}</strong>
         <small>{{ stage.description }}</small>
@@ -57,46 +57,46 @@ defineProps({
 <style scoped>
 .diagnosis-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.95fr);
-  gap: 18px;
-  padding: 24px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.95fr);
+  gap: 20px;
+  padding: 28px;
   border-radius: 28px;
   background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.14), transparent 30%),
-    linear-gradient(135deg, #081f2f 0%, #0f4b57 52%, #0f766e 100%);
+    radial-gradient(circle at right top, rgba(255, 255, 255, 0.18), transparent 30%),
+    linear-gradient(140deg, #081f2f 0%, #0d4656 56%, #0f766e 100%);
   color: #f4fbfb;
-  box-shadow: 0 24px 60px rgba(8, 31, 47, 0.24);
+  box-shadow: 0 24px 60px rgba(8, 31, 47, 0.22);
 }
 
 .diagnosis-hero__eyebrow {
   display: inline-flex;
-  padding: 6px 10px;
+  padding: 7px 12px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.14);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.04em;
 }
 
 .diagnosis-hero__main h1 {
-  margin: 16px 0 0;
-  font-size: 42px;
-  line-height: 1.05;
+  margin: 18px 0 0;
+  font-size: 44px;
+  line-height: 1.04;
 }
 
 .diagnosis-hero__main p {
-  margin: 14px 0 0;
-  max-width: 640px;
+  margin: 16px 0 0;
+  max-width: 660px;
   line-height: 1.9;
-  color: rgba(244, 251, 251, 0.84);
+  color: rgba(244, 251, 251, 0.86);
 }
 
 .diagnosis-hero__cue {
-  margin-top: 18px;
   display: inline-flex;
-  padding: 10px 14px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.12);
+  margin-top: 18px;
+  padding: 11px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.16);
   font-weight: 700;
 }
@@ -108,14 +108,18 @@ defineProps({
 
 .diagnosis-summary-card {
   padding: 16px 18px;
-  border-radius: 18px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
+.diagnosis-summary-card--accent {
+  background: rgba(255, 255, 255, 0.14);
+}
+
 .diagnosis-summary-card span {
   font-size: 12px;
-  color: rgba(244, 251, 251, 0.74);
+  color: rgba(244, 251, 251, 0.72);
 }
 
 .diagnosis-summary-card strong {
@@ -128,7 +132,7 @@ defineProps({
 .diagnosis-summary-card small {
   display: block;
   margin-top: 6px;
-  color: rgba(244, 251, 251, 0.78);
-  line-height: 1.6;
+  line-height: 1.7;
+  color: rgba(244, 251, 251, 0.8);
 }
 </style>

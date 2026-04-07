@@ -40,7 +40,7 @@ def start_collection(current_user):
     data = request.get_json(silent=True) or {}
     drone_id = data.get('drone_id')
     session_type = data.get('session_type', 'simulation')
-    sim_time = data.get('sim_time', 120)
+    sim_time_raw = data.get('sim_time', 120)
     allowed_backend_list = list(current_app.config.get('TELEMETRY_ALLOWED_BACKENDS') or ())
     allowed_backends = set(allowed_backend_list)
     default_backend = allowed_backend_list[0] if allowed_backend_list else 'replay'
@@ -48,11 +48,18 @@ def start_collection(current_user):
     replay_path = data.get('replay_path')
 
     try:
-        sim_time = float(sim_time)
+        sim_time = float(sim_time_raw)
     except (TypeError, ValueError):
-        return _error('sim_time 必须为数值')
-    if sim_time <= 0:
-        return _error('sim_time 必须大于 0')
+        sim_time = 0.0 if backend == 'replay' else None
+    if backend != 'replay':
+        if sim_time is None:
+            return _error('sim_time 必须为数值')
+        if sim_time <= 0:
+            return _error('sim_time 必须大于 0')
+    else:
+        # replay 模式按整段 CSV 回放，sim_time 仅用于兼容字段。
+        if sim_time is None:
+            sim_time = 0.0
     if backend not in {'px4', 'replay'}:
         return _error('backend 仅支持 px4 或 replay')
     if backend not in allowed_backends:

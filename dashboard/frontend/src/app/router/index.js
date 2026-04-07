@@ -1,4 +1,4 @@
-﻿import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import Layout from '@/components/Layout.vue'
 import { parseStoredUser } from '@/shared/utils/user'
@@ -84,7 +84,7 @@ router.beforeEach((to, from, next) => {
   const user = parseStoredUser(localStorage.getItem('user'))
 
   if (to.meta.requiresAuth && (!token || !user)) {
-    ElMessage.warning('璇峰厛鐧诲綍')
+    ElMessage.warning('请先登录')
     next('/login')
     return
   }
@@ -98,4 +98,3 @@ router.beforeEach((to, from, next) => {
 })
 
 export default router
-

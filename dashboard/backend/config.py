@@ -259,8 +259,9 @@ class Config:
     AI_EMBEDDING_API_KEY = os.getenv('AI_EMBEDDING_API_KEY', AI_API_KEY)
     AI_EMBEDDING_MODEL = os.getenv('AI_EMBEDDING_MODEL', '')
     AI_HTTP_TIMEOUT = int(os.getenv('AI_HTTP_TIMEOUT', '45'))
+    AI_CHAT_HARD_TIMEOUT = float(os.getenv('AI_CHAT_HARD_TIMEOUT', '60'))
     AI_EMBED_BATCH_SIZE = int(os.getenv('AI_EMBED_BATCH_SIZE', '16'))
-    AI_RAG_MODE = os.getenv('AI_RAG_MODE', 'hybrid').strip().lower()
+    AI_RAG_MODE = os.getenv('AI_RAG_MODE', 'bm25').strip().lower()
     AI_TOP_K = int(os.getenv('AI_TOP_K', '5'))
     AI_MAX_CONTEXT_CHUNKS = int(os.getenv('AI_MAX_CONTEXT_CHUNKS', '6'))
     AI_PROJECT_DOC_PATHS = tuple(

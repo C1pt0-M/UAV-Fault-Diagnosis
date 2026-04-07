@@ -9,49 +9,68 @@
     </div>
     <div class="section-card__body">
       <template v-if="resultData">
-      <div class="diagnosis-result__hero">
-        <div class="diagnosis-result__summary">
-          <span class="diagnosis-result__eyebrow">{{ diagnosisCopy.predictionLabel }}</span>
-          <h3>{{ labelMeta.text }}</h3>
-          <p>{{ labelMeta.summary }}</p>
-        </div>
-        <div class="diagnosis-result__highlight">
-          <span>{{ diagnosisCopy.confidenceLabel }}</span>
-          <strong>{{ confidenceText }}</strong>
-          <small>主分类置信度</small>
-        </div>
-      </div>
-
-      <section class="two-column diagnosis-result__grid">
-        <article class="section-card diagnosis-result__panel">
-          <div class="section-card__header">
-            <div class="section-card__title">{{ diagnosisCopy.probabilityTitle }}</div>
+        <div class="diagnosis-result__hero">
+          <div class="diagnosis-result__summary">
+            <span class="diagnosis-result__eyebrow">{{ diagnosisCopy.predictionLabel }}</span>
+            <h3>{{ labelMeta.text }}</h3>
+            <p>{{ labelMeta.summary }}</p>
           </div>
-          <div class="section-card__body">
-            <div class="probability-list">
-              <div
-                v-for="row in probabilityRows"
-                :key="row.label"
-                class="probability-row"
-              >
-                <div class="probability-row__head">
-                  <span>{{ row.label }}</span>
-                  <strong>{{ row.probability }}</strong>
-                </div>
-                <div class="probability-row__track">
-                  <div class="probability-row__fill" :style="{ width: row.probability }" />
+          <div class="diagnosis-result__highlight">
+            <span>{{ diagnosisCopy.confidenceLabel }}</span>
+            <strong>{{ confidenceText }}</strong>
+            <small>主分类置信度</small>
+          </div>
+        </div>
+
+        <section class="two-column diagnosis-result__grid">
+          <article class="section-card diagnosis-result__panel diagnosis-result__panel--focus">
+            <div class="section-card__header">
+              <div>
+                <div class="section-card__title">{{ diagnosisCopy.recommendationTitle }}</div>
+                <div class="section-card__desc">{{ labelMeta.riskBadge }}</div>
+              </div>
+            </div>
+            <div class="section-card__body">
+              <div class="diagnosis-recommendation">
+                <h4>{{ labelMeta.actionTitle }}</h4>
+                <p>{{ labelMeta.actionSummary }}</p>
+                <ul>
+                  <li v-for="item in labelMeta.actionItems" :key="item">{{ item }}</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <article class="section-card diagnosis-result__panel">
+            <div class="section-card__header">
+              <div class="section-card__title">{{ diagnosisCopy.probabilityTitle }}</div>
+            </div>
+            <div class="section-card__body">
+              <div class="probability-list">
+                <div
+                  v-for="row in probabilityRows"
+                  :key="row.label"
+                  class="probability-row"
+                >
+                  <div class="probability-row__head">
+                    <span>{{ row.label }}</span>
+                    <strong>{{ row.probability }}</strong>
+                  </div>
+                  <div class="probability-row__track">
+                    <div class="probability-row__fill" :style="{ width: row.probability }" />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </article>
+          </article>
+        </section>
 
-        <article class="section-card diagnosis-result__panel">
+        <section class="section-card diagnosis-result__actions">
           <div class="section-card__header">
             <div class="section-card__title">{{ diagnosisCopy.resultActionTitle }}</div>
           </div>
           <div class="section-card__body">
-            <div class="diagnosis-actions diagnosis-actions--stack">
+            <div class="diagnosis-actions">
               <el-button
                 v-if="!latestReportId && !reportCreating"
                 type="primary"
@@ -90,8 +109,7 @@
               </el-button>
             </div>
           </div>
-        </article>
-      </section>
+        </section>
       </template>
 
       <el-empty v-else :description="diagnosisCopy.emptyRun" :image-size="68" />
@@ -156,7 +174,7 @@ const labelMeta = computed(() => getDiagnosisLabelMeta(props.resultData?.predict
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.8fr);
   gap: 16px;
-  padding: 20px;
+  padding: 22px;
   border-radius: 22px;
   background:
     radial-gradient(circle at top right, rgba(255, 255, 255, 0.14), transparent 28%),
@@ -175,7 +193,7 @@ const labelMeta = computed(() => getDiagnosisLabelMeta(props.resultData?.predict
 
 .diagnosis-result__summary h3 {
   margin: 14px 0 0;
-  font-size: 36px;
+  font-size: 38px;
 }
 
 .diagnosis-result__summary p {
@@ -217,6 +235,29 @@ const labelMeta = computed(() => getDiagnosisLabelMeta(props.resultData?.predict
   box-shadow: none;
 }
 
+.diagnosis-result__panel--focus {
+  background: linear-gradient(180deg, #fbfdfd 0%, #f3f8fa 100%);
+}
+
+.diagnosis-recommendation h4 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.3;
+}
+
+.diagnosis-recommendation p {
+  margin: 12px 0 0;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+.diagnosis-recommendation ul {
+  margin: 16px 0 0;
+  padding-left: 18px;
+  color: var(--text-secondary);
+  line-height: 1.9;
+}
+
 .probability-list {
   display: flex;
   flex-direction: column;
@@ -243,14 +284,13 @@ const labelMeta = computed(() => getDiagnosisLabelMeta(props.resultData?.predict
   background: linear-gradient(90deg, #0f766e 0%, #1a9c90 100%);
 }
 
+.diagnosis-result__actions {
+  margin-top: 18px;
+}
+
 .diagnosis-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-}
-
-.diagnosis-actions--stack {
-  flex-direction: column;
-  align-items: stretch;
 }
 </style>

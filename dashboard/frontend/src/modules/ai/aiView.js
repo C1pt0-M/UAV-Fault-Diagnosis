@@ -1,19 +1,34 @@
 export const aiCopy = {
   heroTag: 'AI 助手',
-  heroTitle: '围绕报告、任务与知识库进行问答分析',
-  heroDescription: '该模块不再承担系统配置职责，只专注于报告分析、知识片段问答和原因解释。',
-  conversationListTitle: '会话列表',
-  conversationListDescription: '按最近更新时间查看 AI 对话。',
+  heroTitle: '报告解读与知识问答工作台',
+  heroDescription: '围绕诊断报告、任务记录与知识库进行解释、追问和依据回溯，让分析过程更聚焦。',
+  heroPrimaryCardTitle: '分析入口',
+  heroPrimaryCardText: '优先承接报告分析，其次支持通用问答与知识检索。',
+  heroSecondaryCardTitle: '知识库状态',
+  heroSecondaryCardText: '可直接查看检索方式、Embedding 状态与重建结果。',
+
+  conversationListTitle: '会话轨迹',
+  conversationListDescription: '按最近更新时间查看历史分析对话，快速回到上一次分析现场。',
   newConversation: '新建会话',
   emptyConversationList: '暂无 AI 会话',
-  chatTitle: '对话面板',
-  chatDescription: '直接提问，或以报告分析模式启动对话。',
-  emptyChat: '当前没有消息，输入问题后即可发起分析。',
-  composerPlaceholder: '输入你的问题，例如：请结合当前诊断报告分析最可能的故障原因。',
+  conversationFallbackTitle(id) {
+    return `会话 #${id}`
+  },
+  conversationMetaSeparator: ' / ',
+  conversationScenePrefix: '场景',
+  conversationReportPrefix: '报告',
+  conversationRunPrefix: '任务',
+
+  chatTitle: '分析主区',
+  chatDescription: '直接提问，或基于当前报告发起分析。重点关注结论、原因、风险和建议。',
+  emptyChat: '当前没有消息，输入问题后即可开始分析。',
+  composerPlaceholder: '输入你的问题，例如：请结合当前报告解释故障原因、风险等级和处置建议。',
   sendButton: '发送',
   seedAnalysisButton: '启动报告分析',
-  contextTitle: '上下文绑定',
-  contextDescription: '限制 AI 的分析边界，保持问答围绕业务闭环。',
+  userRole: '用户',
+
+  contextTitle: '上下文与知识库',
+  contextDescription: '查看当前绑定的报告、任务、检索方式和 Embedding 状态，快速判断当前回答依据。',
   sceneLabel: '分析场景',
   reportIdLabel: '报告 ID',
   reportIdPlaceholder: '请输入报告 ID',
@@ -23,16 +38,28 @@ export const aiCopy = {
   boundReport: '绑定报告',
   boundRun: '关联任务',
   knowledgeChunks: '知识片段',
+  knowledgeStatusTitle: '知识库状态',
+  knowledgeDocuments: '知识文档',
   retrievalMode: '检索方式',
+  requestedRetrievalMode: '请求检索方式',
+  currentRetrievalMode: '当前检索方式',
   provider: '回答来源',
   model: '使用模型',
   fallback: '降级模式',
   fallbackEnabled: '已启用',
   fallbackDisabled: '未启用',
+  embeddingStatus: 'Embedding 状态',
+  embeddingEnabled: '正常',
+  embeddingDisabled: '未启用',
+  embeddingErrorState: '异常',
+  embeddingModel: 'Embedding 模型',
+  embeddingError: 'Embedding 错误',
+
   referencesLabel: '参考资料',
   referenceSnippet: '摘要',
   reindexKnowledgeButton: '重建知识库',
   reindexKnowledgeSuccess: '知识库索引已重建',
+
   sourceTypeLabels: {
     report: '诊断报告',
     run: '任务记录',
@@ -52,23 +79,24 @@ export function normalizeConversationSummary(conversation) {
 
   return {
     id: conversation?.id ?? null,
+    title: conversation?.title || '',
     scene: conversation?.scene || null,
     sceneLabel: contextSummary.scene_label || aiCopy.sceneLabels[conversation?.scene] || aiCopy.sceneLabels.general,
     reportId: conversation?.report_id ?? contextSummary.report_id ?? null,
-    runId: conversation?.run_id ?? contextSummary.run_id ?? null
+    runId: conversation?.run_id ?? contextSummary.run_id ?? null,
+    lastPreview: meta.last_message_preview || '',
+    messageCount: meta.message_count ?? 0
   }
 }
 
 export function normalizeAssistantMessage(message, fallback = {}) {
-  const normalized = {
+  return {
     ...message,
     citations: Array.isArray(message?.citations) ? message.citations : (fallback.citations || []),
     used_context: typeof message?.used_context === 'object' && message?.used_context !== null
       ? message.used_context
       : (fallback.used_context || {})
   }
-
-  return normalized
 }
 
 export function createUserDraftMessage(content) {

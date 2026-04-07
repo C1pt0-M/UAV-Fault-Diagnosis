@@ -8,6 +8,11 @@
       <span class="diagnosis-launch__badge">{{ assets.length }} 个可用资产</span>
     </div>
     <div class="section-card__body">
+      <div class="diagnosis-launch__intro">
+        <strong>任务发起区</strong>
+        <p>先完成资产与模型选择，再把离线诊断任务送入状态雷达与结果主舞台。</p>
+      </div>
+
       <el-form label-position="top" class="diagnosis-form-grid">
         <el-form-item :label="diagnosisCopy.assetLabel">
           <el-select
@@ -98,6 +103,24 @@ const selectedModel = defineModel('selectedModel', {
   color: var(--brand-strong);
   font-size: 12px;
   font-weight: 700;
+}
+
+.diagnosis-launch__intro {
+  margin-bottom: 18px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f6fbfc 0%, #eef6f7 100%);
+  border: 1px solid var(--line-soft);
+}
+
+.diagnosis-launch__intro strong {
+  font-size: 16px;
+}
+
+.diagnosis-launch__intro p {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  line-height: 1.8;
 }
 
 .diagnosis-form-grid {

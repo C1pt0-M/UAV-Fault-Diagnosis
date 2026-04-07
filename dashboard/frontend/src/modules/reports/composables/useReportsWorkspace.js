@@ -19,6 +19,12 @@ export function useReportsWorkspace() {
   })
 
   const detailJson = computed(() => JSON.stringify(detailTarget.value || {}, null, 2))
+  const currentFilterSummary = computed(() => {
+    const parts = []
+    if (filters.value.assetId) parts.push(`资产 #${filters.value.assetId}`)
+    if (filters.value.label) parts.push(`标签 ${filters.value.label}`)
+    return parts.length ? parts.join(' / ') : '当前查看全部报告'
+  })
 
   async function loadAssets() {
     const response = await assetApi.list('all')
@@ -118,6 +124,7 @@ export function useReportsWorkspace() {
   return {
     assetNameMap,
     assetOptions,
+    currentFilterSummary,
     detailTarget,
     detailJson,
     detailVisible,

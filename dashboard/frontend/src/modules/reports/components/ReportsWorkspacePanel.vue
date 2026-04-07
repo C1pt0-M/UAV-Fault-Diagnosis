@@ -1,5 +1,5 @@
 <template>
-  <section class="section-card">
+  <section class="section-card reports-workspace">
     <div class="section-card__header page-toolbar">
       <div>
         <div class="section-card__title">{{ reportsCopy.title }}</div>
@@ -90,22 +90,10 @@ import { ElTable, ElTableColumn } from 'element-plus/es/components/table/index.m
 import { reportLabelOptions, reportsCopy } from '@/modules/reports/reportsView'
 
 defineProps({
-  assetOptions: {
-    type: Array,
-    default: () => []
-  },
-  assetNameMap: {
-    type: Object,
-    required: true
-  },
-  loading: {
-    type: Boolean,
-    default: false
-  },
-  reports: {
-    type: Array,
-    default: () => []
-  }
+  assetOptions: { type: Array, default: () => [] },
+  assetNameMap: { type: Object, required: true },
+  loading: { type: Boolean, default: false },
+  reports: { type: Array, default: () => [] }
 })
 
 defineEmits(['refresh', 'reset', 'show-detail', 'open-ai', 'download', 'remove'])
@@ -116,10 +104,23 @@ const reportFilters = defineModel('filters', {
 </script>
 
 <style scoped>
+.reports-workspace {
+  overflow: hidden;
+}
+
 .reports-toolbar {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f7fbfc 0%, #eef6f7 100%);
+  border: 1px solid var(--line-soft);
+}
+
+:deep(.reports-workspace .el-table__row td) {
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 </style>

@@ -5,8 +5,8 @@ export const reportLabelOptions = [
 ]
 
 export const reportsCopy = {
-  title: '诊断报告',
-  description: '筛选、查看和下载离线诊断报告，回溯对应资产与模型。',
+  title: '诊断报告中心',
+  description: '集中查看诊断结论、概率分布与处置建议，并继续追踪对应资产与任务。',
   assetFilterPlaceholder: '按资产筛选',
   labelFilterPlaceholder: '按标签筛选',
   resetButton: '重置',

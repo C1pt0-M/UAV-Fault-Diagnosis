@@ -26,6 +26,7 @@ RETRIEVAL_MODES = {'bm25', 'hybrid', 'semantic'}
 QUERY_SPLIT_RE = re.compile(r'怎么|如何|怎样|为何|为什么|是否|能否|可以|需要|应该|请问')
 MAX_RESULTS_PER_SOURCE = 1
 SNIPPET_PREVIEW_CHARS = 220
+MIN_TEXT_QUALITY_SCORE = 0.72
 
 INTENT_SYNONYMS = {
     'repair': ('修复', '维修', '检修', '排查', '更换', '校准', '恢复'),
@@ -50,8 +51,8 @@ class KnowledgeBaseService:
         return bool(self._config().get('AI_ENABLE_KNOWLEDGE_BASE', False))
 
     def _requested_retrieval_mode(self) -> str:
-        value = str(self._config().get('AI_RAG_MODE', 'hybrid')).strip().lower()
-        return value if value in RETRIEVAL_MODES else 'hybrid'
+        value = str(self._config().get('AI_RAG_MODE', 'bm25')).strip().lower()
+        return value if value in RETRIEVAL_MODES else 'bm25'
 
     def _embedding_client(self) -> OpenAICompatibleProvider:
         return OpenAICompatibleProvider(self._config())
@@ -132,6 +133,34 @@ class KnowledgeBaseService:
 
     def _tokenize(self, text: str) -> list[str]:
         return [token.lower() for token in TOKEN_RE.findall(text or '')]
+
+    def _text_quality_score(self, text: str) -> float:
+        normalized = str(text or '').strip()
+        if not normalized:
+            return 0.0
+
+        good = 0
+        total = 0
+        punctuation = set('，。！？；：、（）《》“”‘’—…,.!?;:()[]{}<>-_/%+*= ')
+
+        for ch in normalized:
+            if ch.isspace():
+                continue
+            total += 1
+            code = ord(ch)
+            if (
+                ch.isascii() and (ch.isalnum() or ch in punctuation)
+            ) or (
+                0x4E00 <= code <= 0x9FFF
+            ) or ch in punctuation:
+                good += 1
+
+        if total == 0:
+            return 0.0
+        return good / total
+
+    def _is_text_quality_acceptable(self, text: str) -> bool:
+        return self._text_quality_score(text) >= MIN_TEXT_QUALITY_SCORE
 
     def _extract_query_focus_terms(self, query: str) -> list[str]:
         text = str(query or '').strip().lower()
@@ -227,6 +256,20 @@ class KnowledgeBaseService:
         return snippet
 
     def _index_is_stale(self, index: dict) -> bool:
+        requested_mode = str(index.get('requested_retrieval_mode') or '').strip().lower()
+        if requested_mode and requested_mode != self._requested_retrieval_mode():
+            return True
+
+        configured_embedding_model = str(self._config().get('AI_EMBEDDING_MODEL') or '').strip()
+        indexed_embedding_model = str(index.get('embedding_model') or '').strip()
+        if configured_embedding_model and indexed_embedding_model and configured_embedding_model != indexed_embedding_model:
+            return True
+
+        configured_provider = str(self._config().get('AI_PROVIDER') or '').strip()
+        indexed_embedding_provider = str(index.get('embedding_provider') or '').strip()
+        if configured_provider and indexed_embedding_provider and configured_provider != indexed_embedding_provider:
+            return True
+
         documents = index.get('documents', [])
         if not isinstance(documents, list):
             return True
@@ -295,13 +338,16 @@ class KnowledgeBaseService:
                 if key in seen:
                     continue
                 seen.add(key)
+                content = path.read_text(encoding='utf-8', errors='ignore')
+                if not self._is_text_quality_acceptable(content):
+                    continue
                 yield {
                     'kind': 'file',
                     'source_type': 'knowledge_base',
                     'source_id': key,
                     'title': path.name,
                     'path': key,
-                    'text': path.read_text(encoding='utf-8', errors='ignore'),
+                    'text': content,
                     'updated_at': datetime.fromtimestamp(path.stat().st_mtime).strftime('%Y-%m-%d %H:%M:%S'),
                 }
 
@@ -444,6 +490,8 @@ class KnowledgeBaseService:
                 }
             )
             for idx, chunk_text in enumerate(self._chunk_text(item['text'])):
+                if not self._is_text_quality_acceptable(chunk_text):
+                    continue
                 tokens = self._tokenize(chunk_text)
                 if not tokens:
                     continue

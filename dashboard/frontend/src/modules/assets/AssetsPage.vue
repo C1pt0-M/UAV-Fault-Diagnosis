@@ -2,11 +2,15 @@
   <div class="page-stack">
     <AssetsWorkspacePanel
       v-model:active-kind="activeKind"
-      :assets="assets"
+      :assets="paginatedAssets"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      :total="totalAssets"
       :loading="loading"
       :uploading="uploading"
       :preparing-map="preparingMap"
       :deleting-map="deletingMap"
+      @update:current-page="setCurrentPage"
       @refresh="loadAssets"
       @upload="handleUpload"
       @download="downloadAsset"
@@ -28,6 +32,7 @@
       :field-options="analysisFieldOptions"
       :chart-times="analysisChartTimes"
       :chart-series="analysisChartSeries"
+      :chart-fault-prob="analysisChartFaultProb"
       :loading-fields="analysisLoadingFields"
       :loading-series="analysisLoadingSeries"
       :error-message="analysisErrorMessage"
@@ -51,6 +56,7 @@ import { useAssetsWorkspace } from '@/modules/assets/composables/useAssetsWorksp
 const {
   activeKind,
   analysisAssetId,
+  analysisChartFaultProb,
   analysisChartSeries,
   analysisChartTimes,
   analysisEndT,
@@ -63,6 +69,7 @@ const {
   analysisMaxPoints,
   analysisStartT,
   assets,
+  currentPage,
   deletingMap,
   detailJson,
   detailVisible,
@@ -74,10 +81,14 @@ const {
   loading,
   openReports,
   openReportsCenter,
+  paginatedAssets,
+  pageSize,
   prepareAsset,
   preparingMap,
   removeAsset,
+  setCurrentPage,
   showDetail,
+  totalAssets,
   uploading
 } = useAssetsWorkspace()
 </script>

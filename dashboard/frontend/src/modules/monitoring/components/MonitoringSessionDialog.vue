@@ -2,10 +2,10 @@
   <el-dialog v-model="dialogVisible" :title="monitoringCopy.sessionDetailTitle" width="720px">
     <template v-if="sessionDetail">
       <el-descriptions :column="1" border>
-        <el-descriptions-item label="会话 ID">{{ sessionDetail.id || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="无人机">{{ sessionDetail.drone_id || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="状态">{{ sessionDetail.status || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="故障事件">{{ sessionDetail.fault_events_count || 0 }}</el-descriptions-item>
+        <el-descriptions-item :label="monitoringCopy.sessionIdLabel">{{ sessionDetail.id || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="monitoringCopy.droneIdLabel">{{ sessionDetail.drone_id || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="monitoringCopy.statusLabel">{{ sessionDetail.status || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="monitoringCopy.faultEventsLabel">{{ sessionDetail.fault_events_count || 0 }}</el-descriptions-item>
       </el-descriptions>
     </template>
     <el-empty

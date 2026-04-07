@@ -1,5 +1,5 @@
 <template>
-  <article class="section-card">
+  <article class="section-card ai-context">
     <div class="section-card__header">
       <div>
         <div class="section-card__title">{{ aiCopy.contextTitle }}</div>
@@ -29,28 +29,43 @@
       </el-form>
 
       <div class="context-box">
-        <div><strong>{{ aiCopy.currentConversation }}：</strong>{{ contextSummary.conversationId || aiCopy.newConversationLabel }}</div>
-        <div><strong>{{ aiCopy.currentScene }}：</strong>{{ contextSummary.sceneLabel }}</div>
-        <div><strong>{{ aiCopy.boundReport }}：</strong>{{ contextSummary.reportId || '-' }}</div>
-        <div><strong>{{ aiCopy.boundRun }}：</strong>{{ contextSummary.runId || '-' }}</div>
-        <div><strong>{{ aiCopy.knowledgeChunks }}：</strong>{{ knowledge.total_chunks || 0 }}</div>
-        <div><strong>{{ aiCopy.retrievalMode }}：</strong>{{ contextSummary.retrievalMode || knowledge.retrieval_mode || '-' }}</div>
-        <div><strong>{{ aiCopy.provider }}：</strong>{{ contextSummary.provider || '-' }}</div>
-        <div><strong>{{ aiCopy.model }}：</strong>{{ contextSummary.model || '-' }}</div>
-        <div><strong>{{ aiCopy.fallback }}：</strong>{{ contextSummary.fallbackUsed ? aiCopy.fallbackEnabled : aiCopy.fallbackDisabled }}</div>
+        <div class="context-box__title">当前分析上下文</div>
+        <div class="context-box__grid">
+          <div><strong>{{ aiCopy.currentConversation }}：</strong>{{ contextSummary.conversationId || aiCopy.newConversationLabel }}</div>
+          <div><strong>{{ aiCopy.currentScene }}：</strong>{{ contextSummary.sceneLabel }}</div>
+          <div><strong>{{ aiCopy.boundReport }}：</strong>{{ contextSummary.reportId || '-' }}</div>
+          <div><strong>{{ aiCopy.boundRun }}：</strong>{{ contextSummary.runId || '-' }}</div>
+          <div><strong>{{ aiCopy.model }}：</strong>{{ contextSummary.model || '-' }}</div>
+          <div><strong>{{ aiCopy.retrievalMode }}：</strong>{{ contextSummary.retrievalMode || knowledge.retrieval_mode || '-' }}</div>
+          <div><strong>{{ aiCopy.fallback }}：</strong>{{ contextSummary.fallbackUsed ? aiCopy.fallbackEnabled : aiCopy.fallbackDisabled }}</div>
+        </div>
+      </div>
+
+      <div class="knowledge-status">
+        <div class="knowledge-status__title">{{ aiCopy.knowledgeStatusTitle }}</div>
+        <div class="knowledge-status__grid">
+          <div><strong>{{ aiCopy.knowledgeDocuments }}：</strong>{{ knowledge.total_documents ?? '-' }}</div>
+          <div><strong>{{ aiCopy.knowledgeChunks }}：</strong>{{ knowledge.total_chunks || 0 }}</div>
+          <div><strong>{{ aiCopy.requestedRetrievalMode }}：</strong>{{ knowledge.requested_retrieval_mode || '-' }}</div>
+          <div><strong>{{ aiCopy.currentRetrievalMode }}：</strong>{{ knowledge.retrieval_mode || '-' }}</div>
+          <div><strong>{{ aiCopy.embeddingStatus }}：</strong>{{ embeddingStatusText }}</div>
+          <div><strong>{{ aiCopy.embeddingModel }}：</strong>{{ knowledge.embedding_model || '-' }}</div>
+          <div><strong>{{ aiCopy.embeddingError }}：</strong>{{ knowledge.embedding_error || '-' }}</div>
+        </div>
       </div>
     </div>
   </article>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import { ElForm, ElFormItem } from 'element-plus/es/components/form/index.mjs'
 import ElInput from 'element-plus/es/components/input/index.mjs'
 import { ElOption, ElSelect } from 'element-plus/es/components/select/index.mjs'
 import { aiCopy } from '@/modules/ai/aiView'
 
-defineProps({
+const props = defineProps({
   contextSummary: {
     type: Object,
     required: true
@@ -76,11 +91,46 @@ const selectedReportIdInput = defineModel('reportIdInput', {
   type: String,
   required: true
 })
+
+const embeddingStatusText = computed(() => {
+  if (props.knowledge.embedding_enabled) return aiCopy.embeddingEnabled
+  if (props.knowledge.embedding_error) return aiCopy.embeddingErrorState
+  return aiCopy.embeddingDisabled
+})
 </script>
 
 <style scoped>
+.ai-context {
+  overflow: hidden;
+}
+
 .context-box {
-  line-height: 1.9;
+  margin-top: 8px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f7fbfc 0%, #eef6f7 100%);
+  border: 1px solid var(--line-soft);
+}
+
+.context-box__title,
+.knowledge-status__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.context-box__grid,
+.knowledge-status__grid {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
   color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.knowledge-status {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line-strong);
 }
 </style>

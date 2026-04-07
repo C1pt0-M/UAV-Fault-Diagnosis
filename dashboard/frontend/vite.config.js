@@ -12,6 +12,10 @@ export default defineConfig({
           if (!id.includes('node_modules')) return undefined
 
           if (id.includes('vue-router')) return 'vue-router'
+          if (id.includes('echarts') || id.includes('zrender')) return 'echarts'
+          if (id.includes('@element-plus/icons-vue')) return 'element-plus-icons'
+          if (id.includes('element-plus')) return 'element-plus'
+          if (id.includes('/vue/')) return 'vue-vendor'
           return undefined
         }
       }

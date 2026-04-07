@@ -757,7 +757,10 @@ class TelemetryProcessManager:
                     "roll",
                     "pitch",
                     "yaw",
+                    "pos_x",
+                    "pos_y",
                     "pos_z",
+                    "fault_prob",
                 ]
             }
 
@@ -774,7 +777,10 @@ class TelemetryProcessManager:
             "roll": [round(f["roll"], 3) for f in sampled],
             "pitch": [round(f["pitch"], 3) for f in sampled],
             "yaw": [round(f["yaw"], 3) for f in sampled],
+            "pos_x": [round(f["pos_x"], 3) for f in sampled],
+            "pos_y": [round(f["pos_y"], 3) for f in sampled],
             "pos_z": [round(f["pos_z"], 3) for f in sampled],
+            "fault_prob": [round(float(f.get("fault_prob", 0.0)), 4) for f in sampled],
         }
 
     def _model_summary(self, meta: dict | None) -> dict | None:
@@ -964,12 +970,12 @@ class TelemetryProcessManager:
             telemetry_python_bin = self._resolve_telemetry_python_bin()
             print(f"[telemetry_manager] 遥测子进程解释器: {telemetry_python_bin}")
         sim_time = float(sim_time)
-        if sim_time <= 0:
+        backend_name = (backend or "px4").strip().lower()
+        if backend_name != "replay" and sim_time <= 0:
             raise RuntimeError("采集时长必须大于 0 秒")
 
         session_id = _generate_id("TS")
         csv_path = str(self._sessions_dir / f"{session_id}.csv")
-        backend_name = (backend or "px4").strip().lower()
         replay_path_resolved = replay_path
         if backend_name == "replay" and replay_path is not None:
             replay_path_resolved = (
@@ -1208,6 +1214,8 @@ class TelemetryProcessManager:
                     "roll": canonical.get("roll", frame.get("roll", 0)),
                     "pitch": canonical.get("pitch", frame.get("pitch", 0)),
                     "yaw": canonical.get("yaw", frame.get("yaw", 0)),
+                    "pos_x": canonical.get("pos_x", frame.get("pos_x", 0)),
+                    "pos_y": canonical.get("pos_y", frame.get("pos_y", 0)),
                     "pos_z": canonical.get(
                         "pos_z",
                         canonical.get(
@@ -1215,6 +1223,7 @@ class TelemetryProcessManager:
                             frame.get("baro_alt_meter", frame.get("pos_z", 0)),
                         ),
                     ),
+                    "fault_prob": self._current_fault_prob,
                 }
             )
         if not self._detecting or self._detector is None:
@@ -1227,6 +1236,8 @@ class TelemetryProcessManager:
         if result is None:
             return
         fault_prob = float(result.get("fault_prob", 0.0))
+        if self._realtime_buffer:
+            self._realtime_buffer[-1]["fault_prob"] = fault_prob
         onset_th = float(
             getattr(getattr(self._detector, "aggregator", None), "onset_th", 0.6)
         )

@@ -1,5 +1,5 @@
 <template>
-  <article class="section-card">
+  <article class="section-card ai-chat">
     <div class="section-card__header">
       <div>
         <div class="section-card__title">{{ aiCopy.chatTitle }}</div>
@@ -8,7 +8,7 @@
     </div>
 
     <div class="section-card__body">
-      <div class="message-stream" v-loading="loadingMessages">
+      <div ref="messageStreamRef" class="message-stream" v-loading="loadingMessages">
         <div v-if="messages.length === 0" class="empty-chat">
           {{ aiCopy.emptyChat }}
         </div>
@@ -19,16 +19,32 @@
           class="message-card"
           :class="item.role"
         >
-          <div class="message-card__role">{{ item.role === 'assistant' ? aiCopy.heroTag : '用户' }}</div>
-          <div class="message-card__content">{{ item.content }}</div>
+          <div class="message-card__role">{{ item.role === 'assistant' ? aiCopy.heroTag : aiCopy.userRole }}</div>
+          <div v-if="item.role === 'assistant' && parseAssistantSections(item.content).summary" class="message-card__summary">
+            {{ parseAssistantSections(item.content).summary }}
+          </div>
+          <div class="message-card__content">
+            <template v-if="item.role === 'assistant'">
+              <p
+                v-for="paragraph in parseAssistantSections(item.content).paragraphs"
+                :key="paragraph"
+                class="message-card__paragraph"
+              >
+                {{ paragraph }}
+              </p>
+            </template>
+            <template v-else>
+              {{ item.content }}
+            </template>
+          </div>
 
           <details
             v-if="item.role === 'assistant' && item.citations?.length"
             class="message-card__references"
           >
-            <summary>{{ aiCopy.referencesLabel }}（{{ item.citations.length }}）</summary>
-            <ul class="reference-list">
-              <li
+            <summary class="message-card__references-title">{{ aiCopy.referencesLabel }}（{{ item.citations.length }}）</summary>
+            <div class="reference-list">
+              <article
                 v-for="citation in item.citations"
                 :key="`${citation.source_type}-${citation.source_id}-${citation.title}`"
                 class="reference-item"
@@ -39,8 +55,8 @@
                 <div v-if="citation.snippet" class="reference-item__snippet">
                   {{ aiCopy.referenceSnippet }}: {{ citation.snippet }}
                 </div>
-              </li>
-            </ul>
+              </article>
+            </div>
           </details>
         </article>
       </div>
@@ -67,11 +83,12 @@
 </template>
 
 <script setup>
+import { nextTick, ref, watch } from 'vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import ElInput from 'element-plus/es/components/input/index.mjs'
 import { aiCopy, formatSourceType } from '@/modules/ai/aiView'
 
-defineProps({
+const props = defineProps({
   loadingMessages: {
     type: Boolean,
     default: false
@@ -96,14 +113,69 @@ const draftComposer = defineModel('composer', {
   type: String,
   required: true
 })
+
+const messageStreamRef = ref(null)
+
+function scrollToLatest() {
+  const container = messageStreamRef.value
+  if (!container) return
+
+  const top = container.scrollHeight || 0
+  if (typeof container.scrollTo === 'function') {
+    container.scrollTo({
+      top,
+      behavior: 'smooth'
+    })
+    return
+  }
+
+  container.scrollTop = top
+}
+
+watch(
+  () => props.messages.map((item) => item.id).join('|'),
+  async () => {
+    await nextTick()
+    scrollToLatest()
+  },
+  { flush: 'post' }
+)
+
+function parseAssistantSections(content) {
+  const normalized = String(content || '').trim()
+  if (!normalized) {
+    return { summary: '', paragraphs: [] }
+  }
+
+  const sections = normalized
+    .split(/\n\s*\n/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  const summaryIndex = sections.findIndex((item) => item.startsWith('直接结论：') || item.startsWith('结论：'))
+  const summary = summaryIndex >= 0 ? sections[summaryIndex] : ''
+  const paragraphs = sections.filter((_, index) => index !== summaryIndex)
+
+  return {
+    summary,
+    paragraphs: paragraphs.length ? paragraphs : (summary ? [] : sections)
+  }
+}
 </script>
 
 <style scoped>
+.ai-chat {
+  overflow: hidden;
+}
+
 .message-stream {
   display: flex;
   flex-direction: column;
   gap: 12px;
   min-height: 360px;
+  max-height: 560px;
+  overflow: auto;
+  padding-right: 6px;
 }
 
 .empty-chat {
@@ -133,8 +205,27 @@ const draftComposer = defineModel('composer', {
 }
 
 .message-card__content {
-  white-space: pre-wrap;
   line-height: 1.8;
+}
+
+.message-card__summary {
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(15, 118, 110, 0.1) 0%, rgba(255, 255, 255, 0.96) 100%);
+  border: 1px solid rgba(15, 118, 110, 0.14);
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+.message-card__paragraph {
+  margin: 0 0 10px;
+  white-space: pre-wrap;
+}
+
+.message-card__paragraph:last-child {
+  margin-bottom: 0;
 }
 
 .message-card__references {
@@ -144,18 +235,26 @@ const draftComposer = defineModel('composer', {
   color: var(--text-secondary);
 }
 
-.message-card__references summary {
+.message-card__references-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-strong);
   cursor: pointer;
   user-select: none;
-  color: var(--brand-strong);
 }
 
 .reference-list {
-  margin: 10px 0 0;
-  padding-left: 18px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.reference-item {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--line-soft);
 }
 
 .reference-item__title {

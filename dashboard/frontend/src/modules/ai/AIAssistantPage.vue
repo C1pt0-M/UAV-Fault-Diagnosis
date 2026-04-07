@@ -1,9 +1,10 @@
 <template>
-  <div class="page-stack">
+  <div class="page-stack ai-workspace">
     <AIHeroSection />
 
-    <section class="three-column">
+    <section class="ai-layout">
       <AIConversationListPanel
+        class="ai-layout__list"
         :conversations="conversations"
         :current-conversation-id="currentConversationId"
         :loading="loadingConversations"
@@ -12,6 +13,7 @@
       />
 
       <AIChatPanel
+        class="ai-layout__chat"
         v-model:composer="composer"
         :loading-messages="loadingMessages"
         :messages="messages"
@@ -22,6 +24,7 @@
       />
 
       <AIContextPanel
+        class="ai-layout__context"
         v-model:scene="scene"
         v-model:report-id-input="reportIdInput"
         :context-summary="contextSummary"
@@ -63,9 +66,41 @@ const {
 </script>
 
 <style scoped>
-.three-column {
+.ai-layout {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr) 320px;
   gap: 18px;
+  align-items: start;
+}
+
+@media (max-width: 1560px) {
+  .ai-layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-areas:
+      "chat context"
+      "list context";
+  }
+
+  .ai-layout__chat {
+    grid-area: chat;
+  }
+
+  .ai-layout__list {
+    grid-area: list;
+  }
+
+  .ai-layout__context {
+    grid-area: context;
+  }
+}
+
+@media (max-width: 1320px) {
+  .ai-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "chat"
+      "context"
+      "list";
+  }
 }
 </style>

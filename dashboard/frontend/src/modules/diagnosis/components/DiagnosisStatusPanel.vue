@@ -19,10 +19,25 @@
         </div>
       </div>
 
+      <div class="diagnosis-status__steps">
+        <div class="diagnosis-step" :class="{ 'is-active': stage.key === 'idle' }">
+          <span>01</span>
+          <strong>任务排布</strong>
+        </div>
+        <div class="diagnosis-step" :class="{ 'is-active': stage.key === 'running' }">
+          <span>02</span>
+          <strong>推理执行</strong>
+        </div>
+        <div class="diagnosis-step" :class="{ 'is-active': stage.key === 'completed' }">
+          <span>03</span>
+          <strong>结果出舱</strong>
+        </div>
+      </div>
+
       <template v-if="currentRun">
         <el-progress :percentage="progressPercentage" />
         <div class="run-meta">
-          <span>{{ diagnosisCopy.taskIdLabel }}：{{ currentRun.id }}</span>
+          <span>{{ diagnosisCopy.taskIdLabel }}：#{{ currentRun.id }}</span>
           <span>{{ diagnosisCopy.statusLabel }}：{{ currentRun.status }}</span>
         </div>
         <div class="run-meta">
@@ -96,7 +111,7 @@ defineProps({
 }
 
 .diagnosis-status__progress {
-  min-width: 150px;
+  min-width: 170px;
   padding: 16px;
   border-radius: 18px;
   background: #ffffff;
@@ -115,6 +130,35 @@ defineProps({
   margin-top: 8px;
   color: var(--text-tertiary);
   font-size: 12px;
+}
+
+.diagnosis-status__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.diagnosis-step {
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--line-soft);
+  background: #fcfdfd;
+}
+
+.diagnosis-step.is-active {
+  border-color: rgba(15, 118, 110, 0.28);
+  background: linear-gradient(180deg, #effaf7 0%, #ffffff 100%);
+}
+
+.diagnosis-step span {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.diagnosis-step strong {
+  display: block;
+  margin-top: 8px;
 }
 
 .diagnosis-status.is-completed .diagnosis-status__hero {

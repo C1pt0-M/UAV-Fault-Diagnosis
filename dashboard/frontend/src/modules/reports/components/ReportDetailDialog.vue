@@ -118,18 +118,9 @@ import { reportsCopy } from '@/modules/reports/reportsView'
 import { buildDiagnosisReportView } from '@/utils/diagnosisReportView'
 
 const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false
-  },
-  report: {
-    type: Object,
-    default: null
-  },
-  detailJson: {
-    type: String,
-    default: '{}'
-  }
+  visible: { type: Boolean, default: false },
+  report: { type: Object, default: null },
+  detailJson: { type: String, default: '{}' }
 })
 
 const emit = defineEmits(['update:visible'])
@@ -140,10 +131,7 @@ const dialogVisible = computed({
 })
 
 const view = computed(() => buildDiagnosisReportView(props.report || {}))
-
-const topProbabilityText = computed(() => {
-  return view.value?.probabilityRows?.[0]?.probText || '-'
-})
+const topProbabilityText = computed(() => view.value?.probabilityRows?.[0]?.probText || '-')
 </script>
 
 <style scoped>

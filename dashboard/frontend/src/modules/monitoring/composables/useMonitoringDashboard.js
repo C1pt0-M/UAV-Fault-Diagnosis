@@ -6,6 +6,7 @@ import {
   formatLatestValue,
   monitoringCopy,
   resolveMonitoringBackendOptions,
+  monitoringBackendOptions,
   monitoringStateLabels,
   resolveMonitoringState,
   shouldShowBlindTest
@@ -17,17 +18,6 @@ const actionKeys = [
   'startBlindTest',
   'stopDetection',
   'stopCollection'
-]
-
-const realtimeFieldOptions = [
-  { label: 'Motor 1', value: 'motor1' },
-  { label: 'Motor 2', value: 'motor2' },
-  { label: 'Motor 3', value: 'motor3' },
-  { label: 'Motor 4', value: 'motor4' },
-  { label: 'Roll', value: 'roll' },
-  { label: 'Pitch', value: 'pitch' },
-  { label: 'Yaw', value: 'yaw' },
-  { label: 'Position Z', value: 'pos_z' }
 ]
 
 function createActionLoadingState() {
@@ -48,7 +38,6 @@ export function useMonitoringDashboard() {
   const sessionDetail = ref(null)
   const detailVisible = ref(false)
   const realtime = ref({ times: [] })
-  const realtimeChartFields = ref(['motor1', 'motor2', 'motor3', 'motor4'])
   const selectedBackend = ref('replay')
   const selectedDuration = ref(60)
   const selectedModel = ref('')
@@ -64,44 +53,107 @@ export function useMonitoringDashboard() {
   const alerts = computed(() => runStatus.fault_events || [])
   const riskScore = computed(() => Number(runStatus.risk_score || 0).toFixed(2))
   const realtimeCount = computed(() => realtime.value?.times?.length || 0)
-  const latestTimestamp = computed(() => {
-    return formatLatestValue(realtime.value?.times, (value) => `${value} s`)
+  const latestTimestamp = computed(() => formatLatestValue(realtime.value?.times, (value) => `${value} s`))
+  const currentSessionId = computed(() => runStatus.current_session_id || monitoringCopy.noSession)
+  const selectedBackendLabel = computed(() => {
+    const option = monitoringBackendOptions.find((item) => item.value === selectedBackend.value)
+    return option?.label || selectedBackend.value || monitoringCopy.noSelection
   })
+  const activeModelLabel = computed(() => {
+    if (!selectedModel.value) return monitoringCopy.noSelection
+    const option = onlineModels.value.find((item) => item.name === selectedModel.value)
+    return option?.display_name || option?.name || selectedModel.value
+  })
+  const faultPeakText = computed(() => {
+    const values = Array.isArray(realtime.value?.fault_prob) ? realtime.value.fault_prob : []
+    const numeric = values.map((item) => Number(item)).filter((item) => Number.isFinite(item))
+    if (!numeric.length) return '0.00'
+    return Math.max(...numeric).toFixed(2)
+  })
+  const sessionBridgeText = computed(() => {
+    return Number(runStatus.fault_events_count || 0) > 0
+      ? monitoringCopy.heroBridgeReady
+      : monitoringCopy.heroBridgeIdle
+  })
+
+  function resolveAltitudeFromPosZ(rawValue) {
+    const raw = Number(rawValue)
+    if (Number.isNaN(raw)) return NaN
+
+    const backend = String(runStatus.scenario_backend || '').toLowerCase()
+    if (backend === 'px4') return -raw
+
+    if (backend === 'replay') {
+      const series = (Array.isArray(realtime.value?.pos_z) ? realtime.value.pos_z : [])
+        .map((item) => Number(item))
+        .filter((item) => !Number.isNaN(item))
+      if (series.length) {
+        const negatives = series.filter((item) => item < 0).length
+        const positives = series.filter((item) => item > 0).length
+        if (negatives > positives) return -raw
+      }
+      return raw
+    }
+
+    return raw
+  }
+
   const latestAltitude = computed(() => {
-    return formatLatestValue(realtime.value?.pos_z, (value) => `${(-Number(value)).toFixed(2)} m`)
+    return formatLatestValue(realtime.value?.pos_z, (value) => {
+      const altitude = resolveAltitudeFromPosZ(value)
+      if (Number.isNaN(altitude)) return monitoringCopy.noValue
+      return `${altitude.toFixed(2)} m`
+    })
   })
-  const latestRoll = computed(() => {
-    return formatLatestValue(realtime.value?.roll, (value) => `${Number(value).toFixed(2)}°`)
+
+  const latestRoll = computed(() => formatLatestValue(realtime.value?.roll, (value) => `${Number(value).toFixed(2)}°`))
+  const latestPitch = computed(() => formatLatestValue(realtime.value?.pitch, (value) => `${Number(value).toFixed(2)}°`))
+  const realtimeChartTimes = computed(() => Array.isArray(realtime.value?.times) ? realtime.value.times : [])
+  const realtimeFaultProb = computed(() => Array.isArray(realtime.value?.fault_prob) ? realtime.value.fault_prob : [])
+
+  const realtimeMotorSeries = computed(() => {
+    return [
+      { name: 'Motor 1', field: 'motor1' },
+      { name: 'Motor 2', field: 'motor2' },
+      { name: 'Motor 3', field: 'motor3' },
+      { name: 'Motor 4', field: 'motor4' }
+    ]
+      .map((item) => ({
+        name: item.name,
+        data: Array.isArray(realtime.value?.[item.field]) ? realtime.value[item.field] : []
+      }))
+      .filter((item) => item.data.length > 0)
   })
-  const latestPitch = computed(() => {
-    return formatLatestValue(realtime.value?.pitch, (value) => `${Number(value).toFixed(2)}°`)
+
+  const realtimeAttitudeSeries = computed(() => {
+    return [
+      { name: 'Roll', field: 'roll' },
+      { name: 'Pitch', field: 'pitch' },
+      { name: 'Yaw', field: 'yaw' }
+    ]
+      .map((item) => ({
+        name: item.name,
+        data: Array.isArray(realtime.value?.[item.field]) ? realtime.value[item.field] : []
+      }))
+      .filter((item) => item.data.length > 0)
   })
-  const realtimeFieldLabelMap = computed(() => {
-    return realtimeFieldOptions.reduce((mapping, item) => {
-      mapping[item.value] = item.label
-      return mapping
-    }, {})
-  })
-  const realtimeChartTimes = computed(() => {
-    return Array.isArray(realtime.value?.times) ? realtime.value.times : []
-  })
-  const realtimeChartSeries = computed(() => {
-    return realtimeChartFields.value
-      .map((field) => {
-        const values = Array.isArray(realtime.value?.[field]) ? realtime.value[field] : []
-        return {
-          name: realtimeFieldLabelMap.value[field] || field,
-          data: values
-        }
-      })
+
+  const realtimePositionSeries = computed(() => {
+    return [
+      { name: 'Position Z', field: 'pos_z' }
+    ]
+      .map((item) => ({
+        name: item.name,
+        data: Array.isArray(realtime.value?.[item.field]) ? realtime.value[item.field] : []
+      }))
       .filter((item) => item.data.length > 0)
   })
 
   const metrics = computed(() => [
     {
-      label: '当前状态',
+      label: monitoringCopy.heroStatusLabel,
       value: stateLabel.value,
-      meta: `当前会话：${runStatus.current_session_id || monitoringCopy.noSession}`
+      meta: `当前会话：${currentSessionId.value}`
     },
     {
       label: '风险评分',
@@ -110,8 +162,8 @@ export function useMonitoringDashboard() {
     },
     {
       label: '在线模型',
-      value: selectedModel.value || monitoringCopy.noSelection,
-      meta: `数据来源：${selectedBackend.value === 'replay' ? 'Replay CSV' : 'PX4 SITL'}`
+      value: activeModelLabel.value,
+      meta: `数据源：${selectedBackendLabel.value}`
     },
     {
       label: '最近样本',
@@ -185,7 +237,7 @@ export function useMonitoringDashboard() {
       try {
         await refreshDashboard()
       } catch {
-        // 轮询错误延迟到用户主动操作时提示，避免持续刷屏
+        // Polling errors are surfaced on user-triggered actions.
       }
     }, 4000)
   }
@@ -207,7 +259,7 @@ export function useMonitoringDashboard() {
         await telemetryApi.startCollection({
           drone_id: 'DRONE-001',
           session_type: 'simulation',
-          sim_time: selectedDuration.value,
+          sim_time: selectedBackend.value === 'replay' ? 0 : selectedDuration.value,
           backend: selectedBackend.value,
           replay_path: selectedBackend.value === 'replay'
             ? replayAsset?.meta?.prepared_csv_path || replayAsset?.stored_path
@@ -275,9 +327,7 @@ export function useMonitoringDashboard() {
             }
           })
         } catch (error) {
-          if (error?.message && error.message !== 'cancel') {
-            throw error
-          }
+          if (error?.message && error.message !== 'cancel') throw error
         }
       } catch (error) {
         if (error?.message !== 'cancel') {
@@ -338,31 +388,38 @@ export function useMonitoringDashboard() {
 
   return {
     actionLoading,
+    activeModelLabel,
     alerts,
     backendOptions,
     blindTestEnabled,
     continueDiagnosis,
+    currentSessionId,
     currentState,
     detailVisible,
+    faultPeakText,
     loadSessions,
     metrics,
     onlineModels,
     openSessionDetail,
     replayAssets,
-    realtimeChartFields,
-    realtimeChartSeries,
     realtimeChartTimes,
-    realtimeFieldOptions,
+    realtimeFaultProb,
+    realtimeAttitudeSeries,
+    realtimeMotorSeries,
+    realtimePositionSeries,
     sampleSummaryItems,
     selectedBackend,
+    selectedBackendLabel,
     selectedDuration,
     selectedModel,
     selectedReplayAssetId,
+    sessionBridgeText,
     sessionDetail,
     sessions,
     startBlindTest,
     startCollection,
     startDetection,
+    stateLabel,
     stopCollection,
     stopDetection
   }
