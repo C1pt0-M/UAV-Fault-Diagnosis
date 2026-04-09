@@ -2,7 +2,9 @@
   <div class="app-shell">
     <aside class="shell-sidebar">
       <div class="brand-card">
-        <div class="brand-mark">U</div>
+        <div class="brand-mark brand-mark--plain">
+          <img class="brand-mark__logo" :src="brandLogo" alt="智诊天眸 Logo" />
+        </div>
         <div>
           <div class="brand-title">智诊天眸</div>
           <div class="brand-subtitle">基于数据驱动的无人机故障检测系统</div>
@@ -62,6 +64,8 @@ import {
   getRoleLabel,
   parseStoredUser
 } from '@/shared/utils/user'
+
+const brandLogo = new URL('../../智诊天眸_logo.png', import.meta.url).href
 
 const route = useRoute()
 const router = useRouter()
@@ -126,12 +130,22 @@ async function logout() {
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.15);
-  font-size: 24px;
-  font-weight: 800;
+  width: 68px;
+  height: 68px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brand-mark--plain {
+  background: transparent;
+  border-radius: 0;
+}
+
+.brand-mark__logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .brand-title {
