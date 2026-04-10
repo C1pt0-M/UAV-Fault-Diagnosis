@@ -502,6 +502,51 @@ class AIAssistantService:
             parts.append(scene_context.run.task)
         return " ".join(part for part in parts if part)
 
+    def _looks_like_general_knowledge_question(self, message: str) -> bool:
+        text = str(message or "").strip()
+        if not text:
+            return False
+        keywords = (
+            "表现",
+            "症状",
+            "原因",
+            "怎么修",
+            "如何修",
+            "如何处理",
+            "如何排查",
+            "是什么",
+            "有哪些",
+            "原理",
+        )
+        return any(keyword in text for keyword in keywords)
+
+    def _scene_prompt_guidance(
+        self, *, scene_context: SceneContext, user_message: str
+    ) -> str:
+        if scene_context.scene == "report_analysis":
+            return (
+                "当前场景为报告分析。\n"
+                "如果用户继续追问“如何修复、如何排查、下一步怎么做”这类问题，"
+                "请优先给出可执行的检查与修复建议，并尽量按步骤组织答案。\n"
+                "当现有报告无法唯一确定故障根因时，也应先给出基于当前证据的分步骤排查路径，"
+                "再说明哪些步骤需要人工复核，而不是直接拒绝回答。"
+            )
+
+        if scene_context.scene == "general" and self._looks_like_general_knowledge_question(user_message):
+            return (
+                "当前场景为通用问答，且没有绑定具体报告或任务。\n"
+                "请直接按无人机故障诊断领域的一般知识回答用户问题，"
+                "不要默认把回答收束成“请绑定 report_id 或 run_id”。\n"
+                "如果用户询问表现、原因、排查、修复等内容，可以给出通用且可执行的检查建议，"
+                "同时明确这些建议属于一般性说明。"
+            )
+
+        return (
+            "当前场景为通用问答。\n"
+            "若缺少具体报告或任务上下文，请优先给出一般性领域知识回答，"
+            "只有在用户明确要求结合当前系统记录做判断时，才提示绑定 report_id 或 run_id。"
+        )
+
     def _format_knowledge_context(self, items: list[dict]) -> list[str]:
         blocks = []
         for idx, item in enumerate(items, start=1):
@@ -573,9 +618,9 @@ class AIAssistantService:
     ) -> str:
         knowledge_enabled = bool(self._config().get("AI_ENABLE_KNOWLEDGE_BASE", False))
         knowledge_enabled = bool(self._config().get("AI_ENABLE_KNOWLEDGE_BASE", False))
-        conclusion = "\u5f53\u524d\u6ca1\u6709\u7ed1\u5b9a\u5177\u4f53\u62a5\u544a\u6216\u4efb\u52a1\uff0c\u6211\u53ea\u80fd\u7ed9\u51fa\u4e00\u822c\u6027\u5224\u65ad\u3002"
+        conclusion = "\u5f53\u524d\u6211\u5c06\u57fa\u4e8e\u901a\u7528\u65e0\u4eba\u673a\u6545\u969c\u8bca\u65ad\u77e5\u8bc6\u7ed9\u51fa\u4e00\u822c\u6027\u5224\u65ad\u3002"
         reason = "\u5f53\u524d\u4e3b\u8981\u4f9d\u636e\u4f60\u7684\u95ee\u9898\u548c\u7cfb\u7edf\u91cc\u5df2\u6709\u7684\u4e0a\u4e0b\u6587\u4fe1\u606f\u3002"
-        advice = "\u5efa\u8bae\u7ed1\u5b9a\u5177\u4f53 report_id \u6216 run_id \u540e\u518d\u7ee7\u7eed\u5206\u6790\u3002"
+        advice = "\u5efa\u8bae\u5148\u6839\u636e\u5f53\u524d\u7ed9\u51fa\u7684\u901a\u7528\u68c0\u67e5\u9879\u8fdb\u884c\u6392\u67e5\uff0c\u82e5\u9700\u7ed3\u5408\u5177\u4f53\u65e5\u5fd7\u6216\u62a5\u544a\u505a\u7cbe\u786e\u5224\u65ad\uff0c\u518d\u7ed1\u5b9a report_id \u6216 run_id\u3002"
 
         if scene_context.report is not None:
             conclusion = (
@@ -590,6 +635,16 @@ class AIAssistantService:
             )
             reason = "\u8fd9\u4e00\u5224\u65ad\u4e3b\u8981\u4f9d\u636e\u4efb\u52a1\u72b6\u6001\u3001\u8fdb\u5ea6\u548c\u5173\u8054\u7ed3\u679c\u6458\u8981\u3002"
             advice = "\u5efa\u8bae\u7ed3\u5408\u4efb\u52a1\u7ed3\u8bba\u4e0e\u5173\u8054\u8d44\u4ea7\u7ee7\u7eed\u5206\u6790\uff0c\u5fc5\u8981\u65f6\u751f\u6210\u62a5\u544a\u540e\u518d\u8ffd\u95ee\u3002"
+        elif scene_context.scene == "general" and self._looks_like_general_knowledge_question(message):
+            text = str(message or "")
+            if "电机" in text:
+                conclusion = "\u7535\u673a\u6545\u969c\u901a\u5e38\u4f1a\u8868\u73b0\u4e3a\u632f\u52a8\u589e\u5927\u3001\u5f02\u54cd\u3001\u8f6c\u901f\u4e0d\u7a33\u3001\u63a8\u529b\u4e0b\u964d\u6216\u8fc7\u70ed\u3002"
+                reason = "\u8fd9\u4e9b\u8868\u73b0\u901a\u5e38\u4e0e\u8f74\u627f\u78e8\u635f\u3001\u87ba\u65cb\u6868\u5931\u8861\u3001\u7535\u673a\u7ed5\u7ec4\u5f02\u5e38\u6216 ESC \u8f93\u51fa\u5f02\u5e38\u6709\u5173\uff0c\u56e0\u6b64\u4f1a\u540c\u65f6\u53cd\u6620\u5728\u52a8\u529b\u3001\u632f\u52a8\u548c\u7535\u6c14\u53c2\u6570\u4e0a\u3002"
+                advice = "\u5efa\u8bae\u4f18\u5148\u68c0\u67e5\u7535\u673a\u4e0e\u87ba\u65cb\u6868\u7684\u7269\u7406\u72b6\u6001\uff0c\u540c\u65f6\u89c2\u5bdf\u8f6c\u901f\u3001\u7535\u6d41\u3001\u632f\u52a8\u548c\u6e29\u5ea6\u7b49\u53c2\u6570\u662f\u5426\u5f02\u5e38\uff1b\u82e5\u6709\u65e5\u5fd7\u6216\u62a5\u544a\uff0c\u53ef\u7ee7\u7eed\u7ed3\u5408\u5177\u4f53\u6570\u636e\u5b9a\u4f4d\u6545\u969c\u539f\u56e0\u3002"
+            elif "修复" in text or "排查" in text:
+                conclusion = "\u6545\u969c\u4fee\u590d\u4e00\u822c\u9700\u8981\u5148\u5224\u5b9a\u95ee\u9898\u51fa\u5728\u54ea\u4e2a\u90e8\u4ef6\uff0c\u518d\u9488\u5bf9\u6027\u5904\u7406\u3002"
+                reason = "\u65e0\u4eba\u673a\u6545\u969c\u5f80\u5f80\u5305\u62ec\u7535\u673a\u3001\u4f20\u611f\u5668\u3001\u4f9b\u7535\u6216\u63a7\u5236\u94fe\u8def\u7b49\u591a\u79cd\u539f\u56e0\uff0c\u5982\u679c\u4e0d\u5148\u505a\u57fa\u672c\u6392\u67e5\uff0c\u76f4\u63a5\u66f4\u6362\u90e8\u4ef6\u5bb9\u6613\u5bfc\u81f4\u8bef\u5224\u3002"
+                advice = "\u5efa\u8bae\u5148\u68c0\u67e5\u8fde\u63a5\u72b6\u6001\u3001\u4f9b\u7535\u3001\u4f20\u611f\u5668\u8bfb\u6570\u3001\u6267\u884c\u5668\u8f93\u51fa\u548c\u663e\u8457\u7684\u673a\u68b0\u635f\u4f24\uff0c\u518d\u6839\u636e\u75c7\u72b6\u51b3\u5b9a\u662f\u6821\u51c6\u3001\u7ef4\u4fee\u8fd8\u662f\u66f4\u6362\u90e8\u4ef6\u3002"
 
         if knowledge_hits:
             reason += " \u540c\u65f6\u547d\u4e2d\u4e86\u8865\u5145\u77e5\u8bc6\u5e93\u5185\u5bb9\uff0c\u53ef\u4f5c\u4e3a\u539f\u56e0\u89e3\u91ca\u548c\u5904\u7406\u5efa\u8bae\u7684\u8f85\u52a9\u4f9d\u636e\u3002"
@@ -728,6 +783,13 @@ class AIAssistantService:
         history = self._history_messages(conversation)
         return [
             {"role": "system", "content": SYSTEM_PROMPT},
+            {
+                "role": "system",
+                "content": self._scene_prompt_guidance(
+                    scene_context=scene_context,
+                    user_message=user_message,
+                ),
+            },
             {
                 "role": "system",
                 "content": (
