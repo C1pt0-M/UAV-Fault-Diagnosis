@@ -3,10 +3,10 @@
     <section class="login-card">
       <div class="login-card__hero">
         <span class="login-card__tag">登录入口</span>
-        <h1>故障诊断系统</h1>
+        <h1>智诊天眸</h1>
         <p>
-          面向运维与演示人员的统一入口。登录后可进入总览、实时监测、诊断中心、
-          资产与报告以及 AI 助手模块。
+          基于数据驱动的无人机故障检测系统统一入口。登录后可进入总览、实时监测、
+          诊断中心、资产中心、诊断报告以及 AI 助手模块。
         </p>
       </div>
 
