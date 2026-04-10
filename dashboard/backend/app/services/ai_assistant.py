@@ -99,7 +99,7 @@ class AIAssistantService:
         blocks = [
             "【诊断报告】",
             f"报告ID: {report.id}",
-            f"任务ID: {report.run_id}",
+            f"资产ID: {report.asset_id}",
             f"模型: {report.model_name}",
             f"主要结论: {report.prediction_label}",
             f"置信度: {report.confidence:.4f}",
@@ -117,7 +117,7 @@ class AIAssistantService:
             if isinstance(evidence, list) and evidence:
                 metrics = [
                     str(item.get("metric") or "").strip()
-                    for item in evidence[:4]
+                    for item in evidence[:2]
                     if isinstance(item, dict) and str(item.get("metric") or "").strip()
                 ]
                 if metrics:
@@ -126,19 +126,13 @@ class AIAssistantService:
         if isinstance(recommendations, list) and recommendations:
             recommendation_titles = [
                 str(item.get("title") or "").strip()
-                for item in recommendations[:3]
+                for item in recommendations[:2]
                 if isinstance(item, dict) and str(item.get("title") or "").strip()
             ]
             if recommendation_titles:
                 blocks.append(f"处置建议: {'；'.join(recommendation_titles)}")
 
         if isinstance(decision, dict):
-            blocks.append(
-                "统一决策结论: "
-                f"state={decision.get('state') or '-'}"
-                f", severity={decision.get('severity') or '-'}"
-                f", warning_stage={decision.get('warning_stage') or '-'}"
-            )
             if decision.get("warning_reason"):
                 blocks.append(f"统一决策说明: {decision.get('warning_reason')}")
 
@@ -146,7 +140,7 @@ class AIAssistantService:
             if isinstance(evidence_summary, dict):
                 top_evidence = evidence_summary.get("top_evidence") or []
                 metrics = []
-                for item in top_evidence[:4]:
+                for item in top_evidence[:2]:
                     if not isinstance(item, dict):
                         continue
                     metric = str(item.get("metric") or "").strip()
@@ -245,7 +239,10 @@ class AIAssistantService:
             if run is None and report.run_id:
                 run = self._get_run(report.run_id)
 
-        if run is not None:
+        include_run_context = run is not None and not (
+            scene == "report_analysis" and report is not None
+        )
+        if include_run_context:
             run_blocks, run_citations = self._build_run_context(run)
             blocks.extend(run_blocks)
             citations.extend(run_citations)
