@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import inspect
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -45,7 +46,16 @@ class OfficialRflyAttachSession:
         self._true_started = False
 
     def start(self):
-        self.mav = self.module.PX4MavCtrler(self.test_id, self.port, self.ip)
+        ctor = self.module.PX4MavCtrler
+        params = list(inspect.signature(ctor.__init__).parameters.keys())
+        # Support both common official signatures:
+        # 1) PX4MavCtrler(port, ip)
+        # 2) PX4MavCtrler(test_id, port, ip)
+        if len(params) >= 4:
+            self.mav = ctor(self.test_id, self.port, self.ip)
+        else:
+            ip_arg = f"{self.ip}:{self.test_id}"
+            self.mav = ctor(self.port, ip_arg)
         self.mav.InitMavLoop(self.udp_mode)
         self._mav_started = True
         self.mav.InitTrueDataLoop()

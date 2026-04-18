@@ -17,6 +17,13 @@ from collections import deque
 from telemetry.config import AUX_COLUMNS, FEATURE_COLUMNS, UDP_FORWARD_PORT
 
 
+def _coerce_seq(value, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return int(default)
+
+
 class TelemetryReceiver:
 
     def __init__(self, port: int, csv_path: str, window_size: int, auto_stop: float = 5.0,
@@ -71,7 +78,7 @@ class TelemetryReceiver:
                 count += 1
 
                 # 丢包检测
-                seq = row.get("seq", expected_seq)
+                seq = _coerce_seq(row.get("seq", expected_seq), expected_seq)
                 if seq > expected_seq:
                     lost += seq - expected_seq
                 expected_seq = seq + 1

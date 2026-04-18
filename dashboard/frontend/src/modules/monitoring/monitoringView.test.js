@@ -14,8 +14,8 @@ describe('monitoring deployment capability helpers', () => {
     })
 
     expect(options).toEqual([
-      { label: 'PX4 SITL', value: 'px4' },
-      { label: 'Replay CSV', value: 'replay' }
+      { label: 'RflySim', value: 'rfly' },
+      { label: 'CSV 回放', value: 'replay' }
     ])
   })
 
@@ -23,8 +23,8 @@ describe('monitoring deployment capability helpers', () => {
     const options = resolveMonitoringBackendOptions({})
 
     expect(options).toEqual([
-      { label: 'PX4 SITL', value: 'px4' },
-      { label: 'Replay CSV', value: 'replay' }
+      { label: 'RflySim', value: 'rfly' },
+      { label: 'CSV 回放', value: 'replay' }
     ])
   })
 

@@ -31,6 +31,7 @@
       v-model:selected-duration="selectedDuration"
       v-model:selected-model="selectedModel"
       v-model:selected-replay-asset-id="selectedReplayAssetId"
+      v-model:rfly-px4mavctrl-path="rflyPx4mavctrlPath"
       :action-loading="actionLoading"
       :backend-options="backendOptions"
       :blind-test-enabled="blindTestEnabled"
@@ -104,6 +105,7 @@ const {
   realtimeAttitudeSeries,
   realtimeMotorSeries,
   realtimePositionSeries,
+  rflyPx4mavctrlPath,
   sampleSummaryItems,
   selectedBackend,
   selectedBackendLabel,

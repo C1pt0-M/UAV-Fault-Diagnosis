@@ -42,6 +42,7 @@ export function useMonitoringDashboard() {
   const selectedDuration = ref(60)
   const selectedModel = ref('')
   const selectedReplayAssetId = ref(null)
+  const rflyPx4mavctrlPath = ref('')
 
   let pollTimer = null
 
@@ -81,7 +82,7 @@ export function useMonitoringDashboard() {
     if (Number.isNaN(raw)) return NaN
 
     const backend = String(runStatus.scenario_backend || '').toLowerCase()
-    if (backend === 'px4') return -raw
+    if (backend === 'px4' || backend === 'rfly') return -raw
 
     if (backend === 'replay') {
       const series = (Array.isArray(realtime.value?.pos_z) ? realtime.value.pos_z : [])
@@ -255,6 +256,7 @@ export function useMonitoringDashboard() {
       }
 
       const replayAsset = replayAssets.value.find((item) => item.id === selectedReplayAssetId.value)
+      const rflyPath = String(rflyPx4mavctrlPath.value || '').trim()
       try {
         await telemetryApi.startCollection({
           drone_id: 'DRONE-001',
@@ -263,6 +265,9 @@ export function useMonitoringDashboard() {
           backend: selectedBackend.value,
           replay_path: selectedBackend.value === 'replay'
             ? replayAsset?.meta?.prepared_csv_path || replayAsset?.stored_path
+            : undefined,
+          rfly_px4mavctrl_path: selectedBackend.value === 'rfly' && rflyPath
+            ? rflyPath
             : undefined
         })
         ElMessage.success(monitoringCopy.startCollectionSuccess)
@@ -407,6 +412,7 @@ export function useMonitoringDashboard() {
     realtimeAttitudeSeries,
     realtimeMotorSeries,
     realtimePositionSeries,
+    rflyPx4mavctrlPath,
     sampleSummaryItems,
     selectedBackend,
     selectedBackendLabel,

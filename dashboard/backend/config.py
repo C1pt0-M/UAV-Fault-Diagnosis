@@ -211,6 +211,27 @@ class Config:
     )
     PX4_SYS_AUTOSTART = os.getenv('PX4_SYS_AUTOSTART', '4001')
     PX4_SIM_TARGET = os.getenv('PX4_SIM_TARGET', 'gz_x500_lawn')
+    RFLY_PX4MAVCTRL_PATH = _resolve_optional_path(
+        'RFLY_PX4MAVCTRL_PATH',
+        '',
+        base_dir=_REPO_ROOT_PATH,
+    )
+    RFLY_BRIDGE_SCRIPT = _resolve_optional_path(
+        'RFLY_BRIDGE_SCRIPT',
+        '',
+        base_dir=_REPO_ROOT_PATH,
+    )
+    RFLY_FORWARD_HOST = os.getenv('RFLY_FORWARD_HOST', '127.0.0.1')
+    RFLY_FORWARD_PORT = int(os.getenv('RFLY_FORWARD_PORT', '15550'))
+    RFLY_EMIT_RATE_HZ = int(os.getenv('RFLY_EMIT_RATE_HZ', '50'))
+    RFLY_RPM_SCALE = float(os.getenv('RFLY_RPM_SCALE', '10000.0'))
+    RFLY_TEST_ID = int(os.getenv('RFLY_TEST_ID', '1'))
+    RFLY_UDP_PORT = int(os.getenv('RFLY_UDP_PORT', '20100'))
+    RFLY_UDP_MODE = int(os.getenv('RFLY_UDP_MODE', '2'))
+    RFLY_MAV_IP = os.getenv('RFLY_MAV_IP', '127.0.0.1')
+    RFLY_PYMAV_ADDRESS = os.getenv('RFLY_PYMAV_ADDRESS', 'udpin:0.0.0.0:14030')
+    RFLY_ENABLE_PYMAV = _get_env_bool('RFLY_ENABLE_PYMAV', True)
+    RFLY_RECEIVER_TIMEOUT_S = float(os.getenv('RFLY_RECEIVER_TIMEOUT_S', '60.0'))
     FAULT_DATASET_ROOT = _resolve_optional_path(
         'FAULT_DATASET_ROOT',
         '',
@@ -278,7 +299,7 @@ class DevelopmentConfig(Config):
     ENABLE_SETUP_API = True
     ENABLE_PUBLIC_REGISTER = True
     ENABLE_BLIND_TEST = True
-    TELEMETRY_ALLOWED_BACKENDS = ('replay', 'px4')
+    TELEMETRY_ALLOWED_BACKENDS = ('replay', 'rfly')
 
 
 class ProductionConfig(Config):

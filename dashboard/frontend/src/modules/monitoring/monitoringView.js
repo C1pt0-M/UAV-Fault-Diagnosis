@@ -1,6 +1,6 @@
 export const monitoringBackendOptions = [
-  { label: 'PX4 SITL', value: 'px4' },
-  { label: 'Replay CSV', value: 'replay' }
+  { label: 'RflySim', value: 'rfly' },
+  { label: 'CSV 回放', value: 'replay' }
 ]
 
 export const monitoringDurationOptions = [
@@ -30,6 +30,7 @@ export const monitoringCopy = {
   controlDescription: '在同一处完成数据源选择、在线模型切换与采集 / 检测控制。',
   modelPlaceholder: '选择在线模型',
   replayAssetPlaceholder: '选择回放资产',
+  rflyPx4MavCtrlPlaceholder: 'PX4MavCtrlV4.py 路径（可选，默认读取后端配置）',
   startCollectionLabel: '启动采集',
   startDetectionLabel: '启动检测',
   startBlindTestLabel: '启动盲测',
@@ -69,7 +70,7 @@ export const monitoringCopy = {
   noSelection: '未选择',
   noValue: '暂无',
 
-  backendNotAllowed: '当前环境未开放该后端，请使用 Replay CSV',
+  backendNotAllowed: '当前环境未开放该后端，请使用 CSV 回放',
   replayAssetRequired: '请选择回放资产',
   startCollectionSuccess: '遥测采集已启动',
   startDetectionSuccess: '在线检测已启动',

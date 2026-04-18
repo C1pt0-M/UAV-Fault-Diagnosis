@@ -31,7 +31,11 @@ from app.services.diagnosis_contract import (
     normalize_recommendations,
 )
 from app.services.model_registry import resolve_registered_model
-from app.services.telemetry_backends import PX4ScenarioBackend, ReplayScenarioBackend
+from app.services.telemetry_backends import (
+    PX4ScenarioBackend,
+    ReplayScenarioBackend,
+    RflyScenarioBackend,
+)
 from app.utils.path_store import resolve_local_path, serialize_local_path
 from telemetry.receiver import TelemetryReceiver
 from telemetry.replay_metrics import gt_event_metrics
@@ -628,6 +632,12 @@ class TelemetryProcessManager:
             return "degraded"
         if self._backend_name == "replay" and self.is_collecting:
             return "connected"
+        if (
+            self._backend_name == "rfly"
+            and self.is_collecting
+            and processes.get("rfly_bridge") == "running"
+        ):
+            return "connected"
         if self.is_collecting and processes.get("collector") == "running":
             return "connected"
         if self.is_collecting:
@@ -963,6 +973,7 @@ class TelemetryProcessManager:
         sim_time: float = 120.0,
         backend: str = "px4",
         replay_path: str | None = None,
+        rfly_options: dict | None = None,
     ) -> dict:
         if self.is_collecting:
             raise RuntimeError("采集已在运行中，请先停止当前会话")
@@ -984,9 +995,13 @@ class TelemetryProcessManager:
                 else str(replay_path).strip()
             )
         backend_options = {"replay_path": replay_path_resolved}
-        backend_cls = {"px4": PX4ScenarioBackend, "replay": ReplayScenarioBackend}.get(
-            backend_name
-        )
+        if backend_name == "rfly":
+            backend_options.update(rfly_options or {})
+        backend_cls = {
+            "px4": PX4ScenarioBackend,
+            "replay": ReplayScenarioBackend,
+            "rfly": RflyScenarioBackend,
+        }.get(backend_name)
         if backend_cls is None:
             raise RuntimeError(f"不支持的 backend: {backend_name}")
         backend_instance = backend_cls(

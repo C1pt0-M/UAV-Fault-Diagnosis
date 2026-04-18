@@ -32,7 +32,7 @@ const dashboardState = vi.hoisted(() => ({
   stopDetection: vi.fn(),
   continueDiagnosis: vi.fn(),
   stateLabel: '检测中',
-  statusMeta: 'Replay CSV / online_detector_cnn1d_rfly',
+  statusMeta: 'CSV 回放 / online_detector_cnn1d_rfly',
   faultPeakText: '0.83',
   sessionBridgeText: '支持承接到离线诊断'
 }))

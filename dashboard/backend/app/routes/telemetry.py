@@ -27,6 +27,7 @@ def _telemetry_capabilities() -> dict:
         'enabled': bool(current_app.config.get('ENABLE_TELEMETRY', True)),
         'allowed_backends': allowed_backends,
         'px4_enabled': 'px4' in allowed_backends,
+        'rfly_enabled': 'rfly' in allowed_backends,
         'blind_test_enabled': bool(current_app.config.get('ENABLE_BLIND_TEST', False)),
     }
 
@@ -46,6 +47,9 @@ def start_collection(current_user):
     default_backend = allowed_backend_list[0] if allowed_backend_list else 'replay'
     backend = str(data.get('backend', default_backend) or default_backend).strip().lower()
     replay_path = data.get('replay_path')
+    rfly_options = {
+        'px4mavctrl_path': data.get('rfly_px4mavctrl_path'),
+    }
 
     try:
         sim_time = float(sim_time_raw)
@@ -60,8 +64,8 @@ def start_collection(current_user):
         # replay 模式按整段 CSV 回放，sim_time 仅用于兼容字段。
         if sim_time is None:
             sim_time = 0.0
-    if backend not in {'px4', 'replay'}:
-        return _error('backend 仅支持 px4 或 replay')
+    if backend not in {'px4', 'rfly', 'replay'}:
+        return _error('backend 仅支持 px4、rfly 或 replay')
     if backend not in allowed_backends:
         return _error('backend_not_allowed')
     if backend == 'replay' and not str(replay_path or '').strip():
@@ -75,6 +79,7 @@ def start_collection(current_user):
             sim_time=sim_time,
             backend=backend,
             replay_path=replay_path,
+            rfly_options=rfly_options,
         )
         return _ok(result, '数据采集已启动')
     except RuntimeError as e:

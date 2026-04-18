@@ -71,6 +71,14 @@
               :value="asset.id"
             />
           </el-select>
+
+          <el-input
+            v-if="selectedBackend === 'rfly'"
+            v-model="rflyPx4mavctrlPath"
+            clearable
+            style="width: 360px"
+            :placeholder="monitoringCopy.rflyPx4MavCtrlPlaceholder"
+          />
         </div>
 
         <div class="monitoring-controls__actions">
@@ -126,6 +134,7 @@
 <script setup>
 import { computed } from 'vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
+import ElInput from 'element-plus/es/components/input/index.mjs'
 import { ElOption, ElSelect } from 'element-plus/es/components/select/index.mjs'
 import {
   monitoringBackendOptions,
@@ -155,6 +164,7 @@ const selectedBackend = defineModel('selectedBackend', { type: String, required:
 const selectedDuration = defineModel('selectedDuration', { type: Number, required: true })
 const selectedModel = defineModel('selectedModel', { type: String, required: true })
 const selectedReplayAssetId = defineModel('selectedReplayAssetId', { default: null })
+const rflyPx4mavctrlPath = defineModel('rflyPx4mavctrlPath', { type: String, default: '' })
 
 const currentStateText = computed(() => monitoringStateLabels[props.currentState] || props.currentState)
 const currentBackendLabel = computed(() => {

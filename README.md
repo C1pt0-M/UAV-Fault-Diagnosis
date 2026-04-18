@@ -32,6 +32,7 @@ UAV-Fault-Diagnosis/
 - Frontend：`dashboard/frontend`
 - 默认后端地址：`http://localhost:5000`
 - 默认前端地址：`http://localhost:5173`
+- 实时数据源：支持 `RflySim` 仿真接入与 `CSV` 回放；本地接入 `RflySim` 时需要在后端配置 `RFLY_PX4MAVCTRL_PATH`
 
 ## 环境要求
 
@@ -66,6 +67,15 @@ cd .\dashboard\frontend
 npm install
 cd ..\..
 ```
+
+如果要启用 `RflySim` 实时接入，确认 `dashboard/backend/.env` 中至少包含：
+
+```powershell
+TELEMETRY_ALLOWED_BACKENDS=rfly,replay
+RFLY_PX4MAVCTRL_PATH=D:\BuaaAutoTestPlatForm\AutoTestAPI\PX4MavCtrlV4.py
+```
+
+先启动官方 `RflySim` 环境，再在 Dashboard 的“在线监测”页选择 `RflySim` 并启动采集。
 
 一键启动前后端：
 

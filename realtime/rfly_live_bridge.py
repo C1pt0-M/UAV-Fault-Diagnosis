@@ -109,6 +109,13 @@ class RflyLiveBridge:
         self.rpm_scale = float(rpm_scale)
         self._forwarder = UDPForwarder(forward_host, int(forward_port))
         self._start_wall = time.time()
+        self._prev_recv_time_s: float | None = None
+        self._prev_roll: float | None = None
+        self._prev_pitch: float | None = None
+        self._prev_yaw: float | None = None
+        self._prev_vx: float | None = None
+        self._prev_vy: float | None = None
+        self._prev_vz: float | None = None
 
     def close(self) -> None:
         self._forwarder.close()
@@ -121,16 +128,87 @@ class RflyLiveBridge:
 
     def _time_s_from_state(self, mav_state: dict[str, Any]) -> float:
         true_time = _safe_float(mav_state.get("trueTimeStmp"), default=-1.0)
-        if true_time >= 0.0:
+        if true_time > 1e-6:
             return true_time
         uav_time = _safe_float(mav_state.get("uavTimeStmp"), default=-1.0)
-        if uav_time >= 0.0:
+        if uav_time > 1e-6:
             return uav_time
+        recv_time = _safe_float(mav_state.get("recv_time_s"), default=-1.0)
+        if recv_time >= 0.0:
+            return recv_time
         return max(0.0, time.time() - self._start_wall)
 
     @staticmethod
+    def _ctrl_to_motor(value: float) -> float:
+        return max(0.0, min(1.0, (value + 1.0) / 2.0))
+
+    def _apply_fallbacks(self, frame: dict[str, float], pymav_frame: dict[str, Any]) -> None:
+        recv_time = frame.get("recv_time_s", 0.0)
+        dt = None
+        if self._prev_recv_time_s is not None:
+            dt = recv_time - self._prev_recv_time_s
+            if dt <= 1e-6:
+                dt = None
+
+        # Fallback motor outputs from ESC RPM first, then actuator controls.
+        for idx in range(1, 5):
+            motor_key = f"motor{idx}"
+            if abs(frame.get(motor_key, 0.0)) > 1e-9:
+                continue
+            esc_key = f"esc_rpm_{idx}"
+            esc_rpm = _safe_float(pymav_frame.get(esc_key), default=0.0)
+            if esc_rpm > 0.0:
+                frame[motor_key] = self._normalize_motor_rpm(esc_rpm)
+                continue
+            ctrl_key = f"actuator_ctrl_{idx}"
+            ctrl_val = _safe_float(frame.get(ctrl_key), default=0.0)
+            if abs(ctrl_val) <= 1e-9:
+                ctrl_val = _safe_float(pymav_frame.get(ctrl_key), default=0.0)
+            if abs(ctrl_val) > 1e-9:
+                frame[motor_key] = self._ctrl_to_motor(ctrl_val)
+
+        # Fallback body rates from Euler differences.
+        if dt is not None and all(abs(frame.get(key, 0.0)) <= 1e-9 for key in ("rollspeed", "pitchspeed", "yawspeed")):
+            if self._prev_roll is not None:
+                frame["rollspeed"] = (frame.get("roll", 0.0) - self._prev_roll) / dt
+            if self._prev_pitch is not None:
+                frame["pitchspeed"] = (frame.get("pitch", 0.0) - self._prev_pitch) / dt
+            if self._prev_yaw is not None:
+                frame["yawspeed"] = (frame.get("yaw", 0.0) - self._prev_yaw) / dt
+
+        # Keep gyro aligned with angular rates when unavailable.
+        if all(abs(frame.get(key, 0.0)) <= 1e-9 for key in ("gyro_x", "gyro_y", "gyro_z")):
+            frame["gyro_x"] = frame.get("rollspeed", 0.0)
+            frame["gyro_y"] = frame.get("pitchspeed", 0.0)
+            frame["gyro_z"] = frame.get("yawspeed", 0.0)
+
+        # Fallback acceleration from velocity differences.
+        if dt is not None and all(abs(frame.get(key, 0.0)) <= 1e-9 for key in ("accel_x", "accel_y", "accel_z")):
+            if self._prev_vx is not None:
+                frame["accel_x"] = (frame.get("vx", 0.0) - self._prev_vx) / dt
+            if self._prev_vy is not None:
+                frame["accel_y"] = (frame.get("vy", 0.0) - self._prev_vy) / dt
+            if self._prev_vz is not None:
+                frame["accel_z"] = (frame.get("vz", 0.0) - self._prev_vz) / dt
+
+        self._prev_recv_time_s = recv_time
+        self._prev_roll = frame.get("roll", 0.0)
+        self._prev_pitch = frame.get("pitch", 0.0)
+        self._prev_yaw = frame.get("yaw", 0.0)
+        self._prev_vx = frame.get("vx", 0.0)
+        self._prev_vy = frame.get("vy", 0.0)
+        self._prev_vz = frame.get("vz", 0.0)
+
+    @staticmethod
     def snapshot_mav_state(mav: Any) -> dict[str, Any]:
+        px4_controls = [0.0, 0.0, 0.0, 0.0]
+        px4ext = getattr(mav, "px4ext", None)
+        if px4ext is not None:
+            controls = list(getattr(px4ext, "controls", []) or [])
+            if controls:
+                px4_controls = controls[:4] + [0.0] * max(0, 4 - len(controls[:4]))
         return {
+            "recv_time_s": time.perf_counter(),
             "trueTimeStmp": getattr(mav, "trueTimeStmp", 0.0),
             "uavTimeStmp": getattr(mav, "uavTimeStmp", 0.0),
             "uavAngEular": list(getattr(mav, "uavAngEular", [0.0, 0.0, 0.0])),
@@ -141,6 +219,7 @@ class RflyLiveBridge:
             "trueMotorRPMS": list(
                 getattr(mav, "trueMotorRPMS", [0.0, 0.0, 0.0, 0.0])
             ),
+            "px4_controls": px4_controls,
         }
 
     def build_frame(
@@ -153,6 +232,7 @@ class RflyLiveBridge:
         frame: dict[str, float] = {
             "seq": float(self._forwarder._seq),
             "time_s": self._time_s_from_state(mav_state),
+            "recv_time_s": _safe_float(mav_state.get("recv_time_s"), default=0.0),
             "motor1": self._normalize_motor_rpm(_get_vector_component(mav_state, "trueMotorRPMS", 0)),
             "motor2": self._normalize_motor_rpm(_get_vector_component(mav_state, "trueMotorRPMS", 1)),
             "motor3": self._normalize_motor_rpm(_get_vector_component(mav_state, "trueMotorRPMS", 2)),
@@ -203,9 +283,13 @@ class RflyLiveBridge:
             "pymav_attitude_target_seen": 0.0,
             "pymav_actuator_control_seen": 0.0,
         }
+        px4_controls = list(mav_state.get("px4_controls", []) or [])
+        for idx in range(min(4, len(px4_controls))):
+            frame[f"actuator_ctrl_{idx + 1}"] = _safe_float(px4_controls[idx], default=0.0)
         for key in self.ENHANCED_FIELDS:
             if key in pymav_frame:
                 frame[key] = _safe_float(pymav_frame.get(key))
+        self._apply_fallbacks(frame, pymav_frame)
         return frame
 
     def emit_frame(
