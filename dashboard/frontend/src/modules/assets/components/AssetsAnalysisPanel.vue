@@ -183,31 +183,31 @@ const maxPointsModel = defineModel('analysisMaxPoints', { type: Number, default:
 <style scoped>
 .header-info { display: flex; flex-direction: column; gap: 4px; }
 .header-title-row { display: flex; align-items: center; gap: 12px; }
-.header-icon { font-size: 20px; color: var(--primary); }
+.header-icon { font-size: 20px; color: var(--brand); }
 
-.analysis-annotations { margin-bottom: 24px; padding: 20px; border-radius: 20px; background: rgba(239, 68, 68, 0.03); border: 1px solid rgba(239, 68, 68, 0.1); }
-.analysis-annotations__label { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 14px; font-weight: 700; color: var(--danger); }
+.analysis-annotations { margin-bottom: var(--space-2xl); padding: var(--space-lg); border-radius: var(--radius-lg); background: var(--status-danger-soft); border: 1px solid rgba(220, 38, 38, 0.18); }
+.analysis-annotations__label { display: flex; align-items: center; gap: 8px; margin-bottom: var(--space-lg); font-size: 13px; font-weight: 600; color: var(--status-danger); }
 .analysis-annotations__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-.annotation-card { position: relative; padding: 16px; background: white; border-radius: 16px; border: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: flex-start; }
+.annotation-card { position: relative; padding: var(--space-lg); background: var(--bg-panel); border-radius: var(--radius-md); border: 1px solid var(--line-soft); display: flex; justify-content: space-between; align-items: flex-start; }
 .annotation-card__main strong { display: block; font-size: 14px; margin-bottom: 4px; color: var(--text-primary); }
 .annotation-card__main small { font-size: 12px; color: var(--text-tertiary); font-family: var(--font-mono); }
 
-.analysis-grid-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 24px; padding: 24px; background: var(--bg-soft); border-radius: 20px; align-items: flex-end; }
+.analysis-grid-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-xl); margin-bottom: var(--space-2xl); padding: var(--space-xl); background: var(--bg-panel-raised); border: 1px solid var(--line-soft); border-radius: var(--radius-lg); align-items: flex-end; }
 .control-field { display: flex; flex-direction: column; gap: 8px; }
 .field-label { font-size: 12px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; }
 .range-inputs { display: flex; align-items: center; gap: 8px; }
 .range-sep { color: var(--text-tertiary); }
 .control-actions { display: flex; align-items: center; gap: 16px; }
 
-.analysis-probability-bar { margin: 12px 0 24px; display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; border-radius: 16px; background: #f8fafc; border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s ease; }
-.analysis-probability-bar.is-active { background: linear-gradient(90deg, #f0fdfa 0%, #faffff 100%); border-color: rgba(16, 185, 129, 0.2); }
+.analysis-probability-bar { margin: var(--space-md) 0 var(--space-2xl); display: flex; align-items: center; justify-content: space-between; padding: var(--space-md) var(--space-xl); border-radius: var(--radius-lg); background: var(--bg-panel-raised); border: 1px solid var(--line-soft); transition: all 0.3s ease; }
+.analysis-probability-bar.is-active { background: var(--status-ok-soft); border-color: rgba(22, 163, 74, 0.22); }
 .prob-label { font-size: 13px; font-weight: 700; color: var(--text-secondary); }
 .prob-values { display: flex; gap: 32px; }
 .prob-metric { display: flex; align-items: baseline; gap: 8px; }
 .prob-metric .label { font-size: 12px; color: var(--text-tertiary); }
 .prob-metric .value { font-size: 18px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); }
-.prob-metric .value.is-high { color: var(--danger); text-shadow: 0 0 12px rgba(239, 68, 68, 0.2); }
+.prob-metric .value.is-high { color: var(--status-danger); text-shadow: 0 0 12px rgba(220, 38, 38, 0.2); }
 .prob-empty { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-tertiary); }
 
-.chart-container { background: white; border-radius: 20px; border: 1px solid rgba(0,0,0,0.03); padding: 16px; }
+.chart-container { background: var(--bg-panel); border-radius: var(--radius-lg); border: 1px solid var(--line-soft); padding: var(--space-lg); }
 </style>

@@ -4,7 +4,8 @@ import {
   Document,
   Files,
   House,
-  Odometer
+  Odometer,
+  Setting
 } from '@element-plus/icons-vue'
 
 export const navigationItems = [
@@ -30,13 +31,6 @@ export const navigationItems = [
     matchPaths: ['/diagnosis']
   },
   {
-    key: 'model-compare',
-    label: '模型对比',
-    path: '/model-compare',
-    icon: DataAnalysis,
-    matchPaths: ['/model-compare']
-  },
-  {
     key: 'assets',
     label: '资产中心',
     path: '/assets',
@@ -56,6 +50,13 @@ export const navigationItems = [
     path: '/ai',
     icon: ChatDotRound,
     matchPaths: ['/ai']
+  },
+  {
+    key: 'settings',
+    label: '系统设置',
+    path: '/settings',
+    icon: Setting,
+    matchPaths: ['/settings']
   }
 ]
 
@@ -72,10 +73,6 @@ export const pageMeta = {
     title: '诊断中心',
     description: '执行离线诊断任务，联动会话追溯与诊断报告生成。'
   },
-  '/model-compare': {
-    title: '模型对比',
-    description: '对比当前重点离线模型在测试集与真实域上的关键指标。'
-  },
   '/assets': {
     title: '资产中心',
     description: '管理 ULG / CSV 日志资产，完成上传、预处理、下载与追踪。'
@@ -87,6 +84,10 @@ export const pageMeta = {
   '/ai': {
     title: 'AI 助手',
     description: '围绕报告、任务和知识库进行问答分析与原因解释。'
+  },
+  '/settings': {
+    title: '系统设置',
+    description: '管理系统参数、AI 配置与运行偏好。'
   }
 }
 

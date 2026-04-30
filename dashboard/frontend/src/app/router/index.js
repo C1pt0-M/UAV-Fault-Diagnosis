@@ -46,12 +46,6 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
-        path: 'model-compare',
-        name: 'ModelCompare',
-        component: () => import('@/modules/competition/ModelComparePage.vue'),
-        meta: { requiresAuth: true }
-      },
-      {
         path: 'assets',
         name: 'Assets',
         component: () => import('@/modules/assets/AssetsPage.vue'),
@@ -68,7 +62,13 @@ const routes = [
         name: 'AIAssistant',
         component: () => import('@/modules/ai/AIAssistantPage.vue'),
         meta: { requiresAuth: true }
-      }
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: () => import('@/modules/settings/SettingsPage.vue'),
+        meta: { requiresAuth: true }
+      },
     ]
   },
   { path: '/:pathMatch(.*)*', redirect: '/' }

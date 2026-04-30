@@ -5,7 +5,7 @@
         <div class="section-card__title">{{ diagnosisCopy.resultTitle }}</div>
         <div class="section-card__desc">{{ diagnosisCopy.resultDescription }}</div>
       </div>
-      <span class="diagnosis-result__status">{{ stage.label }}</span>
+      <span class="status-badge status-badge--active">{{ stage.label }}</span>
     </div>
     <div class="section-card__body">
       <template v-if="resultData">
@@ -23,7 +23,7 @@
         </div>
 
         <section class="two-column diagnosis-result__grid">
-          <article class="section-card diagnosis-result__panel diagnosis-result__panel--focus">
+          <article class="section-card diagnosis-result__panel section-card--accent">
             <div class="section-card__header">
               <div>
                 <div class="section-card__title">{{ diagnosisCopy.recommendationTitle }}</div>
@@ -160,70 +160,63 @@ const labelMeta = computed(() => getDiagnosisLabelMeta(props.resultData?.predict
   overflow: hidden;
 }
 
-.diagnosis-result__status {
-  display: inline-flex;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: var(--brand-soft);
-  color: var(--brand-strong);
-  font-size: 12px;
-  font-weight: 700;
-}
-
 .diagnosis-result__hero {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.8fr);
   gap: 16px;
-  padding: 22px;
-  border-radius: 22px;
-  background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.14), transparent 28%),
-    linear-gradient(135deg, #0f2f3d 0%, #0f766e 100%);
-  color: #f4fbfb;
+  padding: 18px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-lg);
+  background: var(--bg-panel-raised);
 }
 
 .diagnosis-result__eyebrow {
   display: inline-flex;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
-  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 11px;
   font-weight: 700;
 }
 
 .diagnosis-result__summary h3 {
-  margin: 14px 0 0;
-  font-size: 38px;
+  margin: 12px 0 0;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--text-primary);
 }
 
 .diagnosis-result__summary p {
-  margin: 12px 0 0;
-  line-height: 1.8;
-  color: rgba(244, 251, 251, 0.86);
+  margin: 10px 0 0;
+  line-height: 1.7;
+  color: var(--text-secondary);
 }
 
 .diagnosis-result__highlight {
-  padding: 18px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-panel);
+  border: 1px solid var(--line-strong);
 }
 
 .diagnosis-result__highlight span,
 .diagnosis-result__highlight small {
-  color: rgba(244, 251, 251, 0.78);
+  color: var(--text-tertiary);
 }
 
 .diagnosis-result__highlight strong {
   display: block;
-  margin-top: 10px;
-  font-size: 40px;
+  margin-top: 8px;
+  font-size: 34px;
   line-height: 1;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
 }
 
 .diagnosis-result__highlight small {
   display: block;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .diagnosis-result__grid {
@@ -235,14 +228,11 @@ const labelMeta = computed(() => getDiagnosisLabelMeta(props.resultData?.predict
   box-shadow: none;
 }
 
-.diagnosis-result__panel--focus {
-  background: linear-gradient(180deg, #fbfdfd 0%, #f3f8fa 100%);
-}
-
 .diagnosis-recommendation h4 {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1.3;
+  color: var(--text-primary);
 }
 
 .diagnosis-recommendation p {
@@ -255,7 +245,7 @@ const labelMeta = computed(() => getDiagnosisLabelMeta(props.resultData?.predict
   margin: 16px 0 0;
   padding-left: 18px;
   color: var(--text-secondary);
-  line-height: 1.9;
+  line-height: 1.8;
 }
 
 .probability-list {
@@ -269,19 +259,25 @@ const labelMeta = computed(() => getDiagnosisLabelMeta(props.resultData?.predict
   align-items: center;
   justify-content: space-between;
   margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.probability-row__head strong {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
 }
 
 .probability-row__track {
-  height: 10px;
-  border-radius: 999px;
-  background: #e8f1f2;
+  height: 8px;
+  border-radius: var(--radius-xs);
+  background: var(--bg-panel-strong);
   overflow: hidden;
 }
 
 .probability-row__fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #0f766e 0%, #1a9c90 100%);
+  background: var(--brand);
 }
 
 .diagnosis-result__actions {

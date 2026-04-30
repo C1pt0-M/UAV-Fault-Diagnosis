@@ -82,10 +82,11 @@ defineProps({
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #f8fbfc 0%, #eef6f7 100%);
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-panel-raised);
   border: 1px solid var(--line-soft);
+  border-left: 3px solid var(--brand);
   margin-bottom: 18px;
 }
 
@@ -101,7 +102,8 @@ defineProps({
 
 .diagnosis-status__hero h3 {
   margin: 12px 0 0;
-  font-size: 30px;
+  font-size: 26px;
+  color: var(--text-primary);
 }
 
 .diagnosis-status__hero p {
@@ -111,11 +113,11 @@ defineProps({
 }
 
 .diagnosis-status__progress {
-  min-width: 170px;
-  padding: 16px;
-  border-radius: 18px;
-  background: #ffffff;
-  border: 1px solid var(--line-soft);
+  min-width: 150px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-panel);
+  border: 1px solid var(--line-strong);
   text-align: center;
 }
 
@@ -140,15 +142,15 @@ defineProps({
 }
 
 .diagnosis-step {
-  padding: 14px 16px;
-  border-radius: 16px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--line-soft);
-  background: #fcfdfd;
+  background: var(--bg-panel-raised);
 }
 
 .diagnosis-step.is-active {
-  border-color: rgba(15, 118, 110, 0.28);
-  background: linear-gradient(180deg, #effaf7 0%, #ffffff 100%);
+  border-color: var(--brand);
+  background: var(--brand-glow);
 }
 
 .diagnosis-step span {
@@ -162,11 +164,11 @@ defineProps({
 }
 
 .diagnosis-status.is-completed .diagnosis-status__hero {
-  background: linear-gradient(180deg, #effaf6 0%, #e0f3eb 100%);
+  border-left-color: var(--status-ok);
 }
 
 .diagnosis-status.is-running .diagnosis-status__hero {
-  background: linear-gradient(180deg, #eef6fb 0%, #dfeef7 100%);
+  border-left-color: var(--status-active);
 }
 
 .run-meta {

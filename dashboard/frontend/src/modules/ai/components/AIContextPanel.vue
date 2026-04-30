@@ -1,17 +1,23 @@
 <template>
-  <article class="section-card ai-context">
+  <article class="section-card ai-context" :class="`ai-context--${panelVariant}`">
     <div class="section-card__header">
       <div>
-        <div class="section-card__title">{{ aiCopy.contextTitle }}</div>
-        <div class="section-card__desc">{{ aiCopy.contextDescription }}</div>
+        <div class="section-card__title">{{ panelTitle }}</div>
+        <div class="section-card__desc">{{ panelDescription }}</div>
       </div>
-      <el-button plain size="small" :loading="reindexing" @click="$emit('reindex-knowledge')">
+      <el-button
+        v-if="showStatusBlocks"
+        plain
+        size="small"
+        :loading="reindexing"
+        @click="$emit('reindex-knowledge')"
+      >
         {{ aiCopy.reindexKnowledgeButton }}
       </el-button>
     </div>
 
     <div class="section-card__body">
-      <el-form label-position="top">
+      <el-form v-if="showSceneControls" class="scene-form" label-position="top">
         <el-form-item :label="aiCopy.sceneLabel">
           <el-select v-model="selectedScene">
             <el-option
@@ -28,7 +34,7 @@
         </el-form-item>
       </el-form>
 
-      <div class="context-box">
+      <div v-if="showStatusBlocks" class="context-box">
         <div class="context-box__title">当前分析上下文</div>
         <div class="context-box__grid">
           <div><strong>{{ aiCopy.currentConversation }}：</strong>{{ contextSummary.conversationId || aiCopy.newConversationLabel }}</div>
@@ -41,7 +47,7 @@
         </div>
       </div>
 
-      <div class="knowledge-status">
+      <div v-if="showStatusBlocks" class="knowledge-status">
         <div class="knowledge-status__title">{{ aiCopy.knowledgeStatusTitle }}</div>
         <div class="knowledge-status__grid">
           <div><strong>{{ aiCopy.knowledgeDocuments }}：</strong>{{ knowledge.total_documents ?? '-' }}</div>
@@ -77,6 +83,11 @@ const props = defineProps({
   reindexing: {
     type: Boolean,
     default: false
+  },
+  panelVariant: {
+    type: String,
+    default: 'full',
+    validator: (value) => ['full', 'scene', 'status'].includes(value)
   }
 })
 
@@ -92,6 +103,17 @@ const selectedReportIdInput = defineModel('reportIdInput', {
   required: true
 })
 
+const showSceneControls = computed(() => props.panelVariant !== 'status')
+const showStatusBlocks = computed(() => props.panelVariant !== 'scene')
+const panelTitle = computed(() => (
+  props.panelVariant === 'scene' ? '分析场景' : aiCopy.contextTitle
+))
+const panelDescription = computed(() => (
+  props.panelVariant === 'scene'
+    ? '先确定任务类型和报告编号，聊天主区会按当前分析上下文回答。'
+    : aiCopy.contextDescription
+))
+
 const embeddingStatusText = computed(() => {
   if (props.knowledge.embedding_enabled) return aiCopy.embeddingEnabled
   if (props.knowledge.embedding_error) return aiCopy.embeddingErrorState
@@ -104,12 +126,35 @@ const embeddingStatusText = computed(() => {
   overflow: hidden;
 }
 
+.ai-context--scene {
+  border-left: 3px solid var(--brand);
+}
+
+.scene-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) minmax(180px, 260px);
+  gap: var(--space-md);
+  align-items: end;
+}
+
+.scene-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+.scene-form :deep(.el-select) {
+  width: 100%;
+}
+
 .context-box {
-  margin-top: 8px;
-  padding: 16px 18px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #f7fbfc 0%, #eef6f7 100%);
+  margin-top: var(--space-md);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-raised);
   border: 1px solid var(--line-soft);
+}
+
+.ai-context--status .context-box {
+  margin-top: 0;
 }
 
 .context-box__title,
@@ -122,15 +167,21 @@ const embeddingStatusText = computed(() => {
 .context-box__grid,
 .knowledge-status__grid {
   display: grid;
-  gap: 8px;
-  margin-top: 10px;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
   color: var(--text-secondary);
-  line-height: 1.8;
+  line-height: 1.7;
 }
 
 .knowledge-status {
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
   border-top: 1px dashed var(--line-strong);
+}
+
+@media (max-width: 860px) {
+  .scene-form {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

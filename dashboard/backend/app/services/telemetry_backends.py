@@ -88,17 +88,7 @@ class PX4ScenarioBackend(ScenarioBackend):
         )
         self.manager._startup_phase = "starting_collector"
         self.manager._collector_proc = self.manager._spawn_process(
-            [
-                telemetry_python_bin,
-                "-m",
-                "telemetry.collector",
-                "--host",
-                "127.0.0.1",
-                "--port",
-                "15550",
-                "--emit-rate",
-                "50",
-            ],
+            self.manager._build_collector_cmd(telemetry_python_bin),
             env=env,
         )
         self.manager._startup_phase = "starting_flight_controller"
@@ -195,6 +185,8 @@ class RflyScenarioBackend(ScenarioBackend):
         self._bridge_proc = None
         self._px4mavctrl_path: Path | None = None
         self._bridge_script: Path | None = None
+        self._bridge_log_handle = None
+        self._bridge_log_name: str | None = None
 
     def _config(self) -> dict:
         return self.manager.app.config if self.manager.app else {}
@@ -295,6 +287,17 @@ class RflyScenarioBackend(ScenarioBackend):
         env["PYTHONPATH"] = os.pathsep.join([item for item in paths if item])
         return env
 
+    def _open_bridge_log(self):
+        runtime_dir = self._config().get("RUNTIME_DIR")
+        if not runtime_dir:
+            return subprocess.DEVNULL
+        log_dir = Path(runtime_dir) / "telemetry" / "rfly_bridge"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_path = log_dir / f"{self.session_id}.log"
+        self._bridge_log_name = log_path.name
+        self._bridge_log_handle = log_path.open("a", encoding="utf-8")
+        return self._bridge_log_handle
+
     def start(self) -> None:
         self.manager._startup_phase = "starting_rfly_bridge"
         self.manager._timeout_reason = None
@@ -313,18 +316,31 @@ class RflyScenarioBackend(ScenarioBackend):
             daemon=True,
         )
         self.manager._receiver_thread.start()
-        self._bridge_proc = subprocess.Popen(
-            self._build_bridge_cmd(),
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            cwd=str(self._repo_root()),
-            env=self._bridge_env(),
-            **self.manager._popen_session_kwargs(),
-        )
+        bridge_log = self._open_bridge_log()
+        try:
+            self._bridge_proc = subprocess.Popen(
+                self._build_bridge_cmd(),
+                stdout=bridge_log,
+                stderr=bridge_log,
+                cwd=str(self._repo_root()),
+                env=self._bridge_env(),
+                **self.manager._popen_session_kwargs(),
+            )
+            self.manager._startup_phase = "rfly_bridge_running"
+        except Exception:
+            self.manager._startup_phase = "rfly_bridge_failed"
+            self.manager._timeout_reason = "rfly_bridge_failed"
+            if self._bridge_log_handle is not None:
+                self._bridge_log_handle.close()
+                self._bridge_log_handle = None
+            raise
 
     def stop(self) -> None:
         self.manager._stop_process(self._bridge_proc, "rfly_bridge")
         self._bridge_proc = None
+        if self._bridge_log_handle is not None:
+            self._bridge_log_handle.close()
+            self._bridge_log_handle = None
         if self.manager._receiver:
             try:
                 self.manager._receiver._sock.close()
@@ -340,6 +356,7 @@ class RflyScenarioBackend(ScenarioBackend):
             "collector": None,
             "rfly_bridge": self.manager._proc_status(self._bridge_proc),
             "receiver": "running" if self.manager.is_collecting else None,
+            "rfly_bridge_log": self._bridge_log_name,
         }
 
 

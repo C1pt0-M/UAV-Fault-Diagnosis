@@ -145,55 +145,60 @@ const topProbabilityText = computed(() => view.value?.probabilityRows?.[0]?.prob
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(240px, 0.9fr);
   gap: 16px;
-  padding: 20px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #103240 0%, #0f766e 100%);
-  color: #f4fbfb;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line-soft);
+  border-left: 3px solid var(--brand);
 }
 
 .report-hero__label {
   display: inline-flex;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
-  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 11px;
   font-weight: 700;
 }
 
 .report-hero__main h3 {
-  margin: 14px 0 0;
-  font-size: 26px;
+  margin: 12px 0 0;
+  font-size: 22px;
+  color: var(--text-primary);
 }
 
 .report-hero__main p {
-  margin: 10px 0 0;
-  line-height: 1.8;
-  color: rgba(244, 251, 251, 0.88);
+  margin: 8px 0 0;
+  line-height: 1.7;
+  color: var(--text-secondary);
 }
 
 .report-hero__metrics {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .report-hero__metric {
-  padding: 14px 16px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-panel);
+  border: 1px solid var(--line-strong);
 }
 
 .report-hero__metric span {
-  font-size: 12px;
-  color: rgba(244, 251, 251, 0.78);
+  font-size: 11px;
+  color: var(--text-tertiary);
 }
 
 .report-hero__metric strong {
   display: block;
-  margin-top: 6px;
-  font-size: 18px;
+  margin-top: 4px;
+  font-size: 14px;
   line-height: 1.4;
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .report-text {
@@ -209,11 +214,12 @@ const topProbabilityText = computed(() => view.value?.probabilityRows?.[0]?.prob
 }
 
 .report-list__item {
-  padding: 12px 14px;
-  border-radius: 14px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--line-soft);
-  background: #f7fbfb;
+  background: var(--bg-panel-raised);
   line-height: 1.7;
+  color: var(--text-secondary);
 }
 
 .report-priority {
@@ -241,16 +247,16 @@ const topProbabilityText = computed(() => view.value?.probabilityRows?.[0]?.prob
 }
 
 .probability-row__track {
-  height: 10px;
-  border-radius: 999px;
-  background: #e8f1f2;
+  height: 8px;
+  border-radius: var(--radius-xs);
+  background: var(--bg-panel-strong);
   overflow: hidden;
 }
 
 .probability-row__fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #0f766e 0%, #1a9c90 100%);
+  background: var(--brand);
 }
 
 .technical-details summary {
@@ -269,9 +275,12 @@ const topProbabilityText = computed(() => view.value?.probabilityRows?.[0]?.prob
   max-height: 420px;
   overflow: auto;
   padding: 16px;
-  border-radius: 16px;
-  background: #0f1f26;
-  color: #f4fbfb;
+  border-radius: var(--radius-md);
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  border: 1px solid var(--line-soft);
 }
 
 .report-empty {

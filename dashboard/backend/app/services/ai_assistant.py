@@ -15,6 +15,7 @@ from app.models.asset import Asset
 from app.models.diagnosis_report import DiagnosisReport
 from app.models.run_record import RunRecord
 from app.services.ai_provider import AIProviderError, OpenAICompatibleProvider
+from app.services.ai_settings import ai_settings_service
 from app.services.knowledge_base import knowledge_base
 
 
@@ -62,7 +63,7 @@ class AIAssistantService:
         knowledge_base.init_app(app)
 
     def _config(self) -> dict:
-        return dict((self.app or current_app).config)
+        return ai_settings_service.effective_config((self.app or current_app).config)
 
     def _provider_client(self) -> OpenAICompatibleProvider:
         return OpenAICompatibleProvider(self._config())

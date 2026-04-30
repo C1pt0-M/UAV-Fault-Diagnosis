@@ -158,12 +158,12 @@ const selectedKind = defineModel('activeKind', {
 
 .header-info { display: flex; flex-direction: column; gap: 4px; }
 .header-title-row { display: flex; align-items: center; gap: 12px; }
-.header-icon { font-size: 20px; color: var(--primary); }
+.header-icon { font-size: 20px; color: var(--brand); }
 .assets-actions { display: flex; align-items: center; gap: 24px; }
 .kind-tabs {
-  padding: 10px 14px 0;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #f7fbfc 0%, #eef6f7 100%);
+  padding: 8px var(--space-md) 0;
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-raised);
   border: 1px solid var(--line-soft);
 }
 .kind-tabs :deep(.el-tabs__header) { margin-bottom: 0; }
@@ -176,15 +176,15 @@ const selectedKind = defineModel('activeKind', {
   justify-content: flex-end;
   padding: 16px 20px 20px;
   border-top: 1px solid var(--line-soft);
-  background: linear-gradient(180deg, rgba(247, 251, 252, 0.45) 0%, rgba(255, 255, 255, 0.98) 100%);
+  background: var(--bg-panel-raised);
 }
 .filename-cell { display: flex; align-items: center; gap: 10px; font-weight: 500; }
 .file-icon { font-size: 16px; color: var(--text-tertiary); }
 .size-text { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
-.status-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: rgba(0,0,0,0.03); font-size: 12px; color: var(--text-secondary); }
+.status-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: var(--radius-sm); background: var(--bg-panel-raised); font-size: 12px; color: var(--text-secondary); }
 .status-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-tertiary); }
-.status-chip.is-done { background: rgba(34, 197, 94, 0.1); color: #16a34a; }
-.status-chip.is-done .dot { background: #16a34a; box-shadow: 0 0 8px rgba(22, 163, 74, 0.4); }
+.status-chip.is-done { background: var(--status-ok-soft); color: var(--status-ok); }
+.status-chip.is-done .dot { background: var(--status-ok); box-shadow: 0 0 8px rgba(22, 163, 74, 0.4); }
 .table-actions { display: flex; align-items: center; gap: 4px; }
 
 :deep(.assets-workspace .el-table__row td) {

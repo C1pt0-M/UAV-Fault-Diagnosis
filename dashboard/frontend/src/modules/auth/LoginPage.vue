@@ -1,63 +1,62 @@
-﻿<template>
+<template>
   <div class="login-page">
-    <section class="login-card">
-      <div class="login-card__hero">
-        <span class="login-card__tag">登录入口</span>
-        <h1>智诊天眸</h1>
-        <p>
-          基于数据驱动的无人机故障检测系统统一入口。登录后可进入总览、实时监测、
-          诊断中心、资产中心、诊断报告以及 AI 助手模块。
-        </p>
-      </div>
+    <!-- 全屏背景层 -->
+    <div class="login-bg-layer" :style="{ backgroundImage: 'url(' + loginBgImage + ')' }">
+      <div class="login-bg-overlay"></div>
+    </div>
 
-      <div class="login-card__status" :class="`is-${connectionStatus}`">
-        <span>{{ connectionLabel }}</span>
-        <el-button link type="primary" @click="refreshConnection" :disabled="checkingConnection">
-          重新检测
-        </el-button>
-      </div>
+    <!-- 悬浮表单容器 -->
+    <div class="login-card-container">
+      <section class="login-card">
+        <div class="login-header">
+          <h1>{{ isRegisterMode ? '创建新账号' : '登录系统' }}</h1>
+          <p>{{ isRegisterMode ? '注册后可直接返回登录' : '欢迎登录智诊天眸' }}</p>
+        </div>
 
-      <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input
-            v-model="form.password"
-            type="password"
-            show-password
-            placeholder="请输入密码"
-            @keyup.enter="submit"
-          />
-        </el-form-item>
-        <el-button type="primary" size="large" class="login-button" :loading="submitting" @click="submit">
-          登录系统
-        </el-button>
-      </el-form>
+        <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
+          <el-form-item label="用户名" prop="username">
+            <el-input v-model="form.username" placeholder="请输入用户名" />
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input
+              v-model="form.password"
+              type="password"
+              show-password
+              placeholder="请输入密码"
+              @keyup.enter="submit"
+            />
+          </el-form-item>
+          <el-button type="primary" class="login-button" :loading="submitting" @click="submit">
+            {{ isRegisterMode ? '创建账号' : '登录系统' }}
+          </el-button>
+        </el-form>
 
-      <div class="auth-card__footer">
-        <span>还没有账号？</span>
-        <el-button link type="primary" @click="router.push('/register')">去注册</el-button>
-      </div>
-    </section>
+        <div class="login-footer">
+          <span>{{ isRegisterMode ? '已有账号？' : '还没有账号？' }}</span>
+          <el-button link type="primary" @click="isRegisterMode ? switchToLogin() : switchToRegister()">
+            {{ isRegisterMode ? '返回登录' : '立即注册' }}
+          </el-button>
+        </div>
+      </section>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import { ElForm, ElFormItem } from 'element-plus/es/components/form/index.mjs'
 import ElInput from 'element-plus/es/components/input/index.mjs'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { authApi } from '@/shared/services'
-import { checkBackend, getConnectionStatus } from '@/utils/request'
+import loginBgImage from '@/assets/login-bg-full.png'
 
 const router = useRouter()
 const formRef = ref(null)
 const submitting = ref(false)
-const checkingConnection = ref(false)
-const connectionStatus = ref(getConnectionStatus())
+const mode = ref('login')
+const isRegisterMode = computed(() => mode.value === 'register')
 
 const form = reactive({
   username: '',
@@ -69,27 +68,18 @@ const rules = {
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 }
 
-const connectionLabel = computed(() => {
-  switch (connectionStatus.value) {
-    case 'connected':
-      return '后端连接正常'
-    case 'checking':
-      return '正在检测后端状态'
-    case 'disconnected':
-      return '后端未连接，部分能力不可用'
-    default:
-      return '正在初始化连接状态'
-  }
-})
+function clearPassword() {
+  form.password = ''
+}
 
-async function refreshConnection() {
-  checkingConnection.value = true
-  try {
-    const ok = await checkBackend()
-    connectionStatus.value = ok ? 'connected' : 'disconnected'
-  } finally {
-    checkingConnection.value = false
-  }
+function switchToRegister() {
+  mode.value = 'register'
+  clearPassword()
+}
+
+function switchToLogin() {
+  mode.value = 'login'
+  clearPassword()
 }
 
 async function submit() {
@@ -100,6 +90,16 @@ async function submit() {
 
     submitting.value = true
     try {
+      if (isRegisterMode.value) {
+        await authApi.register({
+          username: form.username,
+          password: form.password
+        })
+        ElMessage.success('注册成功，请使用新账号登录')
+        switchToLogin()
+        return
+      }
+
       const response = await authApi.login({
         username: form.username,
         password: form.password
@@ -110,93 +110,105 @@ async function submit() {
       ElMessage.success('登录成功')
       router.push('/')
     } catch (error) {
-      ElMessage.error(error.message || '登录失败，请检查账号和密码')
+      ElMessage.error(
+        error.message || (isRegisterMode.value ? '注册失败，请检查输入信息' : '登录失败，请检查账号和密码')
+      )
     } finally {
       submitting.value = false
     }
   })
 }
-
-onMounted(refreshConnection)
 </script>
 
 <style scoped>
 .login-page {
-  display: grid;
-  place-items: center;
+  position: relative;
   min-height: 100vh;
-  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+/* ── 全屏背景层 ── */
+.login-bg-layer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.login-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35); /* 稍微降低一点浓度，凸显背景 */
+  backdrop-filter: blur(2px);
+}
+
+/* ── 悬浮卡片 ── */
+.login-card-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 340px; /* 极致缩小，让出更多背景空间 */
+  margin-left: 12vw;
+  display: flex;
+  justify-content: center;
 }
 
 .login-card {
-  width: min(480px, 100%);
-  padding: 34px;
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(16, 50, 64, 0.12);
-  box-shadow: 0 30px 60px rgba(15, 31, 38, 0.14);
-}
-
-.login-card__hero h1 {
-  margin: 12px 0 0;
-  font-size: 34px;
-}
-
-.login-card__hero p {
-  margin: 12px 0 0;
-  color: var(--text-secondary);
-  line-height: 1.8;
-}
-
-.login-card__tag {
-  display: inline-flex;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: var(--brand-soft);
-  color: var(--brand-strong);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.login-card__status {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 24px 0;
-  padding: 12px 14px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 36px 28px; /* 压缩内边距 */
   border-radius: 16px;
-  border: 1px solid var(--line-soft);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.login-card__status.is-connected {
-  background: #edf8f2;
-  color: var(--success);
+.login-header {
+  margin-bottom: 24px;
 }
 
-.login-card__status.is-disconnected {
-  background: #fff3f2;
-  color: var(--danger);
+.login-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 6px 0;
 }
 
-.login-card__status.is-checking,
-.login-card__status.is-unknown {
-  background: #f2f7f8;
-  color: var(--text-secondary);
+.login-header p {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  margin: 0;
 }
 
 .login-button {
   width: 100%;
-  margin-top: 8px;
+  margin-top: 16px;
+  height: 40px;
+  font-size: 14px;
+  border-radius: var(--radius-md);
 }
 
-.auth-card__footer {
+.login-footer {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin-top: 18px;
+  margin-top: 24px;
   color: var(--text-tertiary);
   font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .login-page {
+    justify-content: center;
+  }
+  .login-card-container {
+    margin-left: 0;
+    padding: 20px;
+  }
 }
 </style>

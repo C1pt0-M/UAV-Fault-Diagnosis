@@ -1,4 +1,4 @@
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { assetApi, modelApi, telemetryApi } from '@/shared/services'
@@ -34,6 +34,8 @@ export function useMonitoringDashboard() {
   const actionLoading = reactive(createActionLoadingState())
   const onlineModels = ref([])
   const replayAssets = ref([])
+  const rflyDiagnostics = ref(null)
+  const rflyDiagnosticsLoading = ref(false)
   const sessions = ref([])
   const sessionDetail = ref(null)
   const detailVisible = ref(false)
@@ -50,6 +52,7 @@ export function useMonitoringDashboard() {
   const telemetryCapabilities = computed(() => runStatus.telemetry_capabilities || {})
   const backendOptions = computed(() => resolveMonitoringBackendOptions(telemetryCapabilities.value))
   const blindTestEnabled = computed(() => shouldShowBlindTest(telemetryCapabilities.value))
+  const rflyReady = computed(() => rflyDiagnostics.value?.ready === true)
   const stateLabel = computed(() => monitoringStateLabels[currentState.value] || monitoringStateLabels.IDLE)
   const alerts = computed(() => runStatus.fault_events || [])
   const riskScore = computed(() => Number(runStatus.risk_score || 0).toFixed(2))
@@ -70,6 +73,18 @@ export function useMonitoringDashboard() {
     const numeric = values.map((item) => Number(item)).filter((item) => Number.isFinite(item))
     if (!numeric.length) return '0.00'
     return Math.max(...numeric).toFixed(2)
+  })
+  const inputContractStatus = computed(() => runStatus.input_contract_status || {})
+  const inputContractLabel = computed(() => {
+    const status = String(inputContractStatus.value?.status || '').toLowerCase()
+    if (status === 'healthy') return '字段正常'
+    if (status === 'degraded') return '字段降级'
+    return '等待输入'
+  })
+  const inputContractMeta = computed(() => {
+    const actuatorSource = inputContractStatus.value?.actuator_source || 'unknown'
+    const reason = inputContractStatus.value?.reason || 'waiting'
+    return `动力字段：${actuatorSource} / ${reason}`
   })
   const sessionBridgeText = computed(() => {
     return Number(runStatus.fault_events_count || 0) > 0
@@ -167,6 +182,11 @@ export function useMonitoringDashboard() {
       meta: `数据源：${selectedBackendLabel.value}`
     },
     {
+      label: '字段合同',
+      value: inputContractLabel.value,
+      meta: inputContractMeta.value
+    },
+    {
       label: '最近样本',
       value: latestTimestamp.value,
       meta: '最近一次拉取的实时数据时间点'
@@ -223,6 +243,38 @@ export function useMonitoringDashboard() {
     replayAssets.value = (response.data || []).filter((item) => ['csv', 'ulg'].includes(item.kind))
   }
 
+  async function loadRflyDiagnostics() {
+    rflyDiagnosticsLoading.value = true
+    try {
+      const response = await telemetryApi.rflyDiagnostics()
+      rflyDiagnostics.value = response.data || null
+    } finally {
+      rflyDiagnosticsLoading.value = false
+    }
+  }
+
+  async function testRflyDiagnostics() {
+    rflyDiagnosticsLoading.value = true
+    try {
+      const rflyPath = String(rflyPx4mavctrlPath.value || '').trim()
+      const response = await telemetryApi.testRflyDiagnostics({
+        rfly_px4mavctrl_path: rflyPath || undefined
+      })
+      rflyDiagnostics.value = response.data || null
+      if (response.data?.ready) {
+        ElMessage.success(monitoringCopy.rflyDiagnosticsReady)
+      } else {
+        ElMessage.warning(response.data?.summary?.message || monitoringCopy.rflyNotReady)
+      }
+      return response.data
+    } catch (error) {
+      ElMessage.error(`RflySim 配置诊断失败：${error.message || '未知错误'}`)
+      throw error
+    } finally {
+      rflyDiagnosticsLoading.value = false
+    }
+  }
+
   async function loadSessions() {
     const response = await telemetryApi.sessions({ page: 1, per_page: 20 })
     sessions.value = response.data?.items || []
@@ -253,6 +305,15 @@ export function useMonitoringDashboard() {
       if (selectedBackend.value === 'replay' && !selectedReplayAssetId.value) {
         ElMessage.warning(monitoringCopy.replayAssetRequired)
         return
+      }
+      if (selectedBackend.value === 'rfly') {
+        const diagnostics = rflyDiagnostics.value?.ready
+          ? rflyDiagnostics.value
+          : await testRflyDiagnostics()
+        if (diagnostics?.ready !== true) {
+          ElMessage.warning(diagnostics?.summary?.message || monitoringCopy.rflyNotReady)
+          return
+        }
       }
 
       const replayAsset = replayAssets.value.find((item) => item.id === selectedReplayAssetId.value)
@@ -380,12 +441,18 @@ export function useMonitoringDashboard() {
 
   onMounted(async () => {
     try {
-      await Promise.all([loadModels(), loadReplayAssets(), refreshDashboard()])
+      await Promise.all([loadModels(), loadReplayAssets(), loadRflyDiagnostics(), refreshDashboard()])
       if (currentState.value !== 'IDLE') {
         startPolling()
       }
     } catch (error) {
       ElMessage.error(`初始化监测页失败：${error.message || '未知错误'}`)
+    }
+  })
+
+  watch(selectedBackend, (backend) => {
+    if (backend === 'rfly' && !rflyDiagnostics.value) {
+      loadRflyDiagnostics().catch(() => {})
     }
   })
 
@@ -402,6 +469,8 @@ export function useMonitoringDashboard() {
     currentState,
     detailVisible,
     faultPeakText,
+    inputContractLabel,
+    inputContractMeta,
     loadSessions,
     metrics,
     onlineModels,
@@ -412,7 +481,10 @@ export function useMonitoringDashboard() {
     realtimeAttitudeSeries,
     realtimeMotorSeries,
     realtimePositionSeries,
+    rflyDiagnostics,
+    rflyDiagnosticsLoading,
     rflyPx4mavctrlPath,
+    rflyReady,
     sampleSummaryItems,
     selectedBackend,
     selectedBackendLabel,
@@ -427,6 +499,7 @@ export function useMonitoringDashboard() {
     startDetection,
     stateLabel,
     stopCollection,
-    stopDetection
+    stopDetection,
+    testRflyDiagnostics
   }
 }

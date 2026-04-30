@@ -101,3 +101,83 @@ def test_build_frame_derives_rates_accel_and_motor_fallbacks() -> None:
     assert second["accel_x"] > 0.0
     assert second["accel_y"] < 0.0
     assert second["accel_z"] > 0.0
+
+
+def test_build_frame_populates_kg_mstca_canonical_fields() -> None:
+    bridge = RflyLiveBridge(forward_host="127.0.0.1", forward_port=19996)
+    try:
+        frame = bridge.build_frame(
+            mav_state={
+                "recv_time_s": 20.0,
+                "uavAngEular": [0.1, -0.2, 0.3],
+                "uavAngRate": [0.01, -0.02, 0.03],
+                "uavVelNED": [1.0, -2.0, 3.0],
+                "uavPosNED": [4.0, 5.0, -6.0],
+                "trueAccB": [0.2, -0.3, -9.6],
+                "trueMotorRPMS": [0.0, 0.0, 0.0, 0.0],
+                "px4_controls": [0.1, -0.2, 0.05, 0.4],
+            }
+        )
+    finally:
+        bridge.close()
+
+    for key in [
+        "actuator_out_1",
+        "actuator_out_2",
+        "actuator_out_3",
+        "actuator_out_4",
+        "att_q_w",
+        "att_q_x",
+        "att_q_y",
+        "att_q_z",
+        "vel_x",
+        "vel_y",
+        "vel_z",
+        "baro_alt",
+        "baro_temp",
+        "baro_pressure",
+        "mag_x",
+        "mag_y",
+        "mag_z",
+    ]:
+        assert key in frame
+
+    assert frame["actuator_out_1"] > 900.0
+    assert frame["actuator_out_4"] > 900.0
+    assert frame["vel_x"] == 1.0
+    assert frame["vel_y"] == -2.0
+    assert frame["vel_z"] == 3.0
+    assert frame["baro_pressure"] > 90000.0
+
+
+def test_build_frame_marks_actuator_source_for_true_and_proxy_outputs() -> None:
+    bridge = RflyLiveBridge(forward_host="127.0.0.1", forward_port=19995)
+    try:
+        true_frame = bridge.build_frame(
+            mav_state={
+                "recv_time_s": 30.0,
+                "uavAngEular": [0.0, 0.0, 0.0],
+                "uavAngRate": [0.0, 0.0, 0.0],
+                "uavVelNED": [0.0, 0.0, 0.0],
+                "uavPosNED": [0.0, 0.0, 0.0],
+                "trueAccB": [0.0, 0.0, 0.0],
+                "trueMotorRPMS": [1100.0, 1200.0, 1300.0, 1400.0],
+            }
+        )
+        proxy_frame = bridge.build_frame(
+            mav_state={
+                "recv_time_s": 30.1,
+                "uavAngEular": [0.0, 0.0, 0.0],
+                "uavAngRate": [0.0, 0.0, 0.0],
+                "uavVelNED": [0.0, 0.0, 0.0],
+                "uavPosNED": [0.0, 0.0, 0.0],
+                "trueAccB": [0.0, 0.0, 0.0],
+                "trueMotorRPMS": [0.0, 0.0, 0.0, 0.0],
+                "px4_controls": [0.0, 0.0, 0.0, 0.0],
+            }
+        )
+    finally:
+        bridge.close()
+
+    assert true_frame["actuator_source"] == "true_motor_rpm"
+    assert proxy_frame["actuator_source"] == "proxy"

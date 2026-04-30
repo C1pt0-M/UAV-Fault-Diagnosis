@@ -3,6 +3,7 @@
 from flask import Blueprint, current_app, jsonify, request
 
 from app import db
+from app.services.rfly_diagnostics import build_rfly_diagnostics
 from app.utils.jwt_utils import token_required
 
 bp = Blueprint('telemetry', __name__)
@@ -23,11 +24,14 @@ def _error(message, status=400, data=None):
 
 def _telemetry_capabilities() -> dict:
     allowed_backends = list(current_app.config.get('TELEMETRY_ALLOWED_BACKENDS') or ())
+    rfly_diagnostics = build_rfly_diagnostics(current_app.config)
     return {
         'enabled': bool(current_app.config.get('ENABLE_TELEMETRY', True)),
         'allowed_backends': allowed_backends,
         'px4_enabled': 'px4' in allowed_backends,
         'rfly_enabled': 'rfly' in allowed_backends,
+        'rfly_ready': bool(rfly_diagnostics.get('ready')),
+        'rfly_diagnostics_summary': rfly_diagnostics.get('summary'),
         'blind_test_enabled': bool(current_app.config.get('ENABLE_BLIND_TEST', False)),
     }
 
@@ -142,6 +146,24 @@ def get_status(current_user):
     payload = mgr.get_status()
     payload['telemetry_capabilities'] = _telemetry_capabilities()
     return _ok(payload)
+
+
+@bp.route('/rfly/diagnostics', methods=['GET'])
+@token_required
+def get_rfly_diagnostics(current_user):
+    """检查 RflySim 接入配置，不启动仿真链路。"""
+    return _ok(build_rfly_diagnostics(current_app.config))
+
+
+@bp.route('/rfly/diagnostics', methods=['POST'])
+@token_required
+def test_rfly_diagnostics(current_user):
+    """使用本次表单值检查 RflySim 接入配置，不保存配置。"""
+    data = request.get_json(silent=True) or {}
+    override_path = data.get('rfly_px4mavctrl_path')
+    if override_path is not None and not isinstance(override_path, str):
+        return _error('rfly_px4mavctrl_path 必须是字符串')
+    return _ok(build_rfly_diagnostics(current_app.config, override_path))
 
 
 # ── 获取实时数据 ──────────────────────────────────────────────

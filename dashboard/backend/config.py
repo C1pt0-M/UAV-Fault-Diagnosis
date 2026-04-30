@@ -106,6 +106,10 @@ class Config:
         _get_env('AI_RUNTIME_DIR', str(RUNTIME_DIR / 'ai')),
         base_dir=BASE_DIR,
     )
+    AI_SETTINGS_PATH = _resolve_path(
+        _get_env('AI_SETTINGS_PATH', str(RUNTIME_DIR / 'ai_settings.json')),
+        base_dir=BASE_DIR,
+    )
     AI_KNOWLEDGE_DIR = _resolve_path(
         _get_env('AI_KNOWLEDGE_DIR', 'knowledge_base'),
         base_dir=RESOLVED_REPO_ROOT,
@@ -211,6 +215,15 @@ class Config:
     )
     PX4_SYS_AUTOSTART = os.getenv('PX4_SYS_AUTOSTART', '4001')
     PX4_SIM_TARGET = os.getenv('PX4_SIM_TARGET', 'gz_x500_lawn')
+    PX4_READY_HOST = os.getenv('PX4_READY_HOST', '127.0.0.1')
+    PX4_READY_PORT = int(os.getenv('PX4_READY_PORT', '18570'))
+    TELEMETRY_MAVSDK_ADDRESS = os.getenv('TELEMETRY_MAVSDK_ADDRESS', 'udpin://0.0.0.0:14550')
+    TELEMETRY_MAVSDK_GRPC_PORT = int(os.getenv('TELEMETRY_MAVSDK_GRPC_PORT', '50052'))
+    TELEMETRY_PYMAV_ADDRESS = os.getenv('TELEMETRY_PYMAV_ADDRESS', 'udpin:0.0.0.0:14030')
+    TELEMETRY_FORWARD_HOST = os.getenv('TELEMETRY_FORWARD_HOST', '127.0.0.1')
+    TELEMETRY_FORWARD_PORT = int(os.getenv('TELEMETRY_FORWARD_PORT', '15550'))
+    TELEMETRY_EMIT_RATE_HZ = int(os.getenv('TELEMETRY_EMIT_RATE_HZ', '50'))
+    TELEMETRY_ENABLE_PYMAV = _get_env_bool('TELEMETRY_ENABLE_PYMAV', True)
     RFLY_PX4MAVCTRL_PATH = _resolve_optional_path(
         'RFLY_PX4MAVCTRL_PATH',
         '',
@@ -230,7 +243,7 @@ class Config:
     RFLY_UDP_MODE = int(os.getenv('RFLY_UDP_MODE', '2'))
     RFLY_MAV_IP = os.getenv('RFLY_MAV_IP', '127.0.0.1')
     RFLY_PYMAV_ADDRESS = os.getenv('RFLY_PYMAV_ADDRESS', 'udpin:0.0.0.0:14030')
-    RFLY_ENABLE_PYMAV = _get_env_bool('RFLY_ENABLE_PYMAV', True)
+    RFLY_ENABLE_PYMAV = _get_env_bool('RFLY_ENABLE_PYMAV', False)
     RFLY_RECEIVER_TIMEOUT_S = float(os.getenv('RFLY_RECEIVER_TIMEOUT_S', '60.0'))
     FAULT_DATASET_ROOT = _resolve_optional_path(
         'FAULT_DATASET_ROOT',
@@ -248,12 +261,12 @@ class Config:
         base_dir=_REPO_ROOT_PATH,
     )
     DEFAULT_OFFLINE_MODEL = os.getenv('DEFAULT_OFFLINE_MODEL', 'transfer3_cnnlstm_normalproto')
-    DEFAULT_ONLINE_MODEL = os.getenv('DEFAULT_ONLINE_MODEL', 'online_detector_cnn1d_rfly')
+    DEFAULT_ONLINE_MODEL = os.getenv('DEFAULT_ONLINE_MODEL', 'online_detector_kg_mstca_rfly')
     ONLINE_MODEL_PRIORITY = tuple(
         item.strip()
         for item in os.getenv(
             'ONLINE_MODEL_PRIORITY',
-            'online_detector_cnn1d_rfly,online_detector_kg_mstca_rfly,online_detector_CNN,online_detector_final',
+            'online_detector_kg_mstca_rfly,online_detector_mstca_rfly,online_detector_cnn1d_rfly,online_detector_CNN,online_detector_final',
         ).split(',')
         if item.strip()
     )

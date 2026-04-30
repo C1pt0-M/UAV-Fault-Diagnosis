@@ -118,6 +118,10 @@ def _apply_derived(out: dict[str, Any], source_map: dict[str, str]) -> tuple[dic
 def canonicalize_rfly_frame(row: dict[str, Any]) -> tuple[dict[str, Any], dict[str, list[str]]]:
     out = dict(row)
     source_map: dict[str, str] = {}
+    actuator_source = str(row.get("actuator_source") or "").strip()
+    if actuator_source:
+        out["actuator_source"] = actuator_source
+        source_map["actuator_source"] = "mapped"
     if _safe_float(out.get("time_s")) is None:
         true_time = _safe_float(row.get("trueTime"))
         timestamp_us = _safe_float(row.get("Timestamp"))
@@ -141,6 +145,14 @@ def canonicalize_rfly_frame(row: dict[str, Any]) -> tuple[dict[str, Any], dict[s
                 out[name] = row.get(alias)
                 source_map[name] = "mapped"
                 break
+    if actuator_source == "proxy":
+        for column in ("actuator_out_1", "actuator_out_2", "actuator_out_3", "actuator_out_4"):
+            if _safe_float(out.get(column)) is not None:
+                source_map[column] = "proxy"
+    elif actuator_source == "px4_controls":
+        for column in ("actuator_out_1", "actuator_out_2", "actuator_out_3", "actuator_out_4"):
+            if _safe_float(out.get(column)) is not None:
+                source_map[column] = "derived"
     if not all(key in out for key in ("att_q_w", "att_q_x", "att_q_y", "att_q_z")):
         quat = _quat_from_euler(row.get("roll"), row.get("pitch"), row.get("yaw"))
         if quat is not None:

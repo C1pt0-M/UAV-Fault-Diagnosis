@@ -34,8 +34,9 @@ const dialogVisible = computed({
   max-height: 420px;
   overflow: auto;
   padding: 16px;
-  border-radius: 16px;
-  background: #0f1f26;
-  color: #f4fbfb;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line-soft);
+  background: var(--bg-panel-strong);
+  color: var(--text-primary);
 }
 </style>

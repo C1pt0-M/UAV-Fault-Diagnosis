@@ -18,6 +18,7 @@ SUPPORTED_OFFLINE_ARCHITECTURES = {
     "bilstm_normalproto",
 }
 SUPPORTED_ONLINE_ARCHITECTURES = {"bilstm", "cnn1d", "transformer", "mstca", "kg_mstca"}
+OFFLINE_MULTICLASS_TASKS = {"offline_multiclass", "offline_5class"}
 
 
 def _as_name_set(value: Any) -> set[str]:
@@ -46,6 +47,16 @@ def _read_json(path: Path) -> dict[str, Any]:
     return data if isinstance(data, dict) else {}
 
 
+def _task_matches(model_task: str, requested_task: str | None) -> bool:
+    if not requested_task:
+        return True
+    if model_task == requested_task:
+        return True
+    if requested_task == "offline_multiclass" and model_task == "offline_5class":
+        return True
+    return False
+
+
 def _infer_architecture(model_dir: Path, config: dict[str, Any]) -> str:
     for key in ("model", "architecture", "model_name"):
         value = str(config.get(key, "")).strip()
@@ -65,7 +76,7 @@ def _infer_task(
     if num_classes == 2 or label_names == ["normal", "fault"]:
         return "online_binary"
     if num_classes == 5:
-        return "offline_multiclass"
+        return "offline_5class"
     if num_classes > 2:
         return "offline_multiclass"
     if norm_stats and norm_stats.get("columns"):
@@ -78,7 +89,7 @@ def _infer_task(
 def _default_label_names(task: str, num_classes: int) -> list[str]:
     if task == "online_binary" and num_classes == 2:
         return ["normal", "fault"]
-    if task == "offline_multiclass" and num_classes == 5:
+    if task in OFFLINE_MULTICLASS_TASKS and num_classes == 5:
         return ["normal", "battery_failure", "motor_failure", "prop_imbalance", "thrust_loss"]
     if task == "offline_multiclass" and num_classes == 3:
         return ["normal", "motor", "sensor"]
@@ -160,7 +171,7 @@ def _build_metadata(model_dir: Path) -> dict[str, Any] | None:
 
     capabilities = {
         "offline_detection": (
-            task == "offline_multiclass"
+            task in OFFLINE_MULTICLASS_TASKS
             and architecture in SUPPORTED_OFFLINE_ARCHITECTURES
         ),
         "realtime_detection": (
@@ -213,7 +224,7 @@ def list_registered_models(
         meta = _build_metadata(model_dir)
         if meta is None:
             continue
-        if task and meta["task"] != task:
+        if not _task_matches(meta["task"], task):
             continue
         if capability and not meta["capabilities"].get(capability, False) and not include_unavailable:
             continue
@@ -223,15 +234,14 @@ def list_registered_models(
 
     preferred_names: list[str] = []
     if task == "online_binary" or capability in {"realtime_detection", "fault_prob_curve"}:
-        preferred_names.extend(_as_name_list(config.get("DEFAULT_ONLINE_MODEL")))
         preferred_names.extend(_as_name_list(config.get("ONLINE_MODEL_PRIORITY")))
-    elif capability == "offline_detection" or task == "offline_multiclass":
+    elif capability == "offline_detection" or task in OFFLINE_MULTICLASS_TASKS:
         preferred_names.extend(_as_name_list(config.get("DEFAULT_OFFLINE_MODEL")))
 
     if preferred_names:
-        preferred_set = {name for name in preferred_names if name}
+        preferred_rank = {name: idx for idx, name in enumerate(preferred_names) if name}
         items.sort(
-            key=lambda item: (item["name"] not in preferred_set, ),
+            key=lambda item: (preferred_rank.get(item["name"], len(preferred_rank)), ),
         )
     return items
 
@@ -268,7 +278,7 @@ def resolve_registered_model(
             meta = _build_metadata(requested_path)
             if meta is None:
                 return None
-            if task and meta["task"] != task:
+            if not _task_matches(meta["task"], task):
                 return None
             if capability and not meta["capabilities"].get(capability, False):
                 return None
@@ -289,7 +299,7 @@ def resolve_registered_model(
     if task == "online_binary" or capability in {"realtime_detection", "fault_prob_curve"}:
         preferred_names.extend(_as_name_list(config.get("DEFAULT_ONLINE_MODEL")))
         preferred_names.extend(_as_name_list(config.get("ONLINE_MODEL_PRIORITY")))
-    elif capability == "offline_detection":
+    elif capability == "offline_detection" or task in OFFLINE_MULTICLASS_TASKS:
         preferred_names.extend(_as_name_list(config.get("DEFAULT_OFFLINE_MODEL")))
 
     models = list_registered_models(

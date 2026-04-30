@@ -13,6 +13,7 @@ from flask import current_app
 from app.models.diagnosis_report import DiagnosisReport
 from app.models.run_record import RunRecord
 from app.services.ai_provider import AIProviderError, OpenAICompatibleProvider
+from app.services.ai_settings import ai_settings_service
 
 
 TOKEN_RE = re.compile(r'[A-Za-z0-9_]+|[一-鿿]')
@@ -45,7 +46,7 @@ class KnowledgeBaseService:
         self.app = app
 
     def _config(self) -> dict:
-        return dict((self.app or current_app).config)
+        return ai_settings_service.effective_config((self.app or current_app).config)
 
     def _enabled(self) -> bool:
         return bool(self._config().get('AI_ENABLE_KNOWLEDGE_BASE', False))

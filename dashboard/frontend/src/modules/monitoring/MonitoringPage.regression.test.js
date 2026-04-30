@@ -34,6 +34,8 @@ const dashboardState = vi.hoisted(() => ({
   stateLabel: '检测中',
   statusMeta: 'CSV 回放 / online_detector_cnn1d_rfly',
   faultPeakText: '0.83',
+  inputContractLabel: '字段降级',
+  inputContractMeta: '动力字段：proxy / proxy_actuator_source',
   sessionBridgeText: '支持承接到离线诊断'
 }))
 
@@ -59,8 +61,11 @@ describe('MonitoringPage command deck redesign', () => {
     })
 
     const text = wrapper.text()
-    expect(text).toContain('在线监测')
-    expect(text).toContain('实时监测与在线预警工作台')
+    expect(text).toContain('当前状态')
+    expect(text).toContain('数据源')
+    expect(text).toContain('模型')
+    expect(text).toContain('字段合同')
+    expect(text).toContain('字段降级')
     expect(text).toContain('监测控制台')
     expect(text).toContain('实时曲线主区')
     expect(text).toContain('监测会话承接区')

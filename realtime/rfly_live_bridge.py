@@ -37,6 +37,25 @@ def _get_vector_component(source: dict[str, Any], key: str, index: int) -> float
     return 0.0
 
 
+def _clamp(value: float, low: float, high: float) -> float:
+    return max(low, min(high, value))
+
+
+def _quat_from_euler(roll: float, pitch: float, yaw: float) -> tuple[float, float, float, float]:
+    cr = math.cos(roll * 0.5)
+    sr = math.sin(roll * 0.5)
+    cp = math.cos(pitch * 0.5)
+    sp = math.sin(pitch * 0.5)
+    cy = math.cos(yaw * 0.5)
+    sy = math.sin(yaw * 0.5)
+    return (
+        cr * cp * cy + sr * sp * sy,
+        sr * cp * cy - cr * sp * sy,
+        cr * sp * cy + sr * cp * sy,
+        cr * cp * sy - sr * sp * cy,
+    )
+
+
 class RflyLiveBridge:
     """Bridge official RflySim live state into the project's telemetry JSON contract."""
 
@@ -142,6 +161,26 @@ class RflyLiveBridge:
     def _ctrl_to_motor(value: float) -> float:
         return max(0.0, min(1.0, (value + 1.0) / 2.0))
 
+    @staticmethod
+    def _proxy_actuator_outputs(frame: dict[str, float]) -> list[float]:
+        ctrl_roll = _safe_float(frame.get("actuator_ctrl_1"), default=0.0)
+        ctrl_pitch = _safe_float(frame.get("actuator_ctrl_2"), default=0.0)
+        ctrl_yaw = _safe_float(frame.get("actuator_ctrl_3"), default=0.0)
+        ctrl_thrust = _safe_float(frame.get("actuator_ctrl_4"), default=0.0)
+        if abs(ctrl_thrust) <= 1e-9:
+            ctrl_thrust = 0.32
+
+        base = 1300.0 + 180.0 * _clamp(ctrl_thrust - 0.32, -0.8, 0.8)
+        roll_delta = 110.0 * _clamp(ctrl_roll, -0.8, 0.8)
+        pitch_delta = 110.0 * _clamp(ctrl_pitch, -0.8, 0.8)
+        yaw_delta = 55.0 * _clamp(ctrl_yaw, -0.8, 0.8)
+        return [
+            _clamp(base + roll_delta + pitch_delta + yaw_delta, 900.0, 1900.0),
+            _clamp(base - roll_delta + pitch_delta - yaw_delta, 900.0, 1900.0),
+            _clamp(base - roll_delta - pitch_delta + yaw_delta, 900.0, 1900.0),
+            _clamp(base + roll_delta - pitch_delta - yaw_delta, 900.0, 1900.0),
+        ]
+
     def _apply_fallbacks(self, frame: dict[str, float], pymav_frame: dict[str, Any]) -> None:
         recv_time = frame.get("recv_time_s", 0.0)
         dt = None
@@ -151,14 +190,26 @@ class RflyLiveBridge:
                 dt = None
 
         # Fallback motor outputs from ESC RPM first, then actuator controls.
+        actuator_source = str(frame.get("actuator_source") or "none")
+        for idx in range(1, 5):
+            out_key = f"actuator_out_{idx}"
+            if out_key not in frame:
+                frame[out_key] = 0.0
+
         for idx in range(1, 5):
             motor_key = f"motor{idx}"
             if abs(frame.get(motor_key, 0.0)) > 1e-9:
+                out_key = f"actuator_out_{idx}"
+                if abs(frame.get(out_key, 0.0)) <= 1e-9:
+                    frame[out_key] = frame[motor_key] * self.rpm_scale
                 continue
             esc_key = f"esc_rpm_{idx}"
             esc_rpm = _safe_float(pymav_frame.get(esc_key), default=0.0)
             if esc_rpm > 0.0:
                 frame[motor_key] = self._normalize_motor_rpm(esc_rpm)
+                frame[f"actuator_out_{idx}"] = esc_rpm
+                if actuator_source == "none":
+                    actuator_source = "esc_rpm"
                 continue
             ctrl_key = f"actuator_ctrl_{idx}"
             ctrl_val = _safe_float(frame.get(ctrl_key), default=0.0)
@@ -166,6 +217,18 @@ class RflyLiveBridge:
                 ctrl_val = _safe_float(pymav_frame.get(ctrl_key), default=0.0)
             if abs(ctrl_val) > 1e-9:
                 frame[motor_key] = self._ctrl_to_motor(ctrl_val)
+                if actuator_source == "none":
+                    actuator_source = "px4_controls"
+
+        if all(abs(frame.get(f"actuator_out_{idx}", 0.0)) <= 1e-9 for idx in range(1, 5)):
+            proxy_outputs = self._proxy_actuator_outputs(frame)
+            for idx, value in enumerate(proxy_outputs, start=1):
+                frame[f"actuator_out_{idx}"] = value
+                if abs(frame.get(f"motor{idx}", 0.0)) <= 1e-9:
+                    frame[f"motor{idx}"] = self._normalize_motor_rpm(value)
+            if actuator_source == "none":
+                actuator_source = "proxy"
+        frame["actuator_source"] = actuator_source
 
         # Fallback body rates from Euler differences.
         if dt is not None and all(abs(frame.get(key, 0.0)) <= 1e-9 for key in ("rollspeed", "pitchspeed", "yawspeed")):
@@ -229,6 +292,10 @@ class RflyLiveBridge:
         pymav_frame: dict[str, Any] | None = None,
     ) -> dict[str, float]:
         pymav_frame = dict(pymav_frame or {})
+        has_true_motor = any(
+            abs(_get_vector_component(mav_state, "trueMotorRPMS", idx)) > 1e-9
+            for idx in range(4)
+        )
         frame: dict[str, float] = {
             "seq": float(self._forwarder._seq),
             "time_s": self._time_s_from_state(mav_state),
@@ -237,6 +304,11 @@ class RflyLiveBridge:
             "motor2": self._normalize_motor_rpm(_get_vector_component(mav_state, "trueMotorRPMS", 1)),
             "motor3": self._normalize_motor_rpm(_get_vector_component(mav_state, "trueMotorRPMS", 2)),
             "motor4": self._normalize_motor_rpm(_get_vector_component(mav_state, "trueMotorRPMS", 3)),
+            "actuator_out_1": _get_vector_component(mav_state, "trueMotorRPMS", 0),
+            "actuator_out_2": _get_vector_component(mav_state, "trueMotorRPMS", 1),
+            "actuator_out_3": _get_vector_component(mav_state, "trueMotorRPMS", 2),
+            "actuator_out_4": _get_vector_component(mav_state, "trueMotorRPMS", 3),
+            "actuator_source": "true_motor_rpm" if has_true_motor else "none",
             "roll": _get_vector_component(mav_state, "uavAngEular", 0),
             "pitch": _get_vector_component(mav_state, "uavAngEular", 1),
             "yaw": _get_vector_component(mav_state, "uavAngEular", 2),
@@ -252,10 +324,15 @@ class RflyLiveBridge:
             "vx": _get_vector_component(mav_state, "uavVelNED", 0),
             "vy": _get_vector_component(mav_state, "uavVelNED", 1),
             "vz": _get_vector_component(mav_state, "uavVelNED", 2),
+            "vel_x": _get_vector_component(mav_state, "uavVelNED", 0),
+            "vel_y": _get_vector_component(mav_state, "uavVelNED", 1),
+            "vel_z": _get_vector_component(mav_state, "uavVelNED", 2),
             "pos_z": _get_vector_component(mav_state, "uavPosNED", 2),
+            "baro_alt": -_get_vector_component(mav_state, "uavPosNED", 2),
             "baro_alt_meter": 0.0,
-            "baro_temp": 0.0,
-            "baro_pressure_pa": 0.0,
+            "baro_temp": 25.0,
+            "baro_pressure": 101325.0,
+            "baro_pressure_pa": 101325.0,
             "mag_x": 0.0,
             "mag_y": 0.0,
             "mag_z": 0.0,
@@ -283,6 +360,15 @@ class RflyLiveBridge:
             "pymav_attitude_target_seen": 0.0,
             "pymav_actuator_control_seen": 0.0,
         }
+        q_w, q_x, q_y, q_z = _quat_from_euler(
+            frame["roll"],
+            frame["pitch"],
+            frame["yaw"],
+        )
+        frame["att_q_w"] = q_w
+        frame["att_q_x"] = q_x
+        frame["att_q_y"] = q_y
+        frame["att_q_z"] = q_z
         px4_controls = list(mav_state.get("px4_controls", []) or [])
         for idx in range(min(4, len(px4_controls))):
             frame[f"actuator_ctrl_{idx + 1}"] = _safe_float(px4_controls[idx], default=0.0)

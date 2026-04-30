@@ -8,9 +8,25 @@
       <span class="diagnosis-launch__badge">{{ assets.length }} 个可用资产</span>
     </div>
     <div class="section-card__body">
-      <div class="diagnosis-launch__intro">
-        <strong>任务发起区</strong>
-        <p>先完成资产与模型选择，再把离线诊断任务送入状态雷达与结果主舞台。</p>
+      <div class="diagnosis-launch__summary">
+        <article class="diagnosis-param-card">
+          <span class="diagnosis-param-card__label">可用资产</span>
+          <strong class="diagnosis-param-card__value">{{ assets.length }}</strong>
+          <small class="diagnosis-param-card__meta">CSV / ULog 诊断输入</small>
+        </article>
+        <article class="diagnosis-param-card">
+          <span class="diagnosis-param-card__label">当前资产</span>
+          <strong class="diagnosis-param-card__value">{{ currentAssetName }}</strong>
+          <small class="diagnosis-param-card__meta">{{ currentAssetMeta }}</small>
+        </article>
+        <article class="diagnosis-param-card">
+          <span class="diagnosis-param-card__label">诊断模型</span>
+          <strong class="diagnosis-param-card__value">{{ currentModelDisplayName }}</strong>
+          <small v-if="currentModelRawName" class="diagnosis-param-card__meta diagnosis-param-card__meta--mono">
+            {{ currentModelRawName }}
+          </small>
+          <small v-else class="diagnosis-param-card__meta">请选择离线诊断模型</small>
+        </article>
       </div>
 
       <el-form label-position="top" class="diagnosis-form-grid">
@@ -58,12 +74,13 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import { ElForm, ElFormItem } from 'element-plus/es/components/form/index.mjs'
 import { ElOption, ElSelect } from 'element-plus/es/components/select/index.mjs'
 import { diagnosisCopy } from '@/modules/diagnosis/diagnosisView'
 
-defineProps({
+const props = defineProps({
   assets: {
     type: Array,
     default: () => []
@@ -88,6 +105,35 @@ const selectedModel = defineModel('selectedModel', {
   type: String,
   required: true
 })
+
+const currentAsset = computed(() => {
+  if (selectedAssetId.value == null) return null
+  return props.assets.find((asset) => asset.id === selectedAssetId.value) || null
+})
+
+const currentAssetName = computed(() => currentAsset.value?.filename || '尚未选择资产')
+const currentAssetMeta = computed(() => {
+  if (!currentAsset.value) return '等待选择诊断输入'
+  return `资产 #${currentAsset.value.id}`
+})
+
+const currentModel = computed(() => {
+  if (!selectedModel.value) return null
+  return props.models.find((model) => model.name === selectedModel.value) || {
+    name: selectedModel.value,
+    display_name: selectedModel.value
+  }
+})
+
+const currentModelDisplayName = computed(() => {
+  if (!selectedModel.value) return '尚未选择模型'
+  return currentModel.value.display_name || currentModel.value.name || selectedModel.value
+})
+
+const currentModelRawName = computed(() => {
+  if (!selectedModel.value) return ''
+  return currentModel.value.name || selectedModel.value
+})
 </script>
 
 <style scoped>
@@ -105,22 +151,55 @@ const selectedModel = defineModel('selectedModel', {
   font-weight: 700;
 }
 
-.diagnosis-launch__intro {
-  margin-bottom: 18px;
-  padding: 16px 18px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #f6fbfc 0%, #eef6f7 100%);
+.diagnosis-launch__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.diagnosis-param-card {
+  min-height: 76px;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-raised);
   border: 1px solid var(--line-soft);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
 }
 
-.diagnosis-launch__intro strong {
-  font-size: 16px;
+.diagnosis-param-card__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  letter-spacing: 0.04em;
 }
 
-.diagnosis-launch__intro p {
-  margin: 8px 0 0;
-  color: var(--text-secondary);
-  line-height: 1.8;
+.diagnosis-param-card__value {
+  min-width: 0;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.diagnosis-param-card__meta {
+  min-width: 0;
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.diagnosis-param-card__meta--mono {
+  font-family: var(--font-mono);
 }
 
 .diagnosis-form-grid {
@@ -134,5 +213,15 @@ const selectedModel = defineModel('selectedModel', {
   gap: 12px;
   flex-wrap: wrap;
   margin-top: 8px;
+  justify-content: flex-end;
+  padding-top: var(--space-md);
+  border-top: 1px dashed var(--line-soft);
+}
+
+@media (max-width: 1480px) {
+  .diagnosis-launch__summary,
+  .diagnosis-form-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

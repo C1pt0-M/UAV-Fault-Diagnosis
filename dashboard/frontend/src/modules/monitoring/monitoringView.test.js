@@ -6,7 +6,7 @@ import {
 } from '@/modules/monitoring/monitoringView'
 
 describe('monitoring deployment capability helpers', () => {
-  it('always keeps both backend options visible', () => {
+  it('keeps RflySim visible even when backend capability is not ready', () => {
     const options = resolveMonitoringBackendOptions({
       allowed_backends: ['replay'],
       blind_test_enabled: false,

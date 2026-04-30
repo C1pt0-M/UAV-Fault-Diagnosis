@@ -16,6 +16,12 @@ export const telemetryApi = {
   status() {
     return request.get('/telemetry/status')
   },
+  rflyDiagnostics() {
+    return request.get('/telemetry/rfly/diagnostics')
+  },
+  testRflyDiagnostics(payload = {}) {
+    return request.post('/telemetry/rfly/diagnostics', payload)
+  },
   realtimeData() {
     return request.get('/telemetry/realtime-data')
   },

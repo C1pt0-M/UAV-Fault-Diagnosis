@@ -34,18 +34,18 @@ defineProps({
   inset: 0 auto auto 0;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg, #0f766e, #14b8a6);
+  background: var(--brand);
 }
 
 .monitoring-metric:nth-child(2)::before {
-  background: linear-gradient(90deg, #2563eb, #38bdf8);
+  background: var(--status-active);
 }
 
 .monitoring-metric:nth-child(3)::before {
-  background: linear-gradient(90deg, #d97706, #fbbf24);
+  background: var(--status-warn);
 }
 
 .monitoring-metric:nth-child(4)::before {
-  background: linear-gradient(90deg, #dc2626, #fb7185);
+  background: var(--status-danger);
 }
 </style>

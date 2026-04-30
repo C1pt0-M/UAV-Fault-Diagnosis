@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="login-page">
     <section class="login-card">
       <div class="login-card__hero">

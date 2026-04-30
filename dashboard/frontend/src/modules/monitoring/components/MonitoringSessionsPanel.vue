@@ -51,14 +51,14 @@ defineEmits(['refresh', 'open-detail', 'continue-diagnosis'])
 <style scoped>
 .session-list {
   display: grid;
-  gap: 12px;
+  gap: var(--space-md);
 }
 
 .session-card {
-  padding: 16px;
-  border-radius: 18px;
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
   border: 1px solid var(--line-soft);
-  background: linear-gradient(180deg, #fbfdfd 0%, #ffffff 100%);
+  background: var(--bg-panel-raised);
 }
 
 .session-card__head {
@@ -81,8 +81,8 @@ defineEmits(['refresh', 'open-detail', 'continue-diagnosis'])
 .session-card__badge {
   display: inline-flex;
   padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(15, 118, 110, 0.1);
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
   color: var(--brand-strong);
   font-size: 12px;
   font-weight: 700;

@@ -37,6 +37,12 @@ export const monitoringCopy = {
   stopDetectionLabel: '停止检测',
   stopCollectionLabel: '停止采集',
 
+  rflyDiagnosticsTitle: 'RflySim 配置诊断',
+  rflyDiagnosticsDesc: '检查后端开放状态、PX4MavCtrlV4.py、bridge script、Python 与端口配置。',
+  rflyDiagnosticsAction: '检测配置',
+  rflyDiagnosticsReady: 'RflySim 链路配置可用',
+  rflyDiagnosticsEmpty: '请选择 RflySim 后点击检测配置。',
+
   alertsTitle: '告警与样本摘要',
   alertsDescription: '同步展示当前告警事件与关键实时字段，帮助快速定位异常时段。',
   alertsEmpty: '当前没有故障告警',
@@ -71,6 +77,7 @@ export const monitoringCopy = {
   noValue: '暂无',
 
   backendNotAllowed: '当前环境未开放该后端，请使用 CSV 回放',
+  rflyNotReady: 'RflySim 配置未就绪，请先完成配置诊断',
   replayAssetRequired: '请选择回放资产',
   startCollectionSuccess: '遥测采集已启动',
   startDetectionSuccess: '在线检测已启动',
@@ -90,7 +97,7 @@ export function resolveMonitoringState(runStatus = {}) {
   return 'IDLE'
 }
 
-export function resolveMonitoringBackendOptions() {
+export function resolveMonitoringBackendOptions(capabilities = {}) {
   return monitoringBackendOptions
 }
 

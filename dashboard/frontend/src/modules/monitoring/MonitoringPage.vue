@@ -1,30 +1,37 @@
 <template>
   <div class="page-stack monitoring-command">
-    <section class="monitoring-hero">
-      <div class="monitoring-hero__main">
-        <span class="monitoring-hero__eyebrow">在线监测</span>
-        <h1>实时监测与在线预警工作台</h1>
-        <p>{{ monitoringCopy.heroDescription }}</p>
+    <!-- 监测状态摘要条：替代原大渐变 Hero -->
+    <div class="monitoring-statusbar">
+      <div class="monitoring-statusbar__item">
+        <span class="monitoring-statusbar__label">{{ monitoringCopy.heroStatusLabel }}</span>
+        <span class="monitoring-statusbar__value">{{ stateLabel }}</span>
       </div>
-
-      <div class="monitoring-hero__summary">
-        <article class="monitoring-summary-card monitoring-summary-card--accent">
-          <span>{{ monitoringCopy.heroStatusLabel }}</span>
-          <strong>{{ stateLabel }}</strong>
-          <small>当前会话：{{ currentSessionId }}</small>
-        </article>
-        <article class="monitoring-summary-card">
-          <span>{{ monitoringCopy.heroBackendLabel }}</span>
-          <strong>{{ selectedBackendLabel }}</strong>
-          <small>{{ sessionBridgeText }}</small>
-        </article>
-        <article class="monitoring-summary-card">
-          <span>{{ monitoringCopy.heroModelLabel }}</span>
-          <strong>{{ activeModelLabel }}</strong>
-          <small>故障概率峰值：{{ faultPeakText }}</small>
-        </article>
+      <div class="monitoring-statusbar__divider"></div>
+      <div class="monitoring-statusbar__item">
+        <span class="monitoring-statusbar__label">当前会话</span>
+        <span class="monitoring-statusbar__value monitoring-statusbar__value--mono">{{ currentSessionId || '-' }}</span>
       </div>
-    </section>
+      <div class="monitoring-statusbar__divider"></div>
+      <div class="monitoring-statusbar__item">
+        <span class="monitoring-statusbar__label">{{ monitoringCopy.heroBackendLabel }}</span>
+        <span class="monitoring-statusbar__value">{{ selectedBackendLabel }}</span>
+      </div>
+      <div class="monitoring-statusbar__divider"></div>
+      <div class="monitoring-statusbar__item">
+        <span class="monitoring-statusbar__label">{{ monitoringCopy.heroModelLabel }}</span>
+        <span class="monitoring-statusbar__value">{{ activeModelLabel }}</span>
+      </div>
+      <div class="monitoring-statusbar__divider"></div>
+      <div class="monitoring-statusbar__item">
+        <span class="monitoring-statusbar__label">故障概率峰值</span>
+        <span class="monitoring-statusbar__value monitoring-statusbar__value--mono">{{ faultPeakText }}</span>
+      </div>
+      <div class="monitoring-statusbar__divider"></div>
+      <div class="monitoring-statusbar__item" :title="inputContractMeta">
+        <span class="monitoring-statusbar__label">字段合同</span>
+        <span class="monitoring-statusbar__value">{{ inputContractLabel }}</span>
+      </div>
+    </div>
 
     <MonitoringControlPanel
       v-model:selected-backend="selectedBackend"
@@ -38,11 +45,14 @@
       :current-state="currentState"
       :online-models="onlineModels"
       :replay-assets="replayAssets"
+      :rfly-diagnostics="rflyDiagnostics"
+      :rfly-diagnostics-loading="rflyDiagnosticsLoading"
       @start-collection="startCollection"
       @start-detection="startDetection"
       @start-blind-test="startBlindTest"
       @stop-detection="stopDetection"
       @stop-collection="stopCollection"
+      @test-rfly-diagnostics="testRflyDiagnostics"
     />
 
     <MonitoringMetrics :metrics="metrics" />
@@ -95,6 +105,8 @@ const {
   currentState,
   detailVisible,
   faultPeakText,
+  inputContractLabel,
+  inputContractMeta,
   loadSessions,
   metrics,
   onlineModels,
@@ -105,6 +117,8 @@ const {
   realtimeAttitudeSeries,
   realtimeMotorSeries,
   realtimePositionSeries,
+  rflyDiagnostics,
+  rflyDiagnosticsLoading,
   rflyPx4mavctrlPath,
   sampleSummaryItems,
   selectedBackend,
@@ -120,85 +134,53 @@ const {
   startDetection,
   stateLabel,
   stopCollection,
-  stopDetection
+  stopDetection,
+  testRflyDiagnostics
 } = useMonitoringDashboard()
 </script>
 
 <style scoped>
-.monitoring-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.95fr);
-  gap: 20px;
-  padding: 28px;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at right top, rgba(255, 255, 255, 0.18), transparent 30%),
-    linear-gradient(140deg, #081f2f 0%, #0d4656 56%, #0f766e 100%);
-  color: #f4fbfb;
-  box-shadow: 0 24px 60px rgba(8, 31, 47, 0.22);
-}
-
-.monitoring-hero__eyebrow {
-  display: inline-flex;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
+/* 监测状态摘要条 */
+.monitoring-statusbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-raised);
   font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  color: var(--text-secondary);
 }
 
-.monitoring-hero__main h1 {
-  margin: 18px 0 0;
-  font-size: 44px;
-  line-height: 1.04;
+.monitoring-statusbar__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.monitoring-hero__main p {
-  margin: 16px 0 0;
-  max-width: 660px;
-  line-height: 1.9;
-  color: rgba(244, 251, 251, 0.86);
+.monitoring-statusbar__label {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  white-space: nowrap;
 }
 
-.monitoring-hero__summary {
-  display: grid;
-  gap: 12px;
+.monitoring-statusbar__value {
+  color: var(--text-primary);
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.monitoring-summary-card {
-  padding: 16px 18px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+.monitoring-statusbar__value--mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
 }
 
-.monitoring-summary-card--accent {
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.monitoring-summary-card span {
-  font-size: 12px;
-  color: rgba(244, 251, 251, 0.72);
-}
-
-.monitoring-summary-card strong {
-  display: block;
-  margin-top: 8px;
-  font-size: 22px;
-  line-height: 1.3;
-}
-
-.monitoring-summary-card small {
-  display: block;
-  margin-top: 6px;
-  line-height: 1.7;
-  color: rgba(244, 251, 251, 0.8);
-}
-
-@media (max-width: 1480px) {
-  .monitoring-hero {
-    grid-template-columns: 1fr;
-  }
+.monitoring-statusbar__divider {
+  width: 1px;
+  height: 14px;
+  background: var(--line-strong);
+  flex-shrink: 0;
 }
 </style>

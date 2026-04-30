@@ -76,7 +76,7 @@ def create_app(config_class=Config):
     app.after_request(log_request)
     signal.signal(signal.SIGINT, lambda sig, frame: app.logger.info('应用关闭'))
 
-    from app.routes import ai, auth, dashboard, diagnosis_reports, health, setup, users
+    from app.routes import ai, auth, dashboard, diagnosis_reports, health, settings, setup, users
     from app.routes import telemetry
 
     api_prefix = app.config['API_PREFIX']
@@ -85,6 +85,7 @@ def create_app(config_class=Config):
     app.register_blueprint(users.bp, url_prefix=f'{api_prefix}/users')
     if app.config.get('ENABLE_SETUP_API', True):
         app.register_blueprint(setup.bp, url_prefix=f'{api_prefix}/setup')
+    app.register_blueprint(settings.bp, url_prefix=f'{api_prefix}/settings')
     app.register_blueprint(dashboard.bp, url_prefix=f'{api_prefix}')
     app.register_blueprint(
         diagnosis_reports.bp, url_prefix=f'{api_prefix}/reports/diagnosis'

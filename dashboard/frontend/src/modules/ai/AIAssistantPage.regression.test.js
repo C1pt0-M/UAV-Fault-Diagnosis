@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 
 const workspaceState = vi.hoisted(() => ({
@@ -76,10 +77,44 @@ describe('AIAssistantPage information architecture', () => {
     const wrapper = mount(AIAssistantPage)
     const text = wrapper.text()
 
-    expect(text).toContain('分析入口')
     expect(text).toContain('会话轨迹')
     expect(text).toContain('分析主区')
     expect(text).toContain('上下文与知识库')
+    expect(text).toContain('启动报告分析')
     expect(text).toContain('报告 #42 风险复核')
+  })
+
+  it('places scene controls above the workspace and keeps status diagnostics on the right', () => {
+    const wrapper = mount(AIAssistantPage)
+
+    const scenePanel = wrapper.get('.ai-layout__scene')
+    const workspaceLayout = wrapper.get('.ai-layout')
+    const workspaceChildren = Array.from(wrapper.get('.ai-workspace').element.children)
+
+    expect(workspaceChildren.indexOf(scenePanel.element)).toBeLessThan(
+      workspaceChildren.indexOf(workspaceLayout.element)
+    )
+    expect(wrapper.get('.ai-layout__chat').exists()).toBe(true)
+    expect(wrapper.get('.ai-layout__status').exists()).toBe(true)
+    expect(scenePanel.text()).toContain('分析场景')
+    expect(wrapper.get('.ai-layout__status').text()).toContain('知识库状态')
+  })
+
+  it('keeps the status diagnostics column beside chat on desktop-scale viewports', () => {
+    const source = readFileSync('src/modules/ai/AIAssistantPage.vue', 'utf-8')
+
+    expect(source).toContain('grid-template-columns: var(--ai-rail-width) minmax(0, 1fr) var(--ai-status-width)')
+    expect(source).not.toContain('@media (max-width: 1320px)')
+    expect(source).toContain('@media (max-width: 1080px)')
+  })
+
+  it('uses a collapsible conversation rail instead of pushing history below chat', () => {
+    const source = readFileSync('src/modules/ai/AIAssistantPage.vue', 'utf-8')
+
+    expect(source).toContain(':rail-expanded="conversationRailExpanded"')
+    expect(source).toContain('@toggle-rail="toggleConversationRail"')
+    expect(source).toContain('--ai-rail-width: 56px')
+    expect(source).toContain('grid-template-areas:')
+    expect(source).toContain('"list chat context"')
   })
 })

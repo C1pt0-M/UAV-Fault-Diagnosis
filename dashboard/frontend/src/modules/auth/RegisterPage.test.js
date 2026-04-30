@@ -1,4 +1,4 @@
-﻿import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { shallowMount } from '@vue/test-utils'
 
 import RegisterPage from '@/modules/auth/RegisterPage.vue'

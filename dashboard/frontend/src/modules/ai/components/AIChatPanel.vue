@@ -189,13 +189,14 @@ function parseAssistantSections(content) {
 
 .message-card {
   padding: 14px 16px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--line-soft);
-  background: #ffffff;
+  background: var(--bg-panel-raised);
 }
 
 .message-card.assistant {
-  background: #f8fbfb;
+  background: var(--bg-panel);
+  border-left: 2px solid var(--brand);
 }
 
 .message-card__role {
@@ -210,10 +211,10 @@ function parseAssistantSections(content) {
 
 .message-card__summary {
   margin-bottom: 10px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(15, 118, 110, 0.1) 0%, rgba(255, 255, 255, 0.96) 100%);
-  border: 1px solid rgba(15, 118, 110, 0.14);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--brand-glow);
+  border: 1px solid var(--brand-soft);
   color: var(--text-primary);
   font-weight: 700;
   line-height: 1.7;
@@ -252,8 +253,8 @@ function parseAssistantSections(content) {
 
 .reference-item {
   padding: 10px 12px;
-  border-radius: 12px;
-  background: #ffffff;
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-raised);
   border: 1px solid var(--line-soft);
 }
 

@@ -357,6 +357,32 @@ class TelemetryProcessManager:
                 return os.path.expanduser(configured)
         return self._px4_root
 
+    def _build_collector_cmd(self, telemetry_python_bin: str) -> list[str]:
+        cfg = self.app.config if self.app else {}
+        cmd = [
+            telemetry_python_bin,
+            "-m",
+            "telemetry.collector",
+            "--host",
+            str(cfg.get("TELEMETRY_FORWARD_HOST", "127.0.0.1")),
+            "--port",
+            str(cfg.get("TELEMETRY_FORWARD_PORT", 15550)),
+            "--emit-rate",
+            str(cfg.get("TELEMETRY_EMIT_RATE_HZ", 50)),
+            "--mavsdk-address",
+            str(cfg.get("TELEMETRY_MAVSDK_ADDRESS", "udpin://0.0.0.0:14550")),
+            "--grpc-port",
+            str(cfg.get("TELEMETRY_MAVSDK_GRPC_PORT", 50052)),
+            "--pymav-address",
+            str(cfg.get("TELEMETRY_PYMAV_ADDRESS", "udpin:0.0.0.0:14030")),
+        ]
+        enable_pymav = cfg.get("TELEMETRY_ENABLE_PYMAV", True)
+        if isinstance(enable_pymav, str):
+            enable_pymav = enable_pymav.strip().lower() in {"1", "true", "yes", "on"}
+        if not enable_pymav:
+            cmd.append("--no-pymav")
+        return cmd
+
     def _reset_runtime_state(self) -> None:
         self._session_id = None
         self._start_time = None
@@ -778,19 +804,29 @@ class TelemetryProcessManager:
         step = max(1, len(buf) // 200)
         sampled = buf[::step]
 
+        def series(field: str, digits: int, default: float = 0.0) -> list[float]:
+            values = []
+            for frame in sampled:
+                raw_value = frame.get(field, default)
+                try:
+                    values.append(round(float(raw_value), digits))
+                except (TypeError, ValueError):
+                    values.append(round(float(default), digits))
+            return values
+
         return {
-            "times": [round(f["time_s"], 3) for f in sampled],
-            "motor1": [round(f["motor1"], 4) for f in sampled],
-            "motor2": [round(f["motor2"], 4) for f in sampled],
-            "motor3": [round(f["motor3"], 4) for f in sampled],
-            "motor4": [round(f["motor4"], 4) for f in sampled],
-            "roll": [round(f["roll"], 3) for f in sampled],
-            "pitch": [round(f["pitch"], 3) for f in sampled],
-            "yaw": [round(f["yaw"], 3) for f in sampled],
-            "pos_x": [round(f["pos_x"], 3) for f in sampled],
-            "pos_y": [round(f["pos_y"], 3) for f in sampled],
-            "pos_z": [round(f["pos_z"], 3) for f in sampled],
-            "fault_prob": [round(float(f.get("fault_prob", 0.0)), 4) for f in sampled],
+            "times": series("time_s", 3),
+            "motor1": series("motor1", 4),
+            "motor2": series("motor2", 4),
+            "motor3": series("motor3", 4),
+            "motor4": series("motor4", 4),
+            "roll": series("roll", 3),
+            "pitch": series("pitch", 3),
+            "yaw": series("yaw", 3),
+            "pos_x": series("pos_x", 3),
+            "pos_y": series("pos_y", 3),
+            "pos_z": series("pos_z", 3),
+            "fault_prob": series("fault_prob", 4),
         }
 
     def _model_summary(self, meta: dict | None) -> dict | None:
@@ -1197,7 +1233,7 @@ class TelemetryProcessManager:
         if backend_name == "px4":
             canonical, coverage = adapt_px4_live_frame(frame)
             detect_window = [adapt_px4_live_frame(item)[0] for item in window]
-        elif backend_name == "replay":
+        elif backend_name in {"replay", "rfly"}:
             canonical, coverage = canonicalize_rfly_frame(frame)
             detect_window = [canonicalize_rfly_frame(item)[0] for item in window]
         with self._lock:
@@ -1210,14 +1246,32 @@ class TelemetryProcessManager:
                     "mapped_count": len(coverage.get("mapped", [])),
                     "derived_count": len(coverage.get("derived", [])),
                     "default_count": len(coverage.get("default", [])),
+                    "proxy_count": len(coverage.get("proxy", [])),
                     "mapped": coverage.get("mapped", []),
                     "derived": coverage.get("derived", []),
                     "default": coverage.get("default", []),
+                    "proxy": coverage.get("proxy", []),
                 }
                 default_count = len(coverage.get("default", []))
+                proxy_count = len(coverage.get("proxy", []))
+                actuator_source = canonical.get("actuator_source") or frame.get(
+                    "actuator_source"
+                )
+                if default_count > 0:
+                    contract_status = "degraded"
+                    reason = "missing_features"
+                elif actuator_source == "proxy" or proxy_count > 0:
+                    contract_status = "degraded"
+                    reason = "proxy_actuator_source"
+                else:
+                    contract_status = "healthy"
+                    reason = "ok"
                 self._input_contract_status = {
-                    "status": "degraded" if default_count > 0 else "healthy",
-                    "reason": "missing_features" if default_count > 0 else "ok",
+                    "status": contract_status,
+                    "reason": reason,
+                    "actuator_source": actuator_source,
+                    "default_count": default_count,
+                    "proxy_count": proxy_count,
                 }
             self._realtime_buffer.append(
                 {
@@ -1410,13 +1464,16 @@ class TelemetryProcessManager:
         print(f"[telemetry_manager] PX4 SITL 启动中 (PID={self._px4_proc.pid})")
 
     def _wait_for_px4(self, timeout: int = 90) -> bool:
+        cfg = self.app.config if self.app else {}
+        ready_host = str(cfg.get("PX4_READY_HOST", "127.0.0.1"))
+        ready_port = int(cfg.get("PX4_READY_PORT", 18570))
         deadline = time.time() + timeout
         while time.time() < deadline:
             if self._px4_proc is not None and self._px4_proc.poll() is not None:
                 print("[telemetry_manager] PX4 进程已退出")
                 return False
             try:
-                with socket.create_connection(("127.0.0.1", 18570), timeout=2):
+                with socket.create_connection((ready_host, ready_port), timeout=2):
                     return True
             except (ConnectionRefusedError, OSError):
                 time.sleep(2)

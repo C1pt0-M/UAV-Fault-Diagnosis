@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import shutil
+import sqlite3
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -32,7 +33,18 @@ def backup_sqlite_database(config: dict[str, Any], *, now: datetime | None = Non
         backup_path = backup_dir / f'{db_path.stem}_{stamp}_{suffix}{db_path.suffix}'
         suffix += 1
 
-    shutil.copy2(db_path, backup_path)
+    try:
+        source = sqlite3.connect(db_path, timeout=float(config.get('SQLITE_BUSY_TIMEOUT', 30)))
+        target = sqlite3.connect(backup_path)
+        try:
+            source.backup(target)
+        finally:
+            target.close()
+            source.close()
+        shutil.copystat(db_path, backup_path)
+    except sqlite3.Error:
+        backup_path.unlink(missing_ok=True)
+        raise
 
     backups = sorted(backup_dir.glob(f'{db_path.stem}_*{db_path.suffix}'))
     overflow = len(backups) - max(1, int(max_backups))

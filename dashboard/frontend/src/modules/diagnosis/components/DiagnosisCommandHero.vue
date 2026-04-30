@@ -1,30 +1,51 @@
 <template>
-  <section class="diagnosis-hero">
-    <div class="diagnosis-hero__main">
-      <span class="diagnosis-hero__eyebrow">{{ diagnosisCopy.commandTitle }}</span>
-      <h1>{{ stage.label }}</h1>
-      <p>{{ diagnosisCopy.commandDescription }}</p>
-      <div class="diagnosis-hero__cue">{{ stage.cue }}</div>
+  <!-- 诊断状态摘要条：工业风紧凑布局，替代原大渐变 Hero -->
+  <div class="diag-statusbar">
+    <!-- 当前阶段 -->
+    <div class="diag-statusbar__item diag-statusbar__item--primary">
+      <span class="diag-statusbar__label">{{ diagnosisCopy.stageLabel }}</span>
+      <span class="diag-statusbar__value">{{ stage.label }}</span>
     </div>
 
-    <div class="diagnosis-hero__summary">
-      <div class="diagnosis-summary-card diagnosis-summary-card--accent">
-        <span>{{ diagnosisCopy.stageLabel }}</span>
-        <strong>{{ stage.label }}</strong>
-        <small>{{ stage.description }}</small>
-      </div>
-      <div class="diagnosis-summary-card">
-        <span>{{ diagnosisCopy.assetSummaryLabel }}</span>
-        <strong>{{ selectedAssetName }}</strong>
-        <small>{{ diagnosisCopy.linkedSessionLabel }}：{{ activeSessionId || '-' }}</small>
-      </div>
-      <div class="diagnosis-summary-card">
-        <span>{{ diagnosisCopy.modelSummaryLabel }}</span>
-        <strong>{{ selectedModelName }}</strong>
-        <small>{{ currentRun?.task || 'offline_multiclass' }}</small>
-      </div>
+    <div class="diag-statusbar__divider"></div>
+
+    <!-- 操作提示 -->
+    <div class="diag-statusbar__item">
+      <span class="diag-statusbar__cue">{{ stage.cue }}</span>
     </div>
-  </section>
+
+    <div class="diag-statusbar__divider"></div>
+
+    <!-- 关联资产 -->
+    <div class="diag-statusbar__item">
+      <span class="diag-statusbar__label">{{ diagnosisCopy.assetSummaryLabel }}</span>
+      <span class="diag-statusbar__value">{{ selectedAssetName }}</span>
+    </div>
+
+    <div class="diag-statusbar__divider"></div>
+
+    <!-- 关联会话 -->
+    <div class="diag-statusbar__item">
+      <span class="diag-statusbar__label">{{ diagnosisCopy.linkedSessionLabel }}</span>
+      <span class="diag-statusbar__value diag-statusbar__value--mono">{{ activeSessionId || '-' }}</span>
+    </div>
+
+    <div class="diag-statusbar__divider"></div>
+
+    <!-- 模型 -->
+    <div class="diag-statusbar__item">
+      <span class="diag-statusbar__label">{{ diagnosisCopy.modelSummaryLabel }}</span>
+      <span class="diag-statusbar__value">{{ selectedModelName }}</span>
+    </div>
+
+    <div class="diag-statusbar__divider"></div>
+
+    <!-- 任务类型 -->
+    <div class="diag-statusbar__item">
+      <span class="diag-statusbar__label">任务类型</span>
+      <span class="diag-statusbar__value diag-statusbar__value--mono">{{ currentRun?.task || 'offline_multiclass' }}</span>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -55,84 +76,67 @@ defineProps({
 </script>
 
 <style scoped>
-.diagnosis-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.95fr);
-  gap: 20px;
-  padding: 28px;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at right top, rgba(255, 255, 255, 0.18), transparent 30%),
-    linear-gradient(140deg, #081f2f 0%, #0d4656 56%, #0f766e 100%);
-  color: #f4fbfb;
-  box-shadow: 0 24px 60px rgba(8, 31, 47, 0.22);
-}
-
-.diagnosis-hero__eyebrow {
-  display: inline-flex;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
+/* 诊断状态摘要条：与 system-statusbar 同一视觉风格 */
+.diag-statusbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-raised);
   font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  color: var(--text-secondary);
 }
 
-.diagnosis-hero__main h1 {
-  margin: 18px 0 0;
-  font-size: 44px;
-  line-height: 1.04;
+.diag-statusbar__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.diagnosis-hero__main p {
-  margin: 16px 0 0;
-  max-width: 660px;
-  line-height: 1.9;
-  color: rgba(244, 251, 251, 0.86);
-}
-
-.diagnosis-hero__cue {
-  display: inline-flex;
-  margin-top: 18px;
-  padding: 11px 16px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+/* 当前阶段项：稍微突出 */
+.diag-statusbar__item--primary .diag-statusbar__value {
+  color: var(--brand);
   font-weight: 700;
 }
 
-.diagnosis-hero__summary {
-  display: grid;
-  gap: 12px;
+.diag-statusbar__label {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  white-space: nowrap;
 }
 
-.diagnosis-summary-card {
-  padding: 16px 18px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+.diag-statusbar__value {
+  color: var(--text-primary);
+  font-weight: 600;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.diagnosis-summary-card--accent {
-  background: rgba(255, 255, 255, 0.14);
+.diag-statusbar__value--mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
 }
 
-.diagnosis-summary-card span {
-  font-size: 12px;
-  color: rgba(244, 251, 251, 0.72);
+/* 操作提示：使用 badge 风格 */
+.diag-statusbar__cue {
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.diagnosis-summary-card strong {
-  display: block;
-  margin-top: 8px;
-  font-size: 22px;
-  line-height: 1.3;
-}
-
-.diagnosis-summary-card small {
-  display: block;
-  margin-top: 6px;
-  line-height: 1.7;
-  color: rgba(244, 251, 251, 0.8);
+.diag-statusbar__divider {
+  width: 1px;
+  height: 14px;
+  background: var(--line-strong);
+  flex-shrink: 0;
 }
 </style>

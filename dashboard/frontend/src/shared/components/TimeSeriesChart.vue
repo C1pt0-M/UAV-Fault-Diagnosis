@@ -103,7 +103,59 @@ function smoothFaultProbSeries(values, alpha = 0.14) {
   return back
 }
 
-function buildFaultProbAreaSeries() {
+function getCssToken(name, fallback) {
+  if (typeof window === 'undefined') return fallback
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  return value || fallback
+}
+
+function toRgbParts(color) {
+  const value = String(color || '').trim()
+  if (value.startsWith('#') && value.length === 7) {
+    return [
+      Number.parseInt(value.slice(1, 3), 16),
+      Number.parseInt(value.slice(3, 5), 16),
+      Number.parseInt(value.slice(5, 7), 16)
+    ]
+  }
+
+  const rgbMatch = value.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+  if (rgbMatch) {
+    return rgbMatch.slice(1, 4).map((part) => Number.parseInt(part, 10))
+  }
+
+  return [0, 0, 0]
+}
+
+function colorWithAlpha(color, alpha) {
+  const [red, green, blue] = toRgbParts(color)
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`
+}
+
+function resolveChartTheme() {
+  const brand = getCssToken('--brand', '#2563eb')
+  const active = getCssToken('--status-active', '#2563eb')
+  const warn = getCssToken('--status-warn', '#d97706')
+  const danger = getCssToken('--status-danger', '#dc2626')
+  const pending = getCssToken('--status-pending', '#7c3aed')
+  const ok = getCssToken('--status-ok', '#16a34a')
+  const text = getCssToken('--text-tertiary', '#9ca3af')
+  const legendText = getCssToken('--text-secondary', '#4b5563')
+  const lineSoft = getCssToken('--line-soft', '#e5e7eb')
+  const lineStrong = getCssToken('--line-strong', '#d1d5db')
+
+  return {
+    palette: [brand, active, warn, danger, pending, ok],
+    textColor: text,
+    legendTextColor: legendText,
+    axisColor: lineStrong,
+    splitLineColor: lineSoft,
+    warnAreaColor: colorWithAlpha(warn, 0.22),
+    dangerAreaColor: colorWithAlpha(danger, 0.28)
+  }
+}
+
+function buildFaultProbAreaSeries(chartTheme) {
   const xData = Array.isArray(props.xData) ? props.xData : []
   const probs = Array.isArray(props.faultProbData) ? props.faultProbData : []
   const n = Math.min(xData.length, probs.length)
@@ -140,7 +192,7 @@ function buildFaultProbAreaSeries() {
         opacity: 0
       },
       areaStyle: {
-        color: 'rgba(245, 158, 11, 0.22)'
+        color: chartTheme.warnAreaColor
       },
       z: 0
     },
@@ -161,7 +213,7 @@ function buildFaultProbAreaSeries() {
         opacity: 0
       },
       areaStyle: {
-        color: 'rgba(220, 38, 38, 0.28)'
+        color: chartTheme.dangerAreaColor
       },
       z: 1
     }
@@ -172,18 +224,19 @@ function renderChart() {
   if (!chartInstance) return
 
   const lineSeries = buildLineSeries()
-  const faultProbAreaSeries = buildFaultProbAreaSeries()
+  const chartTheme = resolveChartTheme()
+  const faultProbAreaSeries = buildFaultProbAreaSeries(chartTheme)
 
   chartInstance.setOption(
     {
-      color: ['#0f766e', '#1d4ed8', '#d97706', '#be123c', '#7c3aed', '#0891b2', '#15803d', '#b45309'],
+      color: chartTheme.palette,
       animation: false,
       grid: { left: 50, right: 24, top: 36, bottom: 42 },
       tooltip: { trigger: 'axis' },
       legend: {
         top: 6,
         type: 'scroll',
-        textStyle: { color: '#49616d' },
+        textStyle: { color: chartTheme.legendTextColor },
         data: lineSeries.map((item) => item.name)
       },
       xAxis: {
@@ -191,16 +244,16 @@ function renderChart() {
         name: props.xAxisName,
         boundaryGap: false,
         data: props.xData || [],
-        axisLine: { lineStyle: { color: 'rgba(16, 50, 64, 0.25)' } },
-        axisLabel: { color: '#738791' }
+        axisLine: { lineStyle: { color: chartTheme.axisColor } },
+        axisLabel: { color: chartTheme.textColor }
       },
       yAxis: [
         {
           type: 'value',
           scale: true,
-          axisLine: { lineStyle: { color: 'rgba(16, 50, 64, 0.25)' } },
-          splitLine: { lineStyle: { color: 'rgba(16, 50, 64, 0.08)' } },
-          axisLabel: { color: '#738791' }
+          axisLine: { lineStyle: { color: chartTheme.axisColor } },
+          splitLine: { lineStyle: { color: chartTheme.splitLineColor } },
+          axisLabel: { color: chartTheme.textColor }
         },
         {
           type: 'value',

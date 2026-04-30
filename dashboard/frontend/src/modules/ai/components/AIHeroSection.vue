@@ -30,82 +30,86 @@ import { aiCopy } from '@/modules/ai/aiView'
 <style scoped>
 .ai-hero {
   overflow: hidden;
-  background:
-    radial-gradient(circle at right top, rgba(255, 255, 255, 0.18), transparent 30%),
-    linear-gradient(140deg, #081f2f 0%, #0d4656 56%, #0f766e 100%);
-  color: #f4fbfb;
+  background: var(--bg-panel);
+  border-left: 3px solid var(--brand);
 }
 
 .ai-hero__main {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.95fr);
-  gap: 18px;
+  gap: var(--space-xl);
   align-items: stretch;
-  padding: 26px 28px 24px;
+  padding: var(--space-xl);
 }
 
 .ai-hero__content {
-  padding: 10px 0 0 8px;
+  padding: var(--space-sm) 0 0 var(--space-sm);
 }
 
 .ai-hero__tag {
   display: inline-flex;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand-strong);
   font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .ai-hero h2 {
   margin: 14px 0 0;
-  font-size: 34px;
-  line-height: 1.1;
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--text-primary);
 }
 
 .ai-hero :deep(.page-description) {
-  color: rgba(244, 251, 251, 0.84);
+  color: var(--text-secondary);
 }
 
 .ai-hero__cards {
   display: grid;
-  gap: 12px;
+  gap: var(--space-md);
 }
 
 .ai-hero__card {
-  padding: 16px 18px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line-soft);
 }
 
 .ai-hero__card--accent {
-  background: rgba(255, 255, 255, 0.14);
+  border-left: 3px solid var(--brand);
+  padding-left: calc(var(--space-lg) - 3px);
 }
 
 .ai-hero__card span {
   font-size: 12px;
-  color: rgba(244, 251, 251, 0.72);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .ai-hero__card strong {
   display: block;
   margin-top: 8px;
-  font-size: 22px;
+  font-size: 17px;
   line-height: 1.3;
+  color: var(--text-primary);
 }
 
 .ai-hero__card small {
   display: block;
   margin-top: 6px;
-  line-height: 1.7;
-  color: rgba(244, 251, 251, 0.8);
+  line-height: 1.6;
+  color: var(--text-secondary);
 }
 
 @media (max-width: 1480px) {
   .ai-hero__main {
     grid-template-columns: 1fr;
-    padding: 24px 24px 22px;
   }
 
   .ai-hero__content {

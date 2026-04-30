@@ -11,7 +11,7 @@
           v-model="reportFilters.assetId"
           clearable
           filterable
-          style="width: 220px"
+          class="reports-filter-select"
           :placeholder="reportsCopy.assetFilterPlaceholder"
         >
           <el-option
@@ -25,7 +25,7 @@
         <el-select
           v-model="reportFilters.label"
           clearable
-          style="width: 220px"
+          class="reports-filter-select"
           :placeholder="reportsCopy.labelFilterPlaceholder"
         >
           <el-option
@@ -111,12 +111,16 @@ const reportFilters = defineModel('filters', {
 .reports-toolbar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-md);
   flex-wrap: wrap;
-  padding: 12px 14px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #f7fbfc 0%, #eef6f7 100%);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-raised);
   border: 1px solid var(--line-soft);
+}
+
+.reports-filter-select {
+  width: 220px;
 }
 
 :deep(.reports-workspace .el-table__row td) {

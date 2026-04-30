@@ -1,4 +1,4 @@
-﻿export function parseStoredUser(rawValue) {
+export function parseStoredUser(rawValue) {
   if (!rawValue) return null
 
   try {
