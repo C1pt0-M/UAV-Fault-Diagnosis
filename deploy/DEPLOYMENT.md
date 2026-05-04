@@ -5,8 +5,8 @@
 - OS: Ubuntu 22.04 LTS
 - Reverse proxy: Nginx
 - App server: Gunicorn
-- Frontend: static files from `dashboard/frontend/dist`
-- Backend: Flask app from `dashboard/backend/wsgi.py`
+- Frontend: static files from `apps/dashboard/frontend/dist`
+- Backend: Flask app from `apps/dashboard/backend/wsgi.py`
 - Database: SQLite
 
 ## Constraints
@@ -20,10 +20,11 @@
 
 ```text
 /srv/uav-dashboard/
-  dashboard/
-    backend/
-    frontend/
-  models/
+  apps/
+    dashboard/
+      backend/
+      frontend/
+  assets/models/
   knowledge_base/
   runtime/
 ```
@@ -48,8 +49,8 @@ RUNS_DIR=/srv/uav-dashboard/runtime/runs
 REPORTS_DIR=/srv/uav-dashboard/runtime/reports
 AI_RUNTIME_DIR=/srv/uav-dashboard/runtime/ai
 
-MODEL_ROOT=/srv/uav-dashboard/models
-OFFLINE_NORM_STATS=/srv/uav-dashboard/models/transfer3_cnnlstm_normalproto/norm_stats.json
+MODEL_ROOT=/srv/uav-dashboard/assets/models
+OFFLINE_NORM_STATS=/srv/uav-dashboard/assets/models/transfer3_cnnlstm_normalproto/norm_stats.json
 DEFAULT_OFFLINE_MODEL=transfer3_cnnlstm_normalproto
 DEFAULT_ONLINE_MODEL=online_detector_cnn1d_rfly
 
@@ -69,7 +70,7 @@ TASK_MAX_WORKERS=2
 ## Build frontend
 
 ```bash
-cd /srv/uav-dashboard/dashboard/frontend
+cd /srv/uav-dashboard/apps/dashboard/frontend
 npm ci
 npm run build
 ```
@@ -79,7 +80,7 @@ npm run build
 ```bash
 cd /srv/uav-dashboard
 python3 -m venv .venv
-.venv/bin/pip install -r dashboard/backend/requirements.txt
+.venv/bin/pip install -r apps/dashboard/backend/requirements.txt
 ```
 
 ## Start backend

@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$frontendDir = Join-Path $repoRoot "dashboard\frontend"
+$frontendDir = Join-Path $repoRoot "apps\\dashboard\\frontend"
 
 if (-not (Test-Path -LiteralPath $frontendDir -PathType Container)) {
     Write-Error "frontend directory not found: $frontendDir"

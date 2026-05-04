@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$backendDir = Join-Path $repoRoot "dashboard\backend"
+$backendDir = Join-Path $repoRoot "apps\\dashboard\\backend"
 
 if (-not (Test-Path -LiteralPath $backendDir -PathType Container)) {
     Write-Error "backend directory not found: $backendDir"
@@ -17,7 +17,7 @@ if ($env:DASHBOARD_BACKEND_PYTHON) {
     } else {
         $pythonCmd = Get-Command python -ErrorAction SilentlyContinue
         if ($null -eq $pythonCmd) {
-            Write-Error "Python not found. Set DASHBOARD_BACKEND_PYTHON or create dashboard/backend/.venv."
+            Write-Error "Python not found. Set DASHBOARD_BACKEND_PYTHON or create apps/dashboard/backend/.venv."
             exit 1
         }
         $pythonBin = $pythonCmd.Source

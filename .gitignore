@@ -29,21 +29,31 @@ Thumbs.db
 models_backup_*/
 
 # Dashboard
+apps/dashboard/frontend/node_modules/
+apps/dashboard/frontend/dist/
+apps/dashboard/frontend/.env
+apps/dashboard/backend/.venv/
+apps/dashboard/backend/runtime/
+apps/dashboard/backend/runtime_test/
+apps/dashboard/backend/*.db
+apps/dashboard/backend/logs/
+apps/dashboard/backend/instance/
+apps/dashboard/backend/.env
+
+# Legacy local runtime paths
 dashboard/frontend/node_modules/
 dashboard/frontend/dist/
-dashboard/frontend/.env
 dashboard/backend/.venv/
 dashboard/backend/runtime/
-dashboard/backend/*.db
 dashboard/backend/logs/
-dashboard/backend/instance/
-dashboard/backend/.env
 
-# Local docs / assets not for GitHub
-docs/
+# Local docs / tests / assets not for GitHub
+docs/*
+!docs/migration-monorepo.md
+/tests/*
+!/tests/test_monorepo_layout.py
 /data/
 /logs/
-tests/
 /competition/
 results/
 tmp/
@@ -59,5 +69,6 @@ Git规范.md
 /无人机故障检测系统.txt
 competition_docs/
 服务器更新命令.md
-src/*.csv
+packages/uav_fault/uav_fault/*.csv
+assets/models/*.csv
 /uav_5g_results_stride5/full_run_stride5.log
