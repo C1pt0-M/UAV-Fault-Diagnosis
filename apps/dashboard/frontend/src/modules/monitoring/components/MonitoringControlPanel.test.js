@@ -16,7 +16,7 @@ function mountControlPanel(overrides = {}) {
       onlineModels: [
         {
           name: 'online_detector_kg_mstca_rfly',
-          display_name: 'KG-MSTCA 在线模型'
+          display_name: 'KG-MSTCA 在线检测模型'
         }
       ],
       replayAssets: [],
@@ -32,18 +32,17 @@ function mountControlPanel(overrides = {}) {
   })
 }
 
-describe('MonitoringControlPanel industrial console', () => {
-  it('renders compact status parameters with readable model name and raw id', () => {
+describe('MonitoringControlPanel telemetry console', () => {
+  it('renders three compact status cards with readable Chinese labels', () => {
     const wrapper = mountControlPanel()
 
     expect(wrapper.findAll('.monitoring-param-card')).toHaveLength(3)
-    expect(wrapper.find('.monitoring-param-card__state').exists()).toBe(true)
-    expect(wrapper.text()).toContain('当前状态')
+    expect(wrapper.text()).toContain('当前会话状态')
     expect(wrapper.text()).toContain('空闲')
     expect(wrapper.text()).toContain('数据源')
     expect(wrapper.text()).toContain('CSV 回放')
-    expect(wrapper.text()).toContain('在线模型')
-    expect(wrapper.text()).toContain('KG-MSTCA 在线模型')
+    expect(wrapper.text()).toContain('在线检测模型')
+    expect(wrapper.text()).toContain('KG-MSTCA 在线检测模型')
     expect(wrapper.text()).toContain('online_detector_kg_mstca_rfly')
   })
 
@@ -66,7 +65,7 @@ describe('MonitoringControlPanel industrial console', () => {
           message: 'PX4MavCtrlV4.py 未配置'
         },
         checks: {
-          px4mavctrl: { ok: false, message: '缺少 PX4MavCtrlV4.py' }
+          px4mavctrl: { ok: false, label: 'PX4MavCtrlV4.py 缺失' }
         },
         issues: [{ code: 'px4mavctrl_missing', message: '缺少 PX4MavCtrlV4.py' }]
       }

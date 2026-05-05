@@ -1,6 +1,5 @@
 <template>
   <div class="page-stack">
-    <!-- 报告状态摘要条：替代原 Hero -->
     <div class="reports-statusbar">
       <div class="reports-statusbar__item">
         <span class="reports-statusbar__label">当前筛选</span>

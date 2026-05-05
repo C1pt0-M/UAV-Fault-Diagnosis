@@ -44,6 +44,26 @@ const props = defineProps({
   faultProbData: {
     type: Array,
     default: () => []
+  },
+  showSlider: {
+    type: Boolean,
+    default: true
+  },
+  showLegend: {
+    type: Boolean,
+    default: true
+  },
+  showThresholdLine: {
+    type: Boolean,
+    default: false
+  },
+  thresholdValue: {
+    type: Number,
+    default: 0.7
+  },
+  thresholdLabel: {
+    type: String,
+    default: ''
   }
 })
 
@@ -54,8 +74,8 @@ const hasSeriesData = computed(() => {
   return props.series.some((item) => Array.isArray(item.data) && item.data.length > 0)
 })
 
-function buildLineSeries() {
-  return props.series.map((item) => ({
+function buildLineSeries(chartTheme) {
+  return props.series.map((item, index) => ({
     name: item.name,
     type: 'line',
     yAxisIndex: 0,
@@ -64,7 +84,31 @@ function buildLineSeries() {
     sampling: 'lttb',
     data: item.data || [],
     connectNulls: true,
-    z: 3
+    z: 3,
+    ...(index === 0 && props.showThresholdLine
+      ? {
+          markLine: {
+            silent: true,
+            symbol: 'none',
+            data: [
+              {
+                yAxis: props.thresholdValue,
+                name: props.thresholdLabel || `阈值 ${props.thresholdValue}`
+              }
+            ],
+            label: {
+              formatter: props.thresholdLabel || `阈值 ${props.thresholdValue}`,
+              color: chartTheme.legendTextColor,
+              fontSize: 11
+            },
+            lineStyle: {
+              color: chartTheme.warnLineColor,
+              type: 'dashed',
+              width: 1.2
+            }
+          }
+        }
+      : {})
   }))
 }
 
@@ -150,9 +194,57 @@ function resolveChartTheme() {
     legendTextColor: legendText,
     axisColor: lineStrong,
     splitLineColor: lineSoft,
+    sliderFillColor: colorWithAlpha(brand, 0.12),
+    sliderDataColor: colorWithAlpha(brand, 0.08),
+    sliderHandleColor: colorWithAlpha(brand, 0.38),
+    warnLineColor: colorWithAlpha(warn, 0.86),
     warnAreaColor: colorWithAlpha(warn, 0.22),
     dangerAreaColor: colorWithAlpha(danger, 0.28)
   }
+}
+
+const hasVisibleDataZoom = computed(() => {
+  return hasSeriesData.value && (props.showSlider || props.xData.length > 1)
+})
+
+const chartGrid = computed(() => ({
+  left: 50,
+  right: 24,
+  top: props.showLegend ? 36 : 16,
+  bottom: hasSeriesData.value && props.showSlider ? 34 : 20
+}))
+
+function buildDataZoom(chartTheme) {
+  if (!hasVisibleDataZoom.value) return []
+
+  const zoom = [
+    { type: 'inside', start: 0, end: 100 }
+  ]
+
+  if (props.showSlider) {
+    zoom.push({
+      type: 'slider',
+      height: 10,
+      bottom: 8,
+      start: 0,
+      end: 100,
+      borderColor: chartTheme.splitLineColor,
+      backgroundColor: chartTheme.sliderDataColor,
+      fillerColor: chartTheme.sliderFillColor,
+      handleStyle: { color: chartTheme.sliderHandleColor },
+      dataBackground: {
+        lineStyle: { color: chartTheme.sliderHandleColor },
+        areaStyle: { color: chartTheme.sliderDataColor }
+      },
+      selectedDataBackground: {
+        lineStyle: { color: chartTheme.sliderHandleColor },
+        areaStyle: { color: chartTheme.sliderFillColor }
+      },
+      textStyle: { color: chartTheme.textColor }
+    })
+  }
+
+  return zoom
 }
 
 function buildFaultProbAreaSeries(chartTheme) {
@@ -223,17 +315,18 @@ function buildFaultProbAreaSeries(chartTheme) {
 function renderChart() {
   if (!chartInstance) return
 
-  const lineSeries = buildLineSeries()
   const chartTheme = resolveChartTheme()
+  const lineSeries = buildLineSeries(chartTheme)
   const faultProbAreaSeries = buildFaultProbAreaSeries(chartTheme)
 
   chartInstance.setOption(
     {
       color: chartTheme.palette,
       animation: false,
-      grid: { left: 50, right: 24, top: 36, bottom: 42 },
+      grid: chartGrid.value,
       tooltip: { trigger: 'axis' },
       legend: {
+        show: props.showLegend,
         top: 6,
         type: 'scroll',
         textStyle: { color: chartTheme.legendTextColor },
@@ -266,10 +359,7 @@ function renderChart() {
           splitLine: { show: false }
         }
       ],
-      dataZoom: [
-        { type: 'inside', start: 0, end: 100 },
-        { type: 'slider', height: 16, bottom: 8, start: 0, end: 100 }
-      ],
+      dataZoom: buildDataZoom(chartTheme),
       series: [...faultProbAreaSeries, ...lineSeries]
     },
     true

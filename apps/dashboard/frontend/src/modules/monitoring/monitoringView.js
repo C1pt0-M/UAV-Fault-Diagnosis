@@ -1,5 +1,5 @@
 export const monitoringBackendOptions = [
-  { label: 'RflySim', value: 'rfly' },
+  { label: 'RflySim 实时链路', value: 'rfly' },
   { label: 'CSV 回放', value: 'replay' }
 ]
 
@@ -17,8 +17,10 @@ export const monitoringStateLabels = {
 }
 
 export const monitoringCopy = {
-  heroTitle: '实时监测与在线预警工作台',
-  heroDescription: '统一呈现遥测采集、在线检测、故障趋势与会话承接，让运行状态一眼可读。',
+  pageTitle: '实时监测',
+  pageDescription: '统一管理遥测采集、在线检测、实时告警与会话承接。',
+  heroTitle: '实时监测',
+  heroDescription: '遥测采集、在线检测、实时告警与会话承接',
   heroStatusLabel: '当前状态',
   heroBackendLabel: '数据源',
   heroModelLabel: '在线模型',
@@ -28,7 +30,7 @@ export const monitoringCopy = {
 
   controlTitle: '监测控制台',
   controlDescription: '在同一处完成数据源选择、在线模型切换与采集 / 检测控制。',
-  modelPlaceholder: '选择在线模型',
+  modelPlaceholder: '选择在线检测模型',
   replayAssetPlaceholder: '选择回放资产',
   rflyPx4MavCtrlPlaceholder: 'PX4MavCtrlV4.py 路径（可选，默认读取后端配置）',
   startCollectionLabel: '启动采集',
@@ -43,21 +45,25 @@ export const monitoringCopy = {
   rflyDiagnosticsReady: 'RflySim 链路配置可用',
   rflyDiagnosticsEmpty: '请选择 RflySim 后点击检测配置。',
 
-  alertsTitle: '告警与样本摘要',
-  alertsDescription: '同步展示当前告警事件与关键实时字段，帮助快速定位异常时段。',
+  statusOverviewTitle: '实时状态概览',
+  statusOverviewDescription: '只展示当前接口可追溯的运行状态。',
+  pipelineTitle: '检测链路状态',
+  pipelineDescription: '采集、模型、字段合同与会话承接是否就绪。',
+  alertsTitle: '最近告警事件',
+  alertsDescription: '来自 telemetry fault events 的实时告警。',
   alertsEmpty: '当前没有故障告警',
   sampleTitle: '实时样本摘要',
-  sampleDescription: '读取最近一批实时数据并展示关键字段。',
+  sampleDescription: '最近一批实时遥测的关键字段。',
 
-  realtimeCurveTitle: '实时曲线主区',
-  realtimeCurveDescription: '把故障概率、动力输出与姿态变化集中到主视图中，优先展示系统正在发生什么。',
-  realtimeCurveEmpty: '当前会话暂无可绘制的实时曲线',
+  realtimeCurveTitle: '故障概率趋势',
+  realtimeCurveDescription: '主图展示在线检测风险变化；下方保留当前接口已有的关键遥测曲线。',
+  realtimeCurveEmpty: '暂无实时曲线；启动采集或选择 CSV 回放后自动更新',
   motorChartTitle: '动力输出',
   attitudeChartTitle: '姿态角',
   positionChartTitle: '高度轨迹',
 
-  sessionsTitle: '监测会话承接区',
-  sessionsDescription: '跟踪采集历史，并在需要时继续承接到离线诊断中心。',
+  sessionsTitle: '监测会话记录',
+  sessionsDescription: '跟踪采集历史，并在需要时承接到离线诊断中心。',
   sessionsEmpty: '暂无监测会话',
   sessionDetailTitle: '会话详情',
   sessionDetailEmpty: '暂无会话详情',
@@ -69,6 +75,7 @@ export const monitoringCopy = {
   durationLabel: '时长（秒）',
   detailAction: '查看详情',
   continueAction: '继续诊断',
+  refreshAction: '刷新',
 
   unknownFault: '疑似异常',
   pendingSeverity: '待评估',
@@ -103,6 +110,24 @@ export function resolveMonitoringBackendOptions(capabilities = {}) {
 
 export function shouldShowBlindTest(capabilities = {}) {
   return Boolean(capabilities?.blind_test_enabled)
+}
+
+export function formatMonitoringModelName(value) {
+  const raw = String(value || '').trim()
+  if (!raw) return monitoringCopy.noSelection
+
+  const normalized = raw
+    .replace(/在线检测模型/g, '')
+    .replace(/^online_detector_/i, '')
+    .replace(/_rfly$/i, '')
+    .replace(/[_-]+/g, ' ')
+    .trim()
+
+  if (/kg\s*mstca/i.test(normalized)) return 'KG-MSTCA'
+  if (/cnn\s*1d/i.test(normalized)) return 'CNN1D'
+  if (/mstca/i.test(normalized)) return 'MSTCA'
+
+  return raw
 }
 
 export function formatLatestValue(values, formatter = (value) => value) {

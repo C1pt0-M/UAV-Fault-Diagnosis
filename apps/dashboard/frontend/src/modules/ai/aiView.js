@@ -1,3 +1,9 @@
+export const aiQuickPrompts = [
+  '解释当前报告结论',
+  '列出风险和处置建议',
+  '说明模型判断依据'
+]
+
 export const aiCopy = {
   heroTag: 'AI 助手',
   heroTitle: '报告解读与知识问答工作台',
@@ -18,10 +24,13 @@ export const aiCopy = {
   conversationScenePrefix: '场景',
   conversationReportPrefix: '报告',
   conversationRunPrefix: '任务',
+  conversationRailCollapsed: '会话',
+  conversationRailExpanded: '收起',
 
   chatTitle: '分析主区',
   chatDescription: '直接提问，或基于当前报告发起分析。重点关注结论、原因、风险和建议。',
   emptyChat: '当前没有消息，输入问题后即可开始分析。',
+  quickPromptTitle: '快捷问题',
   composerPlaceholder: '输入你的问题，例如：请结合当前报告解释故障原因、风险等级和处置建议。',
   sendButton: '发送',
   seedAnalysisButton: '启动报告分析',
@@ -29,6 +38,9 @@ export const aiCopy = {
 
   contextTitle: '上下文与知识库',
   contextDescription: '查看当前绑定的报告、任务、检索方式和 Embedding 状态，快速判断当前回答依据。',
+  scenePanelTitle: '分析场景',
+  scenePanelDescription: '先确定任务类型和报告编号，聊天主区会按当前分析上下文回答。',
+  contextBoxTitle: '当前分析上下文',
   sceneLabel: '分析场景',
   reportIdLabel: '报告 ID',
   reportIdPlaceholder: '请输入报告 ID',
@@ -73,6 +85,13 @@ export const aiCopy = {
   defaultReportPrompt: '请结合当前报告给出故障原因分析、风险判断和处理建议。'
 }
 
+export function createConversationPreview(content, maxLength = 56) {
+  const normalized = String(content || '').replace(/\s+/g, ' ').trim()
+  if (!normalized) return ''
+  if (normalized.length <= maxLength) return normalized
+  return `${normalized.slice(0, maxLength)}...`
+}
+
 export function normalizeConversationSummary(conversation) {
   const meta = conversation?.meta || {}
   const contextSummary = meta.context_summary || {}
@@ -84,7 +103,7 @@ export function normalizeConversationSummary(conversation) {
     sceneLabel: contextSummary.scene_label || aiCopy.sceneLabels[conversation?.scene] || aiCopy.sceneLabels.general,
     reportId: conversation?.report_id ?? contextSummary.report_id ?? null,
     runId: conversation?.run_id ?? contextSummary.run_id ?? null,
-    lastPreview: meta.last_message_preview || '',
+    lastPreview: createConversationPreview(meta.last_message_preview || ''),
     messageCount: meta.message_count ?? 0
   }
 }

@@ -4,10 +4,11 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { assetApi, modelApi, telemetryApi } from '@/shared/services'
 import {
   formatLatestValue,
-  monitoringCopy,
-  resolveMonitoringBackendOptions,
+  formatMonitoringModelName,
   monitoringBackendOptions,
+  monitoringCopy,
   monitoringStateLabels,
+  resolveMonitoringBackendOptions,
   resolveMonitoringState,
   shouldShowBlindTest
 } from '@/modules/monitoring/monitoringView'
@@ -25,6 +26,28 @@ function createActionLoadingState() {
     state[key] = false
     return state
   }, {})
+}
+
+function formatCount(value) {
+  const parsed = Number(value || 0)
+  return Number.isFinite(parsed) ? parsed.toLocaleString('zh-CN') : '0'
+}
+
+function formatDuration(seconds) {
+  const parsed = Number(seconds || 0)
+  if (!Number.isFinite(parsed) || parsed <= 0) return monitoringCopy.noValue
+  if (parsed < 60) return `${parsed.toFixed(0)} s`
+  const minutes = Math.floor(parsed / 60)
+  const remain = Math.floor(parsed % 60)
+  return `${minutes}m ${String(remain).padStart(2, '0')}s`
+}
+
+function resolveSeverityTone(severity) {
+  const value = String(severity || '').toLowerCase()
+  if (['critical', 'high', 'danger'].includes(value)) return 'danger'
+  if (['medium', 'warning', 'warn'].includes(value)) return 'warn'
+  if (['low', 'info'].includes(value)) return 'ok'
+  return 'pending'
 }
 
 export function useMonitoringDashboard() {
@@ -54,7 +77,12 @@ export function useMonitoringDashboard() {
   const blindTestEnabled = computed(() => shouldShowBlindTest(telemetryCapabilities.value))
   const rflyReady = computed(() => rflyDiagnostics.value?.ready === true)
   const stateLabel = computed(() => monitoringStateLabels[currentState.value] || monitoringStateLabels.IDLE)
-  const alerts = computed(() => runStatus.fault_events || [])
+  const alerts = computed(() => {
+    return (runStatus.fault_events || []).map((item) => ({
+      ...item,
+      tone: resolveSeverityTone(item.diagnosis?.severity || item.severity)
+    }))
+  })
   const riskScore = computed(() => Number(runStatus.risk_score || 0).toFixed(2))
   const realtimeCount = computed(() => realtime.value?.times?.length || 0)
   const latestTimestamp = computed(() => formatLatestValue(realtime.value?.times, (value) => `${value} s`))
@@ -68,6 +96,7 @@ export function useMonitoringDashboard() {
     const option = onlineModels.value.find((item) => item.name === selectedModel.value)
     return option?.display_name || option?.name || selectedModel.value
   })
+  const compactModelLabel = computed(() => formatMonitoringModelName(activeModelLabel.value))
   const faultPeakText = computed(() => {
     const values = Array.isArray(realtime.value?.fault_prob) ? realtime.value.fault_prob : []
     const numeric = values.map((item) => Number(item)).filter((item) => Number.isFinite(item))
@@ -90,6 +119,42 @@ export function useMonitoringDashboard() {
     return Number(runStatus.fault_events_count || 0) > 0
       ? monitoringCopy.heroBridgeReady
       : monitoringCopy.heroBridgeIdle
+  })
+  const stateTone = computed(() => {
+    if (currentState.value === 'DETECTING') return 'ok'
+    if (currentState.value === 'COLLECTING') return 'active'
+    if (currentState.value === 'BLIND_TEST') return 'pending'
+    return 'offline'
+  })
+  const contractTone = computed(() => {
+    const status = String(inputContractStatus.value?.status || '').toLowerCase()
+    if (status === 'healthy') return 'ok'
+    if (status === 'degraded') return 'warn'
+    return 'offline'
+  })
+  const riskTone = computed(() => {
+    const score = Number(riskScore.value)
+    if (score >= 0.7) return 'danger'
+    if (score >= 0.45) return 'warn'
+    return 'ok'
+  })
+
+  const estimatedSampleRate = computed(() => {
+    const times = Array.isArray(realtime.value?.times)
+      ? realtime.value.times.map((item) => Number(item)).filter((item) => Number.isFinite(item))
+      : []
+    if (times.length < 2) return monitoringCopy.noValue
+
+    const deltas = []
+    for (let index = 1; index < times.length; index += 1) {
+      const delta = times[index] - times[index - 1]
+      if (delta > 0) deltas.push(delta)
+    }
+    if (!deltas.length) return monitoringCopy.noValue
+
+    const averageDelta = deltas.reduce((sum, item) => sum + item, 0) / deltas.length
+    if (!Number.isFinite(averageDelta) || averageDelta <= 0) return monitoringCopy.noValue
+    return `${(1 / averageDelta).toFixed(1)} Hz`
   })
 
   function resolveAltitudeFromPosZ(rawValue) {
@@ -169,35 +234,115 @@ export function useMonitoringDashboard() {
     {
       label: monitoringCopy.heroStatusLabel,
       value: stateLabel.value,
-      meta: `当前会话：${currentSessionId.value}`
+      meta: `会话 ${currentSessionId.value}`,
+      tone: stateTone.value,
+      icon: 'Monitor'
     },
     {
-      label: '风险评分',
-      value: riskScore.value,
-      meta: `累计故障事件：${runStatus.fault_events_count || 0}`
+      label: '故障概率峰值',
+      value: faultPeakText.value,
+      meta: `风险评分 ${riskScore.value}`,
+      tone: riskTone.value,
+      icon: 'Warning'
     },
     {
-      label: '在线模型',
-      value: activeModelLabel.value,
-      meta: `数据源：${selectedBackendLabel.value}`
+      label: '在线检测模型',
+      value: compactModelLabel.value,
+      meta: selectedModel.value || monitoringCopy.noSelection,
+      tone: 'active',
+      icon: 'Cpu'
     },
     {
       label: '字段合同',
       value: inputContractLabel.value,
-      meta: inputContractMeta.value
+      meta: inputContractMeta.value,
+      tone: contractTone.value,
+      icon: 'DocumentChecked'
     },
     {
-      label: '最近样本',
-      value: latestTimestamp.value,
-      meta: '最近一次拉取的实时数据时间点'
+      label: '实时样本',
+      value: formatCount(realtimeCount.value),
+      meta: `最近时间 ${latestTimestamp.value}`,
+      tone: realtimeCount.value > 0 ? 'ok' : 'offline',
+      icon: 'DataLine'
+    },
+    {
+      label: '估算采样率',
+      value: estimatedSampleRate.value,
+      meta: '基于实时 times 间隔计算',
+      tone: estimatedSampleRate.value === monitoringCopy.noValue ? 'offline' : 'ok',
+      icon: 'Timer'
+    }
+  ])
+
+  const statusOverviewItems = computed(() => [
+    {
+      label: '连接状态',
+      value: currentState.value === 'IDLE' ? '等待连接' : '已连接',
+      status: currentState.value === 'IDLE' ? 'offline' : 'ok'
+    },
+    {
+      label: '采集状态',
+      value: runStatus.is_collecting ? '采集中' : '未采集',
+      status: runStatus.is_collecting ? 'active' : 'offline'
+    },
+    {
+      label: '检测状态',
+      value: runStatus.is_detecting ? '运行中' : '未运行',
+      status: runStatus.is_detecting ? 'ok' : 'offline'
+    },
+    {
+      label: '输入 Schema',
+      value: inputContractLabel.value,
+      status: contractTone.value
+    },
+    {
+      label: '实时样本数',
+      value: formatCount(realtimeCount.value),
+      status: realtimeCount.value > 0 ? 'ok' : 'offline'
+    },
+    {
+      label: '估算采样率',
+      value: estimatedSampleRate.value,
+      status: estimatedSampleRate.value === monitoringCopy.noValue ? 'offline' : 'ok'
+    }
+  ])
+
+  const pipelineItems = computed(() => [
+    {
+      label: '遥测采集',
+      value: runStatus.is_collecting ? '进行中' : '等待启动',
+      status: runStatus.is_collecting ? 'active' : 'offline'
+    },
+    {
+      label: '在线检测模型',
+      value: activeModelLabel.value,
+      status: selectedModel.value ? 'ok' : 'offline'
+    },
+    {
+      label: '故障事件',
+      value: `${formatCount(runStatus.fault_events_count)} 个`,
+      status: Number(runStatus.fault_events_count || 0) > 0 ? 'warn' : 'ok'
+    },
+    {
+      label: '字段合同',
+      value: inputContractLabel.value,
+      status: contractTone.value
+    },
+    {
+      label: '会话承接',
+      value: sessionBridgeText.value,
+      status: Number(runStatus.fault_events_count || 0) > 0 ? 'active' : 'offline'
     }
   ])
 
   const sampleSummaryItems = computed(() => [
-    { label: '采样点数量', value: realtimeCount.value },
+    { label: '采样点数量', value: formatCount(realtimeCount.value) },
+    { label: '估算采样率', value: estimatedSampleRate.value },
     { label: '最新高度', value: latestAltitude.value },
     { label: '最新滚转角', value: latestRoll.value },
-    { label: '最新俯仰角', value: latestPitch.value }
+    { label: '最新俯仰角', value: latestPitch.value },
+    { label: '最近样本时间', value: latestTimestamp.value }
   ])
 
   function stopPolling() {
@@ -468,6 +613,7 @@ export function useMonitoringDashboard() {
     currentSessionId,
     currentState,
     detailVisible,
+    estimatedSampleRate,
     faultPeakText,
     inputContractLabel,
     inputContractMeta,
@@ -475,6 +621,7 @@ export function useMonitoringDashboard() {
     metrics,
     onlineModels,
     openSessionDetail,
+    pipelineItems,
     replayAssets,
     realtimeChartTimes,
     realtimeFaultProb,
@@ -498,6 +645,7 @@ export function useMonitoringDashboard() {
     startCollection,
     startDetection,
     stateLabel,
+    statusOverviewItems,
     stopCollection,
     stopDetection,
     testRflyDiagnostics

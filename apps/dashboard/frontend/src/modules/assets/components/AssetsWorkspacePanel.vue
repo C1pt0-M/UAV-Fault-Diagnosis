@@ -41,6 +41,18 @@
     </div>
 
     <div class="section-card__body no-padding">
+      <div class="assets-summary-strip">
+        <article
+          v-for="item in assetSummaryItems"
+          :key="item.label"
+          class="assets-summary-strip__item"
+          :class="`assets-summary-strip__item--${item.tone}`"
+        >
+          <span>{{ item.label }}</span>
+          <strong>{{ item.value }}</strong>
+        </article>
+      </div>
+
       <el-table :data="assets" stripe v-loading="loading" :empty-text="assetsCopy.emptyText" class="asset-table">
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="filename" label="文件名" min-width="240">
@@ -74,29 +86,19 @@
           </template>
         </el-table-column>
         <el-table-column prop="created_at" label="上传时间" width="180" />
-        <el-table-column label="操作" width="340" fixed="right">
+        <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
             <div class="table-actions">
-              <el-button link type="primary" @click="$emit('download', row)">下载</el-button>
-              <el-divider direction="vertical" />
-              <el-button link type="success" @click="$emit('open-reports', row)">报告</el-button>
-              <el-divider direction="vertical" />
               <el-button
-                v-if="row.kind === 'ulg'"
+                v-for="action in createAssetActionItems(row)"
+                :key="action.key"
                 link
-                type="warning"
-                :loading="preparingMap[row.id]"
-                @click="$emit('prepare', row)"
-              >处理</el-button>
-              <el-divider v-if="row.kind === 'ulg'" direction="vertical" />
-              <el-button link type="info" @click="$emit('show-detail', row)">详情</el-button>
-              <el-divider direction="vertical" />
-              <el-button
-                link
-                type="danger"
-                :loading="deletingMap[row.id]"
-                @click="$emit('remove', row)"
-              >删除</el-button>
+                :type="action.type"
+                :loading="resolveActionLoading(action.key, row)"
+                @click="emitAssetAction(action.key, row)"
+              >
+                {{ action.label }}
+              </el-button>
             </div>
           </template>
         </el-table-column>
@@ -118,7 +120,6 @@
 
 <script setup>
 import ElButton from 'element-plus/es/components/button/index.mjs'
-import ElDivider from 'element-plus/es/components/divider/index.mjs'
 import ElIcon from 'element-plus/es/components/icon/index.mjs'
 import ElPagination from 'element-plus/es/components/pagination/index.mjs'
 import ElTable from 'element-plus/es/components/table/index.mjs'
@@ -127,9 +128,10 @@ import { ElTabPane, ElTabs } from 'element-plus/es/components/tabs/index.mjs'
 import ElTag from 'element-plus/es/components/tag/index.mjs'
 import ElUpload from 'element-plus/es/components/upload/index.mjs'
 import { Files, Upload, Document, Box, Memo } from '@element-plus/icons-vue'
-import { assetKindTabs, assetsCopy, formatAssetSize } from '@/modules/assets/assetsView'
+import { computed } from 'vue'
+import { assetKindTabs, assetsCopy, createAssetActionItems, formatAssetSize } from '@/modules/assets/assetsView'
 
-defineProps({
+const props = defineProps({
   assets: { type: Array, default: () => [] },
   currentPage: { type: Number, default: 1 },
   pageSize: { type: Number, default: 10 },
@@ -140,7 +142,7 @@ defineProps({
   deletingMap: { type: Object, required: true }
 })
 
-defineEmits([
+const emit = defineEmits([
   'refresh', 'upload', 'download', 'open-reports-center',
   'open-reports', 'prepare', 'show-detail', 'remove'
 ])
@@ -149,6 +151,38 @@ const selectedKind = defineModel('activeKind', {
   type: String,
   required: true
 })
+
+const assetSummaryItems = computed(() => {
+  const csvCount = props.assets.filter((item) => item.kind === 'csv').length
+  const ulgCount = props.assets.filter((item) => item.kind === 'ulg').length
+  const preparedCount = props.assets.filter((item) => Boolean(item.meta?.prepared_csv_path)).length
+  const pendingCount = props.assets.length - preparedCount
+
+  return [
+    { label: '当前筛选总数', value: props.total, tone: 'primary' },
+    { label: '当前页 CSV', value: csvCount, tone: 'ok' },
+    { label: '当前页 ULG', value: ulgCount, tone: 'warn' },
+    { label: '当前页已就绪', value: preparedCount, tone: 'ok' },
+    { label: '当前页待处理', value: pendingCount, tone: 'offline' }
+  ]
+})
+
+function resolveActionLoading(actionKey, row) {
+  if (actionKey === 'prepare') return Boolean(props.preparingMap[row.id])
+  if (actionKey === 'remove') return Boolean(props.deletingMap[row.id])
+  return false
+}
+
+function emitAssetAction(actionKey, row) {
+  const eventMap = {
+    download: 'download',
+    reports: 'open-reports',
+    prepare: 'prepare',
+    detail: 'show-detail',
+    remove: 'remove'
+  }
+  emit(eventMap[actionKey], row)
+}
 </script>
 
 <style scoped>
@@ -170,25 +204,82 @@ const selectedKind = defineModel('activeKind', {
 .button-group { display: flex; align-items: center; gap: 12px; }
 .action-btn { padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
 .no-padding { padding: 0 !important; }
-.asset-table { border-radius: 0 0 16px 16px; }
+.assets-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--bg-panel);
+}
+.assets-summary-strip__item {
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-raised);
+}
+.assets-summary-strip__item span {
+  display: block;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 800;
+}
+.assets-summary-strip__item strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 18px;
+  line-height: 1;
+}
+.assets-summary-strip__item--primary { border-left: 3px solid var(--brand); }
+.assets-summary-strip__item--ok { border-left: 3px solid var(--status-ok); }
+.assets-summary-strip__item--warn { border-left: 3px solid var(--status-warn); }
+.assets-summary-strip__item--offline { border-left: 3px solid var(--status-offline); }
+.asset-table { border-radius: 0; }
 .table-pagination {
   display: flex;
   justify-content: flex-end;
-  padding: 16px 20px 20px;
+  padding: 12px 18px 14px;
   border-top: 1px solid var(--line-soft);
   background: var(--bg-panel-raised);
 }
-.filename-cell { display: flex; align-items: center; gap: 10px; font-weight: 500; }
-.file-icon { font-size: 16px; color: var(--text-tertiary); }
+.filename-cell { display: flex; align-items: center; gap: 9px; font-weight: 600; }
+.file-icon { font-size: 15px; color: var(--text-tertiary); }
 .size-text { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
-.status-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: var(--radius-sm); background: var(--bg-panel-raised); font-size: 12px; color: var(--text-secondary); }
+.status-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: var(--radius-sm); background: var(--bg-panel-raised); font-size: 12px; color: var(--text-secondary); }
 .status-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-tertiary); }
 .status-chip.is-done { background: var(--status-ok-soft); color: var(--status-ok); }
 .status-chip.is-done .dot { background: var(--status-ok); box-shadow: 0 0 8px rgba(22, 163, 74, 0.4); }
-.table-actions { display: flex; align-items: center; gap: 4px; }
+.table-actions { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 
 :deep(.assets-workspace .el-table__row td) {
-  padding-top: 12px;
-  padding-bottom: 12px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+:deep(.assets-workspace .el-table__header th) {
+  padding-top: 9px;
+  padding-bottom: 9px;
+  color: var(--text-secondary);
+  font-weight: 800;
+}
+
+@media (max-width: 1320px) {
+  .assets-summary-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .assets-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .assets-summary-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 </style>

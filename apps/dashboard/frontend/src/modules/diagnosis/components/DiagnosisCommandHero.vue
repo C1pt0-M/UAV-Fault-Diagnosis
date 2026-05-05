@@ -1,7 +1,12 @@
 <template>
-  <!-- 诊断状态摘要条：工业风紧凑布局，替代原大渐变 Hero -->
   <div class="diag-statusbar">
-    <!-- 当前阶段 -->
+    <div class="diag-statusbar__item diag-statusbar__item--online">
+      <span class="status-dot status-dot--ok"></span>
+      <span class="diag-statusbar__value">系统在线</span>
+    </div>
+
+    <div class="diag-statusbar__divider"></div>
+
     <div class="diag-statusbar__item diag-statusbar__item--primary">
       <span class="diag-statusbar__label">{{ diagnosisCopy.stageLabel }}</span>
       <span class="diag-statusbar__value">{{ stage.label }}</span>
@@ -9,22 +14,34 @@
 
     <div class="diag-statusbar__divider"></div>
 
-    <!-- 操作提示 -->
-    <div class="diag-statusbar__item">
-      <span class="diag-statusbar__cue">{{ stage.cue }}</span>
-    </div>
-
-    <div class="diag-statusbar__divider"></div>
-
-    <!-- 关联资产 -->
-    <div class="diag-statusbar__item">
+    <div class="diag-statusbar__item diag-statusbar__item--asset">
       <span class="diag-statusbar__label">{{ diagnosisCopy.assetSummaryLabel }}</span>
-      <span class="diag-statusbar__value">{{ selectedAssetName }}</span>
+      <span class="diag-statusbar__value" :title="selectedAssetName">{{ selectedAssetName }}</span>
     </div>
 
     <div class="diag-statusbar__divider"></div>
 
-    <!-- 关联会话 -->
+    <div class="diag-statusbar__item">
+      <span class="diag-statusbar__label">{{ diagnosisCopy.taskIdLabel }}</span>
+      <span class="diag-statusbar__value diag-statusbar__value--mono">{{ currentRun?.id ? `DG-${currentRun.id}` : '-' }}</span>
+    </div>
+
+    <div class="diag-statusbar__divider"></div>
+
+    <div class="diag-statusbar__item">
+      <span class="diag-statusbar__label">{{ diagnosisCopy.modelSummaryLabel }}</span>
+      <span class="diag-statusbar__value" :title="selectedModelName">{{ selectedModelName }}</span>
+    </div>
+
+    <div class="diag-statusbar__divider"></div>
+
+    <div class="diag-statusbar__item">
+      <span class="diag-statusbar__label">{{ diagnosisCopy.taskTypeLabel }}</span>
+      <span class="diag-statusbar__value diag-statusbar__value--mono">{{ currentRun?.task || 'offline_multiclass' }}</span>
+    </div>
+
+    <div class="diag-statusbar__divider"></div>
+
     <div class="diag-statusbar__item">
       <span class="diag-statusbar__label">{{ diagnosisCopy.linkedSessionLabel }}</span>
       <span class="diag-statusbar__value diag-statusbar__value--mono">{{ activeSessionId || '-' }}</span>
@@ -32,18 +49,16 @@
 
     <div class="diag-statusbar__divider"></div>
 
-    <!-- 模型 -->
     <div class="diag-statusbar__item">
-      <span class="diag-statusbar__label">{{ diagnosisCopy.modelSummaryLabel }}</span>
-      <span class="diag-statusbar__value">{{ selectedModelName }}</span>
+      <span class="diag-statusbar__label">报告状态</span>
+      <span class="diag-statusbar__cue">{{ reportStatusText }}</span>
     </div>
 
     <div class="diag-statusbar__divider"></div>
 
-    <!-- 任务类型 -->
     <div class="diag-statusbar__item">
-      <span class="diag-statusbar__label">任务类型</span>
-      <span class="diag-statusbar__value diag-statusbar__value--mono">{{ currentRun?.task || 'offline_multiclass' }}</span>
+      <span class="diag-statusbar__label">最近更新</span>
+      <span class="diag-statusbar__value diag-statusbar__value--mono">{{ latestUpdatedText }}</span>
     </div>
   </div>
 </template>
@@ -59,6 +74,14 @@ defineProps({
   currentRun: {
     type: Object,
     default: null
+  },
+  latestUpdatedText: {
+    type: String,
+    default: '暂无'
+  },
+  reportStatusText: {
+    type: String,
+    default: '待诊断'
   },
   selectedAssetName: {
     type: String,
@@ -76,30 +99,39 @@ defineProps({
 </script>
 
 <style scoped>
-/* 诊断状态摘要条：与 system-statusbar 同一视觉风格 */
 .diag-statusbar {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-lg);
+  min-width: 0;
+  padding: 10px 14px;
   border: 1px solid var(--line-soft);
   border-radius: var(--radius-md);
   background: var(--bg-panel-raised);
   font-size: 12px;
   color: var(--text-secondary);
+  overflow: hidden;
 }
 
 .diag-statusbar__item {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+  flex-shrink: 0;
 }
 
-/* 当前阶段项：稍微突出 */
+.diag-statusbar__item--asset {
+  flex: 1 1 240px;
+}
+
 .diag-statusbar__item--primary .diag-statusbar__value {
-  color: var(--brand);
-  font-weight: 700;
+  color: var(--status-ok);
+}
+
+.diag-statusbar__item--online {
+  color: var(--status-ok);
 }
 
 .diag-statusbar__label {
@@ -109,10 +141,11 @@ defineProps({
 }
 
 .diag-statusbar__value {
+  min-width: 0;
+  max-width: min(280px, 100%);
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
-  max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -122,14 +155,13 @@ defineProps({
   font-size: 11px;
 }
 
-/* 操作提示：使用 badge 风格 */
 .diag-statusbar__cue {
   padding: 2px 8px;
   border-radius: var(--radius-sm);
   background: var(--brand-soft);
   color: var(--brand);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -138,5 +170,15 @@ defineProps({
   height: 14px;
   background: var(--line-strong);
   flex-shrink: 0;
+}
+
+@media (max-width: 1180px) {
+  .diag-statusbar {
+    flex-wrap: wrap;
+  }
+
+  .diag-statusbar__divider {
+    display: none;
+  }
 }
 </style>

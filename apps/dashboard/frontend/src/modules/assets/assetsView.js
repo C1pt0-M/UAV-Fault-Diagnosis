@@ -36,6 +36,24 @@ export const assetsCopy = {
   analysisLoadSeriesFailed: '请求时序曲线失败，请检查后端服务状态'
 }
 
+export function createAssetActionItems(row = {}) {
+  const items = [
+    { key: 'download', label: assetsCopy.downloadAction, type: 'primary' },
+    { key: 'reports', label: '报告', type: 'success' }
+  ]
+
+  if (row.kind === 'ulg') {
+    items.push({ key: 'prepare', label: '处理', type: 'warning' })
+  }
+
+  items.push(
+    { key: 'detail', label: assetsCopy.detailAction, type: 'info' },
+    { key: 'remove', label: assetsCopy.removeAction, type: 'danger' }
+  )
+
+  return items
+}
+
 export function formatAssetSize(bytes) {
   if (bytes < 1024) return bytes + ' B'
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'

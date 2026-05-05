@@ -34,9 +34,72 @@ export const reportsCopy = {
   noReportDetail: '暂无报告详情'
 }
 
+const reportLabelTextMap = {
+  normal: '状态正常',
+  motor: '电机故障',
+  sensor: '传感器故障',
+  imu: 'IMU 异常',
+  battery: '电池异常',
+  unknown: '未知故障'
+}
+
+const modelDisplayNameMap = [
+  { match: 'kg_mstca', label: 'KG-MSTCA' },
+  { match: 'mstca', label: 'MSTCA' },
+  { match: 'cnnlstm', label: 'CNN-LSTM' },
+  { match: 'cnn_lstm', label: 'CNN-LSTM' }
+]
+
 export function createDefaultReportFilters() {
   return {
     assetId: undefined,
     label: ''
   }
+}
+
+export function formatReportConfidence(value) {
+  const numeric = Number(value)
+  if (!Number.isFinite(numeric)) return '暂无'
+  return `${(numeric * 100).toFixed(2)}%`
+}
+
+export function getReportLabelText(label) {
+  return reportLabelTextMap[label] || label || '暂无'
+}
+
+export function getReportModelDisplayName(modelName) {
+  const rawName = String(modelName || '').trim()
+  if (!rawName) return '暂无'
+
+  const lowered = rawName.toLowerCase()
+  const matched = modelDisplayNameMap.find((item) => lowered.includes(item.match))
+  if (matched) return matched.label
+
+  return rawName.replace(/_/g, ' ')
+}
+
+export function createReportSummaryItems(reports = []) {
+  const reportCount = reports.length
+  const confidenceValues = reports
+    .map((item) => Number(item.confidence))
+    .filter((value) => Number.isFinite(value))
+  const avgConfidence = confidenceValues.length
+    ? confidenceValues.reduce((sum, value) => sum + value, 0) / confidenceValues.length
+    : null
+
+  return [
+    { label: '当前列表报告', value: reportCount, tone: 'primary' },
+    { label: '平均置信度', value: avgConfidence == null ? '暂无' : formatReportConfidence(avgConfidence), tone: 'ok' },
+    { label: '可下载报告', value: reportCount, tone: 'ok' },
+    { label: '可 AI 解读', value: reportCount, tone: 'ai' }
+  ]
+}
+
+export function createReportActionItems() {
+  return [
+    { key: 'detail', label: reportsCopy.detailAction, type: 'primary' },
+    { key: 'ai', label: reportsCopy.aiAction, type: 'warning' },
+    { key: 'download', label: reportsCopy.downloadAction, type: 'success' },
+    { key: 'remove', label: reportsCopy.removeAction, type: 'danger' }
+  ]
 }

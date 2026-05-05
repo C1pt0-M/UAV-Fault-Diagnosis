@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import AIContextPanel from './components/AIContextPanel.vue'
 
 describe('AIContextPanel regression', () => {
-  it('shows knowledge-base embedding status and retrieval diagnostics', () => {
+  it('shows knowledge-base embedding status and retrieval diagnostics in readable Chinese', () => {
     const wrapper = mount(AIContextPanel, {
       props: {
         contextSummary: {
@@ -39,6 +39,7 @@ describe('AIContextPanel regression', () => {
     expect(text).toContain('异常')
     expect(text).toContain('embedding provider timeout')
     expect(text).toContain('请求检索方式')
-    expect(text).not.toContain('回答来源')
+    expect(text).not.toContain('锛')
+    expect(text).not.toContain('鐭')
   })
 })

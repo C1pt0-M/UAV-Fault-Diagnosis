@@ -32,8 +32,30 @@ describe('AIChatPanel regression', () => {
     expect(text).toContain('直接结论')
     expect(text).toContain('主要原因')
     expect(text).toContain('风险与建议')
+    expect(text).toContain('参考资料（1）')
     expect(wrapper.find('.message-card__summary').exists()).toBe(true)
     expect(wrapper.find('details.message-card__references').exists()).toBe(true)
+  })
+
+  it('renders quick prompts in the empty state and fills composer without sending', async () => {
+    const wrapper = mount(AIChatPanel, {
+      props: {
+        loadingMessages: false,
+        sending: false,
+        canSeedAnalysis: false,
+        composer: '',
+        messages: []
+      }
+    })
+
+    expect(wrapper.text()).toContain('解释当前报告结论')
+    expect(wrapper.text()).toContain('列出风险和处置建议')
+    expect(wrapper.text()).toContain('说明模型判断依据')
+
+    await wrapper.get('.quick-prompt').trigger('click')
+
+    expect(wrapper.emitted('send')).toBeUndefined()
+    expect(wrapper.emitted('update:composer')?.[0]).toEqual(['解释当前报告结论'])
   })
 
   it('scrolls to the newest message when chat content updates', async () => {

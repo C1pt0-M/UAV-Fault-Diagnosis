@@ -5,6 +5,10 @@ import bcrypt
 import pytest
 
 from uav_dashboard_api import create_app, db
+from uav_dashboard_api.models.asset import Asset
+from uav_dashboard_api.models.diagnosis_report import DiagnosisReport
+from uav_dashboard_api.models.run_record import RunRecord
+from uav_dashboard_api.models.telemetry_session import TelemetryFaultEvent, TelemetrySession
 from uav_dashboard_api.models.user import User
 from uav_dashboard_api.services.model_registry import list_registered_models, resolve_registered_model
 from uav_dashboard_api.utils.jwt_utils import JWTUtils
@@ -223,6 +227,157 @@ def test_models_endpoint_filters_by_capability(client, auth_header):
     assert response.status_code == 200
     payload = response.get_json()
     assert "cnn_transformer_4class" in [item["name"] for item in payload["data"]]
+
+
+def test_overview_endpoint_exposes_industrial_dashboard_aggregates(app, client, auth_header):
+    with app.app_context():
+        csv_asset = Asset(
+            filename="flight.csv",
+            kind="csv",
+            stored_path="runtime/uploads/csv/flight.csv",
+            size_bytes=100,
+            sha256="a" * 64,
+        )
+        prepared_ulg = Asset(
+            filename="prepared.ulg",
+            kind="ulg",
+            stored_path="runtime/uploads/ulg/prepared.ulg",
+            size_bytes=200,
+            sha256="b" * 64,
+        )
+        prepared_ulg.set_meta({"prepared_csv_path": "runtime/derived/prepared.csv"})
+        raw_ulg = Asset(
+            filename="raw.ulg",
+            kind="ulg",
+            stored_path="runtime/uploads/ulg/raw.ulg",
+            size_bytes=300,
+            sha256="c" * 64,
+        )
+        db.session.add_all([csv_asset, prepared_ulg, raw_ulg])
+        db.session.flush()
+
+        run = RunRecord(
+            task="offline_multiclass",
+            status="success",
+            progress=1.0,
+            asset_id=csv_asset.id,
+        )
+        run.set_result({
+            "diagnosis": {
+                "evidence_summary": {
+                    "top_evidence": [
+                        {"name": "motor_current_rms", "value": 0.82, "status": "observed"}
+                    ]
+                }
+            }
+        })
+        db.session.add(run)
+        db.session.flush()
+
+        report = DiagnosisReport(
+            run_id=run.id,
+            asset_id=csv_asset.id,
+            model_name="lstm",
+            prediction_label="motor",
+            confidence=0.86,
+            pdf_path="runtime/reports/report.pdf",
+        )
+        report.set_summary({
+            "severity": {"level": "high"},
+            "recommendations": [{"title": "Check motor current"}],
+        })
+        db.session.add(report)
+
+        session = TelemetrySession(
+            id="TS-UNIT",
+            drone_id="UAV-1023",
+            session_type="simulation",
+            scenario_backend="replay",
+            schema_version="v1.4",
+            csv_path="runtime/telemetry/session.csv",
+            status="completed",
+            frame_count=128,
+            fault_events_count=1,
+        )
+        session.set_meta({
+            "feature_coverage": {
+                "schema_version": "v1.4",
+                "mapped_count": 43,
+                "default_count": 3,
+                "feature_count": 48,
+            }
+        })
+        db.session.add(session)
+        db.session.flush()
+
+        event = TelemetryFaultEvent(
+            id="FE-UNIT",
+            session_id=session.id,
+            start_time=10.0,
+            end_time=12.0,
+            duration=2.0,
+            max_fault_prob=0.91,
+            mean_fault_prob=0.77,
+            data_points=20,
+            severity="high",
+        )
+        event.set_diagnosis({
+            "label": "fault",
+            "confidence": 0.91,
+            "severity": "high",
+            "evidence_summary": {
+                "top_evidence": [
+                    {"name": "fault_probability", "value": 0.91, "status": "observed"},
+                    {"name": "warning_stage", "value": "critical", "status": "observed"},
+                ]
+            },
+        })
+        db.session.add(event)
+        db.session.commit()
+        report_id = report.id
+
+    response = client.get("/api/overview", headers=auth_header)
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+
+    assert data["assets_total"] == 3
+    assert data["asset_summary"]["diagnosable_total"] == 2
+    assert data["task_summary"]["completed_total"] == 1
+    assert data["warning_summary"]["confirmed_total"] == 1
+    assert data["fault_summary"]["dominant_label"] == "motor"
+    assert data["fault_summary"]["avg_confidence"] == 0.86
+    assert data["model_summary"]["name"] == "online_detector_alpha"
+    assert data["field_contract"]["status"] in {"passed", "degraded"}
+    assert data["warning_summary"]["recent"][0]["message"] == "故障概率异常"
+    assert data["risk_trend"]["points"]
+    assert data["recent_evidence"][0]["name"] == "故障概率异常"
+    assert data["recent_evidence"][1]["name"] == "告警阶段"
+    assert data["similar_reports"][0]["id"] == report_id
+
+
+def test_overview_field_contract_explains_waiting_coverage(app, client, auth_header):
+    with app.app_context():
+        session = TelemetrySession(
+            id="TS-WAITING",
+            drone_id="UAV-WAITING",
+            session_type="simulation",
+            scenario_backend="replay",
+            schema_version="rfly_seq_v1",
+            csv_path="runtime/telemetry/waiting.csv",
+            status="completed",
+        )
+        db.session.add(session)
+        db.session.commit()
+
+    response = client.get("/api/overview", headers=auth_header)
+    assert response.status_code == 200
+    field_contract = response.get_json()["data"]["field_contract"]
+
+    assert field_contract["status"] == "waiting"
+    assert field_contract["schema_version"] == "rfly_seq_v1"
+    assert field_contract["source"] == "最近一次输入"
+    assert field_contract["message"] == "等待特征覆盖数据"
+    assert field_contract["reason"] == "latest_session_without_feature_coverage"
 
 
 def test_telemetry_status_endpoint_exposes_online_model_summary(client, auth_header, monkeypatch):

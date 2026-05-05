@@ -5,29 +5,44 @@
         <div class="section-card__title">{{ monitoringCopy.sessionsTitle }}</div>
         <div class="section-card__desc">{{ monitoringCopy.sessionsDescription }}</div>
       </div>
-      <el-button circle @click="$emit('refresh')">
+      <el-button size="small" plain @click="$emit('refresh')">
         <el-icon><Refresh /></el-icon>
+        {{ monitoringCopy.refreshAction }}
       </el-button>
     </div>
-    <div class="section-card__body">
-      <div v-if="sessions.length" class="session-list">
-        <article v-for="row in sessions" :key="row.id" class="session-card">
-          <div class="session-card__head">
-            <div>
-              <strong>#{{ row.id }}</strong>
-              <span>{{ row.drone_id || '-' }}</span>
-            </div>
-            <div class="session-card__badge">{{ row.fault_events_count || 0 }} 个事件</div>
-          </div>
-
-          <p class="session-card__meta">{{ monitoringCopy.startTimeLabel }}：{{ row.start_time || '-' }}</p>
-          <p class="session-card__meta">{{ monitoringCopy.durationLabel }}：{{ Number(row.duration_seconds || 0).toFixed(1) }}</p>
-
-          <div class="session-card__actions">
-            <el-button link type="primary" @click="$emit('open-detail', row.id)">{{ monitoringCopy.detailAction }}</el-button>
-            <el-button link type="warning" @click="$emit('continue-diagnosis', row.id)">{{ monitoringCopy.continueAction }}</el-button>
-          </div>
-        </article>
+    <div class="section-card__body monitoring-sessions__body">
+      <div v-if="sessions.length" class="session-table">
+        <div class="session-table__head">
+          <span>会话 ID</span>
+          <span>资产 / 机型</span>
+          <span>开始时间</span>
+          <span>持续时间</span>
+          <span>事件数</span>
+          <span>状态</span>
+          <span>操作</span>
+        </div>
+        <div
+          v-for="row in sessions"
+          :key="row.id"
+          class="session-table__row"
+        >
+          <strong class="session-table__mono">#{{ row.id }}</strong>
+          <span>{{ row.drone_id || '-' }}</span>
+          <span>{{ row.start_time || '-' }}</span>
+          <span>{{ formatDuration(row.duration_seconds) }}</span>
+          <span>{{ row.fault_events_count || 0 }}</span>
+          <span class="status-badge" :class="sessionStatusClass(row.status)">
+            {{ sessionStatusLabel(row.status) }}
+          </span>
+          <span class="session-table__actions">
+            <el-button link type="primary" @click="$emit('open-detail', row.id)">
+              {{ monitoringCopy.detailAction }}
+            </el-button>
+            <el-button link type="warning" @click="$emit('continue-diagnosis', row.id)">
+              {{ monitoringCopy.continueAction }}
+            </el-button>
+          </span>
+        </div>
       </div>
       <el-empty v-else :description="monitoringCopy.sessionsEmpty" :image-size="60" />
     </div>
@@ -46,57 +61,88 @@ defineProps({
 })
 
 defineEmits(['refresh', 'open-detail', 'continue-diagnosis'])
+
+function formatDuration(seconds) {
+  const parsed = Number(seconds || 0)
+  if (!Number.isFinite(parsed) || parsed <= 0) return '-'
+  if (parsed < 60) return `${parsed.toFixed(0)} s`
+  const minutes = Math.floor(parsed / 60)
+  const remain = Math.floor(parsed % 60)
+  return `${minutes}m ${String(remain).padStart(2, '0')}s`
+}
+
+function sessionStatusLabel(status) {
+  const value = String(status || '').toLowerCase()
+  if (['running', 'active', 'collecting', 'detecting'].includes(value)) return '运行中'
+  if (['completed', 'done', 'finished'].includes(value)) return '已完成'
+  if (['failed', 'error'].includes(value)) return '异常'
+  return status || '-'
+}
+
+function sessionStatusClass(status) {
+  const value = String(status || '').toLowerCase()
+  if (['running', 'active', 'collecting', 'detecting'].includes(value)) return 'status-badge--active'
+  if (['completed', 'done', 'finished'].includes(value)) return 'status-badge--ok'
+  if (['failed', 'error'].includes(value)) return 'status-badge--danger'
+  return 'status-badge--offline'
+}
 </script>
 
 <style scoped>
-.session-list {
-  display: grid;
-  gap: var(--space-md);
+.monitoring-sessions {
+  overflow: hidden;
 }
 
-.session-card {
+.monitoring-sessions__body {
   padding: var(--space-lg);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--line-soft);
-  background: var(--bg-panel-raised);
 }
 
-.session-card__head {
+.session-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.session-table__head,
+.session-table__row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.1fr) minmax(120px, 1fr) minmax(150px, 1.2fr) 92px 68px 78px minmax(150px, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-width: 900px;
+}
+
+.session-table__head {
+  padding-bottom: 10px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 800;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.session-table__row {
+  min-height: 42px;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.session-table__row > span,
+.session-table__row > strong {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session-table__mono {
+  font-family: var(--font-mono);
+  color: var(--brand-strong);
+}
+
+.session-table__actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.session-card__head strong {
-  display: block;
-  font-size: 18px;
-}
-
-.session-card__head span {
-  color: var(--text-tertiary);
-  font-size: 12px;
-}
-
-.session-card__badge {
-  display: inline-flex;
-  padding: 6px 10px;
-  border-radius: var(--radius-sm);
-  background: var(--brand-soft);
-  color: var(--brand-strong);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.session-card__meta {
-  margin: 8px 0 0;
-  color: var(--text-secondary);
-  line-height: 1.7;
-}
-
-.session-card__actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 8px;
+  overflow: visible !important;
 }
 </style>

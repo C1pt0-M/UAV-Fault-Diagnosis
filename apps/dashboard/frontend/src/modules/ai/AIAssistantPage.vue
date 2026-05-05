@@ -100,7 +100,7 @@ function toggleConversationRail() {
   display: grid;
   grid-template-columns: var(--ai-side-width) minmax(520px, 1fr) var(--ai-status-width);
   gap: var(--space-lg);
-  align-items: start;
+  align-items: stretch;
 }
 
 @media (max-width: 1560px) {

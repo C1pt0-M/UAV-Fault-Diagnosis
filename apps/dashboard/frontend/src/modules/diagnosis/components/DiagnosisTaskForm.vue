@@ -7,28 +7,7 @@
       </div>
       <span class="diagnosis-launch__badge">{{ assets.length }} 个可用资产</span>
     </div>
-    <div class="section-card__body">
-      <div class="diagnosis-launch__summary">
-        <article class="diagnosis-param-card">
-          <span class="diagnosis-param-card__label">可用资产</span>
-          <strong class="diagnosis-param-card__value">{{ assets.length }}</strong>
-          <small class="diagnosis-param-card__meta">CSV / ULog 诊断输入</small>
-        </article>
-        <article class="diagnosis-param-card">
-          <span class="diagnosis-param-card__label">当前资产</span>
-          <strong class="diagnosis-param-card__value">{{ currentAssetName }}</strong>
-          <small class="diagnosis-param-card__meta">{{ currentAssetMeta }}</small>
-        </article>
-        <article class="diagnosis-param-card">
-          <span class="diagnosis-param-card__label">诊断模型</span>
-          <strong class="diagnosis-param-card__value">{{ currentModelDisplayName }}</strong>
-          <small v-if="currentModelRawName" class="diagnosis-param-card__meta diagnosis-param-card__meta--mono">
-            {{ currentModelRawName }}
-          </small>
-          <small v-else class="diagnosis-param-card__meta">请选择离线诊断模型</small>
-        </article>
-      </div>
-
+    <div class="section-card__body diagnosis-launch__body">
       <el-form label-position="top" class="diagnosis-form-grid">
         <el-form-item :label="diagnosisCopy.assetLabel">
           <el-select
@@ -59,11 +38,62 @@
             />
           </el-select>
         </el-form-item>
+
+        <el-form-item :label="diagnosisCopy.taskTypeLabel">
+          <el-select model-value="offline_multiclass" disabled>
+            <el-option :label="diagnosisCopy.taskTypeValue" value="offline_multiclass" />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item :label="diagnosisCopy.windowLabel">
+          <el-input :model-value="diagnosisCopy.windowPlaceholder" disabled />
+        </el-form-item>
       </el-form>
+
+      <section class="diagnosis-summary-block">
+        <h4>日志概览</h4>
+        <div class="diagnosis-mini-grid">
+          <article
+            v-for="item in assetSummaryItems"
+            :key="item.label"
+            class="diagnosis-param-card"
+          >
+            <span class="diagnosis-param-card__label">{{ item.label }}</span>
+            <strong class="diagnosis-param-card__value" :title="String(item.value)">{{ item.value }}</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="diagnosis-summary-block">
+        <h4>模型概览</h4>
+        <div class="diagnosis-mini-grid">
+          <article
+            v-for="item in modelSummaryItems"
+            :key="item.label"
+            class="diagnosis-param-card"
+          >
+            <span class="diagnosis-param-card__label">{{ item.label }}</span>
+            <strong class="diagnosis-param-card__value" :title="String(item.value)">{{ item.value }}</strong>
+          </article>
+        </div>
+      </section>
+
+      <div class="diagnosis-flow">
+        <div
+          v-for="step in flowSteps"
+          :key="step.label"
+          class="diagnosis-flow__step"
+          :class="`diagnosis-flow__step--${step.status}`"
+        >
+          <span class="status-dot" :class="`status-dot--${step.status === 'ok' ? 'ok' : step.status}`"></span>
+          <strong>{{ step.label }}</strong>
+          <small>{{ step.time }}</small>
+        </div>
+      </div>
 
       <div class="diagnosis-actions">
         <el-button type="primary" size="large" :loading="running" @click="$emit('submit')">
-          {{ diagnosisCopy.submitButton }}
+          {{ stage.key === 'completed' ? diagnosisCopy.rerunButton : diagnosisCopy.submitButton }}
         </el-button>
         <el-button plain @click="$emit('refresh')">
           {{ diagnosisCopy.refreshButton }}
@@ -74,14 +104,26 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import { ElForm, ElFormItem } from 'element-plus/es/components/form/index.mjs'
+import ElInput from 'element-plus/es/components/input/index.mjs'
 import { ElOption, ElSelect } from 'element-plus/es/components/select/index.mjs'
 import { diagnosisCopy } from '@/modules/diagnosis/diagnosisView'
 
-const props = defineProps({
+defineProps({
+  assetSummaryItems: {
+    type: Array,
+    default: () => []
+  },
   assets: {
+    type: Array,
+    default: () => []
+  },
+  flowSteps: {
+    type: Array,
+    default: () => []
+  },
+  modelSummaryItems: {
     type: Array,
     default: () => []
   },
@@ -92,6 +134,10 @@ const props = defineProps({
   running: {
     type: Boolean,
     default: false
+  },
+  stage: {
+    type: Object,
+    required: true
   }
 })
 
@@ -105,40 +151,15 @@ const selectedModel = defineModel('selectedModel', {
   type: String,
   required: true
 })
-
-const currentAsset = computed(() => {
-  if (selectedAssetId.value == null) return null
-  return props.assets.find((asset) => asset.id === selectedAssetId.value) || null
-})
-
-const currentAssetName = computed(() => currentAsset.value?.filename || '尚未选择资产')
-const currentAssetMeta = computed(() => {
-  if (!currentAsset.value) return '等待选择诊断输入'
-  return `资产 #${currentAsset.value.id}`
-})
-
-const currentModel = computed(() => {
-  if (!selectedModel.value) return null
-  return props.models.find((model) => model.name === selectedModel.value) || {
-    name: selectedModel.value,
-    display_name: selectedModel.value
-  }
-})
-
-const currentModelDisplayName = computed(() => {
-  if (!selectedModel.value) return '尚未选择模型'
-  return currentModel.value.display_name || currentModel.value.name || selectedModel.value
-})
-
-const currentModelRawName = computed(() => {
-  if (!selectedModel.value) return ''
-  return currentModel.value.name || selectedModel.value
-})
 </script>
 
 <style scoped>
 .diagnosis-launch {
   overflow: hidden;
+}
+
+.diagnosis-launch__body {
+  padding: 16px var(--space-lg);
 }
 
 .diagnosis-launch__badge {
@@ -151,76 +172,112 @@ const currentModelRawName = computed(() => {
   font-weight: 700;
 }
 
-.diagnosis-launch__summary {
+.diagnosis-form-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 12px;
+  row-gap: 6px;
+}
+
+.diagnosis-summary-block {
+  margin-top: 10px;
+}
+
+.diagnosis-summary-block h4 {
+  margin: 0 0 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.diagnosis-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .diagnosis-param-card {
-  min-height: 76px;
-  padding: var(--space-md) var(--space-lg);
+  min-width: 0;
+  min-height: 52px;
+  padding: 9px 10px;
   border-radius: var(--radius-md);
   background: var(--bg-panel-raised);
   border: 1px solid var(--line-soft);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .diagnosis-param-card__label {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-tertiary);
-  letter-spacing: 0.04em;
 }
 
 .diagnosis-param-card__value {
   min-width: 0;
-  font-size: 15px;
-  line-height: 1.3;
-  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.25;
+  font-weight: 800;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.diagnosis-param-card__meta {
+.diagnosis-flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line-soft);
+}
+
+.diagnosis-flow__step {
   min-width: 0;
-  font-size: 11px;
-  line-height: 1.3;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   color: var(--text-tertiary);
+}
+
+.diagnosis-flow__step strong {
+  color: var(--text-primary);
+  font-size: 12px;
+}
+
+.diagnosis-flow__step small {
+  font-size: 11px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.diagnosis-param-card__meta--mono {
-  font-family: var(--font-mono);
-}
-
-.diagnosis-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
 }
 
 .diagnosis-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 8px;
+  margin-top: 14px;
   justify-content: flex-end;
-  padding-top: var(--space-md);
-  border-top: 1px dashed var(--line-soft);
+}
+
+:deep(.diagnosis-form-grid .el-form-item) {
+  margin-bottom: 8px;
 }
 
 @media (max-width: 1480px) {
-  .diagnosis-launch__summary,
-  .diagnosis-form-grid {
+  .diagnosis-form-grid,
+  .diagnosis-mini-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .diagnosis-form-grid,
+  .diagnosis-mini-grid,
+  .diagnosis-flow {
     grid-template-columns: 1fr;
   }
 }

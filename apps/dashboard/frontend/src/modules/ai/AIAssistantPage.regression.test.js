@@ -82,6 +82,7 @@ describe('AIAssistantPage information architecture', () => {
     expect(text).toContain('上下文与知识库')
     expect(text).toContain('启动报告分析')
     expect(text).toContain('报告 #42 风险复核')
+    expect(text).not.toMatch(/锛|鐩|璇/)
   })
 
   it('places scene controls above the workspace and keeps status diagnostics on the right', () => {

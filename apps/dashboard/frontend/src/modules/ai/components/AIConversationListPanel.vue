@@ -7,7 +7,7 @@
       </div>
       <div class="ai-list__actions">
         <el-button class="ai-list__rail-toggle" plain size="small" @click="$emit('toggle-rail')">
-          {{ railExpanded ? '收起' : '会话' }}
+          {{ railExpanded ? aiCopy.conversationRailExpanded : aiCopy.conversationRailCollapsed }}
         </el-button>
         <el-button class="ai-list__new" type="primary" plain size="small" @click="$emit('start-fresh')">
           {{ aiCopy.newConversation }}
@@ -16,7 +16,7 @@
     </div>
 
     <div class="section-card__body">
-      <div class="conversation-list" v-loading="loading">
+      <div class="conversation-list conversation-list--scrollable" v-loading="loading">
         <button
           v-for="item in normalizedConversations"
           :key="item.id"
@@ -85,6 +85,7 @@ const normalizedConversations = computed(() => {
 
 <style scoped>
 .ai-list {
+  height: 690px;
   overflow: hidden;
 }
 
@@ -102,13 +103,19 @@ const normalizedConversations = computed(() => {
 .conversation-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+}
+
+.conversation-list--scrollable {
+  max-height: 566px;
+  overflow: auto;
+  padding-right: 4px;
 }
 
 .conversation-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
   padding: 10px 12px;
   border-radius: var(--radius-md);
   border: 1px solid var(--line-soft);
@@ -134,6 +141,15 @@ const normalizedConversations = computed(() => {
   gap: 4px;
 }
 
+.conversation-item__top strong {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .conversation-item__top small,
 .conversation-item__meta {
   color: var(--text-tertiary);
@@ -142,20 +158,25 @@ const normalizedConversations = computed(() => {
 .conversation-item__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 12px;
+  gap: 6px 10px;
   font-size: 12px;
 }
 
 .conversation-item__preview {
+  display: -webkit-box;
   margin: 0;
+  overflow: hidden;
   color: var(--text-secondary);
-  line-height: 1.7;
   font-size: 13px;
+  line-height: 1.65;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 @media (max-width: 1560px) {
   .ai-list {
     min-height: 128px;
+    height: auto;
   }
 
   .ai-list__rail-toggle {
@@ -187,12 +208,13 @@ const normalizedConversations = computed(() => {
     width: 36px;
     height: 96px;
     padding: 0;
-    writing-mode: vertical-rl;
     letter-spacing: 0.12em;
+    writing-mode: vertical-rl;
   }
 
   .ai-list.ai-list--rail-expanded {
     width: 260px;
+    height: 690px;
   }
 }
 
@@ -200,6 +222,7 @@ const normalizedConversations = computed(() => {
   .ai-list,
   .ai-list.ai-list--rail-expanded {
     width: auto;
+    height: auto;
   }
 
   .ai-list:not(.ai-list--rail-expanded) .section-card__header,
@@ -215,6 +238,10 @@ const normalizedConversations = computed(() => {
 
   .ai-list__rail-toggle {
     display: none;
+  }
+
+  .conversation-list--scrollable {
+    max-height: 360px;
   }
 }
 </style>

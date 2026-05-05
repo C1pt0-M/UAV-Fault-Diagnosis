@@ -10,7 +10,18 @@
     <div class="section-card__body">
       <div ref="messageStreamRef" class="message-stream" v-loading="loadingMessages">
         <div v-if="messages.length === 0" class="empty-chat">
-          {{ aiCopy.emptyChat }}
+          <div>{{ aiCopy.emptyChat }}</div>
+          <div class="quick-prompts" :aria-label="aiCopy.quickPromptTitle">
+            <button
+              v-for="prompt in aiQuickPrompts"
+              :key="prompt"
+              type="button"
+              class="quick-prompt"
+              @click="applyQuickPrompt(prompt)"
+            >
+              {{ prompt }}
+            </button>
+          </div>
         </div>
 
         <article
@@ -86,7 +97,7 @@
 import { nextTick, ref, watch } from 'vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import ElInput from 'element-plus/es/components/input/index.mjs'
-import { aiCopy, formatSourceType } from '@/modules/ai/aiView'
+import { aiCopy, aiQuickPrompts, formatSourceType } from '@/modules/ai/aiView'
 
 const props = defineProps({
   loadingMessages: {
@@ -115,6 +126,10 @@ const draftComposer = defineModel('composer', {
 })
 
 const messageStreamRef = ref(null)
+
+function applyQuickPrompt(prompt) {
+  draftComposer.value = prompt
+}
 
 function scrollToLatest() {
   const container = messageStreamRef.value
@@ -152,7 +167,11 @@ function parseAssistantSections(content) {
     .map((item) => item.trim())
     .filter(Boolean)
 
-  const summaryIndex = sections.findIndex((item) => item.startsWith('直接结论：') || item.startsWith('结论：'))
+  const summaryIndex = sections.findIndex((item) => (
+    item.startsWith('直接结论：') ||
+    item.startsWith('结论：') ||
+    item.startsWith('Direct conclusion:')
+  ))
   const summary = summaryIndex >= 0 ? sections[summaryIndex] : ''
   const paragraphs = sections.filter((_, index) => index !== summaryIndex)
 
@@ -165,6 +184,7 @@ function parseAssistantSections(content) {
 
 <style scoped>
 .ai-chat {
+  min-height: 690px;
   overflow: hidden;
 }
 
@@ -172,19 +192,45 @@ function parseAssistantSections(content) {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: 360px;
-  max-height: 560px;
+  min-height: 318px;
+  max-height: 500px;
   overflow: auto;
   padding-right: 6px;
 }
 
 .empty-chat {
   display: grid;
+  gap: 16px;
   place-items: center;
-  min-height: 240px;
+  min-height: 210px;
+  padding: 22px;
   border: 1px dashed var(--line-strong);
-  border-radius: 18px;
+  border-radius: var(--radius-lg);
   color: var(--text-tertiary);
+  text-align: center;
+}
+
+.quick-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.quick-prompt {
+  padding: 7px 10px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel-raised);
+  color: var(--brand-strong);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.quick-prompt:hover {
+  border-color: var(--brand);
+  background: var(--brand-glow);
 }
 
 .message-card {
@@ -269,7 +315,7 @@ function parseAssistantSections(content) {
 }
 
 .composer-box {
-  margin-top: 18px;
+  margin-top: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;

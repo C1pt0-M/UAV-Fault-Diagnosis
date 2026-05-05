@@ -35,28 +35,70 @@
       </el-form>
 
       <div v-if="showStatusBlocks" class="context-box">
-        <div class="context-box__title">当前分析上下文</div>
-        <div class="context-box__grid">
-          <div><strong>{{ aiCopy.currentConversation }}：</strong>{{ contextSummary.conversationId || aiCopy.newConversationLabel }}</div>
-          <div><strong>{{ aiCopy.currentScene }}：</strong>{{ contextSummary.sceneLabel }}</div>
-          <div><strong>{{ aiCopy.boundReport }}：</strong>{{ contextSummary.reportId || '-' }}</div>
-          <div><strong>{{ aiCopy.boundRun }}：</strong>{{ contextSummary.runId || '-' }}</div>
-          <div><strong>{{ aiCopy.model }}：</strong>{{ contextSummary.model || '-' }}</div>
-          <div><strong>{{ aiCopy.retrievalMode }}：</strong>{{ contextSummary.retrievalMode || knowledge.retrieval_mode || '-' }}</div>
-          <div><strong>{{ aiCopy.fallback }}：</strong>{{ contextSummary.fallbackUsed ? aiCopy.fallbackEnabled : aiCopy.fallbackDisabled }}</div>
+        <div class="context-box__title">{{ aiCopy.contextBoxTitle }}</div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <span>{{ aiCopy.currentConversation }}</span>
+            <strong>{{ contextSummary.conversationId || aiCopy.newConversationLabel }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.currentScene }}</span>
+            <strong>{{ contextSummary.sceneLabel }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.boundReport }}</span>
+            <strong>{{ contextSummary.reportId || '-' }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.boundRun }}</span>
+            <strong>{{ contextSummary.runId || '-' }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.model }}</span>
+            <strong>{{ contextSummary.model || '-' }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.retrievalMode }}</span>
+            <strong>{{ contextSummary.retrievalMode || knowledge.retrieval_mode || '-' }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.fallback }}</span>
+            <strong>{{ contextSummary.fallbackUsed ? aiCopy.fallbackEnabled : aiCopy.fallbackDisabled }}</strong>
+          </div>
         </div>
       </div>
 
       <div v-if="showStatusBlocks" class="knowledge-status">
         <div class="knowledge-status__title">{{ aiCopy.knowledgeStatusTitle }}</div>
-        <div class="knowledge-status__grid">
-          <div><strong>{{ aiCopy.knowledgeDocuments }}：</strong>{{ knowledge.total_documents ?? '-' }}</div>
-          <div><strong>{{ aiCopy.knowledgeChunks }}：</strong>{{ knowledge.total_chunks || 0 }}</div>
-          <div><strong>{{ aiCopy.requestedRetrievalMode }}：</strong>{{ knowledge.requested_retrieval_mode || '-' }}</div>
-          <div><strong>{{ aiCopy.currentRetrievalMode }}：</strong>{{ knowledge.retrieval_mode || '-' }}</div>
-          <div><strong>{{ aiCopy.embeddingStatus }}：</strong>{{ embeddingStatusText }}</div>
-          <div><strong>{{ aiCopy.embeddingModel }}：</strong>{{ knowledge.embedding_model || '-' }}</div>
-          <div><strong>{{ aiCopy.embeddingError }}：</strong>{{ knowledge.embedding_error || '-' }}</div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <span>{{ aiCopy.knowledgeDocuments }}</span>
+            <strong>{{ knowledge.total_documents ?? '-' }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.knowledgeChunks }}</span>
+            <strong>{{ knowledge.total_chunks || 0 }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.requestedRetrievalMode }}</span>
+            <strong>{{ knowledge.requested_retrieval_mode || '-' }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.currentRetrievalMode }}</span>
+            <strong>{{ knowledge.retrieval_mode || '-' }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.embeddingStatus }}</span>
+            <strong>{{ embeddingStatusText }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.embeddingModel }}</span>
+            <strong>{{ knowledge.embedding_model || '-' }}</strong>
+          </div>
+          <div class="kv-row">
+            <span>{{ aiCopy.embeddingError }}</span>
+            <strong>{{ knowledge.embedding_error || '-' }}</strong>
+          </div>
         </div>
       </div>
     </div>
@@ -106,11 +148,11 @@ const selectedReportIdInput = defineModel('reportIdInput', {
 const showSceneControls = computed(() => props.panelVariant !== 'status')
 const showStatusBlocks = computed(() => props.panelVariant !== 'scene')
 const panelTitle = computed(() => (
-  props.panelVariant === 'scene' ? '分析场景' : aiCopy.contextTitle
+  props.panelVariant === 'scene' ? aiCopy.scenePanelTitle : aiCopy.contextTitle
 ))
 const panelDescription = computed(() => (
   props.panelVariant === 'scene'
-    ? '先确定任务类型和报告编号，聊天主区会按当前分析上下文回答。'
+    ? aiCopy.scenePanelDescription
     : aiCopy.contextDescription
 ))
 
@@ -123,10 +165,12 @@ const embeddingStatusText = computed(() => {
 
 <style scoped>
 .ai-context {
+  min-height: 690px;
   overflow: hidden;
 }
 
 .ai-context--scene {
+  min-height: 0;
   border-left: 3px solid var(--brand);
 }
 
@@ -147,7 +191,7 @@ const embeddingStatusText = computed(() => {
 
 .context-box {
   margin-top: var(--space-md);
-  padding: var(--space-lg);
+  padding: 14px;
   border-radius: var(--radius-md);
   background: var(--bg-panel-raised);
   border: 1px solid var(--line-soft);
@@ -160,23 +204,54 @@ const embeddingStatusText = computed(() => {
 .context-box__title,
 .knowledge-status__title {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
-.context-box__grid,
-.knowledge-status__grid {
+.kv-list {
   display: grid;
-  gap: var(--space-sm);
-  margin-top: var(--space-md);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.kv-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--line-soft);
   color: var(--text-secondary);
-  line-height: 1.7;
+  line-height: 1.55;
+}
+
+.kv-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.kv-row span {
+  color: var(--text-secondary);
+}
+
+.kv-row strong {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .knowledge-status {
   margin-top: var(--space-lg);
   padding-top: var(--space-lg);
   border-top: 1px dashed var(--line-strong);
+}
+
+@media (max-width: 1080px) {
+  .ai-context {
+    min-height: 0;
+  }
 }
 
 @media (max-width: 860px) {
