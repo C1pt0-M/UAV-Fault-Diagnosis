@@ -446,6 +446,127 @@ select {
   --shadow-md:   0 8px 18px rgba(2, 6, 23, 0.3);
 }
 
+[data-theme='dark'] .el-table {
+  --el-table-border-color: var(--line-faint);
+  --el-table-border: 1px solid var(--line-faint);
+  --el-table-text-color: var(--text-secondary);
+  --el-table-header-text-color: var(--text-secondary);
+  --el-table-row-hover-bg-color: var(--bg-panel-strong);
+  --el-table-current-row-bg-color: var(--bg-panel-strong);
+  --el-table-header-bg-color: var(--bg-panel-raised);
+  --el-table-tr-bg-color: var(--bg-panel);
+  --el-table-expanded-cell-bg-color: var(--bg-panel);
+  --el-table-fixed-box-shadow: 0 0 10px rgba(2, 6, 23, 0.28);
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .el-table__inner-wrapper::before,
+[data-theme='dark'] .el-table__border-left-patch,
+[data-theme='dark'] .el-table--border::after,
+[data-theme='dark'] .el-table--border::before {
+  background: var(--line-faint);
+}
+
+[data-theme='dark'] .el-table__header th,
+[data-theme='dark'] .el-table__header th.el-table__cell {
+  background: var(--bg-panel-raised);
+  color: var(--text-secondary);
+  border-bottom-color: var(--line-faint);
+}
+
+[data-theme='dark'] .el-table__body tr,
+[data-theme='dark'] .el-table__body td,
+[data-theme='dark'] .el-table__body td.el-table__cell {
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+  border-bottom-color: var(--line-faint);
+}
+
+[data-theme='dark'] .el-table--striped .el-table__body tr.el-table__row--striped td,
+[data-theme='dark'] .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: var(--bg-panel-raised);
+}
+
+[data-theme='dark'] .el-table__body tr:hover > td,
+[data-theme='dark'] .el-table__body tr:hover > td.el-table__cell,
+[data-theme='dark'] .el-table--striped .el-table__body tr.el-table__row--striped:hover > td,
+[data-theme='dark'] .el-table--striped .el-table__body tr.el-table__row--striped:hover > td.el-table__cell {
+  background: var(--bg-panel-strong);
+}
+
+[data-theme='dark'] .el-table__fixed-right,
+[data-theme='dark'] .el-table__fixed,
+[data-theme='dark'] .el-table__fixed-right-patch {
+  background: var(--bg-panel);
+}
+
+[data-theme='dark'] .el-table__empty-block {
+  background: var(--bg-panel);
+}
+
+[data-theme='dark'] .el-table__empty-text {
+  color: var(--text-tertiary);
+}
+
+[data-theme='dark'] .el-input__wrapper,
+[data-theme='dark'] .el-select__wrapper {
+  background: var(--bg-panel-raised);
+  border-color: var(--line-soft);
+  box-shadow: 0 0 0 1px var(--line-soft) inset;
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .el-input__wrapper:hover,
+[data-theme='dark'] .el-select__wrapper:hover {
+  box-shadow: 0 0 0 1px var(--line-strong) inset;
+}
+
+[data-theme='dark'] .el-input__wrapper.is-focus,
+[data-theme='dark'] .el-select__wrapper.is-focused {
+  box-shadow: 0 0 0 1px var(--brand) inset;
+}
+
+[data-theme='dark'] .el-input__inner,
+[data-theme='dark'] .el-select__placeholder,
+[data-theme='dark'] .el-select__selected-item {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .el-button.is-plain {
+  background: var(--bg-panel-raised);
+  border-color: var(--line-soft);
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .el-button.is-plain:hover,
+[data-theme='dark'] .el-button.is-plain:focus {
+  background: var(--bg-panel-strong);
+  border-color: var(--brand);
+  color: var(--brand-strong);
+}
+
+[data-theme='dark'] .el-pagination.is-background .btn-prev,
+[data-theme='dark'] .el-pagination.is-background .btn-next,
+[data-theme='dark'] .el-pagination.is-background .el-pager li {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line-soft);
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .el-pagination.is-background .btn-prev:not(:disabled):hover,
+[data-theme='dark'] .el-pagination.is-background .btn-next:not(:disabled):hover,
+[data-theme='dark'] .el-pagination.is-background .el-pager li:not(.is-active):hover {
+  background: var(--bg-panel-strong);
+  color: var(--brand-strong);
+}
+
+[data-theme='dark'] .el-pagination.is-background .el-pager li.is-active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
 /* ---- Utilities ---------------------------------------------------------- */
 .is-pulsing {
   animation: status-pulse 2s ease-in-out infinite;

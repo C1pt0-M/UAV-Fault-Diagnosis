@@ -39,6 +39,7 @@ const workspaceState = vi.hoisted(() => ({
   resultMetaItems: [{ label: '诊断完成时间', value: '2026-05-05 10:26:18' }],
   riskLevel: { label: '高风险', tone: 'danger', description: '置信度较高' },
   ruleRows: [{ title: '规则 1', detail: 'Top-1 故障类别概率最高。' }],
+  runErrorText: '',
   running: false,
   selectedAssetId: 7,
   selectedAssetName: 'UAV-1023 / LOG-20240429-018',
@@ -113,6 +114,30 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
     expect(text).toContain('启动离线诊断任务')
     expect(text).not.toContain('Top-K 概率分布')
     expect(text).not.toContain('风险等级')
+  })
+
+  it('renders an explicit failed state when the run status is error', () => {
+    const wrapper = mount(DiagnosisResultPanel, {
+      props: {
+        confidenceText: '0.00%',
+        latestReportId: null,
+        nextActionItems: ['查看任务错误原因', '重新启动离线诊断任务'],
+        probabilityRows: [],
+        reportCreating: false,
+        resultData: null,
+        resultMetaItems: [],
+        runErrorText: "离线检测失败: No module named 'build_sequence_cache'",
+        riskLevel: { label: '待确认', tone: 'pending', description: '暂无风险等级。' },
+        stage: { key: 'error', label: '诊断失败', description: '离线诊断任务执行失败，请查看错误原因并重新提交。' }
+      }
+    })
+
+    const text = wrapper.text()
+    expect(text).toContain('诊断失败')
+    expect(text).toContain('离线诊断任务执行失败')
+    expect(text).toContain("No module named 'build_sequence_cache'")
+    expect(text).toContain('重新启动离线诊断任务')
+    expect(text).not.toContain('诊断准备状态')
   })
 
   it('keeps the explanation panel lightweight when no result is available', () => {

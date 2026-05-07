@@ -28,8 +28,16 @@ def parse_args():
 
 
 def add_import_paths(repo_root: Path):
-    sys.path.insert(0, str(repo_root / 'src' / 'models'))
-    sys.path.insert(0, str(repo_root / 'src' / 'data'))
+    candidates = [
+        repo_root / 'src' / 'models',
+        repo_root / 'src' / 'data',
+        repo_root / 'packages' / 'uav_fault' / 'uav_fault' / 'models',
+        repo_root / 'packages' / 'uav_fault' / 'uav_fault' / 'data',
+    ]
+    for path in candidates:
+        path_text = str(path)
+        if path.exists() and path_text not in sys.path:
+            sys.path.insert(0, path_text)
 
 
 def create_model(model_name: str, in_channels: int, num_classes: int):

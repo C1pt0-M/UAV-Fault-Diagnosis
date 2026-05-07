@@ -4,7 +4,7 @@
       <div>
         <div class="section-card__title">{{ diagnosisCopy.resultTitle }}</div>
         <div class="section-card__desc">
-          {{ resultData ? diagnosisCopy.resultDescription : '锁定输入后启动离线诊断，结果将在这里形成闭环。' }}
+          {{ resultData ? diagnosisCopy.resultDescription : stage.description }}
         </div>
       </div>
       <span class="status-badge" :class="riskBadgeClass">{{ stage.label }}</span>
@@ -120,6 +120,28 @@
         </section>
       </template>
 
+      <section v-else-if="stage.key === 'error'" class="diagnosis-ready diagnosis-ready--error">
+        <div class="diagnosis-ready__header">
+          <div>
+            <span class="diagnosis-result__eyebrow diagnosis-result__eyebrow--danger">诊断失败</span>
+            <h3>离线诊断任务执行失败</h3>
+            <p>系统已停止本次诊断任务；请查看错误原因，确认资产与模型可用后重新提交。</p>
+          </div>
+        </div>
+
+        <div class="diagnosis-error-box">
+          <span>错误原因</span>
+          <strong>{{ runErrorText || '暂无错误详情' }}</strong>
+        </div>
+
+        <section class="diagnosis-subpanel diagnosis-subpanel--actions diagnosis-ready__actions">
+          <div class="diagnosis-subpanel__title">{{ diagnosisCopy.resultActionTitle }}</div>
+          <ol>
+            <li v-for="item in nextActionItems" :key="item">{{ item }}</li>
+          </ol>
+        </section>
+      </section>
+
       <section v-else class="diagnosis-ready">
         <div class="diagnosis-ready__header">
           <div>
@@ -168,6 +190,7 @@ const props = defineProps({
   reportCreating: { type: Boolean, default: false },
   resultData: { type: Object, default: null },
   resultMetaItems: { type: Array, default: () => [] },
+  runErrorText: { type: String, default: '' },
   riskLevel: {
     type: Object,
     default: () => ({ label: '待确认', tone: 'pending', description: '暂无风险等级。' })
@@ -185,6 +208,7 @@ const preparationItems = [
   { label: 'AI 解读待解锁', value: '生成报告后可用', tone: 'offline' }
 ]
 const riskBadgeClass = computed(() => {
+  if (props.stage.key === 'error') return 'status-badge--danger'
   if (props.riskLevel.tone === 'danger') return 'status-badge--danger'
   if (props.riskLevel.tone === 'warn') return 'status-badge--warn'
   if (props.riskLevel.tone === 'ok') return 'status-badge--ok'
@@ -219,6 +243,11 @@ const riskBadgeClass = computed(() => {
   color: var(--brand);
   font-size: 11px;
   font-weight: 800;
+}
+
+.diagnosis-result__eyebrow--danger {
+  color: var(--status-danger);
+  background: var(--status-danger-soft);
 }
 
 .diagnosis-result__headline {
@@ -348,6 +377,34 @@ const riskBadgeClass = computed(() => {
 
 .diagnosis-ready__actions {
   margin-top: 0;
+}
+
+.diagnosis-ready--error .diagnosis-ready__header {
+  border-color: rgba(239, 68, 68, 0.24);
+  background: var(--status-danger-soft);
+}
+
+.diagnosis-error-box {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(239, 68, 68, 0.24);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel);
+}
+
+.diagnosis-error-box span {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.diagnosis-error-box strong {
+  color: var(--status-danger);
+  font-size: 12px;
+  line-height: 1.7;
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 
 .diagnosis-meta-grid {

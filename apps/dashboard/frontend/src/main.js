@@ -2,7 +2,6 @@ import { createApp } from 'vue'
 import ElementPlus, { ElLoading } from 'element-plus'
 import App from './App.vue'
 import router from './router'
-import './styles/main.css'
 import 'element-plus/es/components/alert/style/css'
 import 'element-plus/es/components/button/style/css'
 import 'element-plus/es/components/descriptions/style/css'
@@ -24,6 +23,7 @@ import 'element-plus/es/components/tabs/style/css'
 import 'element-plus/es/components/tab-pane/style/css'
 import 'element-plus/es/components/tag/style/css'
 import 'element-plus/es/components/upload/style/css'
+import './styles/main.css'
 
 const app = createApp(App)
 

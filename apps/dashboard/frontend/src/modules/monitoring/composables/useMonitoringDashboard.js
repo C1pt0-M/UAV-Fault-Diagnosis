@@ -1,6 +1,6 @@
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { assetApi, modelApi, telemetryApi } from '@/shared/services'
 import {
   formatLatestValue,
@@ -68,6 +68,11 @@ export function useMonitoringDashboard() {
   const selectedModel = ref('')
   const selectedReplayAssetId = ref(null)
   const rflyPx4mavctrlPath = ref('')
+  const faultHandoffDialogVisible = ref(false)
+  const faultHandoffPayload = ref({
+    session_id: null,
+    fault_events_count: 0
+  })
 
   let pollTimer = null
 
@@ -520,30 +525,33 @@ export function useMonitoringDashboard() {
 
         if (Number(response.data?.fault_events_count || 0) <= 0) return
 
-        try {
-          await ElMessageBox.confirm(
-            monitoringCopy.stopCollectionConfirmMessage(response.data.fault_events_count),
-            monitoringCopy.stopCollectionConfirmTitle,
-            {
-              type: 'warning',
-              confirmButtonText: '立即跳转',
-              cancelButtonText: '稍后处理'
-            }
-          )
-          router.push({
-            path: '/diagnosis',
-            query: {
-              session_id: response.data.session_id,
-              auto: '1'
-            }
-          })
-        } catch (error) {
-          if (error?.message && error.message !== 'cancel') throw error
-        }
+        openFaultHandoffDialog(response.data)
       } catch (error) {
-        if (error?.message !== 'cancel') {
-          ElMessage.error(`停止采集失败：${error.message || '未知错误'}`)
-        }
+        ElMessage.error(`停止采集失败：${error.message || '未知错误'}`)
+      }
+    })
+  }
+
+  function openFaultHandoffDialog(payload = {}) {
+    faultHandoffPayload.value = {
+      session_id: payload.session_id || null,
+      fault_events_count: Number(payload.fault_events_count || 0)
+    }
+    faultHandoffDialogVisible.value = true
+  }
+
+  function dismissFaultHandoff() {
+    faultHandoffDialogVisible.value = false
+  }
+
+  function confirmFaultHandoff() {
+    const sessionId = faultHandoffPayload.value?.session_id
+    faultHandoffDialogVisible.value = false
+    router.push({
+      path: '/diagnosis',
+      query: {
+        ...(sessionId ? { session_id: sessionId } : {}),
+        auto: '1'
       }
     })
   }
@@ -614,12 +622,15 @@ export function useMonitoringDashboard() {
     currentState,
     detailVisible,
     estimatedSampleRate,
+    faultHandoffDialogVisible,
+    faultHandoffPayload,
     faultPeakText,
     inputContractLabel,
     inputContractMeta,
     loadSessions,
     metrics,
     onlineModels,
+    openFaultHandoffDialog,
     openSessionDetail,
     pipelineItems,
     replayAssets,
@@ -646,6 +657,8 @@ export function useMonitoringDashboard() {
     startDetection,
     stateLabel,
     statusOverviewItems,
+    confirmFaultHandoff,
+    dismissFaultHandoff,
     stopCollection,
     stopDetection,
     testRflyDiagnostics

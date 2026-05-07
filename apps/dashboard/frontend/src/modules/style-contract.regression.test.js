@@ -87,6 +87,41 @@ describe('frontend style contracts', () => {
     expect(mainCss).toContain('--el-fill-color-blank: var(--bg-panel)')
   })
 
+  it('bridges Element Plus tables and controls into the dark token system', () => {
+    const mainCss = readSource('styles/main.css')
+
+    expect(mainCss).toContain("[data-theme='dark'] .el-table")
+    expect(mainCss).toContain("[data-theme='dark'] .el-table__header th")
+    expect(mainCss).toContain("[data-theme='dark'] .el-table--striped .el-table__body tr.el-table__row--striped td")
+    expect(mainCss).toContain("[data-theme='dark'] .el-pagination.is-background .btn-prev")
+    expect(mainCss).toContain("[data-theme='dark'] .el-select__wrapper")
+    expect(mainCss).toContain("[data-theme='dark'] .el-input__wrapper")
+    expect(mainCss).toContain('background: var(--bg-panel-raised)')
+    expect(mainCss).toContain('color: var(--text-primary)')
+  })
+
+  it('loads app theme CSS after Element Plus component CSS', () => {
+    const mainJs = readSource('main.js')
+
+    expect(mainJs.indexOf('./styles/main.css')).toBeGreaterThan(
+      mainJs.indexOf('element-plus/es/components/table/style/css')
+    )
+  })
+
+  it('keeps reports workspace labels free of mojibake', () => {
+    const reportsSource = readSource('modules/reports/components/ReportsWorkspacePanel.vue')
+
+    expect(reportsSource).toContain('label="报告 ID"')
+    expect(reportsSource).toContain('label="任务 ID"')
+    expect(reportsSource).toContain('label="资产"')
+    expect(reportsSource).toContain('label="模型"')
+    expect(reportsSource).toContain('label="诊断结论"')
+    expect(reportsSource).toContain('label="置信度"')
+    expect(reportsSource).toContain('label="生成时间"')
+    expect(reportsSource).toContain('label="操作"')
+    expect(reportsSource).not.toMatch(/[鎶璧妯缃鐢鎿诲姟]/)
+  })
+
   it('keeps dark-sensitive workbench surfaces token based', () => {
     const sources = [
       readSource('modules/assets/components/AssetDetailDialog.vue'),

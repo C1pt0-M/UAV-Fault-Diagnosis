@@ -36,6 +36,7 @@
         :result-data="resultData"
         :result-meta-items="resultMetaItems"
         :risk-level="riskLevel"
+        :run-error-text="runErrorText"
         :stage="stage"
         @create-report="createReport"
         @open-reports-center="openReportsCenter"
@@ -103,6 +104,7 @@ const {
   resultMetaItems,
   riskLevel,
   ruleRows,
+  runErrorText,
   running,
   selectedAssetId,
   selectedAssetName,

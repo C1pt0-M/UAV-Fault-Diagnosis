@@ -5,6 +5,7 @@ import {
   buildTraceableEvidenceRows,
   diagnosisCopy,
   formatDiagnosisModelName,
+  resolveDiagnosisStage,
   resolveRiskLevel
 } from './diagnosisView'
 
@@ -21,6 +22,16 @@ describe('diagnosis command deck copy regression', () => {
     expect(formatDiagnosisModelName('transfer3_cnnlstm_normalproto')).toBe('CNN-LSTM')
     expect(resolveRiskLevel({ label: 'motor', confidence: 0.89 }).label).toBe('高风险')
     expect(resolveRiskLevel({ label: 'normal', confidence: 0.95 }).label).toBe('风险可控')
+  })
+
+  it('maps failed runs to an explicit error stage instead of keeping them running', () => {
+    expect(resolveDiagnosisStage({
+      currentRun: { id: 16, status: 'error', error: '离线检测失败' },
+      resultData: null
+    })).toMatchObject({
+      key: 'error',
+      label: '诊断失败'
+    })
   })
 
   it('builds rule explanations and traceable evidence without overclaiming SHAP', () => {

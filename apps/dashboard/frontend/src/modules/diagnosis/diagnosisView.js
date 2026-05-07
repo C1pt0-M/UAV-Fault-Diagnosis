@@ -64,6 +64,12 @@ const STAGE_META = {
     label: '诊断完成',
     description: '结果已就绪，建议生成报告并进入后续解释与复核环节。',
     cue: '生成报告并进入 AI 解读'
+  },
+  error: {
+    key: 'error',
+    label: '诊断失败',
+    description: '离线诊断任务执行失败，请查看错误原因并重新提交。',
+    cue: '检查错误后重试'
   }
 }
 
@@ -141,6 +147,7 @@ export function normalizeDiagnosisResult(payload) {
 
 export function resolveDiagnosisStage({ currentRun, resultData }) {
   if (resultData) return STAGE_META.completed
+  if (String(currentRun?.status || '').toLowerCase() === 'error') return STAGE_META.error
   if (currentRun) return STAGE_META.running
   return STAGE_META.idle
 }

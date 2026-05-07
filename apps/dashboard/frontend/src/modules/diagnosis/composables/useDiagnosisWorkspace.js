@@ -131,10 +131,14 @@ export function useDiagnosisWorkspace() {
     return `${labelMeta.value.summary} 规则解释基于诊断结果摘要、概率分布与规则匹配，不代表真实特征贡献算法。`
   })
   const nextActionItems = computed(() => {
+    if (stage.value.key === 'error') return ['查看任务错误原因', '确认资产与模型可用', '重新启动离线诊断任务']
     if (!resultData.value) return ['选择日志资产与诊断模型', '启动离线诊断任务']
     return latestReportId.value
       ? ['查看报告中心', '进入 AI 解读']
       : ['生成诊断报告', '复核可追溯证据', '进入 AI 解读']
+  })
+  const runErrorText = computed(() => {
+    return currentRun.value?.error || currentRun.value?.error_detail || ''
   })
   const filteredRecentReports = computed(() => {
     const label = String(prediction.value?.label || '').trim()
@@ -333,6 +337,8 @@ export function useDiagnosisWorkspace() {
       if (currentRun.value?.status === 'success') {
         const resultResponse = await runApi.result(runId)
         resultData.value = normalizeDiagnosisResult(resultResponse.data)
+      } else {
+        resultData.value = null
       }
     } catch (error) {
       ElMessage.error(`加载诊断结果失败：${error.message || '未知错误'}`)
@@ -376,6 +382,7 @@ export function useDiagnosisWorkspace() {
     resultMetaItems,
     riskLevel,
     ruleRows,
+    runErrorText,
     running,
     selectedAssetId,
     selectedAssetName,
