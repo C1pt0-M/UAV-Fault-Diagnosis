@@ -88,8 +88,11 @@ class PX4ScenarioBackend(ScenarioBackend):
             print("[telemetry_manager] PX4 启动超时，跳过后续流程")
             return
         env = os.environ.copy()
-        env["PYTHONPATH"] = (
-            str(self.manager._src_dir) + os.pathsep + env.get("PYTHONPATH", "")
+        pythonpath_dirs = getattr(self.manager, "_pythonpath_dirs", None) or [
+            self.manager._src_dir,
+        ]
+        env["PYTHONPATH"] = os.pathsep.join(
+            [str(path) for path in pythonpath_dirs] + [env.get("PYTHONPATH", "")]
         )
         self.manager._startup_phase = "starting_collector"
         self.manager._collector_proc = self.manager._spawn_process(
@@ -111,7 +114,7 @@ class PX4ScenarioBackend(ScenarioBackend):
         cmd = [
             telemetry_python_bin,
             "-m",
-            "telemetry.flight_controller",
+            "uav_fault.telemetry.flight_controller",
             "--sim-time",
             str(self.sim_time),
         ]

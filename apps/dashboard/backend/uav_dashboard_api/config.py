@@ -277,7 +277,7 @@ class Config:
         item.strip()
         for item in os.getenv(
             'ONLINE_MODEL_PRIORITY',
-            'online_detector_kg_mstca_rfly,online_detector_mstca_rfly,online_detector_cnn1d_rfly,online_detector_CNN,online_detector_final',
+            'online_detector_kg_mstca_rfly,online_detector_mstca_rfly,online_detector_cnn1d_rfly',
         ).split(',')
         if item.strip()
     )

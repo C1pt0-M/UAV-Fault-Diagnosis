@@ -4,9 +4,9 @@
 连接 14540 端口（与 Collector 的 14550 不冲突）。
 
 用法:
-    python -m telemetry.flight_controller
-    python -m telemetry.flight_controller --sim-time 120 --seed 42
-    python -m telemetry.flight_controller --fault-type motor_failure --fault-delay 20 --fault-scale 0.1 --motor-index 2
+    python -m uav_fault.telemetry.flight_controller
+    python -m uav_fault.telemetry.flight_controller --sim-time 120 --seed 42
+    python -m uav_fault.telemetry.flight_controller --fault-type motor_failure --fault-delay 20 --fault-scale 0.1 --motor-index 2
 """
 
 import argparse

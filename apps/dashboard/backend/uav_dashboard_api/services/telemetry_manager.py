@@ -18,10 +18,13 @@ from collections import deque
 from datetime import datetime
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[4]
-SRC_DIR = PROJECT_ROOT / "src"
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
+PROJECT_ROOT = Path(__file__).resolve().parents[5]
+UAV_FAULT_PACKAGE_ROOT = PROJECT_ROOT / "packages" / "uav_fault"
+PYTHONPATH_DIRS = [PROJECT_ROOT, UAV_FAULT_PACKAGE_ROOT]
+for _path in reversed(PYTHONPATH_DIRS):
+    _path_text = str(_path)
+    if _path.exists() and _path_text not in sys.path:
+        sys.path.insert(0, _path_text)
 
 from uav_dashboard_api.services.diagnosis_contract import (
     build_diagnosis_payload,
@@ -299,7 +302,8 @@ class TelemetryProcessManager:
         self._active_model: dict | None = None
         self._telemetry_python_bin: str | None = None
         self._px4_root = os.path.expanduser(os.environ.get("PX4_ROOT", "~/PX4-Autopilot"))
-        self._src_dir = SRC_DIR
+        self._src_dir = PROJECT_ROOT
+        self._pythonpath_dirs = [path for path in PYTHONPATH_DIRS if path.exists()]
         self._backend = None
         self._backend_name = None
         self._backend_options: dict = {}
@@ -362,7 +366,7 @@ class TelemetryProcessManager:
         cmd = [
             telemetry_python_bin,
             "-m",
-            "telemetry.collector",
+            "uav_fault.telemetry.collector",
             "--host",
             str(cfg.get("TELEMETRY_FORWARD_HOST", "127.0.0.1")),
             "--port",

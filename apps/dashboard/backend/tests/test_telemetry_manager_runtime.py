@@ -115,6 +115,7 @@ if "uav_fault.data.build_sequence_cache" not in sys.modules:
     sys.modules["uav_fault.data.build_sequence_cache"] = fake_build_sequence_cache
 
 from uav_dashboard_api.services.telemetry_manager import TelemetryProcessManager
+from uav_dashboard_api.services.telemetry_backends import PX4ScenarioBackend
 
 
 @pytest.fixture(autouse=True)
@@ -434,7 +435,6 @@ def test_start_detection_marks_startup_phase_detecting():
         TelemetryProcessManager._get_detection_runner_cls = original_get_runner_cls
 
 
-'''
 def test_start_detection_wraps_detector_init_error_as_runtime_error():
     mgr = TelemetryProcessManager()
     mgr._reset_runtime_state()
@@ -455,64 +455,7 @@ def test_start_detection_wraps_detector_init_error_as_runtime_error():
 
     mgr._backend._thread = _LiveThread()
     mgr._resolve_online_model_meta = lambda requested_model=None: {
-        "name": "online_detector_CNN",
-        "path": "bad_model_dir",
-        "task": "online_binary",
-        "architecture": "cnn1d",
-        "num_classes": 2,
-        "label_names": ["normal", "fault"],
-        "window_size": 150,
-        "feature_count": 31,
-        "metrics": {},
-    }
-
-    from uav_dashboard_api.services import telemetry_manager as telemetry_manager_module
-
-    original_runner = telemetry_manager_module.DetectionRunner
-
-    class _BoomRunner:
-        def __init__(self, model_dir, device="cpu"):
-            raise KeyError("hidden_size")
-
-    telemetry_manager_module.DetectionRunner = _BoomRunner
-    try:
-        try:
-            mgr.start_detection()
-            assert False, "expected RuntimeError"
-        except RuntimeError as exc:
-            assert "在线检测启动失败" in str(exc)
-            assert "online_detector_CNN" in str(exc)
-            assert "hidden_size" in str(exc)
-        assert mgr._detecting is False
-        assert mgr._active_model is None
-    finally:
-        telemetry_manager_module.DetectionRunner = original_runner
-
-
-'''
-
-
-def test_start_detection_wraps_detector_init_error_as_runtime_error():
-    mgr = TelemetryProcessManager()
-    mgr._reset_runtime_state()
-    mgr._session_id = "TS-DET-ERR"
-    mgr._start_time = 100.0
-    mgr._planned_duration_s = 120.0
-    mgr._backend_name = "replay"
-
-    class _ReplayBackend:
-        pass
-
-    mgr._backend = _ReplayBackend()
-    mgr._receiver = object()
-
-    class _LiveThread:
-        def is_alive(self):
-            return True
-
-    mgr._backend._thread = _LiveThread()
-    mgr._resolve_online_model_meta = lambda requested_model=None: {
-        "name": "online_detector_CNN",
+        "name": "online_detector_cnn1d_rfly",
         "path": "bad_model_dir",
         "task": "online_binary",
         "architecture": "cnn1d",
@@ -538,7 +481,7 @@ def test_start_detection_wraps_detector_init_error_as_runtime_error():
         with pytest.raises(RuntimeError) as exc_info:
             mgr.start_detection()
         error_text = str(exc_info.value)
-        assert "online_detector_CNN" in error_text
+        assert "online_detector_cnn1d_rfly" in error_text
         assert "hidden_size" in error_text
         assert mgr._detecting is False
         assert mgr._active_model is None
@@ -750,7 +693,7 @@ def test_build_collector_command_uses_runtime_config():
     assert mgr._build_collector_cmd("python-bin") == [ 
         "python-bin", 
         "-m", 
-        "telemetry.collector", 
+        "uav_fault.telemetry.collector",
         "--host", 
         "127.0.0.1", 
         "--port", 
@@ -765,3 +708,43 @@ def test_build_collector_command_uses_runtime_config():
         "udpin:0.0.0.0:14031", 
         "--no-pymav", 
     ] 
+
+
+def test_runtime_paths_point_to_monorepo_package_roots():
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+
+    repo_root = BACKEND_ROOT.parents[2]
+
+    assert mgr._src_dir == repo_root
+    assert repo_root in mgr._pythonpath_dirs
+    assert repo_root / "packages" / "uav_fault" in mgr._pythonpath_dirs
+
+
+def test_px4_backend_uses_packaged_flight_controller_module():
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._blind_test_ground_truth = {
+        "fault_type": "motor_failure",
+        "fault_delay_s": 12,
+        "effectiveness": 0.2,
+        "motor_index": 3,
+    }
+    backend = PX4ScenarioBackend(
+        mgr,
+        session_id="TS-PX4-001",
+        csv_path="session.csv",
+        sim_time=42,
+        options={},
+    )
+
+    cmd = backend._flight_cmd("python-bin")
+
+    assert cmd[:4] == [
+        "python-bin",
+        "-m",
+        "uav_fault.telemetry.flight_controller",
+        "--sim-time",
+    ]
+    assert "--fault-type" in cmd
+    assert "motor_failure" in cmd

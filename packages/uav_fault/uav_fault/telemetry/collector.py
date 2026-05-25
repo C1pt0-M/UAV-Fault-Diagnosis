@@ -3,9 +3,9 @@
 启动 MAVSDK 订阅 + pymavlink 补充线程，50Hz 快照并通过 UDP 转发。
 
 用法:
-    python -m telemetry.collector
-    python -m telemetry.collector --emit-rate 100
-    python -m telemetry.collector --no-pymav
+    python -m uav_fault.telemetry.collector
+    python -m uav_fault.telemetry.collector --emit-rate 100
+    python -m uav_fault.telemetry.collector --no-pymav
 """
 
 import argparse
