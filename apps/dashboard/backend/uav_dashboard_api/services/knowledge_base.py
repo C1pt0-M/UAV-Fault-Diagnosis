@@ -16,7 +16,7 @@ from uav_dashboard_api.services.ai_provider import AIProviderError, OpenAICompat
 from uav_dashboard_api.services.ai_settings import ai_settings_service
 
 
-TOKEN_RE = re.compile(r'[A-Za-z0-9_]+|[一-鿿]')
+TOKEN_RE = re.compile(r'[A-Za-z0-9_]+|[一-龥]')
 SUPPORTED_EXTS = {'.md', '.txt', '.json', '.yaml', '.yml'}
 DEFAULT_CHUNK_SIZE = 900
 DEFAULT_CHUNK_OVERLAP = 150
@@ -141,6 +141,7 @@ class KnowledgeBaseService:
             return 0.0
 
         good = 0
+        suspicious = 0
         total = 0
         punctuation = set('，。！？；：、（）《》“”‘’—…,.!?;:()[]{}<>-_/%+*= ')
 
@@ -149,6 +150,9 @@ class KnowledgeBaseService:
                 continue
             total += 1
             code = ord(ch)
+            if 0xE000 <= code <= 0xF8FF:
+                suspicious += 1
+                continue
             if (
                 ch.isascii() and (ch.isalnum() or ch in punctuation)
             ) or (
@@ -157,6 +161,8 @@ class KnowledgeBaseService:
                 good += 1
 
         if total == 0:
+            return 0.0
+        if suspicious:
             return 0.0
         return good / total
 
@@ -178,7 +184,7 @@ class KnowledgeBaseService:
 
         focus_terms = []
         for item in parts:
-            normalized = re.sub(r'[^\w\u4e00-\u9fff]+', '', item)
+            normalized = re.sub(r'[^\w一-龥]+', '', item)
             if len(normalized) >= 2:
                 focus_terms.append(normalized)
         return focus_terms

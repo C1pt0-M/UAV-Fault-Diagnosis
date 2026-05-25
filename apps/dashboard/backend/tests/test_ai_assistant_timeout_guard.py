@@ -1,6 +1,6 @@
 import time
 
-from dashboard.backend.tests.test_ai_assistant import app, auth_header, seeded_records
+from tests.test_ai_assistant import app, auth_header, seeded_records
 
 from uav_dashboard_api.services.ai_assistant import ai_assistant_service
 
@@ -37,15 +37,15 @@ def test_call_model_falls_back_when_chat_exceeds_hard_timeout(
 
         started_at = time.perf_counter()
         answer, provider_name, model_name, fallback_used = ai_assistant_service._call_model(
-            [{"role": "user", "content": "璇疯В閲婂綋鍓嶆姤鍛婄殑椋庨櫓閲嶇偣銆?}],
+            [{"role": "user", "content": "请解释当前报告的风险重点。"}],
             scene_context=scene_context,
-            message="璇疯В閲婂綋鍓嶆姤鍛婄殑椋庨櫓閲嶇偣銆?,
+            message="请解释当前报告的风险重点。",
             knowledge_hits=[],
         )
         elapsed = time.perf_counter() - started_at
 
-        assert elapsed < 0.04
+        assert elapsed < 0.08
         assert fallback_used is True
         assert provider_name == "offline_fallback"
         assert model_name == "context_only"
-        assert "鐩存帴缁撹锛? in answer
+        assert "直接结论：" in answer

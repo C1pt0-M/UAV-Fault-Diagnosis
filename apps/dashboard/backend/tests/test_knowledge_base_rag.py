@@ -139,7 +139,7 @@ def test_chat_endpoint_uses_knowledge_hits_from_hybrid_search(
         ai_assistant_service,
         "_call_model",
         lambda messages, **kwargs: (
-            "缁撹锛氱煡璇嗗簱宸插懡涓數鏈虹淮淇枃妗ｃ€?,
+            "结论：知识库已命中电机维修文档。",
             "mock-provider",
             "mock-chat",
             False,
@@ -184,14 +184,14 @@ def test_search_prefers_hits_that_cover_repair_intent(app, monkeypatch):
                 make_chunk(
                     "1",
                     "doc-sensor-overview",
-                    "浼犳劅鍣ㄦ晠闅滄杩?,
-                    "浼犳劅鍣ㄦ晠闅滀富瑕佸垎涓烘紓绉诲亸缃晠闅溿€侀儴鍒嗗け鏁堟晠闅滃拰瀹屽叏澶辨晥鏁呴殰銆?,
+                    "传感器故障概述",
+                    "传感器故障主要分为漂移偏置故障、部分失效故障和完全失效故障。",
                 ),
                 make_chunk(
                     "2",
                     "doc-sensor-repair",
-                    "浼犳劅鍣ㄧ淮淇寚鍗?,
-                    "浼犳劅鍣ㄦ晠闅滀慨澶嶉€氬父鍏堟帓鏌ヤ緵鐢典笌杩炴帴鐘舵€侊紝鍐嶆牴鎹儏鍐垫墽琛屾牎鍑嗐€佺淮淇垨鏇存崲銆?,
+                    "传感器维修指南",
+                    "传感器故障修复通常先排查供电与连接状态，再根据情况执行校准、维修或更换。",
                 ),
             ],
             "df": {},
@@ -214,18 +214,18 @@ def test_search_prefers_hits_that_cover_repair_intent(app, monkeypatch):
 
         monkeypatch.setattr(knowledge_base, "_load_index", lambda: index)
 
-        hits = knowledge_base.search("浼犳劅鍣ㄦ晠闅滄€庝箞淇", top_k=5)
+        hits = knowledge_base.search("传感器故障怎么修复", top_k=5)
 
         assert len(hits) == 1
-        assert hits[0]["title"] == "浼犳劅鍣ㄧ淮淇寚鍗?
-        assert "淇閫氬父鍏堟帓鏌ヤ緵鐢? in hits[0]["snippet"]
+        assert hits[0]["title"] == "传感器维修指南"
+        assert "修复通常先排查供电" in hits[0]["snippet"]
 
 
 def test_search_builds_snippet_around_matched_query(app, monkeypatch):
     with app.app_context():
-        prefix = "鑳屾櫙浠嬬粛銆? * 80
-        focus = "杩欓噷寮€濮嬭璁虹數姹犳晠闅滀慨澶嶆楠わ紝鍖呮嫭鎺掓煡渚涚數銆侀噸鏂版牎鍑嗗拰蹇呰鏃舵洿鎹㈤儴浠躲€?
-        text = prefix + focus + "灏鹃儴琛ュ厖璇存槑銆?
+        prefix = "背景介绍。" * 80
+        focus = "这里开始讨论电池故障修复步骤，包括排查供电、重新校准和必要时更换部件。"
+        text = prefix + focus + "尾部补充说明。"
         tokens = knowledge_base._tokenize(text)
         index = {
             "built_at": "2026-03-31 19:00:00",
@@ -235,7 +235,7 @@ def test_search_builds_snippet_around_matched_query(app, monkeypatch):
                     "chunk_id": "1",
                     "source_type": "knowledge_base",
                     "source_id": "doc-battery-repair",
-                    "title": "鐢垫睜缁翠慨鎵嬪唽",
+                    "title": "电池维修手册",
                     "path": "",
                     "text": text,
                     "token_counts": dict(Counter(tokens)),
@@ -255,11 +255,11 @@ def test_search_builds_snippet_around_matched_query(app, monkeypatch):
 
         monkeypatch.setattr(knowledge_base, "_load_index", lambda: index)
 
-        hits = knowledge_base.search("鐢垫睜鏁呴殰鎬庝箞淇", top_k=5)
+        hits = knowledge_base.search("电池故障怎么修复", top_k=5)
 
         assert len(hits) == 1
-        assert "鐢垫睜鏁呴殰淇姝ラ" in hits[0]["snippet"]
-        assert "鑳屾櫙浠嬬粛" not in hits[0]["snippet"][:40]
+        assert "电池故障修复步骤" in hits[0]["snippet"]
+        assert "背景介绍" not in hits[0]["snippet"][:40]
 
 
 def test_load_index_rebuilds_when_report_or_run_sources_are_stale(app, monkeypatch):
@@ -272,7 +272,7 @@ def test_load_index_rebuilds_when_report_or_run_sources_are_stale(app, monkeypat
                     "kind": "report",
                     "source_type": "report",
                     "source_id": "999",
-                    "title": "璇婃柇鎶ュ憡 #999",
+                    "title": "诊断报告 #999",
                     "path": "",
                     "updated_at": "2026-03-31 19:00:00",
                 },
@@ -281,7 +281,7 @@ def test_load_index_rebuilds_when_report_or_run_sources_are_stale(app, monkeypat
                     "kind": "run",
                     "source_type": "run",
                     "source_id": "888",
-                    "title": "浠诲姟璁板綍 #888",
+                    "title": "任务记录 #888",
                     "path": "",
                     "updated_at": "2026-03-31 19:00:00",
                 },
@@ -306,7 +306,7 @@ def test_load_index_rebuilds_when_report_or_run_sources_are_stale(app, monkeypat
                     "kind": "file",
                     "source_type": "knowledge_base",
                     "source_id": "doc-1",
-                    "title": "鏃犱汉鏈虹淮鎶ゆ墜鍐?,
+                    "title": "无人机维护手册",
                     "path": "",
                     "updated_at": "2026-03-31 19:05:00",
                 }

@@ -2,9 +2,6 @@
 
 import signal
 
-# Flask应用初始化文件
-import signal
-
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy

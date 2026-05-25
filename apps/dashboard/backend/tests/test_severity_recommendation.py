@@ -5,7 +5,7 @@ import pandas as pd
 from uav_dashboard_api.services.severity_recommendation import evaluate_severity_and_recommendations
 
 
-RULE_PATH = Path(__file__).resolve().parents[1] / 'app' / 'configs' / 'severity_rules_v1.yaml'
+RULE_PATH = Path(__file__).resolve().parents[1] / 'uav_dashboard_api' / 'configs' / 'severity_rules_v1.yaml'
 
 
 def _write_csv(tmp_path, name: str, columns: dict):

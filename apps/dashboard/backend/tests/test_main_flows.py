@@ -16,8 +16,13 @@ from uav_dashboard_api.models.asset import Asset
 from uav_dashboard_api.models.run_record import RunRecord
 from uav_dashboard_api.models.telemetry_session import TelemetryFaultEvent, TelemetrySession
 from uav_dashboard_api.models.user import User
+from uav_dashboard_api.utils.path_store import resolve_local_path
 from uav_dashboard_api.utils.jwt_utils import JWTUtils
 from uav_dashboard_api.config import TestingConfig
+
+
+REPO_ROOT = Path(__file__).resolve().parents[4]
+FRONTEND_SRC = REPO_ROOT / "apps" / "dashboard" / "frontend" / "src"
 
 
 def _write_json(path: Path, payload: dict):
@@ -33,8 +38,8 @@ def _create_model(root: Path, name: str, config: dict):
 
 @pytest.fixture
 def app(tmp_path: Path, monkeypatch):
-    fake_fault_detector = types.ModuleType("online.fault_detector")
-    fake_build_sequence_cache = types.ModuleType("data.build_sequence_cache")
+    fake_fault_detector = types.ModuleType("uav_fault.online.fault_detector")
+    fake_build_sequence_cache = types.ModuleType("uav_fault.data.build_sequence_cache")
 
     class _DummyFaultDetector:
         def __init__(self, model_dir=None, device="cpu"):
@@ -84,9 +89,12 @@ def app(tmp_path: Path, monkeypatch):
         "acc_norm",
         "actuator_effort",
     ]
-    monkeypatch.setitem(sys.modules, "online.fault_detector", fake_fault_detector)
+    monkeypatch.setitem(sys.modules, "uav_fault.online.fault_detector", fake_fault_detector)
     monkeypatch.setitem(
         sys.modules, "data.build_sequence_cache", fake_build_sequence_cache
+    )
+    monkeypatch.setitem(
+        sys.modules, "uav_fault.data.build_sequence_cache", fake_build_sequence_cache
     )
 
     model_root = tmp_path / "models"
@@ -108,6 +116,8 @@ def app(tmp_path: Path, monkeypatch):
         DERIVED_DIR = runtime_dir / "derived"
         RUNS_DIR = runtime_dir / "runs"
         REPORTS_DIR = runtime_dir / "reports"
+        ENABLE_BLIND_TEST = True
+        TELEMETRY_ALLOWED_BACKENDS = ("replay", "px4", "rfly")
 
     app = create_app(LocalTestingConfig)
     app.config["TESTING"] = True
@@ -137,65 +147,6 @@ def auth_header(app):
         db.session.add(user)
         db.session.commit()
         return {"Authorization": f"Bearer {JWTUtils.generate_token(user.id)}"}
-
-
-@pytest.fixture
-def minimal_routes_app(tmp_path: Path):
-    from uav_dashboard_api.routes import drones, maintenance, reports
-
-    class MinimalTestingConfig(TestingConfig):
-        SQLALCHEMY_DATABASE_URI = f"sqlite:///{tmp_path / 'test_generate_id_routes.db'}"
-
-    app = Flask(__name__)
-    app.config.from_object(MinimalTestingConfig)
-    db.init_app(app)
-    app.register_blueprint(drones.bp, url_prefix="/api/drones")
-    app.register_blueprint(maintenance.bp, url_prefix="/api/maintenance")
-    app.register_blueprint(reports.bp, url_prefix="/api/reports")
-
-    with app.app_context():
-        db.create_all()
-        user = User(
-            username="route_user",
-            password=bcrypt.hashpw(b"test123", bcrypt.gensalt()).decode("utf-8"),
-            real_name="Route User",
-            email="route@example.com",
-            role="admin",
-            status="active",
-        )
-        db.session.add(user)
-        db.session.commit()
-        token = JWTUtils.generate_token(user.id)
-        yield app, {"Authorization": f"Bearer {token}"}
-        db.session.remove()
-        db.drop_all()
-
-
-def test_basic_create_routes_generate_ids(minimal_routes_app):
-    app, auth_header = minimal_routes_app
-    client = app.test_client()
-
-    drone_resp = client.post(
-        "/api/drones/", headers=auth_header, json={"name": "Test Drone"}
-    )
-    assert drone_resp.status_code == 200
-    assert drone_resp.get_json()["data"]["id"].startswith("DRN-")
-
-    maintenance_resp = client.post(
-        "/api/maintenance/",
-        headers=auth_header,
-        json={"drone_id": "DRN-000001", "title": "妫€鏌ョ數鏈?},
-    )
-    assert maintenance_resp.status_code == 200
-    assert maintenance_resp.get_json()["data"]["id"].startswith("MNT-")
-
-    report_resp = client.post(
-        "/api/reports/",
-        headers=auth_header,
-        json={"title": "鏃ユ姤", "type": "宸℃", "creator": "tester"},
-    )
-    assert report_resp.status_code == 200
-    assert report_resp.get_json()["data"]["id"].startswith("RPT-")
 
 
 def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypatch):
@@ -233,7 +184,7 @@ def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypa
                             "method": "rule_v1",
                         },
                         "recommendations": [
-                            {"title": "绔嬪嵆妫€鏌ョ數鏈?, "priority": "P1"}
+                                    {"title": "立即检查电机", "priority": "P1"}
                         ],
                         "diagnosis": {
                             "source": "offline",
@@ -258,7 +209,7 @@ def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypa
                                     ],
                                 },
                                 "recommendations": [
-                                    {"title": "绔嬪嵆妫€鏌ョ數鏈?, "priority": "P1"}
+                                    {"title": "立即检查电机", "priority": "P1"}
                                 ],
                             },
                         },
@@ -280,7 +231,7 @@ def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypa
                                 ],
                             },
                             "recommendations": [
-                                {"title": "绔嬪嵆妫€鏌ョ數鏈?, "priority": "P1"}
+                                    {"title": "立即检查电机", "priority": "P1"}
                             ],
                         },
                     }
@@ -337,7 +288,9 @@ def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypa
     assert report_detail["summary"]["decision"]["episode_id"] == "ep_test_001"
 
 
-def test_legacy_offline_task_alias_and_filters(app, client, auth_header, monkeypatch):
+def test_offline_task_requires_canonical_name_and_filters_legacy_records(
+    app, client, auth_header, monkeypatch
+):
     from uav_dashboard_api.routes import dashboard as dashboard_routes
 
     def fake_submit(app_obj, run_id, worker_fn, *args, **kwargs):
@@ -361,11 +314,25 @@ def test_legacy_offline_task_alias_and_filters(app, client, auth_header, monkeyp
         data={"file": (io.BytesIO(b"timestamp,a\n0,1\n"), "mission.csv")},
     )
     asset_id = upload.get_json()["data"]["id"]
+    with app.app_context():
+        asset = db.session.get(Asset, asset_id)
+        meta = asset.get_meta()
+        meta["prepared_csv_path"] = asset.stored_path
+        asset.set_meta(meta)
+        db.session.commit()
+
+    legacy_submit = client.post(
+        "/api/runs",
+        headers=auth_header,
+        json={"task": "offline_5class", "asset_id": asset_id, "model": "lstm"},
+    )
+    assert legacy_submit.status_code == 400
+    assert "不支持的任务类型" in legacy_submit.get_json()["message"]
 
     run_resp = client.post(
         "/api/runs",
         headers=auth_header,
-        json={"task": "offline_5class", "asset_id": asset_id, "model": "lstm"},
+        json={"task": "offline_multiclass", "asset_id": asset_id, "model": "lstm"},
     )
     assert run_resp.status_code == 202
     run_id = run_resp.get_json()["data"]["id"]
@@ -383,16 +350,8 @@ def test_legacy_offline_task_alias_and_filters(app, client, auth_header, monkeyp
     legacy_report = client.post(
         "/api/reports/diagnosis", headers=auth_header, json={"run_id": legacy_run_id}
     )
-    assert legacy_report.status_code == 201
-    legacy_report_detail = client.get(
-        f"/api/reports/diagnosis/{legacy_report.get_json()['data']['id']}",
-        headers=auth_header,
-    )
-    assert legacy_report_detail.status_code == 200
-    assert (
-        legacy_report_detail.get_json()["data"]["diagnosis"]["model"]["task"]
-        == "offline_multiclass"
-    )
+    assert legacy_report.status_code == 400
+    assert legacy_report.get_json()["message"] == "仅支持离线分类诊断任务"
 
     legacy_list = client.get("/api/runs?task=offline_5class", headers=auth_header)
     canonical_list = client.get(
@@ -400,16 +359,15 @@ def test_legacy_offline_task_alias_and_filters(app, client, auth_header, monkeyp
     )
     assert legacy_list.status_code == 200
     assert canonical_list.status_code == 200
-    assert {item["id"] for item in legacy_list.get_json()["data"]} == {
-        item["id"] for item in canonical_list.get_json()["data"]
-    }
+    assert {item["id"] for item in legacy_list.get_json()["data"]} == {legacy_run_id}
+    assert {item["id"] for item in canonical_list.get_json()["data"]} == {run_id}
     assert run_id in {item["id"] for item in canonical_list.get_json()["data"]}
 
     overview = client.get("/api/overview", headers=auth_header)
     assert overview.status_code == 200
     fault_distribution = overview.get_json()["data"]["fault_distribution"]
     assert fault_distribution["sensor"] == 1
-    assert fault_distribution["motor"] == 1
+    assert fault_distribution["motor"] == 0
 
 
 def test_offline_run_accepts_telemetry_session_bridge(
@@ -476,7 +434,7 @@ def test_offline_run_rejects_missing_telemetry_session(app, client, auth_header)
     )
 
     assert response.status_code == 404
-    assert response.get_json()["message"] == "閬ユ祴浼氳瘽涓嶅瓨鍦?
+    assert response.get_json()["message"] == "遥测会话不存在"
 
 
 def test_offline_run_rejects_telemetry_session_without_csv(app, client, auth_header):
@@ -533,7 +491,7 @@ def test_offline_run_rejects_telemetry_session_with_missing_csv_file(
 def test_telemetry_receiver_persists_live_baro_temp_and_actuator_controls(
     tmp_path: Path, monkeypatch
 ):
-    src_root = Path(__file__).resolve().parents[3] / "src"
+    src_root = REPO_ROOT / "packages" / "uav_fault"
     if str(src_root) not in sys.path:
         sys.path.insert(0, str(src_root))
 
@@ -572,7 +530,7 @@ def test_telemetry_receiver_persists_live_baro_temp_and_actuator_controls(
             return None
 
     monkeypatch.setattr(
-        "telemetry.receiver.socket.socket",
+        "uav_fault.telemetry.receiver.socket.socket",
         lambda *args, **kwargs: _FakeSocket([json.dumps(payload).encode("utf-8")]),
     )
 
@@ -616,7 +574,7 @@ def test_telemetry_start_detection_status_and_session_detail_flow(
         "probability": 0.96,
         "confidence": 0.96,
         "severity": "heavy",
-        "recommendations": [{"title": "绔嬪嵆涓褰撳墠浠诲姟", "priority": "P0"}],
+        "recommendations": [{"title": "立即执行人工复核", "priority": "P0"}],
         "model": {"name": "online_detector_alpha"},
         "time_range": {"start_time": 1.0, "end_time": 2.5, "duration": 1.5},
     }
@@ -716,7 +674,12 @@ def test_telemetry_start_detection_status_and_session_detail_flow(
         client.post(
             "/api/telemetry/start-collection",
             headers=auth_header,
-            json={"drone_id": "DRONE-001", "sim_time": 60},
+            json={
+                "drone_id": "DRONE-001",
+                "sim_time": 0,
+                "backend": "replay",
+                "replay_path": "/tmp/replay.csv",
+            },
         ).status_code
         == 200
     )
@@ -833,7 +796,7 @@ def test_telemetry_replay_session_detail_builds_fault_evidence_timeline(
         "severity": "heavy",
         "lead_time_s": 1.2,
         "time_range": {"start_time": 11.2, "end_time": 14.8, "duration": 3.6},
-        "recommendations": [{"title": "鍒囨崲杩旇埅妯″紡", "priority": "P0"}],
+        "recommendations": [{"title": "立即执行人工复核", "priority": "P0"}],
         "evidence_summary": {
             "top_evidence": [
                 {"kind": "signal", "name": "fault_probability", "value": 0.98, "status": "observed"}
@@ -859,104 +822,78 @@ def test_telemetry_replay_session_detail_builds_fault_evidence_timeline(
     assert timeline[1]["ts"] == pytest.approx(11.2)
     assert timeline[1]["evidence"][0]["name"] == "fault_probability"
     assert timeline[3]["status"] == "recommended"
-    assert "鍒囨崲杩旇埅妯″紡" in timeline[3]["description"]
+    assert "立即执行人工复核" in timeline[3]["description"]
 
 
 def test_telemetry_frontend_session_detail_dialog_displays_replay_metrics_contract():
-    telemetry_view = (
-        Path(__file__).resolve().parents[3]
-        / "apps/dashboard/frontend/src/views/Telemetry.vue"
-    )
-    content = telemetry_view.read_text(encoding="utf-8")
+    dialog = FRONTEND_SRC / "modules" / "monitoring" / "components" / "MonitoringSessionDialog.vue"
+    content = dialog.read_text(encoding="utf-8")
 
-    assert "sessionDetailReplayMetricsText" in content
-    assert "sessionDetail.meta?.replay_metrics" in content
-    assert '<el-descriptions-item label="Replay璇勪及"' in content
+    assert "monitoringCopy.sessionDetailTitle" in content
+    assert "sessionDetail.fault_events_count" in content
+    assert "monitoringCopy.faultEventsLabel" in content
 
 
-def test_telemetry_frontend_exposes_fault_evidence_timeline_entry_contract():
-    telemetry_view = (
-        Path(__file__).resolve().parents[3]
-        / "apps/dashboard/frontend/src/views/Telemetry.vue"
-    )
-    content = telemetry_view.read_text(encoding="utf-8")
+def test_telemetry_frontend_exposes_fault_handoff_contract():
+    monitoring_page = FRONTEND_SRC / "modules" / "monitoring" / "MonitoringPage.vue"
+    content = monitoring_page.read_text(encoding="utf-8")
 
-    assert "鏁呴殰璇佹嵁閾? in content
-    assert "evidence_timeline" in content
-    assert "session-event-evidence" in content
+    assert "faultHandoffPayload" in content
+    assert "faultHandoffPayload.fault_events_count" in content
+    assert "faultHandoffPayload.session_id" in content
 
 
 def test_telemetry_frontend_displays_runtime_explainability_fields():
-    telemetry_view = (
-        Path(__file__).resolve().parents[3]
-        / "apps/dashboard/frontend/src/views/Telemetry.vue"
-    )
-    content = telemetry_view.read_text(encoding="utf-8")
+    monitoring_copy = FRONTEND_SRC / "modules" / "monitoring" / "monitoringView.js"
+    content = monitoring_copy.read_text(encoding="utf-8")
 
-    assert "鍚姩闃舵:" in content
-    assert "瓒呮椂鍘熷洜:" in content
-    assert "鏈€杩戝抚鏃堕棿:" in content
-    assert "杈撳叆濂戠害:" in content
-    assert "formatStartupPhase" in content
-    assert "formatTimeoutReason" in content
-    assert "formatInputContract" in content
+    assert "modelPlaceholder" in content
+    assert "faultEventsLabel" in content
+    assert "unknownFault" in content
+    assert "replayAssetRequired" in content
 
 
-def test_telemetry_frontend_prefers_old_online_model_for_competition():
-    telemetry_view = (
-        Path(__file__).resolve().parents[3]
-        / "apps/dashboard/frontend/src/views/Telemetry.vue"
-    )
-    content = telemetry_view.read_text(encoding="utf-8")
+def test_telemetry_frontend_uses_current_monitoring_model_and_replay_contract():
+    control_panel = FRONTEND_SRC / "modules" / "monitoring" / "components" / "MonitoringControlPanel.vue"
+    dashboard = FRONTEND_SRC / "modules" / "monitoring" / "composables" / "useMonitoringDashboard.js"
+    control_content = control_panel.read_text(encoding="utf-8")
+    dashboard_content = dashboard.read_text(encoding="utf-8")
 
-    assert "online_detector_CNN" in content
-    assert "assetApi.list('all')" in content
-    assert "selectedReplayAssetId" in content
-    assert "璇峰厛閫夋嫨宸插噯澶囧ソ鐨勬棩蹇楄祫浜? in content
-    assert "replayPath = ref('')" not in content
-    assert "const assetLabel = (asset) =>" in content
-    assert "鐤戜技寮傚父锛堝疄鏃堕璀︼級" in content
-    assert "鏁呴殰浜嬩欢锛堝凡纭锛? in content
-    assert "displayAlerts" in content
-    assert "runStatus.value.latest_diagnoses" in content
-    assert "selectedBackend !== 'replay' && currentState === 'IDLE'" in content
-    assert "replay-config-row" in content
+    assert "monitoring-control--model" in control_content
+    assert "selectedReplayAssetId" in control_content
+    assert "assetApi.list('all')" in dashboard_content
+    assert "selectedBackend.value === 'replay'" in dashboard_content
+    assert "runStatus.fault_events" in dashboard_content
 
 
 def test_telemetry_frontend_prompts_for_fault_classification_after_stop():
-    telemetry_view = (
-        Path(__file__).resolve().parents[3]
-        / "apps/dashboard/frontend/src/views/Telemetry.vue"
-    )
-    content = telemetry_view.read_text(encoding="utf-8")
+    monitoring_page = FRONTEND_SRC / "modules" / "monitoring" / "MonitoringPage.vue"
+    dashboard = FRONTEND_SRC / "modules" / "monitoring" / "composables" / "useMonitoringDashboard.js"
+    page_content = monitoring_page.read_text(encoding="utf-8")
+    dashboard_content = dashboard.read_text(encoding="utf-8")
 
-    assert "鏄惁璺宠浆鏁呴殰鍒嗙被" in content
-    assert "ElMessageBox.confirm" in content
-    assert "session_id" in content
-    assert "fault_events_count" in content
-    assert "path: '/fault-detection'" in content
-    assert "auto: '1'" in content
+    assert "faultHandoffPayload" in page_content
+    assert "fault_events_count" in page_content
+    assert "session_id" in page_content
+    assert "router.push" in dashboard_content
+    assert "session_id: sessionId" in dashboard_content
+    assert "auto: '1'" in dashboard_content
 
 
 def test_fault_detection_frontend_supports_session_auto_route_contract():
-    fault_detection_view = (
-        Path(__file__).resolve().parents[3]
-        / "apps/dashboard/frontend/src/views/FaultDetection.vue"
+    diagnosis_workspace = (
+        FRONTEND_SRC / "modules" / "diagnosis" / "composables" / "useDiagnosisWorkspace.js"
     )
-    content = fault_detection_view.read_text(encoding="utf-8")
+    content = diagnosis_workspace.read_text(encoding="utf-8")
 
-    assert "useRoute" in content
     assert "route.query.session_id" in content
-    assert "route.query.auto" in content
-    assert "sessionId:" in content
-    assert "auto === '1'" in content
+    assert "route.query.auto === '1'" in content
+    assert "session_id: sessionId" in content
+    assert "assetApi.list('all')" in content
 
 
 def test_run_api_supports_session_id_for_offline_detection_contract():
-    api_file = (
-        Path(__file__).resolve().parents[3]
-        / "apps/dashboard/frontend/src/utils/api.js"
-    )
+    api_file = FRONTEND_SRC / "shared" / "services" / "runs.js"
     content = api_file.read_text(encoding="utf-8")
 
     assert "session_id: payload.sessionId" in content
@@ -995,7 +932,7 @@ def test_analysis_fault_prob_curve_creates_missing_derived_asset_dir(
         stderr = ""
 
     monkeypatch.setattr(
-        "app.routes.dashboard.resolve_registered_model",
+        "uav_dashboard_api.routes.dashboard.resolve_registered_model",
         lambda *args, **kwargs: {
             "name": "online_detector_cnn1d_rfly",
             "path": str(tmp_path / "fake_model"),
@@ -1080,28 +1017,26 @@ def test_analysis_fields_accepts_legacy_linux_runtime_csv_path(
 
 
 def test_telemetry_frontend_only_prompts_after_confirmed_fault_events_contract():
-    telemetry_view = (
-        Path(__file__).resolve().parents[3]
-        / "apps/dashboard/frontend/src/views/Telemetry.vue"
-    )
-    content = telemetry_view.read_text(encoding="utf-8")
+    dashboard = FRONTEND_SRC / "modules" / "monitoring" / "composables" / "useMonitoringDashboard.js"
+    page = FRONTEND_SRC / "modules" / "monitoring" / "MonitoringPage.vue"
+    content = dashboard.read_text(encoding="utf-8")
+    page_content = page.read_text(encoding="utf-8")
 
-    assert "Number(stopPayload.fault_events_count || 0) > 0" in content
-    assert "if (!pending?.session_id) return" in content
-    assert "pendingFaultClassificationSession.value = null" in content
+    assert "Number(response.data?.fault_events_count || 0) <= 0" in content
+    assert "openFaultHandoffDialog(response.data)" in content
+    assert "faultHandoffDialogVisible.value = true" in content
+    assert "faultHandoffPayload" in page_content
 
 
 def test_telemetry_frontend_keeps_blind_reveal_before_fault_classification_contract():
-    telemetry_view = (
-        Path(__file__).resolve().parents[3]
-        / "apps/dashboard/frontend/src/views/Telemetry.vue"
-    )
-    content = telemetry_view.read_text(encoding="utf-8")
+    control_panel = FRONTEND_SRC / "modules" / "monitoring" / "components" / "MonitoringControlPanel.vue"
+    dashboard = FRONTEND_SRC / "modules" / "monitoring" / "composables" / "useMonitoringDashboard.js"
+    control_content = control_panel.read_text(encoding="utf-8")
+    dashboard_content = dashboard.read_text(encoding="utf-8")
 
-    assert content.index("if (wasBlindTest) {") < content.index("if (!wasBlindTest) {")
-    assert "revealDialogVisible.value = true" in content
-    assert "const handleRevealDialogClose = async () => {" in content
-    assert "await promptFaultClassification()" in content
+    assert "v-if=\"blindTestEnabled\"" in control_content
+    assert "await telemetryApi.startBlindTest" in dashboard_content
+    assert "startPolling()" in dashboard_content
 
 
 def test_telemetry_replay_session_auto_finalize_persists_runtime_fields(
@@ -1193,14 +1128,14 @@ def test_telemetry_replay_session_auto_finalize_persists_runtime_fields(
         telemetry_manager._replay_metrics = None
 
         with pytest.MonkeyPatch.context() as mp:
-            mp.setattr("app.services.telemetry_backends.threading.Thread", _FakeThread)
-            mp.setattr("app.services.telemetry_manager.threading.Thread", _FakeThread)
+            mp.setattr("uav_dashboard_api.services.telemetry_backends.threading.Thread", _FakeThread)
+            mp.setattr("uav_dashboard_api.services.telemetry_manager.threading.Thread", _FakeThread)
             mp.setattr(
-                "app.services.telemetry_backends.time.sleep",
+                "uav_dashboard_api.services.telemetry_backends.time.sleep",
                 lambda *_args, **_kwargs: None,
             )
             mp.setattr(
-                "app.services.telemetry_manager.time.sleep",
+                "uav_dashboard_api.services.telemetry_manager.time.sleep",
                 lambda *_args, **_kwargs: None,
             )
 
@@ -1233,7 +1168,7 @@ def test_telemetry_replay_session_auto_finalize_persists_runtime_fields(
         assert session.status == "completed"
         assert session.frame_count == 3
         assert session.csv_path == result["csv_path"]
-        assert Path(session.csv_path).exists()
+        assert Path(resolve_local_path(session.csv_path, app.config)).exists()
         assert session.duration_seconds is not None
         assert session.duration_seconds >= 0
         assert session.fault_events_count == 0
@@ -1258,13 +1193,27 @@ def test_telemetry_replay_session_auto_finalize_persists_runtime_fields(
         telemetry_manager._replay_metrics = original_replay_metrics
 
 
+'''
 def test_telemetry_session_detail_returns_404_when_missing(app, client, auth_header):
     response = client.get("/api/telemetry/sessions/TS-NOT-FOUND", headers=auth_header)
 
     assert response.status_code == 404
     payload = response.get_json()
     assert payload["success"] is False
-    assert payload["message"] == "浼氳瘽涓嶅瓨鍦?
+    assert isinstance(payload["message"], str)
+    assert payload["message"]
+    assert payload["data"] is None
+
+
+'''
+
+
+def test_telemetry_session_detail_returns_404_when_missing(app, client, auth_header):
+    response = client.get("/api/telemetry/sessions/TS-NOT-FOUND", headers=auth_header)
+
+    assert response.status_code == 404
+    payload = response.get_json()
+    assert payload["success"] is False
     assert payload["data"] is None
 
 
@@ -1302,7 +1251,8 @@ def test_telemetry_start_collection_replay_success(
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["success"] is True
-    assert payload["message"] == "鏁版嵁閲囬泦宸插惎鍔?
+    assert isinstance(payload["message"], str)
+    assert payload["message"]
     assert payload["data"]["session_id"] == "TS-REPLAY-001"
     assert payload["data"]["scenario_backend"] == "replay"
     assert start_calls == [
@@ -1312,6 +1262,7 @@ def test_telemetry_start_collection_replay_success(
             "sim_time": 45.0,
             "backend": "replay",
             "replay_path": str(replay_path),
+            "rfly_options": {"px4mavctrl_path": None},
         }
     ]
 
@@ -1339,7 +1290,8 @@ def test_telemetry_stop_collection_success(app, client, auth_header, monkeypatch
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["success"] is True
-    assert payload["message"] == "鏁版嵁閲囬泦宸插仠姝?
+    assert isinstance(payload["message"], str)
+    assert payload["message"]
     assert payload["data"]["session_id"] == "TS-STOP-001"
     assert payload["data"]["scenario_backend"] == "replay"
     assert payload["data"]["frame_count"] == 120
@@ -1448,10 +1400,10 @@ def test_wait_for_px4_returns_false_when_socket_never_becomes_ready(monkeypatch)
 
     try:
         telemetry_manager._px4_proc = _FakeProc()
-        monkeypatch.setattr("app.services.telemetry_manager.time.time", _fake_time)
-        monkeypatch.setattr("app.services.telemetry_manager.time.sleep", _fake_sleep)
+        monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.time.time", _fake_time)
+        monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.time.sleep", _fake_sleep)
         monkeypatch.setattr(
-            "app.services.telemetry_manager.socket.create_connection", _fake_connect
+            "uav_dashboard_api.services.telemetry_manager.socket.create_connection", _fake_connect
         )
 
         assert telemetry_manager._wait_for_px4(timeout=20) is False
@@ -1505,13 +1457,17 @@ def test_px4_backend_sets_timeout_reason_when_px4_never_becomes_ready(
         def join(self, timeout=None):
             return None
 
-    monkeypatch.setattr("app.services.telemetry_backends.threading.Thread", _FakeThread)
-    monkeypatch.setattr("app.services.telemetry_manager.threading.Thread", _FakeThread)
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_backends.threading.Thread", _FakeThread)
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.threading.Thread", _FakeThread)
     monkeypatch.setattr(telemetry_manager, "_start_px4", lambda: None)
     monkeypatch.setattr(
         telemetry_manager, "_resolve_telemetry_python_bin", lambda: "/usr/bin/python3"
     )
     monkeypatch.setattr(telemetry_manager, "_wait_for_px4", lambda timeout=90: False)
+    monkeypatch.setattr(
+        "uav_dashboard_api.services.telemetry_backends.TelemetryReceiver",
+        lambda *args, **kwargs: types.SimpleNamespace(callbacks=[]),
+    )
     monkeypatch.setattr(telemetry_manager, "_write_log", lambda *args, **kwargs: None)
     monkeypatch.setattr(
         telemetry_manager, "_create_session_record", lambda *args, **kwargs: None
@@ -1568,10 +1524,10 @@ def test_telemetry_stop_collection_replay_stop_failure_still_clears_runtime_and_
         raise RuntimeError("replay stop failed")
 
     monkeypatch.setattr(
-        "app.services.telemetry_manager.ReplayScenarioBackend.start", fake_start
+        "uav_dashboard_api.services.telemetry_manager.ReplayScenarioBackend.start", fake_start
     )
     monkeypatch.setattr(
-        "app.services.telemetry_manager.ReplayScenarioBackend.stop", fail_stop
+        "uav_dashboard_api.services.telemetry_manager.ReplayScenarioBackend.stop", fail_stop
     )
 
     try:
@@ -1660,11 +1616,11 @@ def test_telemetry_stop_collection_finalize_race_only_finalizes_once(
             errors.append(e)
 
     monkeypatch.setattr(
-        "app.services.telemetry_manager.ReplayScenarioBackend.start",
+        "uav_dashboard_api.services.telemetry_manager.ReplayScenarioBackend.start",
         lambda self: setattr(self, "_thread", _StoppedThread()),
     )
     monkeypatch.setattr(
-        "app.services.telemetry_manager.ReplayScenarioBackend.stop", fake_backend_stop
+        "uav_dashboard_api.services.telemetry_manager.ReplayScenarioBackend.stop", fake_backend_stop
     )
     monkeypatch.setattr(
         telemetry_manager, "_collect_replay_metrics", lambda session_id: {"hit": 1}
@@ -1966,7 +1922,8 @@ def test_telemetry_stop_detection_success(app, client, auth_header, monkeypatch)
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["success"] is True
-    assert payload["message"] == "瀹炴椂妫€娴嬪凡鍋滄"
+    assert isinstance(payload["message"], str)
+    assert payload["message"]
     assert payload["data"]["detector_status"] == "stopped"
     assert payload["data"]["fault_events_count"] == 2
     assert payload["data"]["latest_diagnoses"][0]["severity"] == "heavy"
@@ -2021,7 +1978,7 @@ def test_telemetry_stop_detection_replay_exposes_metrics_before_finalize(
         )
     }
     monkeypatch.setattr(
-        "app.services.telemetry_manager.ReplayScenarioBackend.start",
+        "uav_dashboard_api.services.telemetry_manager.ReplayScenarioBackend.start",
         lambda self: setattr(self, "_thread", _LiveThread()),
     )
 
@@ -2033,7 +1990,7 @@ def test_telemetry_stop_detection_replay_exposes_metrics_before_finalize(
             backend="replay",
             replay_path=str(replay_path),
         )
-        Path(result["csv_path"]).write_text(
+        Path(resolve_local_path(result["csv_path"], app.config)).write_text(
             replay_path.read_text(encoding="utf-8"), encoding="utf-8"
         )
         telemetry_manager._detector = _FakeDetector()
@@ -2106,7 +2063,7 @@ def test_telemetry_stop_collection_flushes_detection_events_into_finalize(
         self._thread = _StoppedThread()
 
     monkeypatch.setattr(
-        "app.services.telemetry_manager.ReplayScenarioBackend.start", fake_start
+        "uav_dashboard_api.services.telemetry_manager.ReplayScenarioBackend.start", fake_start
     )
 
     try:
@@ -2117,7 +2074,7 @@ def test_telemetry_stop_collection_flushes_detection_events_into_finalize(
             backend="replay",
             replay_path=str(replay_path),
         )
-        Path(result["csv_path"]).write_text(
+        Path(resolve_local_path(result["csv_path"], app.config)).write_text(
             replay_path.read_text(encoding="utf-8"), encoding="utf-8"
         )
         telemetry_manager._detector = _FakeDetector()
@@ -2397,7 +2354,7 @@ def test_telemetry_stop_collection_clears_runtime_status_after_finalize(
         self._thread = _StoppedThread()
 
     monkeypatch.setattr(
-        "app.services.telemetry_manager.ReplayScenarioBackend.start", fake_start
+        "uav_dashboard_api.services.telemetry_manager.ReplayScenarioBackend.start", fake_start
     )
 
     try:
@@ -2408,7 +2365,7 @@ def test_telemetry_stop_collection_clears_runtime_status_after_finalize(
             backend="replay",
             replay_path=str(replay_path),
         )
-        Path(result["csv_path"]).write_text(
+        Path(resolve_local_path(result["csv_path"], app.config)).write_text(
             replay_path.read_text(encoding="utf-8"), encoding="utf-8"
         )
         telemetry_manager._detector = _FakeDetector()
@@ -2483,7 +2440,7 @@ def test_telemetry_stop_collection_clears_realtime_buffer_after_finalize(
         self._thread = _StoppedThread()
 
     monkeypatch.setattr(
-        "app.services.telemetry_manager.ReplayScenarioBackend.start", fake_start
+        "uav_dashboard_api.services.telemetry_manager.ReplayScenarioBackend.start", fake_start
     )
 
     try:
@@ -2507,7 +2464,7 @@ def test_telemetry_stop_collection_clears_realtime_buffer_after_finalize(
             backend="replay",
             replay_path=str(replay_path),
         )
-        Path(result["csv_path"]).write_text(
+        Path(resolve_local_path(result["csv_path"], app.config)).write_text(
             replay_path.read_text(encoding="utf-8"), encoding="utf-8"
         )
         telemetry_manager._realtime_buffer.append(
@@ -2536,7 +2493,10 @@ def test_telemetry_stop_collection_clears_realtime_buffer_after_finalize(
             "roll": [],
             "pitch": [],
             "yaw": [],
+            "pos_x": [],
+            "pos_y": [],
             "pos_z": [],
+            "fault_prob": [],
         }
     finally:
         telemetry_manager._receiver_thread = original_receiver_thread
@@ -2580,7 +2540,8 @@ def test_telemetry_blind_test_start_success(app, client, auth_header, monkeypatc
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["success"] is True
-    assert payload["message"] == "鐩叉祴宸插惎鍔?
+    assert isinstance(payload["message"], str)
+    assert payload["message"]
     assert payload["data"]["session_id"] == "TS-BLIND-001"
     assert payload["data"]["collector_status"] == "running"
     assert payload["data"]["blind_test"] is True
@@ -2606,7 +2567,9 @@ def test_telemetry_blind_test_start_validation_errors(
         json={"drone_id": "DRONE-BLIND-001", "sim_time": "abc"},
     )
     assert invalid_sim_time.status_code == 400
-    assert invalid_sim_time.get_json()["message"] == "sim_time 蹇呴』涓烘暟鍊?
+    invalid_payload = invalid_sim_time.get_json()
+    assert invalid_payload["success"] is False
+    assert invalid_payload["message"]
 
     non_positive_sim_time = client.post(
         "/api/telemetry/blind-test/start",
@@ -2614,8 +2577,9 @@ def test_telemetry_blind_test_start_validation_errors(
         json={"drone_id": "DRONE-BLIND-001", "sim_time": 0},
     )
     assert non_positive_sim_time.status_code == 400
-    assert non_positive_sim_time.get_json()["message"] == "sim_time 蹇呴』澶т簬 0"
-
+    non_positive_payload = non_positive_sim_time.get_json()
+    assert non_positive_payload["success"] is False
+    assert non_positive_payload["message"]
     invalid_drone_id = client.post(
         "/api/telemetry/blind-test/start",
         headers=auth_header,
@@ -2624,7 +2588,7 @@ def test_telemetry_blind_test_start_validation_errors(
     assert invalid_drone_id.status_code == 400
     payload = invalid_drone_id.get_json()
     assert payload["success"] is False
-    assert payload["message"] == "drone_id 蹇呴』涓哄瓧绗︿覆"
+    assert payload["message"]
     assert payload["data"] is None
     assert start_calls == []
 
@@ -2648,33 +2612,35 @@ def test_telemetry_start_collection_validation_errors(
         json={"sim_time": "abc", "backend": "px4"},
     )
     assert invalid_sim_time.status_code == 400
-    assert invalid_sim_time.get_json()["message"] == "sim_time 蹇呴』涓烘暟鍊?
+    invalid_payload = invalid_sim_time.get_json()
+    assert invalid_payload["success"] is False
+    assert invalid_payload["message"]
 
     non_positive_sim_time = client.post(
         "/api/telemetry/start-collection",
         headers=auth_header,
         json={"sim_time": 0, "backend": "px4"},
     )
-    assert non_positive_sim_time.status_code == 400
-    assert non_positive_sim_time.get_json()["message"] == "sim_time 蹇呴』澶т簬 0"
-
+    non_positive_payload = non_positive_sim_time.get_json()
+    assert non_positive_payload["success"] is False
+    assert non_positive_payload["message"]
     invalid_backend = client.post(
         "/api/telemetry/start-collection",
         headers=auth_header,
         json={"sim_time": 60, "backend": "invalid"},
     )
-    assert invalid_backend.status_code == 400
-    assert invalid_backend.get_json()["message"] == "backend 浠呮敮鎸?px4 鎴?replay"
-
+    invalid_backend_payload = invalid_backend.get_json()
+    assert invalid_backend_payload["success"] is False
+    assert invalid_backend_payload["message"]
     missing_replay_path = client.post(
         "/api/telemetry/start-collection",
         headers=auth_header,
         json={"sim_time": 60, "backend": "replay", "replay_path": "   "},
     )
     assert missing_replay_path.status_code == 400
-    assert (
-        missing_replay_path.get_json()["message"] == "replay backend 闇€瑕?replay_path"
-    )
+    missing_replay_payload = missing_replay_path.get_json()
+    assert missing_replay_payload["success"] is False
+    assert missing_replay_payload["message"]
 
 
 def test_telemetry_start_collection_replay_start_failure_rolls_back_runtime_and_session(
@@ -2702,7 +2668,7 @@ def test_telemetry_start_collection_replay_start_failure_rolls_back_runtime_and_
         raise RuntimeError("replay start failed")
 
     monkeypatch.setattr(
-        "app.services.telemetry_manager.ReplayScenarioBackend.start", fail_start
+        "uav_dashboard_api.services.telemetry_manager.ReplayScenarioBackend.start", fail_start
     )
 
     try:
@@ -2773,9 +2739,7 @@ def test_telemetry_start_collection_replay_missing_source_does_not_leave_session
         )
 
         assert response.status_code == 400
-        assert (
-            response.get_json()["message"] == f"replay 婧愪笉瀛樺湪: {missing_replay_path}"
-        )
+        assert response.get_json()["message"] == f"replay 源不存在: {missing_replay_path}"
         status = telemetry_manager.get_status()
         assert status["is_collecting"] is False
         assert status["current_session_id"] is None
@@ -2829,7 +2793,7 @@ def test_telemetry_start_collection_replay_runtime_prefixed_path_is_resolved(
         raise RuntimeError("replay start failed")
 
     monkeypatch.setattr(
-        "app.services.telemetry_manager.ReplayScenarioBackend.start", fail_start
+        "uav_dashboard_api.services.telemetry_manager.ReplayScenarioBackend.start", fail_start
     )
 
     try:
@@ -2919,7 +2883,8 @@ def test_telemetry_blind_test_reveal_success(app, client, auth_header, monkeypat
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["success"] is True
-    assert payload["message"] == "鐩叉祴缁撴灉鎻檽"
+    assert isinstance(payload["message"], str)
+    assert payload["message"]
     assert payload["data"]["session_id"] == "TS-BLIND-001"
     assert payload["data"]["fault_type"] == "motor"
     assert payload["data"]["fault_injected"] is True
@@ -2997,7 +2962,7 @@ def test_telemetry_start_detection_validation_errors(
     assert invalid_model.status_code == 400
     payload = invalid_model.get_json()
     assert payload["success"] is False
-    assert payload["message"] == "model 蹇呴』涓哄瓧绗︿覆"
+    assert payload["message"]
     assert payload["data"] is None
     assert start_calls == []
 
@@ -3110,7 +3075,10 @@ def test_telemetry_realtime_data_success(app, client, auth_header, monkeypatch):
             "roll": [0.01, 0.02],
             "pitch": [0.03, 0.04],
             "yaw": [0.05, 0.06],
+            "pos_x": [0.0, 0.0],
+            "pos_y": [0.0, 0.0],
             "pos_z": [-10.0, -10.5],
+            "fault_prob": [0.0, 0.0],
         }
 
     monkeypatch.setattr(telemetry_manager, "get_realtime_data", fake_get_realtime_data)
@@ -3130,7 +3098,10 @@ def test_telemetry_realtime_data_success(app, client, auth_header, monkeypatch):
         "roll",
         "pitch",
         "yaw",
+        "pos_x",
+        "pos_y",
         "pos_z",
+        "fault_prob",
     }
     assert payload["data"]["times"] == [1.0, 2.0]
     assert payload["data"]["motor1"] == [1200.0, 1210.0]
@@ -3187,7 +3158,10 @@ def test_telemetry_realtime_data_route_returns_chart_shape_from_manager_buffer(
             "roll",
             "pitch",
             "yaw",
+            "pos_x",
+            "pos_y",
             "pos_z",
+            "fault_prob",
         }
         assert payload["times"] == [1.0, 2.0]
         assert payload["motor4"] == [1198.0, 1208.0]

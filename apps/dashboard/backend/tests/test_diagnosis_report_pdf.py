@@ -8,6 +8,7 @@ from uav_dashboard_api.models.asset import Asset
 from uav_dashboard_api.models.run_record import RunRecord
 from uav_dashboard_api.models.user import User
 from uav_dashboard_api.services.diagnosis_report import _build_pdf_lines, create_or_get_diagnosis_report
+from uav_dashboard_api.utils.path_store import resolve_local_path
 from uav_dashboard_api.utils.jwt_utils import JWTUtils
 from uav_dashboard_api.config import TestingConfig
 
@@ -91,7 +92,7 @@ def test_build_pdf_lines_uses_user_readable_chinese_summary():
         },
         "recommendations": [
             {
-                "title": "蹇呰鏃跺仠椋炲苟瀹夋帓鍔ㄥ姏绯荤粺澶嶆",
+                "title": "必要时停飞并安排动力系统复检",
                 "priority": "P0",
                 "reason_codes": ["motor_imbalance_ratio"],
             }
@@ -107,12 +108,12 @@ def test_build_pdf_lines_uses_user_readable_chinese_summary():
     lines = _build_pdf_lines(summary, {"motor": 0.93, "propeller": 0.04, "normal": 0.03})
     content = "\n".join(lines)
 
-    assert "绂荤嚎璇婃柇鎶ュ憡" in content
-    assert "鏈绂荤嚎璇婃柇璇嗗埆涓虹數鏈烘晠闅? in content
-    assert "楂橀闄? in content
-    assert "寤鸿鍔ㄤ綔" in content
-    assert "鐢垫満杈撳嚭鍧囪　鎬у紓甯? in content
-    assert "蹇呰鏃跺仠椋炲苟瀹夋帓鍔ㄥ姏绯荤粺澶嶆" in content
+    assert "离线诊断报告" in content
+    assert "本次离线诊断识别为电机故障" in content
+    assert "高风险" in content
+    assert "建议动作" in content
+    assert "电机输出均衡性异常" in content
+    assert "必要时停飞并安排动力系统复检" in content
 
 
 def test_create_or_get_diagnosis_report_writes_pdf_file(app, auth_header):
@@ -159,7 +160,7 @@ def test_create_or_get_diagnosis_report_writes_pdf_file(app, auth_header):
                 },
                 "recommendations": [
                     {
-                        "title": "蹇呰鏃跺仠椋炲苟瀹夋帓鍔ㄥ姏绯荤粺澶嶆",
+                        "title": "必要时停飞并安排动力系统复检",
                         "priority": "P0",
                         "reason_codes": ["motor_imbalance_ratio"],
                     }
@@ -172,6 +173,6 @@ def test_create_or_get_diagnosis_report_writes_pdf_file(app, auth_header):
         report, created = create_or_get_diagnosis_report(run, created_by=user_id)
 
         assert created is True
-        pdf_path = Path(report.pdf_path)
+        pdf_path = Path(resolve_local_path(report.pdf_path, app.config))
         assert pdf_path.exists()
         assert pdf_path.read_bytes().startswith(b"%PDF")

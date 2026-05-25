@@ -1,4 +1,4 @@
-from dashboard.backend.tests.test_ai_assistant import app, auth_header, seeded_records  # noqa: F401
+from tests.test_ai_assistant import app, auth_header, seeded_records  # noqa: F401
 
 from uav_dashboard_api.services.ai_assistant import ai_assistant_service
 
@@ -13,7 +13,7 @@ def test_report_analysis_query_includes_report_summary_terms(app, seeded_records
 
         query = ai_assistant_service._knowledge_query(
             scene_context,
-            "璇风粨鍚堝綋鍓嶆姤鍛婂垎鏋愬彲鑳藉師鍥?,
+            "请结合当前报告分析可能原因。",
         )
 
         assert "battery_failure" in query

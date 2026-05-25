@@ -22,7 +22,7 @@ def app(tmp_path: Path):
     knowledge_dir = runtime_dir / "knowledge"
     knowledge_dir.mkdir(parents=True, exist_ok=True)
     (knowledge_dir / "uav_ops.md").write_text(
-        "鏃犱汉鏈虹數姹犳晠闅滈€氬父琛ㄧ幇涓虹數鍘嬩笅闄嶃€乥attery_warning 澧炲ぇ銆?,
+        "无人机电池故障通常表现为电压下降，battery_warning 增大。",
         encoding="utf-8",
     )
 
@@ -106,7 +106,7 @@ def seeded_records(app, auth_header):
             {
                 "prediction": {"label": "battery_failure", "confidence": 0.91},
                 "severity": {"level": "heavy", "score": 0.88},
-                "recommendations": [{"title": "绔嬪嵆鏇存崲鐢垫睜鍖?, "priority": "P1"}],
+                "recommendations": [{"title": "立即更换电池包", "priority": "P1"}],
             }
         )
         db.session.add(run)
@@ -127,7 +127,7 @@ def seeded_records(app, auth_header):
                 "severity": {"level": "heavy", "score": 0.88, "method": "rule_v1"},
                 "recommendations": [
                     {
-                        "title": "绔嬪嵆鏇存崲鐢垫睜鍖?,
+                        "title": "立即更换电池包",
                         "priority": "P1",
                         "reason_codes": ["battery_heavy_replace"],
                     }
@@ -138,7 +138,7 @@ def seeded_records(app, auth_header):
                     "fault_label": "battery_failure",
                     "severity": "heavy",
                     "warning_stage": "critical",
-                    "warning_reason": "缁熶竴鍐崇瓥鍒ゅ畾涓洪珮椋庨櫓锛屽簲绔嬪嵆澶勭疆銆?,
+                    "warning_reason": "统一决策判定为高风险，应立即处置。",
                     "evidence_summary": {
                         "source": "offline",
                         "fault_label": "battery_failure",
@@ -151,7 +151,7 @@ def seeded_records(app, auth_header):
                             {"metric": "battery_warning", "status": "used"}
                         ],
                     },
-                    "recommendations": [{"title": "绔嬪嵆鏇存崲鐢垫睜鍖?, "priority": "P1"}],
+                    "recommendations": [{"title": "立即更换电池包", "priority": "P1"}],
                 },
             }
         )
@@ -185,7 +185,7 @@ def test_knowledge_search_returns_empty_when_disabled(app):
     from uav_dashboard_api.services.knowledge_base import knowledge_base
 
     with app.app_context():
-        assert knowledge_base.search("鐢垫睜鏁呴殰鎬庝箞淇?, top_k=3) == []
+        assert knowledge_base.search("电池故障怎么修", top_k=3) == []
 
 
 def test_analyze_report_creates_conversation_and_messages(
@@ -195,7 +195,7 @@ def test_analyze_report_creates_conversation_and_messages(
 
     def fake_call_model(messages, **kwargs):
         return (
-            "缁撹锛氭姤鍛婃樉绀?battery_failure 椋庨櫓楂橈紝寤鸿绔嬪嵆妫€鏌ョ數姹犮€?,
+            "结论：报告显示 battery_failure 风险高，建议立即检查电池。",
             "siliconflow",
             "deepseek-chat",
             False,
@@ -228,12 +228,12 @@ def test_report_context_prioritizes_unified_decision(app, seeded_records):
         blocks, citations = ai_assistant_service._build_report_context(report)
         joined = "\n".join(blocks)
 
-        assert "缁熶竴鍐崇瓥" in joined
-        assert "缁熶竴鍐崇瓥鍒ゅ畾涓洪珮椋庨櫓" in joined
+        assert "统一决策说明" in joined
+        assert "统一决策判定为高风险" in joined
         assert "battery_warning" in joined
-        assert "绔嬪嵆鏇存崲鐢垫睜鍖? in joined
-        assert "鎶ュ憡鎽樿:" not in joined
-        assert "缁熶竴鍐崇瓥:" not in joined
+        assert "立即更换电池包" in joined
+        assert "报告摘要:" not in joined
+        assert "统一决策:" not in joined
         assert any(item["source_type"] == "report" for item in citations)
 
 
@@ -246,7 +246,7 @@ def test_chat_endpoint_reuses_conversation(
         ai_assistant_service,
         "_call_model",
         lambda messages, **kwargs: (
-            "杩欐槸鍩轰簬褰撳墠浠诲姟涓婁笅鏂囩殑鍒嗘瀽鍥炲銆?,
+            "这是基于当前任务上下文的分析回复。",
             "siliconflow",
             "deepseek-chat",
             False,
@@ -257,7 +257,7 @@ def test_chat_endpoint_reuses_conversation(
         "/api/ai/chat",
         headers=headers,
         json={
-            "message": "甯垜鍒嗘瀽杩欎唤鎶ュ憡銆?,
+            "message": "帮我分析这份报告。",
             "scene": "report_analysis",
             "report_id": seeded_records["report_id"],
         },
@@ -271,7 +271,7 @@ def test_chat_endpoint_reuses_conversation(
         headers=headers,
         json={
             "conversation_id": conv_id,
-            "message": "鍐嶆€荤粨涓€涓嬮闄╃偣銆?,
+            "message": "再总结一下风险点。",
             "scene": "report_analysis",
             "report_id": seeded_records["report_id"],
         },
@@ -332,9 +332,9 @@ def test_legacy_report_serialization_keeps_canonical_task(app, seeded_records):
 
 
 def test_system_prompt_prefers_natural_language_without_inline_reference_sections():
-    assert "涓嶈浣跨敤 Markdown 鏍囬鎴栫矖浣? in SYSTEM_PROMPT
-    assert "涓嶈鍦ㄦ鏂囦腑鐩存帴鍐欌€滃弬鑰冭祫鏂欌€? in SYSTEM_PROMPT
-    assert "鏃犳硶浠庡綋鍓嶈祫鏂欑‘璁? in SYSTEM_PROMPT
+    assert "不要使用 Markdown 标题或粗体" in SYSTEM_PROMPT
+    assert "不要在正文中直接写“参考资料”" in SYSTEM_PROMPT
+    assert "无法从当前资料确认" in SYSTEM_PROMPT
 
 
 def test_fallback_answer_uses_natural_language_without_reference_sections(

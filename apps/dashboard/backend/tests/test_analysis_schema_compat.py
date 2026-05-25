@@ -6,9 +6,10 @@ BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
-SRC_ROOT = Path(__file__).resolve().parents[3] / "src"
-if str(SRC_ROOT) not in sys.path:
-    sys.path.insert(0, str(SRC_ROOT))
+REPO_ROOT = Path(__file__).resolve().parents[4]
+UAV_FAULT_ROOT = REPO_ROOT / "packages" / "uav_fault"
+if str(UAV_FAULT_ROOT) not in sys.path:
+    sys.path.insert(0, str(UAV_FAULT_ROOT))
 
 from uav_dashboard_api.services.analysis import build_fields_response, build_timeseries_response
 

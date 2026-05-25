@@ -59,8 +59,8 @@ except ImportError:
     fake_engine.Engine = type("Engine", (), {})
     sys.modules["sqlalchemy.engine"] = fake_engine
 
-if "app.services.detection_runner" not in sys.modules:
-    fake_detection_runner = types.ModuleType("app.services.detection_runner")
+if "uav_dashboard_api.services.detection_runner" not in sys.modules:
+    fake_detection_runner = types.ModuleType("uav_dashboard_api.services.detection_runner")
 
     class _FakeDetectionRunner:
         def __init__(self, model_dir=None, device="cpu"):
@@ -69,10 +69,10 @@ if "app.services.detection_runner" not in sys.modules:
             self.window_size = 150
 
     fake_detection_runner.DetectionRunner = _FakeDetectionRunner
-    sys.modules["app.services.detection_runner"] = fake_detection_runner
+    sys.modules["uav_dashboard_api.services.detection_runner"] = fake_detection_runner
 
-if "data.build_sequence_cache" not in sys.modules:
-    fake_build_sequence_cache = types.ModuleType("data.build_sequence_cache")
+if "uav_fault.data.build_sequence_cache" not in sys.modules:
+    fake_build_sequence_cache = types.ModuleType("uav_fault.data.build_sequence_cache")
     fake_build_sequence_cache.SEQ_COLUMN_ALIASES = [
         ("time_s", ("trueTime", "Timestamp")),
         ("seq", ()),
@@ -112,6 +112,7 @@ if "data.build_sequence_cache" not in sys.modules:
         "actuator_effort",
     ]
     sys.modules["data.build_sequence_cache"] = fake_build_sequence_cache
+    sys.modules["uav_fault.data.build_sequence_cache"] = fake_build_sequence_cache
 
 from uav_dashboard_api.services.telemetry_manager import TelemetryProcessManager
 
@@ -175,10 +176,10 @@ def test_get_status_exposes_predictive_warning_fields():
     mgr._risk_score = 0.58
     mgr._risk_trend = "rising"
     mgr._warning_stage = "warning"
-    mgr._warning_reason = "椋庨櫓杩炵画涓婂崌锛屽紓甯告鐜囧凡瓒呰繃棰勮闃堝€?
+    mgr._warning_reason = "风险持续上升，异常概率已超过预警阈值。"
     mgr._preview_started_at = 10.0
     mgr._top_recommendations = [
-        {"title": "缁撴潫褰撳墠鏋舵鍚庢墽琛岀绾胯瘖鏂?, "priority": "P1"}
+        {"title": "结束当前架次后执行离线诊断", "priority": "P1"}
     ]
     mgr._last_frame_time_s = 13.4
 
@@ -188,7 +189,7 @@ def test_get_status_exposes_predictive_warning_fields():
     assert status["risk_score"] == 0.58
     assert status["risk_trend"] == "rising"
     assert status["warning_stage"] == "warning"
-    assert "寮傚父姒傜巼宸茶秴杩囬璀﹂槇鍊? in status["warning_reason"]
+    assert "异常概率已超过预警阈值" in status["warning_reason"]
     assert status["preview_lead_time_s"] == 3.4
     assert status["top_recommendations"][0]["priority"] == "P1"
 
@@ -345,15 +346,15 @@ def test_realtime_data_derives_attitude_from_replay_quaternion_frame():
 
     frame = {
         "time_s": 1.5,
-        "_actuator_outputs_0_output[0]": 1200.0,
-        "_actuator_outputs_0_output[1]": 1190.0,
-        "_actuator_outputs_0_output[2]": 1210.0,
-        "_actuator_outputs_0_output[3]": 1185.0,
-        "_vehicle_attitude_0_q[0]": 0.9553364891,
-        "_vehicle_attitude_0_q[1]": 0.0,
-        "_vehicle_attitude_0_q[2]": 0.0,
-        "_vehicle_attitude_0_q[3]": 0.2955202067,
-        "_vehicle_air_data_0_baro_alt_meter": 15.2,
+        "actuator_out_1": 1200.0,
+        "actuator_out_2": 1190.0,
+        "actuator_out_3": 1210.0,
+        "actuator_out_4": 1185.0,
+        "att_q_w": 0.9553364891,
+        "att_q_x": 0.0,
+        "att_q_y": 0.0,
+        "att_q_z": 0.2955202067,
+        "baro_alt": 15.2,
     }
 
     mgr._on_backend_frame(frame, [frame], source_backend="replay")
@@ -414,22 +415,26 @@ def test_start_detection_marks_startup_phase_detecting():
         "metrics": {},
     }
 
-    original_runner = globals().get("DetectionRunner")
     from uav_dashboard_api.services import telemetry_manager as telemetry_manager_module
+    original_runner = telemetry_manager_module.DetectionRunner
+    original_get_runner_cls = TelemetryProcessManager._get_detection_runner_cls
 
     class _FakeRunner:
         def __init__(self, model_dir, device="cpu"):
             self.window_size = 150
 
     telemetry_manager_module.DetectionRunner = _FakeRunner
+    TelemetryProcessManager._get_detection_runner_cls = staticmethod(lambda: _FakeRunner)
     try:
         mgr.start_detection()
         status = mgr.get_status()
         assert status["startup_phase"] == "detecting"
     finally:
         telemetry_manager_module.DetectionRunner = original_runner
+        TelemetryProcessManager._get_detection_runner_cls = original_get_runner_cls
 
 
+'''
 def test_start_detection_wraps_detector_init_error_as_runtime_error():
     mgr = TelemetryProcessManager()
     mgr._reset_runtime_state()
@@ -475,13 +480,71 @@ def test_start_detection_wraps_detector_init_error_as_runtime_error():
             mgr.start_detection()
             assert False, "expected RuntimeError"
         except RuntimeError as exc:
-            assert "鍦ㄧ嚎妫€娴嬪惎鍔ㄥけ璐? in str(exc)
+            assert "在线检测启动失败" in str(exc)
             assert "online_detector_CNN" in str(exc)
             assert "hidden_size" in str(exc)
         assert mgr._detecting is False
         assert mgr._active_model is None
     finally:
         telemetry_manager_module.DetectionRunner = original_runner
+
+
+'''
+
+
+def test_start_detection_wraps_detector_init_error_as_runtime_error():
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._session_id = "TS-DET-ERR"
+    mgr._start_time = 100.0
+    mgr._planned_duration_s = 120.0
+    mgr._backend_name = "replay"
+
+    class _ReplayBackend:
+        pass
+
+    mgr._backend = _ReplayBackend()
+    mgr._receiver = object()
+
+    class _LiveThread:
+        def is_alive(self):
+            return True
+
+    mgr._backend._thread = _LiveThread()
+    mgr._resolve_online_model_meta = lambda requested_model=None: {
+        "name": "online_detector_CNN",
+        "path": "bad_model_dir",
+        "task": "online_binary",
+        "architecture": "cnn1d",
+        "num_classes": 2,
+        "label_names": ["normal", "fault"],
+        "window_size": 150,
+        "feature_count": 31,
+        "metrics": {},
+    }
+
+    from uav_dashboard_api.services import telemetry_manager as telemetry_manager_module
+
+    original_runner = telemetry_manager_module.DetectionRunner
+    original_get_runner_cls = TelemetryProcessManager._get_detection_runner_cls
+
+    class _BoomRunner:
+        def __init__(self, model_dir, device="cpu"):
+            raise KeyError("hidden_size")
+
+    telemetry_manager_module.DetectionRunner = _BoomRunner
+    TelemetryProcessManager._get_detection_runner_cls = staticmethod(lambda: _BoomRunner)
+    try:
+        with pytest.raises(RuntimeError) as exc_info:
+            mgr.start_detection()
+        error_text = str(exc_info.value)
+        assert "online_detector_CNN" in error_text
+        assert "hidden_size" in error_text
+        assert mgr._detecting is False
+        assert mgr._active_model is None
+    finally:
+        telemetry_manager_module.DetectionRunner = original_runner
+        TelemetryProcessManager._get_detection_runner_cls = original_get_runner_cls
 
 
 def test_on_backend_frame_adds_preview_alert_when_fault_prob_reaches_onset_threshold_but_no_finalized_event():
@@ -551,8 +614,8 @@ def test_start_px4_uses_configured_sim_target_and_autostart(monkeypatch):
         )
         return _FakeProc()
 
-    monkeypatch.setattr("app.services.telemetry_manager.subprocess.run", _fake_run)
-    monkeypatch.setattr("app.services.telemetry_manager.subprocess.Popen", _fake_popen)
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.subprocess.run", _fake_run)
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.subprocess.Popen", _fake_popen)
 
     mgr.app = _FakeApp()
     mgr._start_px4()
@@ -584,7 +647,7 @@ def test_resolve_telemetry_python_bin_prefers_runtime_python_over_legacy_linux_p
     legacy_linux = "/home/jack/miniconda3/envs/fault-dataset/bin/python"
 
     monkeypatch.setattr(
-        "app.services.telemetry_manager.os.path.exists",
+        "uav_dashboard_api.services.telemetry_manager.os.path.exists",
         lambda path: path in {legacy_linux, sys.executable},
     )
     monkeypatch.setattr(
@@ -626,8 +689,8 @@ def test_start_px4_uses_configured_px4_root(monkeypatch):
         calls.append({"cmd": cmd, "env": env})
         return _FakeProc()
 
-    monkeypatch.setattr("app.services.telemetry_manager.subprocess.run", _fake_run)
-    monkeypatch.setattr("app.services.telemetry_manager.subprocess.Popen", _fake_popen)
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.subprocess.run", _fake_run)
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.subprocess.Popen", _fake_popen)
 
     mgr.app = _FakeApp()
     mgr._start_px4()
@@ -660,7 +723,7 @@ def test_wait_for_px4_uses_configured_ready_endpoint(monkeypatch):
         calls.append({"address": address, "timeout": timeout}) 
         return _Conn() 
  
-    monkeypatch.setattr("app.services.telemetry_manager.socket.create_connection", fake_create_connection) 
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.socket.create_connection", fake_create_connection) 
     mgr.app = _FakeApp() 
  
     assert mgr._wait_for_px4(timeout=1) is True 

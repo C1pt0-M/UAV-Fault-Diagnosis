@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import torch
 
 LABEL_NAMES_3CLASS = ['normal', 'motor', 'sensor']
 LABEL_NAMES_4CLASS = ['normal', 'motor', 'propeller', 'sensor']
@@ -145,6 +144,8 @@ def _resolve_label_names(model_cfg: dict, num_classes: int) -> list[str]:
 
 
 def run_inference(args):
+    import torch
+
     repo_root = Path(args.repo_root).resolve()
     csv_path = Path(args.csv_path).resolve()
     model_dir = Path(args.model_dir).resolve()

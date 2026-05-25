@@ -1,4 +1,4 @@
-from dashboard.backend.tests.test_ai_assistant import app  # noqa: F401
+from tests.test_ai_assistant import app  # noqa: F401
 
 from uav_dashboard_api.services.knowledge_base import knowledge_base
 

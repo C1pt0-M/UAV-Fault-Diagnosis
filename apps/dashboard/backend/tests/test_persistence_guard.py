@@ -54,7 +54,7 @@ def test_create_app_startup_creates_db_backup_and_logs_runtime_gaps(tmp_path: Pa
     assert "runtime/runs" in normalized_log
     assert "runtime/reports" in normalized_log
 
-    # 闃叉 app 鐢熷懡鍛ㄦ湡閲岀殑鎵╁睍寮曠敤褰卞搷鍚庣画娴嬭瘯
+    # 防止 app 生命周期里的扩展引用影响后续测试。
     assert app.config["RUNTIME_DIR"] == runtime_dir
 
 

@@ -23,19 +23,21 @@ os.environ.setdefault(
 os.environ.setdefault(
     "AI_RUNTIME_DIR", str((BACKEND_ROOT / "runtime" / "ai").resolve())
 )
+REPO_ROOT = BACKEND_ROOT.parents[2]
+
 os.environ.setdefault(
     "AI_KNOWLEDGE_DIR",
-    str((BACKEND_ROOT.parent.parent / "knowledge_base").resolve()),
+    str((REPO_ROOT / "knowledge_base").resolve()),
 )
-os.environ.setdefault("MODEL_ROOT", str((BACKEND_ROOT.parent.parent / "models").resolve()))
+os.environ.setdefault("MODEL_ROOT", str((REPO_ROOT / "assets" / "models").resolve()))
 os.environ.setdefault(
     "OFFLINE_NORM_STATS",
     str(
         (
-            BACKEND_ROOT.parent.parent
-            / "data"
-            / "processed"
-            / "seq_cache"
+            REPO_ROOT
+            / "assets"
+            / "models"
+            / "transfer3_cnnlstm_normalproto"
             / "norm_stats.json"
         ).resolve()
     ),
@@ -86,8 +88,8 @@ if "sqlalchemy.engine" not in sys.modules:
     fake_engine.Engine = type("Engine", (), {})
     sys.modules["sqlalchemy.engine"] = fake_engine
 
-if "data.build_sequence_cache" not in sys.modules:
-    fake_build_sequence_cache = types.ModuleType("data.build_sequence_cache")
+if "uav_fault.data.build_sequence_cache" not in sys.modules:
+    fake_build_sequence_cache = types.ModuleType("uav_fault.data.build_sequence_cache")
     fake_build_sequence_cache.SEQ_COLUMN_ALIASES = [
         ("time_s", ("trueTime", "Timestamp")),
         ("seq", ()),
@@ -127,6 +129,7 @@ if "data.build_sequence_cache" not in sys.modules:
         "actuator_effort",
     ]
     sys.modules["data.build_sequence_cache"] = fake_build_sequence_cache
+    sys.modules["uav_fault.data.build_sequence_cache"] = fake_build_sequence_cache
 
 
 def _pop_modules(*module_names: str) -> None:
@@ -137,7 +140,7 @@ def _pop_modules(*module_names: str) -> None:
 def test_telemetry_manager_module_import_does_not_require_detection_runner(
     monkeypatch,
 ):
-    trap_detection_runner = types.ModuleType("app.services.detection_runner")
+    trap_detection_runner = types.ModuleType("uav_dashboard_api.services.detection_runner")
 
     def _boom(name):
         raise AssertionError(
@@ -146,12 +149,15 @@ def test_telemetry_manager_module_import_does_not_require_detection_runner(
 
     trap_detection_runner.__getattr__ = _boom
 
-    _pop_modules("app.services.telemetry_manager", "app.services.detection_runner")
+    _pop_modules(
+        "uav_dashboard_api.services.telemetry_manager",
+        "uav_dashboard_api.services.detection_runner",
+    )
     monkeypatch.setitem(
-        sys.modules, "app.services.detection_runner", trap_detection_runner
+        sys.modules, "uav_dashboard_api.services.detection_runner", trap_detection_runner
     )
 
-    module = importlib.import_module("app.services.telemetry_manager")
+    module = importlib.import_module("uav_dashboard_api.services.telemetry_manager")
 
     assert hasattr(module, "TelemetryProcessManager")
 
@@ -159,7 +165,7 @@ def test_telemetry_manager_module_import_does_not_require_detection_runner(
 def test_detection_runner_module_import_does_not_require_online_fault_detector(
     monkeypatch,
 ):
-    trap_fault_detector = types.ModuleType("online.fault_detector")
+    trap_fault_detector = types.ModuleType("uav_fault.online.fault_detector")
 
     def _boom(name):
         raise AssertionError(
@@ -168,10 +174,13 @@ def test_detection_runner_module_import_does_not_require_online_fault_detector(
 
     trap_fault_detector.__getattr__ = _boom
 
-    _pop_modules("app.services.detection_runner", "online.fault_detector")
-    monkeypatch.setitem(sys.modules, "online.fault_detector", trap_fault_detector)
+    _pop_modules(
+        "uav_dashboard_api.services.detection_runner",
+        "uav_fault.online.fault_detector",
+    )
+    monkeypatch.setitem(sys.modules, "uav_fault.online.fault_detector", trap_fault_detector)
 
-    module = importlib.import_module("app.services.detection_runner")
+    module = importlib.import_module("uav_dashboard_api.services.detection_runner")
 
     assert hasattr(module, "DetectionRunner")
 
@@ -180,7 +189,7 @@ def test_detection_runner_instantiates_fault_detector_only_when_runner_is_create
     monkeypatch,
 ):
     calls = []
-    fake_fault_detector = types.ModuleType("online.fault_detector")
+    fake_fault_detector = types.ModuleType("uav_fault.online.fault_detector")
 
     class _FakeFaultDetector:
         def __init__(self, model_dir=None, device="cpu"):
@@ -192,10 +201,13 @@ def test_detection_runner_instantiates_fault_detector_only_when_runner_is_create
 
     fake_fault_detector.FaultDetector = _FakeFaultDetector
 
-    _pop_modules("app.services.detection_runner", "online.fault_detector")
-    monkeypatch.setitem(sys.modules, "online.fault_detector", fake_fault_detector)
+    _pop_modules(
+        "uav_dashboard_api.services.detection_runner",
+        "uav_fault.online.fault_detector",
+    )
+    monkeypatch.setitem(sys.modules, "uav_fault.online.fault_detector", fake_fault_detector)
 
-    module = importlib.import_module("app.services.detection_runner")
+    module = importlib.import_module("uav_dashboard_api.services.detection_runner")
     runner = module.DetectionRunner("model-dir", device="cpu")
 
     assert calls == [("model-dir", "cpu")]
