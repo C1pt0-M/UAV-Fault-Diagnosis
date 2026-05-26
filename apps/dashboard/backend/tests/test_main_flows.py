@@ -287,6 +287,16 @@ def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypa
     assert report_detail["summary"]["decision"]["state"] == "DECIDED"
     assert report_detail["summary"]["decision"]["episode_id"] == "ep_test_001"
 
+    run_detail = client.get(f"/api/runs/{run_id}", headers=auth_header).get_json()[
+        "data"
+    ]
+    assert run_detail["report_id"] == report_id
+
+    listed_runs = client.get(
+        "/api/runs?task=offline_multiclass&limit=5", headers=auth_header
+    ).get_json()["data"]
+    assert listed_runs[0]["report_id"] == report_id
+
 
 def test_offline_task_requires_canonical_name_and_filters_legacy_records(
     app, client, auth_header, monkeypatch

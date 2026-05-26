@@ -1,6 +1,8 @@
 from datetime import datetime
 import json
 
+from flask import has_app_context
+
 from uav_dashboard_api import db
 from uav_dashboard_api.utils.path_store import sanitize_path_payload
 
@@ -51,6 +53,13 @@ class RunRecord(db.Model):
         )
 
     def to_dict(self):
+        report_id = None
+        if self.id and has_app_context():
+            from uav_dashboard_api.models.diagnosis_report import DiagnosisReport
+
+            report = DiagnosisReport.query.filter_by(run_id=self.id).first()
+            report_id = report.id if report is not None else None
+
         return {
             'id': self.id,
             'task': self.task,
@@ -61,6 +70,7 @@ class RunRecord(db.Model):
             'error': self.error,
             'error_detail': self.error_detail,
             'asset_id': self.asset_id,
+            'report_id': report_id,
             'created_by': self.created_by,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None,
             'started_at': self.started_at.strftime('%Y-%m-%d %H:%M:%S') if self.started_at else None,

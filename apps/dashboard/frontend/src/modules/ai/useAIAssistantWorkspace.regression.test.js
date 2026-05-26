@@ -5,7 +5,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const routeState = vi.hoisted(() => ({
   query: {
     scene: 'report_analysis',
-    report_id: '42'
+    report_id: '42',
+    auto_analyze: ''
   }
 }))
 
@@ -53,6 +54,7 @@ describe('useAIAssistantWorkspace regression', () => {
   beforeEach(() => {
     routeState.query.scene = 'report_analysis'
     routeState.query.report_id = '42'
+    routeState.query.auto_analyze = ''
     Object.values(apiMocks).forEach((mock) => mock.mockReset())
     elementMessage.error.mockReset()
     elementMessage.success.mockReset()
@@ -86,9 +88,56 @@ describe('useAIAssistantWorkspace regression', () => {
     const route = useRoute()
     route.query.scene = ''
     route.query.report_id = ''
+    route.query.auto_analyze = ''
     await nextTick()
 
     expect(wrapper.vm.scene).toBe('general')
     expect(wrapper.vm.reportIdInput).toBe('')
+  })
+
+  it('auto-seeds report analysis once when routed from a report entry', async () => {
+    routeState.query.auto_analyze = '1'
+    apiMocks.analyzeReport.mockResolvedValue({
+      data: {
+        conversation: {
+          id: 7,
+          scene: 'report_analysis',
+          report_id: 42,
+          meta: {
+            context_summary: {
+              scene_label: '报告分析',
+              report_id: 42
+            }
+          }
+        },
+        message: {
+          id: 'm-ai',
+          role: 'assistant',
+          content: '直接结论：当前报告为高风险。',
+          citations: [],
+          used_context: { report_id: 42, fallback_used: true }
+        },
+        citations: [],
+        used_context: { report_id: 42, fallback_used: true }
+      }
+    })
+
+    const wrapper = mount(Harness)
+    await flushPromises()
+
+    expect(apiMocks.analyzeReport).toHaveBeenCalledTimes(1)
+    expect(apiMocks.analyzeReport).toHaveBeenCalledWith({
+      report_id: '42',
+      conversation_id: undefined
+    })
+    expect(wrapper.vm.currentConversationId).toBe(7)
+    expect(wrapper.vm.messages).toHaveLength(2)
+
+    const route = useRoute()
+    route.query.auto_analyze = '1'
+    await nextTick()
+    await flushPromises()
+
+    expect(apiMocks.analyzeReport).toHaveBeenCalledTimes(1)
   })
 })

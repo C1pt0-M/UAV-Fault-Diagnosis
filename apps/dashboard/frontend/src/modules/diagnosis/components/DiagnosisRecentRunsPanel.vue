@@ -43,14 +43,14 @@
             <el-button link type="primary" @click="$emit('open-run-result', run.id)">
               查看结果
             </el-button>
-            <el-button link type="success" @click="$emit('open-reports-center')">
+            <el-button link type="success" @click="$emit('open-reports-center', run)">
               查看报告
             </el-button>
             <el-button
               link
               type="warning"
               :disabled="!run.report_id"
-              @click="$emit('open-ai-assistant')"
+              @click="$emit('open-ai-assistant', run)"
             >
               AI 解读
             </el-button>

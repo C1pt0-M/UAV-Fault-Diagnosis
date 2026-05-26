@@ -31,6 +31,49 @@ SCENE_DEFAULT_QUESTIONS = {
     "report_analysis": "请先给出直接结论，再解释主要原因，最后说明风险与处理建议。",
 }
 
+FALLBACK_LABEL_TEXT_MAP = {
+    "normal": "状态正常",
+    "battery_failure": "电池故障",
+    "motor_failure": "电机故障",
+    "motor": "电机故障",
+    "prop_imbalance": "螺旋桨故障",
+    "propeller": "螺旋桨故障",
+    "sensor": "传感器故障",
+    "thrust_loss": "推力异常",
+}
+
+FALLBACK_SEVERITY_TEXT_MAP = {
+    "none": "风险可控",
+    "light": "轻度风险",
+    "medium": "中度风险",
+    "heavy": "高风险",
+    "unknown": "待人工确认",
+}
+
+FALLBACK_PRIORITY_TEXT_MAP = {
+    "P0": "立即处理",
+    "P1": "优先处理",
+    "P2": "安排检查",
+    "P3": "持续观察",
+}
+
+FALLBACK_METRIC_TEXT_MAP = {
+    "prediction_confidence": "模型判断置信度",
+    "motor_imbalance_ratio": "电机输出均衡性异常",
+    "esc_rpm_imbalance_ratio": "ESC 转速一致性异常",
+    "battery_warning": "电池告警",
+    "battery_warning_max": "电池告警触发",
+    "battery_faults_max": "电池故障计数偏高",
+    "battery_remaining_min": "剩余电量偏低",
+    "battery_voltage_drop_ratio": "电压跌落偏大",
+    "gyro_vibration_p95": "陀螺振动偏高",
+    "accel_vibration_p95": "加速度振动偏高",
+    "fault_intensity_mean": "故障强度均值偏高",
+    "fault_severity_p95": "高分位故障严重度偏高",
+    "thrust_saturation_ratio": "推力饱和比例偏高",
+    "unalloc_thrust_z_p95": "未分配推力异常",
+}
+
 SYSTEM_PROMPT = """你是无人机故障诊断系统中的 AI 专家助手。
 回答要求：
 1. 优先依据给定的系统上下文、诊断报告、任务记录和补充背景资料回答，但要把这些信息自然融入判断，不要逐条复述。
@@ -43,6 +86,84 @@ SYSTEM_PROMPT = """你是无人机故障诊断系统中的 AI 专家助手。
 5. 除非用户明确要求，否则不要使用 Markdown 标题或粗体，也不要复述内部字段名或项目内部标签。
 6. 不要在正文中直接写“参考资料”“知识片段 1/2”等内部标签；如需说明依据，用自然语言概括即可。
 7. 如果上下文里有概率、严重度、推荐动作，可以自然引用并解释，但不要把原始 JSON 或整段检索文本原样搬进回答。"""
+
+
+def _fallback_label_text(label: str | None) -> str:
+    raw = str(label or "").strip()
+    return FALLBACK_LABEL_TEXT_MAP.get(raw, raw or "待确认异常")
+
+
+def _fallback_severity_text(level: str | None) -> str:
+    raw = str(level or "unknown").strip()
+    return FALLBACK_SEVERITY_TEXT_MAP.get(raw, FALLBACK_SEVERITY_TEXT_MAP["unknown"])
+
+
+def _fallback_metric_text(metric: str | None) -> str:
+    raw = str(metric or "").strip()
+    return FALLBACK_METRIC_TEXT_MAP.get(raw, raw.replace("_", " ") or "关键指标")
+
+
+def _fallback_percent(value) -> str:
+    try:
+        return f"{float(value) * 100:.2f}%"
+    except (TypeError, ValueError):
+        return "暂无"
+
+
+def _fallback_recommendation_text(recommendations) -> str:
+    if not isinstance(recommendations, list):
+        return ""
+
+    rows = []
+    for item in recommendations[:3]:
+        if isinstance(item, str):
+            title = item.strip()
+            priority = "P2"
+        elif isinstance(item, dict):
+            title = str(item.get("title") or "").strip()
+            priority = str(item.get("priority") or "P2").strip().upper()
+        else:
+            continue
+
+        if title:
+            rows.append(
+                f"{FALLBACK_PRIORITY_TEXT_MAP.get(priority, FALLBACK_PRIORITY_TEXT_MAP['P2'])}：{title}"
+            )
+
+    return "；".join(rows)
+
+
+def _fallback_evidence_text(summary: dict) -> str:
+    metrics = []
+    severity = summary.get("severity") if isinstance(summary, dict) else None
+    if isinstance(severity, dict):
+        evidence = severity.get("evidence")
+        if isinstance(evidence, list):
+            for item in evidence[:3]:
+                if not isinstance(item, dict):
+                    continue
+                metric = str(item.get("metric") or "").strip()
+                if metric:
+                    metrics.append(_fallback_metric_text(metric))
+
+    decision = summary.get("decision") if isinstance(summary, dict) else None
+    if isinstance(decision, dict):
+        evidence_summary = decision.get("evidence_summary")
+        top_evidence = (
+            evidence_summary.get("top_evidence")
+            if isinstance(evidence_summary, dict)
+            else None
+        )
+        if isinstance(top_evidence, list):
+            for item in top_evidence[:3]:
+                if not isinstance(item, dict):
+                    continue
+                metric = str(item.get("metric") or "").strip()
+                label = _fallback_metric_text(metric)
+                if metric and label not in metrics:
+                    metrics.append(label)
+
+    return "、".join(metrics[:3])
 
 
 @dataclass
@@ -615,47 +736,82 @@ class AIAssistantService:
         self, *, scene_context: SceneContext, message: str, knowledge_hits: list[dict]
     ) -> str:
         knowledge_enabled = bool(self._config().get("AI_ENABLE_KNOWLEDGE_BASE", False))
-        knowledge_enabled = bool(self._config().get("AI_ENABLE_KNOWLEDGE_BASE", False))
-        conclusion = "\u5f53\u524d\u6211\u5c06\u57fa\u4e8e\u901a\u7528\u65e0\u4eba\u673a\u6545\u969c\u8bca\u65ad\u77e5\u8bc6\u7ed9\u51fa\u4e00\u822c\u6027\u5224\u65ad\u3002"
-        reason = "\u5f53\u524d\u4e3b\u8981\u4f9d\u636e\u4f60\u7684\u95ee\u9898\u548c\u7cfb\u7edf\u91cc\u5df2\u6709\u7684\u4e0a\u4e0b\u6587\u4fe1\u606f\u3002"
-        advice = "\u5efa\u8bae\u5148\u6839\u636e\u5f53\u524d\u7ed9\u51fa\u7684\u901a\u7528\u68c0\u67e5\u9879\u8fdb\u884c\u6392\u67e5\uff0c\u82e5\u9700\u7ed3\u5408\u5177\u4f53\u65e5\u5fd7\u6216\u62a5\u544a\u505a\u7cbe\u786e\u5224\u65ad\uff0c\u518d\u7ed1\u5b9a report_id \u6216 run_id\u3002"
+        conclusion = "当前我将基于通用无人机故障诊断知识给出一般性判断。"
+        reason = "当前主要依据你的问题和系统里已有的上下文信息。"
+        advice = "建议先根据当前给出的通用检查项进行排查，若需结合具体日志或报告做精确判断，再绑定 report_id 或 run_id。"
 
         if scene_context.report is not None:
-            conclusion = (
-                f"\u5f53\u524d\u62a5\u544a\u66f4\u63a5\u8fd1 `{scene_context.report.prediction_label}`\uff0c"
-                f"\u7f6e\u4fe1\u5ea6\u7ea6\u4e3a {scene_context.report.confidence:.2%}\u3002"
+            summary = scene_context.report.get_summary()
+            severity = summary.get("severity") if isinstance(summary, dict) else {}
+            if not isinstance(severity, dict):
+                severity = {}
+            recommendations = (
+                summary.get("recommendations") if isinstance(summary, dict) else []
             )
-            reason = "\u8fd9\u4e00\u5224\u65ad\u4e3b\u8981\u6765\u81ea\u62a5\u544a\u4e2d\u7684\u8bca\u65ad\u7ed3\u8bba\u3001\u4e25\u91cd\u5ea6\u548c\u7edf\u4e00\u51b3\u7b56\u4fe1\u606f\u3002"
-            advice = "\u5efa\u8bae\u4f18\u5148\u7ed3\u5408\u62a5\u544a\u4e2d\u7684\u98ce\u9669\u7b49\u7ea7\u548c\u5904\u7f6e\u5efa\u8bae\u7ee7\u7eed\u590d\u6838\u5173\u952e\u90e8\u4ef6\u3002"
+            decision = summary.get("decision") if isinstance(summary, dict) else None
+            label_text = _fallback_label_text(scene_context.report.prediction_label)
+            severity_text = _fallback_severity_text(severity.get("level"))
+            confidence_text = _fallback_percent(scene_context.report.confidence)
+            evidence_text = _fallback_evidence_text(summary if isinstance(summary, dict) else {})
+            recommendation_text = _fallback_recommendation_text(recommendations)
+            warning_reason = (
+                str(decision.get("warning_reason") or "").strip()
+                if isinstance(decision, dict)
+                else ""
+            )
+
+            conclusion = (
+                f"当前报告判断为 {label_text}，主分类置信度约为 {confidence_text}，"
+                f"综合风险等级为 {severity_text}。"
+            )
+            reason_parts = [
+                "这一判断主要来自报告中的诊断结论、严重度规则和统一决策信息。"
+            ]
+            if evidence_text:
+                reason_parts.append(f"当前关键证据集中在 {evidence_text}。")
+            if warning_reason:
+                reason_parts.append(f"统一决策给出的风险说明是：{warning_reason}")
+            reason = "".join(reason_parts)
+            if recommendation_text:
+                advice = (
+                    f"建议按报告处置项执行：{recommendation_text}。"
+                    "处理前后都应保留原始日志和复核记录，便于后续追踪同类异常。"
+                )
+            elif scene_context.report.prediction_label == "normal":
+                advice = "建议保持例行巡检与飞前检查，并将本次结果作为正常样本留存。"
+            else:
+                advice = (
+                    "建议优先复核与该故障类别相关的关键部件，并结合原始遥测、维护记录和飞行工况确认根因。"
+                )
         elif scene_context.run is not None:
             conclusion = (
-                f"\u5f53\u524d\u4efb\u52a1 `{scene_context.run.task}` \u7684\u72b6\u6001\u4e3a `{scene_context.run.status}`\u3002"
+                f"当前任务 `{scene_context.run.task}` 的状态为 `{scene_context.run.status}`。"
             )
-            reason = "\u8fd9\u4e00\u5224\u65ad\u4e3b\u8981\u4f9d\u636e\u4efb\u52a1\u72b6\u6001\u3001\u8fdb\u5ea6\u548c\u5173\u8054\u7ed3\u679c\u6458\u8981\u3002"
-            advice = "\u5efa\u8bae\u7ed3\u5408\u4efb\u52a1\u7ed3\u8bba\u4e0e\u5173\u8054\u8d44\u4ea7\u7ee7\u7eed\u5206\u6790\uff0c\u5fc5\u8981\u65f6\u751f\u6210\u62a5\u544a\u540e\u518d\u8ffd\u95ee\u3002"
+            reason = "这一判断主要依据任务状态、进度和关联结果摘要。"
+            advice = "建议结合任务结论与关联资产继续分析，必要时生成报告后再追问。"
         elif scene_context.scene == "general" and self._looks_like_general_knowledge_question(message):
             text = str(message or "")
             if "电机" in text:
-                conclusion = "\u7535\u673a\u6545\u969c\u901a\u5e38\u4f1a\u8868\u73b0\u4e3a\u632f\u52a8\u589e\u5927\u3001\u5f02\u54cd\u3001\u8f6c\u901f\u4e0d\u7a33\u3001\u63a8\u529b\u4e0b\u964d\u6216\u8fc7\u70ed\u3002"
-                reason = "\u8fd9\u4e9b\u8868\u73b0\u901a\u5e38\u4e0e\u8f74\u627f\u78e8\u635f\u3001\u87ba\u65cb\u6868\u5931\u8861\u3001\u7535\u673a\u7ed5\u7ec4\u5f02\u5e38\u6216 ESC \u8f93\u51fa\u5f02\u5e38\u6709\u5173\uff0c\u56e0\u6b64\u4f1a\u540c\u65f6\u53cd\u6620\u5728\u52a8\u529b\u3001\u632f\u52a8\u548c\u7535\u6c14\u53c2\u6570\u4e0a\u3002"
-                advice = "\u5efa\u8bae\u4f18\u5148\u68c0\u67e5\u7535\u673a\u4e0e\u87ba\u65cb\u6868\u7684\u7269\u7406\u72b6\u6001\uff0c\u540c\u65f6\u89c2\u5bdf\u8f6c\u901f\u3001\u7535\u6d41\u3001\u632f\u52a8\u548c\u6e29\u5ea6\u7b49\u53c2\u6570\u662f\u5426\u5f02\u5e38\uff1b\u82e5\u6709\u65e5\u5fd7\u6216\u62a5\u544a\uff0c\u53ef\u7ee7\u7eed\u7ed3\u5408\u5177\u4f53\u6570\u636e\u5b9a\u4f4d\u6545\u969c\u539f\u56e0\u3002"
+                conclusion = "电机故障通常会表现为振动增大、异响、转速不稳、推力下降或过热。"
+                reason = "这些表现通常与轴承磨损、螺旋桨失衡、电机绕组异常或 ESC 输出异常有关，因此会同时反映在动力、振动和电气参数上。"
+                advice = "建议优先检查电机与螺旋桨的物理状态，同时观察转速、电流、振动和温度等参数是否异常；若有日志或报告，可继续结合具体数据定位故障原因。"
             elif "修复" in text or "排查" in text:
-                conclusion = "\u6545\u969c\u4fee\u590d\u4e00\u822c\u9700\u8981\u5148\u5224\u5b9a\u95ee\u9898\u51fa\u5728\u54ea\u4e2a\u90e8\u4ef6\uff0c\u518d\u9488\u5bf9\u6027\u5904\u7406\u3002"
-                reason = "\u65e0\u4eba\u673a\u6545\u969c\u5f80\u5f80\u5305\u62ec\u7535\u673a\u3001\u4f20\u611f\u5668\u3001\u4f9b\u7535\u6216\u63a7\u5236\u94fe\u8def\u7b49\u591a\u79cd\u539f\u56e0\uff0c\u5982\u679c\u4e0d\u5148\u505a\u57fa\u672c\u6392\u67e5\uff0c\u76f4\u63a5\u66f4\u6362\u90e8\u4ef6\u5bb9\u6613\u5bfc\u81f4\u8bef\u5224\u3002"
-                advice = "\u5efa\u8bae\u5148\u68c0\u67e5\u8fde\u63a5\u72b6\u6001\u3001\u4f9b\u7535\u3001\u4f20\u611f\u5668\u8bfb\u6570\u3001\u6267\u884c\u5668\u8f93\u51fa\u548c\u663e\u8457\u7684\u673a\u68b0\u635f\u4f24\uff0c\u518d\u6839\u636e\u75c7\u72b6\u51b3\u5b9a\u662f\u6821\u51c6\u3001\u7ef4\u4fee\u8fd8\u662f\u66f4\u6362\u90e8\u4ef6\u3002"
+                conclusion = "故障修复一般需要先判定问题出在哪个部件，再针对性处理。"
+                reason = "无人机故障往往包括电机、传感器、供电或控制链路等多种原因，如果不先做基本排查，直接更换部件容易导致误判。"
+                advice = "建议先检查连接状态、供电、传感器读数、执行器输出和显著的机械损伤，再根据症状决定是校准、维修还是更换部件。"
 
         if knowledge_hits:
-            reason += " \u540c\u65f6\u547d\u4e2d\u4e86\u8865\u5145\u77e5\u8bc6\u5e93\u5185\u5bb9\uff0c\u53ef\u4f5c\u4e3a\u539f\u56e0\u89e3\u91ca\u548c\u5904\u7406\u5efa\u8bae\u7684\u8f85\u52a9\u4f9d\u636e\u3002"
+            reason += " 同时命中了补充知识库内容，可作为原因解释和处理建议的辅助依据。"
         elif knowledge_enabled:
-            reason += " \u5f53\u524d\u6ca1\u6709\u68c0\u7d22\u5230\u989d\u5916\u77e5\u8bc6\u5e93\u547d\u4e2d\uff0c\u56e0\u6b64\u4e3b\u8981\u4f9d\u636e\u7cfb\u7edf\u8bb0\u5f55\u4f5c\u7b54\u3002"
+            reason += " 当前没有检索到额外知识库命中，因此主要依据系统记录作答。"
         else:
-            reason += " \u5f53\u524d\u672a\u542f\u7528\u77e5\u8bc6\u5e93\u68c0\u7d22\uff0c\u56e0\u6b64\u4e3b\u8981\u4f9d\u636e\u7cfb\u7edf\u8bb0\u5f55\u4f5c\u7b54\u3002"
+            reason += " 当前未启用知识库检索，因此主要依据系统记录作答。"
 
         return "\n\n".join(
             [
-                f"\u76f4\u63a5\u7ed3\u8bba\uff1a{conclusion}",
-                f"\u539f\u56e0\u89e3\u91ca\uff1a{reason}",
-                f"\u98ce\u9669\u4e0e\u5efa\u8bae\uff1a{advice}",
+                f"直接结论：{conclusion}",
+                f"原因解释：{reason}",
+                f"风险与建议：{advice}",
             ]
         )
 

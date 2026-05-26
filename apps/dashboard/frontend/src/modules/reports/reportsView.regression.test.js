@@ -30,12 +30,12 @@ describe('reports workspace copy regression', () => {
     const items = createReportSummaryItems([
       { id: 1, confidence: 0.9 },
       { id: 2, confidence: 0.8 }
-    ])
+    ], { total: 35 })
 
     expect(items).toEqual([
-      { label: '当前列表报告', value: 2, tone: 'primary' },
+      { label: '报告总数', value: 35, tone: 'primary' },
+      { label: '当前页报告', value: 2, tone: 'primary' },
       { label: '平均置信度', value: '85.00%', tone: 'ok' },
-      { label: '可下载报告', value: 2, tone: 'ok' },
       { label: '可 AI 解读', value: 2, tone: 'ai' }
     ])
   })

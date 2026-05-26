@@ -97,6 +97,8 @@ python -m rfly_bridge --px4mavctrl D:\PX4PSP\RflySimAPIs\RflySimSDK\ctrl\PX4MavC
 
 如果本地 `.env` 仍配置 `MODEL_ROOT=models`，后端会在旧路径不存在且新路径存在时自动迁移到 `assets/models`。
 
+当前训练主线已整理到 `scripts/train_pipeline.py`，说明见 `docs/model_training_pipeline.md`。默认 dry-run 只打印命令，确认后再加 `--execute` 跑离线三分类和在线 Real3 二分类流水线。
+
 ## 脚本入口
 
 常用启动脚本仍保留在 `scripts/` 顶层：

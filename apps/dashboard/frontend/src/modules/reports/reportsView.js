@@ -31,7 +31,10 @@ export const reportsCopy = {
   modelLabel: '模型',
   assetLabel: '资产',
   confidenceLabel: '置信度',
-  noReportDetail: '暂无报告详情'
+  noReportDetail: '暂无报告详情',
+  paginationTotal(total) {
+    return `共 ${total || 0} 份报告`
+  }
 }
 
 const reportLabelTextMap = {
@@ -53,7 +56,9 @@ const modelDisplayNameMap = [
 export function createDefaultReportFilters() {
   return {
     assetId: undefined,
-    label: ''
+    label: '',
+    page: 1,
+    perPage: 20
   }
 }
 
@@ -78,8 +83,9 @@ export function getReportModelDisplayName(modelName) {
   return rawName.replace(/_/g, ' ')
 }
 
-export function createReportSummaryItems(reports = []) {
-  const reportCount = reports.length
+export function createReportSummaryItems(reports = [], pagination = {}) {
+  const reportCount = Number(pagination.total ?? reports.length)
+  const pageReportCount = reports.length
   const confidenceValues = reports
     .map((item) => Number(item.confidence))
     .filter((value) => Number.isFinite(value))
@@ -88,10 +94,10 @@ export function createReportSummaryItems(reports = []) {
     : null
 
   return [
-    { label: '当前列表报告', value: reportCount, tone: 'primary' },
+    { label: '报告总数', value: reportCount, tone: 'primary' },
+    { label: '当前页报告', value: pageReportCount, tone: 'primary' },
     { label: '平均置信度', value: avgConfidence == null ? '暂无' : formatReportConfidence(avgConfidence), tone: 'ok' },
-    { label: '可下载报告', value: reportCount, tone: 'ok' },
-    { label: '可 AI 解读', value: reportCount, tone: 'ai' }
+    { label: '可 AI 解读', value: pageReportCount, tone: 'ai' }
   ]
 }
 

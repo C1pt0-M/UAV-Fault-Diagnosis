@@ -60,6 +60,7 @@ vi.mock('@/modules/diagnosis/composables/useDiagnosisWorkspace', () => ({
 
 import DiagnosisPage from './DiagnosisPage.vue'
 import DiagnosisEvidencePanel from './components/DiagnosisEvidencePanel.vue'
+import DiagnosisRecentRunsPanel from './components/DiagnosisRecentRunsPanel.vue'
 import DiagnosisResultPanel from './components/DiagnosisResultPanel.vue'
 
 describe('DiagnosisPage industrial diagnosis workbench', () => {
@@ -160,5 +161,33 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
     expect(text).toContain('历史参考待匹配')
     expect(text).not.toContain('SHAP')
     expect(text).not.toContain('feature importance')
+  })
+
+  it('emits row-specific report and AI actions from recent runs', async () => {
+    const run = {
+      id: 1024,
+      asset_id: 7,
+      report_id: 88,
+      status: 'success',
+      task: 'offline_multiclass',
+      result: {
+        prediction: { label: 'motor', confidence: 0.89 }
+      },
+      created_at: '2026-05-05 10:22:14',
+      updated_at: '2026-05-05 10:26:18'
+    }
+    const wrapper = mount(DiagnosisRecentRunsPanel, {
+      props: {
+        recentRuns: [run],
+        reportStatusText: '已生成'
+      }
+    })
+
+    const buttons = wrapper.findAllComponents({ name: 'ElButton' })
+    await buttons[1].trigger('click')
+    await buttons[2].trigger('click')
+
+    expect(wrapper.emitted('open-reports-center')?.[0]).toEqual([run])
+    expect(wrapper.emitted('open-ai-assistant')?.[0]).toEqual([run])
   })
 })

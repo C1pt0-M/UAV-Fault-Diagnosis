@@ -107,6 +107,20 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <div v-if="pagination.total > pagination.perPage" class="reports-pagination">
+        <span>{{ reportsCopy.paginationTotal(pagination.total) }}</span>
+        <el-pagination
+          background
+          layout="sizes, prev, pager, next"
+          :current-page="pagination.page"
+          :page-size="pagination.perPage"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="pagination.total"
+          @current-change="$emit('page-change', $event)"
+          @size-change="$emit('page-size-change', $event)"
+        />
+      </div>
     </div>
   </section>
 </template>
@@ -114,6 +128,7 @@
 <script setup>
 import { computed } from 'vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
+import ElPagination from 'element-plus/es/components/pagination/index.mjs'
 import { ElOption, ElSelect } from 'element-plus/es/components/select/index.mjs'
 import { ElTable, ElTableColumn } from 'element-plus/es/components/table/index.mjs'
 import {
@@ -130,16 +145,29 @@ const props = defineProps({
   assetOptions: { type: Array, default: () => [] },
   assetNameMap: { type: Object, required: true },
   loading: { type: Boolean, default: false },
+  pagination: {
+    type: Object,
+    default: () => ({ page: 1, perPage: 20, total: 0, pages: 0 })
+  },
   reports: { type: Array, default: () => [] }
 })
 
-const emit = defineEmits(['refresh', 'reset', 'show-detail', 'open-ai', 'download', 'remove'])
+const emit = defineEmits([
+  'refresh',
+  'reset',
+  'show-detail',
+  'open-ai',
+  'download',
+  'remove',
+  'page-change',
+  'page-size-change'
+])
 
 const reportFilters = defineModel('filters', {
   required: true
 })
 
-const reportSummaryItems = computed(() => createReportSummaryItems(props.reports))
+const reportSummaryItems = computed(() => createReportSummaryItems(props.reports, props.pagination))
 
 function emitReportAction(actionKey, row) {
   const eventMap = {
@@ -230,6 +258,16 @@ function emitReportAction(actionKey, row) {
   white-space: nowrap;
 }
 
+.reports-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 14px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
 :deep(.reports-workspace .el-table__row td) {
   padding-top: 10px;
   padding-bottom: 10px;
@@ -256,6 +294,11 @@ function emitReportAction(actionKey, row) {
 
   .reports-filter-select {
     width: min(100%, 260px);
+  }
+
+  .reports-pagination {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 </style>

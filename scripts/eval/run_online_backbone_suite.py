@@ -34,8 +34,15 @@ def build_commands(
     num_layers_by_model: dict[str, int] | None = None,
 ) -> list[list[str]]:
     num_layers_by_model = dict(num_layers_by_model or {})
-    train_script = repo_root / "packages" / "uav_fault" / "models" / "train_online_detector.py"
-    compare_script = repo_root / "scripts" / "compare_online_backbones.py"
+    train_script = (
+        repo_root
+        / "packages"
+        / "uav_fault"
+        / "uav_fault"
+        / "models"
+        / "train_online_detector.py"
+    )
+    compare_script = repo_root / "scripts" / "eval" / "compare_online_backbones.py"
 
     commands: list[list[str]] = []
     for model in models:
@@ -155,8 +162,6 @@ def main() -> int:
     cache_dir = Path(args.cache_dir).resolve()
     output_root = Path(args.output_root).resolve()
     summary_dir = Path(args.summary_dir).resolve()
-    output_root.mkdir(parents=True, exist_ok=True)
-    summary_dir.mkdir(parents=True, exist_ok=True)
 
     commands = build_commands(
         python_bin=args.python_bin,
@@ -179,6 +184,8 @@ def main() -> int:
             print(" ".join(shlex.quote(part) for part in cmd))
         return 0
 
+    output_root.mkdir(parents=True, exist_ok=True)
+    summary_dir.mkdir(parents=True, exist_ok=True)
     _run_commands(commands, repo_root)
     return 0
 

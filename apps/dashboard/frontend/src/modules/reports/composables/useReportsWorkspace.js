@@ -11,6 +11,12 @@ export function useReportsWorkspace() {
   const reports = ref([])
   const assetOptions = ref([])
   const filters = ref(createDefaultReportFilters())
+  const pagination = ref({
+    page: 1,
+    perPage: 20,
+    total: 0,
+    pages: 0
+  })
   const detailVisible = ref(false)
   const detailTarget = ref(null)
 
@@ -23,7 +29,8 @@ export function useReportsWorkspace() {
     const parts = []
     if (filters.value.assetId) parts.push(`资产 #${filters.value.assetId}`)
     if (filters.value.label) parts.push(`标签 ${filters.value.label}`)
-    return parts.length ? parts.join(' / ') : '当前查看全部报告'
+    const filterText = parts.length ? parts.join(' / ') : '当前查看全部报告'
+    return `${filterText}，共 ${pagination.value.total || 0} 份`
   })
 
   async function loadAssets() {
@@ -36,12 +43,19 @@ export function useReportsWorkspace() {
 
     try {
       const response = await diagnosisReportApi.list({
-        page: 1,
-        per_page: 20,
+        page: filters.value.page,
+        per_page: filters.value.perPage,
         asset_id: filters.value.assetId,
         label: filters.value.label
       })
       reports.value = response.data || []
+      const responsePagination = response.pagination || {}
+      pagination.value = {
+        page: Number(responsePagination.page || filters.value.page || 1),
+        perPage: Number(responsePagination.per_page || filters.value.perPage || 20),
+        total: Number(responsePagination.total || 0),
+        pages: Number(responsePagination.pages || 0)
+      }
     } catch (error) {
       ElMessage.error(`加载报告失败：${error.message || '未知错误'}`)
     } finally {
@@ -54,13 +68,39 @@ export function useReportsWorkspace() {
     if (routeAssetId > 0) {
       filters.value = {
         ...filters.value,
-        assetId: routeAssetId
+        assetId: routeAssetId,
+        page: 1
       }
     }
   }
 
   function handleReset() {
     filters.value = createDefaultReportFilters()
+    loadReports()
+  }
+
+  function handlePageChange(page) {
+    filters.value = {
+      ...filters.value,
+      page
+    }
+    loadReports()
+  }
+
+  function handlePageSizeChange(perPage) {
+    filters.value = {
+      ...filters.value,
+      page: 1,
+      perPage
+    }
+    loadReports()
+  }
+
+  function handleFilterRefresh() {
+    filters.value = {
+      ...filters.value,
+      page: 1
+    }
     loadReports()
   }
 
@@ -74,7 +114,8 @@ export function useReportsWorkspace() {
       path: '/ai',
       query: {
         scene: 'report_analysis',
-        report_id: String(row.id)
+        report_id: String(row.id),
+        auto_analyze: '1'
       }
     })
   }
@@ -131,9 +172,13 @@ export function useReportsWorkspace() {
     downloadReport,
     filters,
     handleReset,
+    handleFilterRefresh,
+    handlePageChange,
+    handlePageSizeChange,
     loadReports,
     loading,
     openInAssistant,
+    pagination,
     removeReport,
     reports,
     showDetail

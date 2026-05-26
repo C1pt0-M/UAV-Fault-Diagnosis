@@ -309,22 +309,24 @@ export function useDiagnosisWorkspace() {
     }
   }
 
-  function openReportsCenter() {
-    const assetId = currentRun.value?.asset_id || selectedAssetId.value
+  function openReportsCenter(reportOrRun = null) {
+    const assetId = reportOrRun?.asset_id || currentRun.value?.asset_id || selectedAssetId.value
     router.push({
       path: '/reports',
       query: assetId ? { asset_id: String(assetId) } : {}
     })
   }
 
-  function openReportAssistant() {
-    if (!latestReportId.value) return
+  function openReportAssistant(reportOrRun = null) {
+    const reportId = reportOrRun?.report_id || latestReportId.value
+    if (!reportId) return
 
     router.push({
       path: '/ai',
       query: {
         scene: 'report_analysis',
-        report_id: String(latestReportId.value)
+        report_id: String(reportId),
+        auto_analyze: '1'
       }
     })
   }

@@ -169,6 +169,9 @@ def build_cache(
     extra_normal_limit_files: int = 0,
     max_windows_per_file: int = MAX_WINDOWS_PER_FILE,
     manifest_path: str | None = None,
+    protocol_name: str = "",
+    label_space: str = "",
+    source_fault_classes: list[str] | None = None,
 ):
     csv_dir = Path(csv_dir)
     output_dir = Path(output_dir)
@@ -209,6 +212,9 @@ def build_cache(
 
     # 用于写入 norm_stats.json 的运行配置
     cache_cfg = {
+        "protocol_name": str(protocol_name) if protocol_name else None,
+        "label_space": str(label_space) if label_space else None,
+        "source_fault_classes": list(source_fault_classes or []),
         "source_hz_hint": float(source_hz_hint) if source_hz_hint else None,
         "target_hz": float(target_hz),
         "window_size": int(window_size),
@@ -417,6 +423,12 @@ if __name__ == '__main__':
                         help='extra-normal-dir 仅处理前 N 个文件（0=全量）')
     parser.add_argument('--max-windows-per-file', type=int, default=MAX_WINDOWS_PER_FILE,
                         help='每个文件最多保留多少个窗口（0=不限制）')
+    parser.add_argument('--protocol-name', default='',
+                        help='可选：写入 norm_stats.json 的协议名称')
+    parser.add_argument('--label-space', default='',
+                        help='可选：写入 norm_stats.json 的标签空间，例如 real3')
+    parser.add_argument('--source-fault-classes', nargs='*', default=[],
+                        help='可选：当前二分类 fault 来源类别，例如 motor sensor')
     args = parser.parse_args()
 
     build_cache(args.csv_dir, args.splits, args.output,
@@ -430,4 +442,7 @@ if __name__ == '__main__':
                 extra_normal_split=args.extra_normal_split,
                 extra_normal_limit_files=args.extra_normal_limit_files,
                 max_windows_per_file=args.max_windows_per_file,
-                manifest_path=(args.manifest_path if args.manifest_path else None))
+                manifest_path=(args.manifest_path if args.manifest_path else None),
+                protocol_name=args.protocol_name,
+                label_space=args.label_space,
+                source_fault_classes=args.source_fault_classes)

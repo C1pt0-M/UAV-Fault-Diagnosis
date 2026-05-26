@@ -8,7 +8,9 @@
       <div class="reports-statusbar__divider"></div>
       <div class="reports-statusbar__item">
         <span class="reports-statusbar__label">当前页报告数</span>
-        <span class="reports-statusbar__value reports-statusbar__value--mono">{{ reports.length }}</span>
+        <span class="reports-statusbar__value reports-statusbar__value--mono">
+          {{ reports.length }} / {{ pagination.total || 0 }}
+        </span>
       </div>
       <div class="reports-statusbar__divider"></div>
       <div class="reports-statusbar__item">
@@ -21,13 +23,16 @@
       :asset-options="assetOptions"
       :asset-name-map="assetNameMap"
       :loading="loading"
+      :pagination="pagination"
       :reports="reports"
-      @refresh="loadReports"
+      @refresh="handleFilterRefresh"
       @reset="handleReset"
       @show-detail="showDetail"
       @open-ai="openInAssistant"
       @download="downloadReport"
       @remove="removeReport"
+      @page-change="handlePageChange"
+      @page-size-change="handlePageSizeChange"
     />
 
     <ReportDetailDialog
@@ -52,10 +57,14 @@ const {
   detailVisible,
   downloadReport,
   filters,
+  handleFilterRefresh,
+  handlePageChange,
+  handlePageSizeChange,
   handleReset,
   loadReports,
   loading,
   openInAssistant,
+  pagination,
   removeReport,
   reports,
   showDetail

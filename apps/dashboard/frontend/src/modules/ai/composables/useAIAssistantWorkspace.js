@@ -23,6 +23,7 @@ export function useAIAssistantWorkspace() {
   const loadingMessages = ref(false)
   const sending = ref(false)
   const reindexingKnowledge = ref(false)
+  const autoAnalyzedKeys = ref(new Set())
 
   const canSeedAnalysis = computed(() => {
     return Boolean(scene.value === 'report_analysis' && String(reportIdInput.value || '').trim())
@@ -128,6 +129,28 @@ export function useAIAssistantWorkspace() {
     }
   }
 
+  function shouldAutoAnalyze() {
+    return (
+      route.query.auto_analyze === '1' &&
+      scene.value === 'report_analysis' &&
+      String(reportIdInput.value || '').trim() &&
+      !currentConversationId.value &&
+      messages.value.length === 0 &&
+      !sending.value
+    )
+  }
+
+  async function maybeAutoAnalyzeRouteReport() {
+    if (!shouldAutoAnalyze()) return
+
+    const reportId = String(reportIdInput.value || '').trim()
+    const autoKey = `${route.query.scene || ''}:${reportId}:${route.query.auto_analyze || ''}`
+    if (autoAnalyzedKeys.value.has(autoKey)) return
+
+    autoAnalyzedKeys.value.add(autoKey)
+    await seedReportAnalysis()
+  }
+
   function appendResponseMessages({ userMessage, payload }) {
     const conversation = payload?.conversation || null
     const assistantMessage = normalizeAssistantMessage(payload?.message, {
@@ -175,7 +198,8 @@ export function useAIAssistantWorkspace() {
     sending.value = true
     try {
       const response = await aiApi.analyzeReport({
-        report_id: reportId
+        report_id: reportId,
+        conversation_id: currentConversationId.value || undefined
       })
 
       appendResponseMessages({
@@ -219,9 +243,10 @@ export function useAIAssistantWorkspace() {
   })
 
   watch(
-    () => [route.query.scene, route.query.report_id],
-    () => {
+    () => [route.query.scene, route.query.report_id, route.query.auto_analyze],
+    async () => {
       applyRouteQuery({ resetConversation: true })
+      await maybeAutoAnalyzeRouteReport()
     }
   )
 
@@ -229,6 +254,7 @@ export function useAIAssistantWorkspace() {
     await loadConversations()
     await loadKnowledge()
     applyRouteQuery()
+    await maybeAutoAnalyzeRouteReport()
   })
 
   return {

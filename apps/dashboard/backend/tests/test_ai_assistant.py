@@ -348,20 +348,22 @@ def test_fallback_answer_uses_natural_language_without_reference_sections(
         )
         answer = ai_assistant_service._fallback_answer(
             scene_context=scene_context,
-            message="\u8bf7\u5224\u65ad\u8fd9\u4efd\u62a5\u544a\u7684\u98ce\u9669\u91cd\u70b9\u3002",
+            message="请判断这份报告的风险重点。",
             knowledge_hits=[
                 {
                     "source_type": "knowledge_base",
                     "source_id": "kb-1",
-                    "title": "\u7535\u6c60\u7ef4\u62a4\u624b\u518c",
-                    "snippet": "\u7535\u6c60\u6545\u969c\u901a\u5e38\u8868\u73b0\u4e3a\u7535\u538b\u5f02\u5e38\u4e0b\u964d\u3002",
+                    "title": "电池维护手册",
+                    "snippet": "电池故障通常表现为电压异常下降。",
                 }
             ],
         )
 
-        assert "\u76f4\u63a5\u7ed3\u8bba\uff1a" in answer
-        assert "\u539f\u56e0\u89e3\u91ca\uff1a" in answer
-        assert "\u98ce\u9669\u4e0e\u5efa\u8bae\uff1a" in answer
-        assert "\u77e5\u8bc6\u7247\u6bb5" not in answer
-        assert "\u53c2\u8003\u8d44\u6599" not in answer
-        assert "battery_failure" in answer
+        assert "直接结论：" in answer
+        assert "原因解释：" in answer
+        assert "风险与建议：" in answer
+        assert "知识片段" not in answer
+        assert "参考资料" not in answer
+        assert "电池故障" in answer
+        assert "高风险" in answer
+        assert "立即更换电池包" in answer

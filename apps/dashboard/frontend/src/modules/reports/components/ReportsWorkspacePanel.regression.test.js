@@ -33,6 +33,7 @@ describe('ReportsWorkspacePanel regression', () => {
         assetNameMap: new Map([[178, 'TS-148898.csv']]),
         filters: { assetId: undefined, label: '' },
         loading: false,
+        pagination: { page: 1, perPage: 20, total: 42, pages: 3 },
         reports: sampleReports,
         ...props
       },
@@ -48,10 +49,11 @@ describe('ReportsWorkspacePanel regression', () => {
     const wrapper = mountPanel()
     const text = wrapper.text()
 
-    expect(text).toContain('当前列表报告')
+    expect(text).toContain('报告总数')
+    expect(text).toContain('当前页报告')
     expect(text).toContain('平均置信度')
-    expect(text).toContain('可下载报告')
     expect(text).toContain('可 AI 解读')
+    expect(text).toContain('共 42 份报告')
     expect(text).toContain('重置')
     expect(text).toContain('刷新')
   })
