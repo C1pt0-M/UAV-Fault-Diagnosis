@@ -45,7 +45,7 @@ def initialize_system():
     初始化系统（创建管理员账户）
     """
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         logger.info('系统初始化请求')
 
         # 检查系统是否已安装
@@ -148,7 +148,7 @@ def check_username():
     检查用户名是否可用
     """
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         username = data.get('username', '')
 
         if not username:
@@ -192,7 +192,7 @@ def check_email():
     检查邮箱是否可用
     """
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         email = data.get('email', '')
 
         if not email:

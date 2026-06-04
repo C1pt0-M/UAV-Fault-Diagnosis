@@ -201,7 +201,7 @@ def get_recommendations(db_status, data_status):
         recommendations.append({
             'type': 'warning',
             'message': '数据库未初始化',
-            'action': '首次启动后会自动初始化默认管理员账号'
+            'action': '请进入系统初始化页面创建管理员账号'
         })
     
     if db_status['connected'] and data_status['initialized'] and not data_status['has_users']:

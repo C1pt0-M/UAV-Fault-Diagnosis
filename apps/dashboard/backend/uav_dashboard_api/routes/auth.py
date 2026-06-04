@@ -45,7 +45,7 @@ def verify_password(password, hashed_password):
 def login():
     """用户登录"""
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         logger.info(f'用户登录尝试: username={data.get("username")}')
 
         # 验证必填字段
@@ -120,7 +120,7 @@ def register():
                 'message': 'public_registration_disabled'
             }), 403
 
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
 
         # 验证必填字段
         is_valid, error_msg = validate_required_fields(data, ['username', 'password'])
@@ -218,7 +218,7 @@ def get_profile(current_user):
 def update_profile(current_user):
     """更新用户信息"""
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
 
         # 更新字段
         if 'real_name' in data:

@@ -226,6 +226,9 @@ def validate_required_fields(data, required_fields):
     Returns:
         tuple: (is_valid, error_message)
     """
+    if not isinstance(data, dict):
+        return False, '请求体必须是JSON对象'
+
     for field in required_fields:
         if field not in data or not data[field]:
             return False, f'字段 {field} 是必填的'

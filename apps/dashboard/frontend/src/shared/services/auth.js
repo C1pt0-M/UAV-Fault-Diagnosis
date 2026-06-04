@@ -6,3 +6,8 @@ export const authApi = {
   logout: () => request.post('/auth/logout', {}),
   profile: () => request.get('/auth/profile')
 }
+
+export const setupApi = {
+  status: () => request.get('/setup/status'),
+  initialize: (payload) => request.post('/setup/initialize', payload)
+}

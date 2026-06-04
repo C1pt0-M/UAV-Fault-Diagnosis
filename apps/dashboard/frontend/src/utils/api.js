@@ -7,5 +7,6 @@ export {
   modelApi,
   overviewApi,
   runApi,
+  setupApi,
   telemetryApi
 } from '@/shared/services'

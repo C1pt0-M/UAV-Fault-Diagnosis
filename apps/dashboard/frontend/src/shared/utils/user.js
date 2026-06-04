@@ -22,3 +22,8 @@ export function clearStoredSession(storage = localStorage) {
   storage.removeItem('token')
   storage.removeItem('user')
 }
+
+export function storeSession(token, user, storage = localStorage) {
+  storage.setItem('token', token)
+  storage.setItem('user', JSON.stringify(user))
+}

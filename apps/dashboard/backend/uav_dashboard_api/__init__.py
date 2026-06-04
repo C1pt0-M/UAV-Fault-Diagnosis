@@ -84,8 +84,7 @@ def create_app(config_class=Config):
 
     app.register_blueprint(auth.bp, url_prefix=f'{api_prefix}/auth')
     app.register_blueprint(users.bp, url_prefix=f'{api_prefix}/users')
-    if app.config.get('ENABLE_SETUP_API', True):
-        app.register_blueprint(setup.bp, url_prefix=f'{api_prefix}/setup')
+    app.register_blueprint(setup.bp, url_prefix=f'{api_prefix}/setup')
     app.register_blueprint(settings.bp, url_prefix=f'{api_prefix}/settings')
     app.register_blueprint(dashboard.bp, url_prefix=f'{api_prefix}')
     app.register_blueprint(
@@ -123,8 +122,7 @@ def create_app(config_class=Config):
                 'diagnosis_reports': '/api/reports/diagnosis/*',
             },
         }
-        if app.config.get('ENABLE_SETUP_API', True):
-            payload['endpoints']['setup'] = '/api/setup/*'
+        payload['endpoints']['setup'] = '/api/setup/*'
         if app.config.get('ENABLE_AI', True):
             payload['endpoints']['ai'] = '/api/ai/*'
         if app.config.get('ENABLE_TELEMETRY', True):

@@ -1,27 +1,54 @@
-# AutoDL 模型训练交接文档
+# AutoDL 最小训练包交接文档
 
-本文档覆盖当前主线训练：离线三分类诊断 `normal/motor/sensor`，以及在线 Real3 二分类检测 `normal/fault(motor|sensor)`。目标是把本地仓库和 `D:\UAV-Data` 上传到 AutoDL，完成 split/cache 构建、训练、结果检查和回传。
+本文档只覆盖模型训练，不覆盖 Dashboard、前端、后端服务和运行资产。因此不需要上传整个项目，也不需要安装项目总依赖。AutoDL 上只需要一个最小训练包、RflyMAD 处理后的 CSV 数据、以及训练必需 Python 包。
 
 ## 当前状态
 
-代码层面的数据切分已经做好：
+代码层面的数据切分已经完成：
 
-- 离线：`rflymad_transfer3_v1`，入口是 `build_transfer3_splits.py`。
-- 在线：`rflymad_online_real3_binary_v1`，入口是 `build_online_real3_splits.py`。
+- 离线三分类：`normal/motor/sensor`，协议 `rflymad_transfer3_v1`。
+- 在线二分类：`normal/fault`，但数据范围压缩到 `normal/motor/sensor`，协议 `rflymad_online_real3_binary_v1`。
 - 统一入口：`scripts/train_pipeline.py`。
 
-但新的 split/cache 还没有真实生成。之前只做了 dry-run，验证命令拼接正确，不会写入 `D:\UAV-Data\training_runs`。真正生成 split/cache 和训练，需要在 AutoDL 上执行 `--execute`。
+新的 split/cache 还没有真实生成。之前只做了 dry-run，所以 AutoDL 上第一次执行 `--execute` 时会生成新的 split、cache 和训练结果。
 
-## 本地上传前检查
+## 需要上传什么
 
-本地建议保留两个目录：
+只上传下面两类内容。
+
+训练代码最小包：
 
 ```text
-D:\UAV-Fault-Diagnosis\
-D:\UAV-Data\
+uav_fault_train_min/
+├─ requirements-autodl-train.txt
+├─ scripts/
+│  ├─ train_pipeline.py
+│  └─ eval/
+│     ├─ run_online_backbone_suite.py
+│     ├─ compare_online_backbones.py
+│     └─ compare_transfer3_backbones.py
+└─ packages/
+   └─ uav_fault/
+      └─ uav_fault/
+         ├─ __init__.py
+         ├─ data/
+         │  ├─ build_transfer3_splits.py
+         │  ├─ build_sequence_cache.py
+         │  ├─ build_sequence_cache_3class.py
+         │  ├─ build_online_real3_splits.py
+         │  └─ build_online_cache.py
+         └─ models/
+            ├─ train_transfer3_normalproto.py
+            ├─ train_online_detector.py
+            └─ cnn/
+               ├─ __init__.py
+               ├─ cnn_lstm_v2.py
+               ├─ cnn_lstm_v2_normalproto.py
+               ├─ focal_loss.py
+               └─ lstm.py
 ```
 
-`D:\UAV-Data` 至少需要包含：
+训练数据：
 
 ```text
 UAV-Data/
@@ -32,81 +59,157 @@ UAV-Data/
 └─ processed_Real_50hz/
 ```
 
-旧的 `cache_*`、`results_*`、`splits_*` 可以不上传；它们是历史产物。为了减少上传体积，优先上传 manifest 和三个 processed CSV 目录。
+不需要上传：
 
-如果使用压缩包上传，建议在 Windows PowerShell 中执行：
+- `apps/`
+- `assets/`
+- `docs/`
+- `knowledge_base/`
+- `dashboard/`
+- 前端 `node_modules`
+- 历史 `cache_* / results_* / splits_*`
+- 旧实验材料
 
-```powershell
-cd D:\
-Compress-Archive -Path .\UAV-Fault-Diagnosis -DestinationPath .\uav_fault_repo.zip -Force
-Compress-Archive -Path .\UAV-Data\manifest,.\UAV-Data\processed_SIL_50hz,.\UAV-Data\processed_HIL_50hz,.\UAV-Data\processed_Real_50hz -DestinationPath .\uav_data_real3_source.zip -Force
-```
+## 本地打包
 
-也可以用 AutoDL 网盘、Jupyter 上传、`scp`、`rsync` 等方式上传。上传后推荐在 AutoDL 上统一放到：
+在本地手动建一个目录，目录名建议为 `uav_fault_train_min`。只把上面“训练代码最小包”清单里的文件按相同相对路径放进去，然后自己压缩成：
 
 ```text
-/root/UAV-Fault-Diagnosis
-/root/UAV-Data
+D:\uav_fault_train_min.zip
 ```
 
-## AutoDL 环境准备
+压缩包打开后，第一层应该直接看到：
 
-进入 AutoDL 终端：
+```text
+requirements-autodl-train.txt
+scripts/
+packages/
+```
+
+不要让压缩包解开后变成：
+
+```text
+uav_fault_train_min/uav_fault_train_min/scripts/...
+```
+
+数据你已经上传到 AutoDL 的 `/root/UAV`，无需重复上传。
+
+## 用 scp 上传
+
+本项目训练文件统一用 `scp` 上传。把 AutoDL 的 SSH 信息替换进去，端口参数是大写 `-P`。
+
+数据已经上传后，只需要上传训练代码最小包。你当前 AutoDL SSH 信息是：
+
+```text
+ssh -p 50682 root@connect.westd.seetacloud.com
+```
+
+因此本地 PowerShell 上传命令是：
+
+```powershell
+scp -P 50682 D:\uav_fault_train_min.zip root@connect.westd.seetacloud.com:/root/
+```
+
+## AutoDL 解压
+
+在 AutoDL 终端执行：
 
 ```bash
 cd /root
-unzip -q uav_fault_repo.zip -d /root
-unzip -q uav_data_real3_source.zip -d /root/UAV-Data
+rm -rf /root/uav_fault_train_min
+mkdir -p /root/uav_fault_train_min
+unzip -q /root/uav_fault_train_min.zip -d /root/uav_fault_train_min
 ```
 
-如果解压后多了一层目录，整理成：
+检查结构：
 
 ```bash
-ls /root/UAV-Fault-Diagnosis
-ls /root/UAV-Data/manifest/manifest_v2.csv
-ls /root/UAV-Data/processed_SIL_50hz | head
-ls /root/UAV-Data/processed_HIL_50hz | head
-ls /root/UAV-Data/processed_Real_50hz | head
+ls /root/uav_fault_train_min/scripts/train_pipeline.py
+ls /root/uav_fault_train_min/packages/uav_fault/uav_fault/data/build_online_real3_splits.py
+ls /root/uav_fault_train_min/requirements-autodl-train.txt
+ls /root/UAV/manifest/manifest_v2.csv
+ls /root/UAV/processed_SIL_50hz | head
+ls /root/UAV/processed_HIL_50hz | head
+ls /root/UAV/processed_Real_50hz | head
 ```
 
-安装依赖。AutoDL 镜像通常自带 CUDA 版 PyTorch，如果没有再按镜像 CUDA 版本安装 PyTorch。项目侧依赖可以先装：
+如果 `unzip` 后多了一层目录，整理到上述路径即可。
+
+## 数据量检查
+
+数据已经在 `/root/UAV`。推荐先用不会被 CSV 内部逗号干扰的关键检查命令：
 
 ```bash
-cd /root/UAV-Fault-Diagnosis
+wc -l /root/UAV/manifest/manifest_v2.csv
+find /root/UAV/processed_SIL_50hz -maxdepth 1 -name "*.csv" | wc -l
+find /root/UAV/processed_HIL_50hz -maxdepth 1 -name "*.csv" | wc -l
+find /root/UAV/processed_Real_50hz -maxdepth 1 -name "*.csv" | wc -l
+awk -F, 'NR==1{for(i=1;i<=NF;i++){if($i=="platform") p=i; if($i=="label_main_6class") l=i; if($i=="quality_flag") q=i}next} $q!="bad" && ($l=="normal" || $l=="motor" || $l=="sensor"){a[$p","$l]++; total++} END{print "total",total; for(k in a) print k,a[k]}' /root/UAV/manifest/manifest_v2.csv
+```
+
+当前已确认 `/root/UAV` 的关键数据量正确：
+
+```text
+manifest 行数: 13270
+processed_SIL_50hz: 3055
+processed_HIL_50hz: 3056
+processed_Real_50hz: 492
+
+Real3 eligible total: 4193
+HIL: normal 240, motor 921, sensor 690
+SIL: normal 240, motor 920, sensor 690
+Real: normal 51, motor 245, sensor 196
+```
+
+注意：不要用普通 `awk -F,` 统计完整 `platform` 或 `label_main_6class` 全量分布，manifest 里有带逗号的数组字段，普通 awk 会把 CSV 拆错。上面的 Real3 检查已经足够判断训练主线数据是否完整。
+
+## 训练依赖
+
+RTX 4090 + PyTorch 2.1.2 + CUDA 11.8 + Python 3.10 可以跑这套训练。AutoDL 镜像已带 PyTorch 时，不要重复安装 torch，只安装训练所需补充依赖：
+
+```bash
+cd /root/uav_fault_train_min
 python -m pip install -U pip
-python -m pip install -r requirements.txt tqdm
+python -m pip install -r requirements-autodl-train.txt
+```
+
+`requirements-autodl-train.txt` 只包含训练需要的包：
+
+```text
+numpy
+pandas
+scikit-learn
+matplotlib
+tabulate
+```
+
+检查 PyTorch 和 GPU：
+
+```bash
 python - <<'PY'
-import torch, numpy, pandas
-print("torch", torch.__version__)
-print("cuda", torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu")
+import torch
+print("torch:", torch.__version__)
+print("cuda:", torch.version.cuda)
+print("available:", torch.cuda.is_available())
+print("device:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu")
 PY
 ```
 
-如果 `torch.cuda.is_available()` 是 `False`，先不要训练，检查 AutoDL 镜像和 PyTorch CUDA 版本。
-
-## 路径处理
-
-`manifest_v2.csv` 里可能记录的是 Windows 路径。不要手工改 manifest，训练入口会自动生成：
-
-```text
-/root/UAV-Data/training_runs/<run>/manifest/manifest_v2.local.csv
-```
-
-这个 local manifest 会把 `source_csv_path` 转成当前 AutoDL 能访问的 `/root/UAV-Data/...` 路径。
+期望看到 `available: True` 和 RTX 4090。如果这里是 `False`，先处理 AutoDL 镜像或 PyTorch CUDA 环境，不要开始训练。
 
 ## 先 dry-run
 
-先只打印命令，确认路径和协议：
+先打印命令，不写结果：
 
 ```bash
-cd /root/UAV-Fault-Diagnosis
+cd /root/uav_fault_train_min
 python -B scripts/train_pipeline.py \
   --task both \
-  --data-root /root/UAV-Data \
+  --data-root /root/UAV \
   --run-name real3_v1
 ```
 
-检查输出中在线部分应该是：
+确认输出包含：
 
 ```text
 online/splits real3 binary
@@ -114,26 +217,26 @@ online/cache binary fewshot windows
 online/train backbone suite
 ```
 
-并且 cache 命令应包含：
+在线 cache 命令应包含：
 
 ```text
 --protocol-name rflymad_online_real3_binary_v1 --label-space real3 --source-fault-classes motor sensor
 ```
 
-## 一次性执行全流程
+## 正式执行
 
 确认 dry-run 无误后执行：
 
 ```bash
-cd /root/UAV-Fault-Diagnosis
+cd /root/uav_fault_train_min
 python -B scripts/train_pipeline.py \
   --task both \
-  --data-root /root/UAV-Data \
+  --data-root /root/UAV \
   --run-name real3_v1 \
   --execute
 ```
 
-默认会依次执行：
+默认执行：
 
 1. 离线三分类 split。
 2. 离线三分类 cache。
@@ -141,12 +244,12 @@ python -B scripts/train_pipeline.py \
 4. 离线结果汇总。
 5. 在线 Real3 二分类 split。
 6. 在线短窗口 cache。
-7. 在线 `kg_mstca/mstca/cnn1d` backbone 训练和汇总。
+7. 在线 `kg_mstca/mstca/cnn1d` 训练和汇总。
 
-默认输出目录：
+输出目录：
 
 ```text
-/root/UAV-Data/training_runs/real3_v1/
+/root/UAV/training_runs/real3_v1/
 ├─ manifest/manifest_v2.local.csv
 ├─ offline_transfer3/
 │  ├─ splits_transfer3_v1/
@@ -162,14 +265,12 @@ python -B scripts/train_pipeline.py \
 
 ## 分阶段执行
 
-如果担心一次性运行时间太长，可以分阶段跑。
-
 只生成 split/cache：
 
 ```bash
 python -B scripts/train_pipeline.py \
   --task both \
-  --data-root /root/UAV-Data \
+  --data-root /root/UAV \
   --run-name real3_v1 \
   --stages splits cache \
   --execute
@@ -180,8 +281,8 @@ python -B scripts/train_pipeline.py \
 ```bash
 python -B scripts/train_pipeline.py \
   --task both \
-  --data-root /root/UAV-Data \
-  --work-root /root/UAV-Data/training_runs/real3_v1 \
+  --data-root /root/UAV \
+  --work-root /root/UAV/training_runs/real3_v1 \
   --stages train summary \
   --execute \
   --force
@@ -192,7 +293,7 @@ python -B scripts/train_pipeline.py \
 ```bash
 python -B scripts/train_pipeline.py \
   --task online \
-  --data-root /root/UAV-Data \
+  --data-root /root/UAV \
   --run-name real3_online_v1 \
   --execute
 ```
@@ -202,14 +303,14 @@ python -B scripts/train_pipeline.py \
 ```bash
 python -B scripts/train_pipeline.py \
   --task offline \
-  --data-root /root/UAV-Data \
+  --data-root /root/UAV \
   --run-name transfer3_offline_v1 \
   --execute
 ```
 
-## 训练参数建议
+## 参数建议
 
-默认参数是保守基线：
+第一轮不要急着改 batch，先跑通 baseline：
 
 ```text
 offline: epochs=120, batch_size=32, lr=3e-4
@@ -217,78 +318,72 @@ online : epochs=100, batch_size=512, lr=3e-4
 online models: kg_mstca, mstca, cnn1d
 ```
 
-AutoDL 显存充足时，可以先保持默认。后续做论文实验再扩展：
+如果后续要补 backbone 对比：
 
 ```bash
 python -B scripts/train_pipeline.py \
   --task online \
-  --data-root /root/UAV-Data \
+  --data-root /root/UAV \
   --run-name real3_online_backbone_full \
   --online-models kg_mstca mstca cnn1d bilstm transformer \
   --online-epochs 120 \
   --execute
 ```
 
-## 训练时监控
-
-建议开一个终端跑训练，另一个终端监控：
+## 训练监控
 
 ```bash
 nvidia-smi -l 5
 ```
 
-如果想保留日志：
+保存日志：
 
 ```bash
-cd /root/UAV-Fault-Diagnosis
-mkdir -p /root/UAV-Data/training_runs/logs
+mkdir -p /root/UAV/training_runs/logs
 python -B scripts/train_pipeline.py \
   --task both \
-  --data-root /root/UAV-Data \
+  --data-root /root/UAV \
   --run-name real3_v1 \
-  --execute 2>&1 | tee /root/UAV-Data/training_runs/logs/real3_v1.log
+  --execute 2>&1 | tee /root/UAV/training_runs/logs/real3_v1.log
 ```
 
 ## 结果检查
 
-训练结束后重点检查这些文件。
-
-离线：
+离线结果：
 
 ```text
-/root/UAV-Data/training_runs/real3_v1/offline_transfer3/results/transfer3_cnnlstm_normalproto/
+/root/UAV/training_runs/real3_v1/offline_transfer3/results/transfer3_cnnlstm_normalproto/
 ├─ best.pt
 ├─ config.json
 ├─ metrics_val.json
 ├─ metrics_test.json
 └─ metrics_external_test.json
-
-/root/UAV-Data/training_runs/real3_v1/offline_transfer3/summary/
-├─ transfer3_backbone_summary.csv
-└─ transfer3_backbone_ranking.md
 ```
 
-在线：
+在线结果：
 
 ```text
-/root/UAV-Data/training_runs/real3_v1/online_real3_binary/models/
+/root/UAV/training_runs/real3_v1/online_real3_binary/models/
 ├─ online_detector_kg_mstca_rfly/
 ├─ online_detector_mstca_rfly/
 └─ online_detector_cnn1d_rfly/
-
-/root/UAV-Data/training_runs/real3_v1/online_real3_binary/summary/
-├─ online_backbone_summary.csv
-└─ online_backbone_ranking.md
 ```
 
-快速查看核心指标：
+汇总文件：
+
+```text
+/root/UAV/training_runs/real3_v1/offline_transfer3/summary/transfer3_backbone_ranking.md
+/root/UAV/training_runs/real3_v1/online_real3_binary/summary/online_backbone_ranking.md
+```
+
+快速查看指标：
 
 ```bash
 python - <<'PY'
 import json
 from pathlib import Path
 
-run = Path("/root/UAV-Data/training_runs/real3_v1")
+run = Path("/root/UAV/training_runs/real3_v1")
 offline = run / "offline_transfer3/results/transfer3_cnnlstm_normalproto"
 print("offline external:", json.loads((offline / "metrics_external_test.json").read_text()))
 
@@ -305,14 +400,14 @@ for model_dir in sorted((run / "online_real3_binary/models").iterdir()):
 PY
 ```
 
-## 回传到本地
+## 回传结果
 
-建议只下载 run 结果，不下载 cache。cache 可以重建，体积通常较大。
+只回传训练结果，不回传 cache。cache 体积大且可以重建。
 
-在 AutoDL 上打包：
+AutoDL 上打包：
 
 ```bash
-cd /root/UAV-Data/training_runs
+cd /root/UAV/training_runs
 tar -czf real3_v1_results.tar.gz \
   real3_v1/manifest \
   real3_v1/offline_transfer3/results \
@@ -321,68 +416,32 @@ tar -czf real3_v1_results.tar.gz \
   real3_v1/online_real3_binary/summary
 ```
 
-下载到本地后解压到：
-
-```text
-D:\UAV-Data\training_runs\real3_v1\
-```
-
-也可以用 `scp`：
+Windows PowerShell 下载：
 
 ```powershell
-scp root@<AutoDL主机>:/root/UAV-Data/training_runs/real3_v1_results.tar.gz D:\UAV-Data\training_runs\
+scp -P 50682 root@connect.westd.seetacloud.com:/root/UAV/training_runs/real3_v1_results.tar.gz D:\UAV-Data\training_runs\
 ```
-
-## 更新本地运行资产
-
-先不要直接覆盖 `assets/models`。建议先备份：
-
-```powershell
-cd D:\UAV-Fault-Diagnosis
-Copy-Item .\assets\models .\assets\models_backup_real3_v1 -Recurse -Force
-```
-
-确认指标合格后，再把结果目录中的模型复制到运行资产：
-
-```powershell
-Copy-Item D:\UAV-Data\training_runs\real3_v1\offline_transfer3\results\transfer3_cnnlstm_normalproto .\assets\models\transfer3_cnnlstm_normalproto -Recurse -Force
-Copy-Item D:\UAV-Data\training_runs\real3_v1\online_real3_binary\models\online_detector_kg_mstca_rfly .\assets\models\online_detector_kg_mstca_rfly -Recurse -Force
-Copy-Item D:\UAV-Data\training_runs\real3_v1\online_real3_binary\models\online_detector_mstca_rfly .\assets\models\online_detector_mstca_rfly -Recurse -Force
-Copy-Item D:\UAV-Data\training_runs\real3_v1\online_real3_binary\models\online_detector_cnn1d_rfly .\assets\models\online_detector_cnn1d_rfly -Recurse -Force
-```
-
-更新后启动 Dashboard 做一次冒烟验证：
-
-```powershell
-cd D:\UAV-Fault-Diagnosis
-.\apps\dashboard\backend\.venv\Scripts\python.exe -m uav_dashboard_api
-```
-
-重点确认：
-
-- 后端启动无模型加载错误。
-- 离线诊断能读取 `transfer3_cnnlstm_normalproto`。
-- 实时检测能读取三个在线 detector 的 `best.pt/config.json/norm_stats.json`。
-- 在线模型的 `config.json` 中包含 `protocol_name=rflymad_online_real3_binary_v1`。
 
 ## 常见问题
 
-`manifest missing source_csv_path`：当前流水线需要 manifest 中存在 `source_csv_path`。确认上传的是 `manifest_v2.csv`，不是旧 manifest。
+`ModuleNotFoundError: No module named 'uav_fault'`：确认是在 `/root/uav_fault_train_min` 下运行，且 `packages/uav_fault/uav_fault` 存在。`scripts/train_pipeline.py` 会自动设置 `PYTHONPATH`。
 
-`FileNotFoundError: Case_xxx.csv`：通常是 AutoDL 数据目录结构和 manifest 路径不一致。优先使用 `scripts/train_pipeline.py` 自动生成 local manifest，不要加 `--skip-local-manifest`。
+`No module named sklearn`：没有安装训练最小依赖，执行 `python -m pip install -r requirements-autodl-train.txt`。
 
-`torch.cuda.is_available() == False`：不要继续训练，先换 AutoDL 镜像或重装 CUDA 版 PyTorch。
+`torch.cuda.is_available() == False`：PyTorch/CUDA 环境有问题，不要继续训练。
 
-`work root is not empty`：说明同名 run 已存在。换 `--run-name`，或者确认要复用后加 `--force`。
+`manifest missing source_csv_path`：上传的不是 `manifest_v2.csv`，或者 manifest 不完整。
 
-在线 summary 缺少 `telemetry_live_eval.csv` 不影响当前训练指标；这个文件是额外实时回放评估产物，不是 backbone 训练必需项。
+`FileNotFoundError: Case_xxx.csv`：通常是数据解压路径不对。确认 `processed_SIL_50hz`、`processed_HIL_50hz`、`processed_Real_50hz` 位于 `/root/UAV/` 下。
 
-## 下一步建议
+`work root is not empty`：同名 run 已存在。换 `--run-name`，或确认复用后加 `--force`。
 
-第一轮 AutoDL 先跑默认主线，目标是拿到统一协议下的 baseline：
+## 下一步
+
+第一轮建议只跑默认主线：
 
 ```bash
-python -B scripts/train_pipeline.py --task both --data-root /root/UAV-Data --run-name real3_v1 --execute
+python -B scripts/train_pipeline.py --task both --data-root /root/UAV --run-name real3_v1 --execute
 ```
 
-拿到结果后，再决定是否进入下一轮模型设计：例如在线 KG-MSTCA 的结构消融、离线 CNN-LSTM v2 的对比模型、跨域适配或论文表格需要的重复种子实验。
+拿到结果后再决定是否扩展 backbone、重复随机种子或重新设计模型结构。

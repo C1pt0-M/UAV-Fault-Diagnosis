@@ -1,4 +1,4 @@
-export { authApi } from '@/shared/services/auth'
+export { authApi, setupApi } from '@/shared/services/auth'
 export { overviewApi } from '@/shared/services/overview'
 export { modelApi } from '@/shared/services/models'
 export { assetApi } from '@/shared/services/assets'

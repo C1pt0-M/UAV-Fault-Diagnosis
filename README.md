@@ -67,7 +67,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start_dashboard.ps1
 - Frontend: `http://localhost:5173`
 - Health: `http://localhost:5000/health`
 
-默认账号：`admin / admin123`
+首次使用请打开 `http://localhost:5173/setup` 初始化管理员账号，然后返回登录页进入系统。
 
 ## RflySim 接入
 

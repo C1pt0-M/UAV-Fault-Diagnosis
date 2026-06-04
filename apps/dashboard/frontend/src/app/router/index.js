@@ -1,7 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import Layout from '@/components/Layout.vue'
-import { parseStoredUser } from '@/shared/utils/user'
+import { authApi, setupApi } from '@/shared/services'
+import { clearStoredSession, parseStoredUser, storeSession } from '@/shared/utils/user'
+
+const RegisterRedirect = { name: 'RegisterRedirect', template: '<div />' }
+
+async function redirectRegisterRoute(_to, _from, next) {
+  try {
+    const response = await setupApi.status()
+    next(response.data?.needs_setup ? '/setup' : '/login')
+  } catch {
+    next('/login')
+  }
+}
 
 const routes = [
   {
@@ -19,7 +31,8 @@ const routes = [
   {
     path: '/register',
     name: 'Register',
-    component: () => import('@/modules/auth/RegisterPage.vue'),
+    component: RegisterRedirect,
+    beforeEnter: redirectRegisterRoute,
     meta: { requiresAuth: false }
   },
   {
@@ -79,7 +92,37 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+let profileValidationPromise = null
+
+function isPublicAuthPath(path) {
+  return path === '/login' || path === '/setup' || path === '/register'
+}
+
+async function validateStoredSession() {
+  const token = localStorage.getItem('token')
+  const user = parseStoredUser(localStorage.getItem('user'))
+
+  if (!token || !user) return false
+
+  if (!profileValidationPromise) {
+    profileValidationPromise = authApi.profile()
+      .then((response) => {
+        storeSession(token, response.data)
+        return true
+      })
+      .catch(() => {
+        clearStoredSession()
+        return false
+      })
+      .finally(() => {
+        profileValidationPromise = null
+      })
+  }
+
+  return profileValidationPromise
+}
+
+router.beforeEach(async (to, from, next) => {
   const token = localStorage.getItem('token')
   const user = parseStoredUser(localStorage.getItem('user'))
 
@@ -89,7 +132,20 @@ router.beforeEach((to, from, next) => {
     return
   }
 
-  if ((to.path === '/login' || to.path === '/register') && token && user) {
+  if (token && user) {
+    const isValid = await validateStoredSession()
+    if (!isValid) {
+      if (to.meta.requiresAuth) {
+        ElMessage.warning('登录已过期，请重新登录')
+        next('/login')
+        return
+      }
+      next()
+      return
+    }
+  }
+
+  if (isPublicAuthPath(to.path) && token && user) {
     next('/')
     return
   }

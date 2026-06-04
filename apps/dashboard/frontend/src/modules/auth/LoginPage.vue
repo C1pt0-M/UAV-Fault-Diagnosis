@@ -7,26 +7,14 @@
     <div class="login-card-container">
       <section class="login-card">
         <div class="login-header">
-          <span class="login-header__eyebrow">{{ isRegisterMode ? 'Account Setup' : 'Research Platform' }}</span>
-          <h1>{{ isRegisterMode ? '创建研究账号' : '智诊天眸' }}</h1>
-          <p>
-            {{
-              isRegisterMode
-                ? '填写邮箱完成轻量注册，创建后返回登录。'
-                : '无人机故障诊断研究平台'
-            }}
-          </p>
+          <span class="login-header__eyebrow">Research Platform</span>
+          <h1>智诊天眸</h1>
+          <p>无人机故障诊断研究平台</p>
         </div>
 
         <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
           <el-form-item label="用户名" prop="username">
             <el-input v-model="form.username" placeholder="请输入用户名" />
-            <p v-if="isRegisterMode" class="login-field-hint">用户名用于后续登录，请使用字母、数字或下划线。</p>
-          </el-form-item>
-
-          <el-form-item v-if="isRegisterMode" label="邮箱" prop="email">
-            <el-input v-model="form.email" placeholder="请输入邮箱地址" />
-            <p class="login-field-hint">邮箱用于账号标识与后续扩展，当前无需验证码。</p>
           </el-form-item>
 
           <el-form-item label="密码" prop="password">
@@ -37,19 +25,16 @@
               placeholder="请输入密码"
               @keyup.enter="submit"
             />
-            <p v-if="isRegisterMode" class="login-field-hint">密码长度需为 6-20 位。</p>
           </el-form-item>
 
           <el-button type="primary" class="login-button" :loading="submitting" @click="submit">
-            {{ isRegisterMode ? '创建账号' : '登录系统' }}
+            登录系统
           </el-button>
         </el-form>
 
         <div class="login-footer">
-          <span>{{ isRegisterMode ? '已有账号？' : '还没有账号？' }}</span>
-          <el-button link type="primary" @click="isRegisterMode ? switchToLogin() : switchToRegister()">
-            {{ isRegisterMode ? '返回登录' : '立即注册' }}
-          </el-button>
+          <span>首次使用？</span>
+          <el-button link type="primary" @click="router.push('/setup')">进入系统初始化</el-button>
         </div>
       </section>
     </div>
@@ -57,63 +42,31 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import { ElForm, ElFormItem } from 'element-plus/es/components/form/index.mjs'
 import ElInput from 'element-plus/es/components/input/index.mjs'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { authApi } from '@/shared/services'
+import { storeSession } from '@/shared/utils/user'
 import loginBgImage from '@/assets/login-bg-industrial.png'
 
 const router = useRouter()
 const formRef = ref(null)
 const submitting = ref(false)
-const mode = ref('login')
-const isRegisterMode = computed(() => mode.value === 'register')
 
 const form = reactive({
   username: '',
-  email: '',
   password: ''
 })
 
-const rules = computed(() => {
-  const baseRules = {
-    username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-    password: [
-      { required: true, message: '请输入密码', trigger: 'blur' },
-      { min: 6, max: 20, message: '密码长度需为 6-20 位', trigger: 'blur' }
-    ]
-  }
-
-  if (!isRegisterMode.value) {
-    return baseRules
-  }
-
-  return {
-    ...baseRules,
-    email: [
-      { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-      { type: 'email', message: '请输入有效的邮箱地址', trigger: ['blur', 'change'] }
-    ]
-  }
-})
-
-function clearSensitiveFields() {
-  form.password = ''
-}
-
-function switchToRegister() {
-  mode.value = 'register'
-  form.email = ''
-  clearSensitiveFields()
-}
-
-function switchToLogin() {
-  mode.value = 'login'
-  form.email = ''
-  clearSensitiveFields()
+const rules = {
+  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度需为 6-20 位', trigger: 'blur' }
+  ]
 }
 
 async function submit() {
@@ -124,28 +77,16 @@ async function submit() {
 
     submitting.value = true
     try {
-      if (isRegisterMode.value) {
-        await authApi.register({
-          username: form.username,
-          email: form.email,
-          password: form.password
-        })
-        ElMessage.success('注册成功，请使用新账号登录')
-        switchToLogin()
-        return
-      }
-
       const response = await authApi.login({
         username: form.username,
         password: form.password
       })
 
-      localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
+      storeSession(response.data.token, response.data.user)
       ElMessage.success('登录成功')
       router.push('/')
     } catch (error) {
-      ElMessage.error(error.message || (isRegisterMode.value ? '注册失败，请检查输入信息' : '登录失败，请检查账号和密码'))
+      ElMessage.error(error.message || '登录失败，请检查账号和密码')
     } finally {
       submitting.value = false
     }
