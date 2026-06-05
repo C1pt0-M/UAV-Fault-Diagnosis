@@ -43,9 +43,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="用 CSV 测试诊断报告模块")
     parser.add_argument(
         "--csv-path",
-        default=str(
-            REPO_ROOT / "bf_s0_r0__battery_scale0.4_seed40925773 (1).csv"
-        ),
+        required=True,
         help="输入 CSV 路径",
     )
     parser.add_argument(

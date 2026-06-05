@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+import csv
 from datetime import datetime
 import json
 from pathlib import Path
-import shutil
 import subprocess
+import sys
 import tempfile
 import textwrap
 
-from flask import current_app
+from flask import current_app, has_app_context
 from pypdf import PdfWriter
 from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 
@@ -16,11 +17,13 @@ from uav_dashboard_api import db
 from uav_dashboard_api.models.asset import Asset
 from uav_dashboard_api.models.diagnosis_report import DiagnosisReport
 from uav_dashboard_api.models.run_record import RunRecord
-from uav_dashboard_api.utils.path_store import serialize_local_path
+from uav_dashboard_api.utils.path_store import resolve_local_path, serialize_local_path
 from uav_dashboard_api.utils.pdf_fonts import build_pdf_font_candidates
 
 OFFLINE_MULTICLASS_TASK = "offline_multiclass"
 OFFLINE_CLASS_SET = ["normal", "motor", "sensor"]
+PROJECT_NAME = "基于数据驱动的无人机故障智能诊断系统"
+REPORT_INTENDED_USE = "飞行日志 / CSV 回放离线故障诊断辅助分析"
 RULES_VERSION_DEFAULT = "rule_v1"
 DATA_QUALITY_LEVEL_TEXT = {
     "good": "良好",
@@ -288,7 +291,15 @@ def _find_reportlab_python() -> str | None:
         return _REPORTLAB_PYTHON_CACHE["python"]
 
     candidates = []
-    for item in ("/usr/bin/python3", shutil.which("python3"), shutil.which("python")):
+    configured_python = (
+        current_app.config.get("REPORTLAB_PYTHON_BIN")
+        if has_app_context()
+        else None
+    )
+    for item in (
+        sys.executable,
+        configured_python,
+    ):
         if item and item not in candidates:
             candidates.append(item)
 
@@ -335,15 +346,22 @@ def _render_pdf_with_reportlab(path: Path, lines: list[str]) -> bool:
         )
         return True
     except Exception as exc:  # pragma: no cover - fallback path
-        current_app.logger.warning("reportlab PDF 渲染失败，回退简版 PDF: %s", exc)
+        current_app.logger.warning("reportlab PDF 渲染失败: %s", exc)
         return False
     finally:
         payload_path.unlink(missing_ok=True)
 
 
+def _contains_non_ascii(lines: list[str]) -> bool:
+    return any(any(ord(char) > 127 for char in line) for line in lines)
+
+
 def _write_pdf(path: Path, lines: list[str]):
     if _render_pdf_with_reportlab(path, lines):
         return
+    if _contains_non_ascii(lines):
+        raise RuntimeError("ReportLab PDF 渲染不可用，无法生成中文诊断报告 PDF")
+    current_app.logger.warning("reportlab PDF 渲染不可用，回退简版 ASCII PDF。")
     _write_pdf_fallback(path, lines)
 
 
@@ -373,13 +391,56 @@ def _resolve_input_csv(result: dict, debug: dict, asset: Asset | None) -> str:
     return ""
 
 
+def _csv_row_looks_like_header(row: list[str]) -> bool:
+    non_empty = [str(cell).strip() for cell in row if str(cell).strip()]
+    if not non_empty:
+        return False
+    numeric_cells = 0
+    for cell in non_empty:
+        try:
+            float(cell)
+        except ValueError:
+            continue
+        numeric_cells += 1
+    return numeric_cells < max(1, len(non_empty) // 2)
+
+
+def _count_csv_samples(input_csv: str) -> int | None:
+    if not input_csv:
+        return None
+    try:
+        resolved = Path(resolve_local_path(input_csv, current_app.config))
+    except Exception:
+        return None
+    if not resolved.exists() or not resolved.is_file():
+        return None
+
+    try:
+        with resolved.open("r", encoding="utf-8-sig", newline="") as fp:
+            reader = csv.reader(fp)
+            first_row: list[str] | None = None
+            row_count = 0
+            for row in reader:
+                if not any(str(cell).strip() for cell in row):
+                    continue
+                if first_row is None:
+                    first_row = row
+                    if _csv_row_looks_like_header(row):
+                        continue
+                row_count += 1
+            return row_count if first_row is not None else 0
+    except Exception:
+        return None
+
+
 def _build_data_quality(result: dict, asset: Asset | None) -> dict:
     debug = result.get("debug") if isinstance(result.get("debug"), dict) else {}
     warnings: list[str] = []
 
+    input_csv = _resolve_input_csv(result, debug, asset)
     sample_count = _safe_int(debug.get("sample_count"))
-    if sample_count is None:
-        sample_count = _safe_int(debug.get("seq_len"))
+    if sample_count is None and input_csv:
+        sample_count = _count_csv_samples(input_csv)
 
     window_count = _safe_int(debug.get("window_count"))
     feature_count = _safe_int(debug.get("feature_dim"))
@@ -397,13 +458,19 @@ def _build_data_quality(result: dict, asset: Asset | None) -> dict:
     if not isinstance(time_range, dict):
         time_range = {"start": None, "end": None}
 
-    input_csv = _resolve_input_csv(result, debug, asset)
     if not input_csv:
         warnings.append("未记录输入 CSV 路径，数据追溯能力受限。")
     if sample_count is None:
-        warnings.append("未记录样本数量，无法完整评估输入覆盖度。")
+        if debug.get("seq_len") not in (None, ""):
+            warnings.append("仅记录模型序列长度，未记录真实样本数量；不将序列长度作为样本数量。")
+        else:
+            warnings.append("未记录样本数量，无法完整评估输入覆盖度。")
+    elif sample_count <= 0:
+        warnings.append("样本数量为 0，无法完整评估输入覆盖度。")
     if feature_count is None:
         warnings.append("未记录特征维度，部分质量指标待补充。")
+    elif feature_count <= 0:
+        warnings.append("特征数量为 0，部分质量指标待补充。")
     if missing_columns:
         warnings.append(f"存在缺失列：{', '.join(str(item) for item in missing_columns[:5])}。")
     if missing_value_ratio is not None and missing_value_ratio > 0.1:
@@ -415,16 +482,22 @@ def _build_data_quality(result: dict, asset: Asset | None) -> dict:
         missing_value_ratio is not None and missing_value_ratio > 0.1
     ) or (invalid_value_ratio is not None and invalid_value_ratio > 0.05):
         level = "poor"
-    elif not input_csv or sample_count is None or feature_count is None:
+    elif (
+        not input_csv
+        or sample_count is None
+        or sample_count <= 0
+        or feature_count is None
+        or feature_count <= 0
+    ):
         level = "warning"
-    elif input_csv and sample_count is not None:
+    elif input_csv and sample_count is not None and feature_count is not None:
         level = "good"
     else:
         level = "unknown"
 
     return {
         "level": level,
-        "sample_count": sample_count if sample_count is not None else 0,
+        "sample_count": sample_count if sample_count is not None else None,
         "window_count": window_count if window_count is not None else 0,
         "feature_count": feature_count if feature_count is not None else 0,
         "missing_columns": missing_columns,
@@ -486,7 +559,7 @@ def _build_model_card(result: dict, model_name: str) -> dict:
     return {
         "task": OFFLINE_MULTICLASS_TASK,
         "class_set": class_set,
-        "intended_use": "RflySim/RflyMAD 离线日志故障诊断辅助分析",
+        "intended_use": REPORT_INTENDED_USE,
         "limitations": limitations,
         "metrics": metrics,
         "model_name": model_name,
@@ -836,7 +909,7 @@ def _build_pdf_lines(summary: dict, probs: dict[str, float]) -> list[str]:
     )
 
     lines = [
-        "基于数据驱动的无人机故障检测系统",
+        PROJECT_NAME,
         "离线诊断报告",
         f"生成时间：{basic.get('report_generated_at', '')}",
         f"任务 ID：{basic.get('run_id', '')}    资产 ID：{basic.get('asset_id', '')}",

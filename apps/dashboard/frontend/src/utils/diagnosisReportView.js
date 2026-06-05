@@ -77,6 +77,8 @@ const REVIEW_STATUS_META = {
   ignored: { text: '已忽略', tone: 'muted' }
 }
 
+const REPORT_INTENDED_USE = '飞行日志 / CSV 回放离线故障诊断辅助分析'
+
 const METRIC_LABELS = {
   motor_imbalance_ratio: '电机输出均衡性',
   esc_rpm_imbalance_ratio: 'ESC 转速一致性',
@@ -285,7 +287,7 @@ function buildTraceabilityView(report) {
     task: modelCard.task || 'offline_multiclass',
     classSet,
     classSetText: classSet.join(' / '),
-    intendedUse: modelCard.intended_use || 'RflySim/RflyMAD 离线日志故障诊断辅助分析',
+    intendedUse: modelCard.intended_use || REPORT_INTENDED_USE,
     limitations: Array.isArray(modelCard.limitations) ? modelCard.limitations : []
   }
 }

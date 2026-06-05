@@ -12,7 +12,11 @@ from uav_dashboard_api.models.run_record import RunRecord
 from uav_dashboard_api.models.user import User
 from uav_dashboard_api.services.diagnosis_report import (
     REPORTLAB_FONT_CANDIDATES,
+    REPORT_INTENDED_USE,
+    _REPORTLAB_PYTHON_CACHE,
+    _build_data_quality,
     _build_pdf_lines,
+    _find_reportlab_python,
     _render_pdf_with_reportlab,
     create_or_get_diagnosis_report,
 )
@@ -137,7 +141,7 @@ def test_build_pdf_lines_uses_user_readable_chinese_summary():
         "model_card": {
             "task": "offline_multiclass",
             "class_set": ["normal", "motor", "sensor"],
-            "intended_use": "RflySim/RflyMAD 离线日志故障诊断辅助分析",
+            "intended_use": REPORT_INTENDED_USE,
             "limitations": [],
             "metrics": {},
         },
@@ -159,6 +163,7 @@ def test_build_pdf_lines_uses_user_readable_chinese_summary():
     content = "\n".join(lines)
 
     assert "离线诊断报告" in content
+    assert "基于数据驱动的无人机故障智能诊断系统" in content
     assert "本次离线诊断识别为电机故障" in content
     assert "二、数据质量" in content
     assert "四、风险等级与可信度" in content
@@ -271,6 +276,58 @@ def test_create_or_get_diagnosis_report_writes_pdf_file(app, auth_header):
         assert pdf_path.read_bytes().startswith(b"%PDF")
 
 
+def test_reportlab_python_prefers_current_interpreter(app):
+    with app.app_context():
+        _REPORTLAB_PYTHON_CACHE["checked"] = False
+        _REPORTLAB_PYTHON_CACHE["python"] = None
+        assert _find_reportlab_python() == sys.executable
+
+
+def test_data_quality_does_not_treat_seq_len_as_sample_count(app):
+    with app.app_context():
+        quality = _build_data_quality(
+            {
+                "input_csv": "/tmp/missing_seq_only.csv",
+                "debug": {
+                    "seq_len": 2048,
+                    "in_channels": 31,
+                },
+            },
+            None,
+        )
+
+    assert quality["level"] == "warning"
+    assert quality["sample_count"] is None
+    assert any("序列长度" in warning for warning in quality["warnings"])
+
+
+def test_data_quality_counts_samples_from_resolvable_csv(app):
+    with app.app_context():
+        csv_path = Path(app.config["UPLOAD_DIR"]) / "sample_rows.csv"
+        csv_path.parent.mkdir(parents=True, exist_ok=True)
+        csv_path.write_text(
+            "timestamp,roll,pitch\n"
+            "0.00,0.1,0.2\n"
+            "0.01,0.2,0.3\n"
+            "0.02,0.3,0.4\n",
+            encoding="utf-8",
+        )
+
+        quality = _build_data_quality(
+            {
+                "input_csv": str(csv_path),
+                "debug": {
+                    "feature_dim": 2,
+                },
+            },
+            None,
+        )
+
+    assert quality["level"] == "good"
+    assert quality["sample_count"] == 3
+    assert quality["feature_count"] == 2
+
+
 def _create_legacy_report(app, user_id: int, *, summary: dict, label: str = "motor"):
     run = RunRecord(
         task="offline_multiclass",
@@ -369,7 +426,7 @@ def test_render_pdf_with_reportlab_preserves_chinese_when_font_available(app, tm
         "recommendation_meta": {},
         "data_quality": {"level": "good", "sample_count": 100, "window_count": 0, "feature_count": 31, "missing_columns": [], "missing_value_ratio": None, "invalid_value_ratio": None, "time_range": {"start": None, "end": None}, "warnings": []},
         "traceability": {"run_id": 1, "asset_id": 1, "asset_filename": "mission.csv", "input_csv": "mission.csv", "model_name": "cnn_lstm", "model_version": "", "model_hash": "", "rules_version": "rule_v1", "generated_at": "2026-03-26 21:00:00"},
-        "model_card": {"task": "offline_multiclass", "class_set": ["normal", "motor", "sensor"], "intended_use": "离线日志故障诊断辅助分析", "limitations": [], "metrics": {}},
+        "model_card": {"task": "offline_multiclass", "class_set": ["normal", "motor", "sensor"], "intended_use": REPORT_INTENDED_USE, "limitations": [], "metrics": {}},
         "report_confidence": {"level": "medium", "score": 0.7, "reasons": ["模型主分类置信度中等（80.0%）。"]},
         "review": {"status": "pending", "reviewer": "", "reviewed_at": "", "conclusion": "", "maintenance_notes": ""},
     }

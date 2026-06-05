@@ -129,7 +129,7 @@ apps/dashboard/frontend/src/modules/ai/composables/useAIAssistantWorkspace.js
   "model_card": {
     "task": "offline_multiclass",
     "class_set": ["normal", "motor", "sensor"],
-    "intended_use": "RflySim/RflyMAD 离线日志故障诊断辅助分析",
+    "intended_use": "飞行日志 / CSV 回放离线故障诊断辅助分析",
     "limitations": [],
     "metrics": {}
   },
