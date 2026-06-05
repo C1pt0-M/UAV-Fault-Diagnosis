@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Session Loader</title>
+  </head>
+  <body>
+    <script>
+      const params = new URLSearchParams(window.location.search)
+      const token = params.get('token')
+      const user = params.get('user')
+      const target = params.get('target') || '/'
+
+      if (token) {
+        localStorage.setItem('token', token)
+      }
+      if (user) {
+        localStorage.setItem('user', user)
+      }
+      window.location.replace(target)
+    </script>
+  </body>
+</html>

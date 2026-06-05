@@ -1,0 +1,866 @@
+
+
+ drones
+
+
+
+
+
+Article
+Fault Detection and Fault-Tolerant Cooperative Control of Multi-UAVs under Actuator Faults, Sensor Faults,
+and Wind Disturbances
+Zhongyu Yang1, Mengna Li 1, Ziquan Yu 1, Yuehua Cheng 1, Guili Xu 1 and Youmin Zhang 2,*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+°Í check for
+Citation: Yang, Z.; Li, M.; Yu, Z.;
+Cheng, Y.; Xu, G.; Zhang, Y. Fault
+Detection and Fault-Tolerant
+Cooperative Control of Multi-UAVs
+under Actuator Faults, Sensor Faults, and Wind Disturbances. Drones 2023, 7, 503.  https://doi.org/10.3390/      drones7080503
+Academic Editor: Mostafa Hassanalian
+Received: 3 July 2023
+Revised: 24 July 2023
+Accepted: 27 July 2023
+Published: 1 August 2023
+
+¡¡
+¡¡Copyright:   ?  2023  by  the  authors. Licensee  MDPI,  Basel,   Switzerland. This  article is  an  open  access  article distributed   under   the   terms   and conditions of the Creative Commons Attribution (CC BY) license (https:// creativecommons.org/licenses/by/
+4.0/).
+
+
+
+1      College of Automation Engineering, Nanjing University of Aeronautics and Astronautics,
+Nanjing 211106, China; yangzhongyu@nuaa.edu.cn (Z.Y.); limengna@nuaa.edu.cn (M.L.);
+yuziquan@nuaa.edu.cn (Z.Y.); chengyuehua@nuaa.edu.cn (Y.C.); guilixu@nuaa.edu.cn (G.X.)
+2      Mechanical, Industrial and Aerospace Engineering, Concordia University, Montreal, QC H3G 1M8, Canada
+*    Correspondence: ymzhang@encs.concordia.ca
+
+Abstract: Fault detection (FD) and fault-tolerant cooperative control (FTCC) strategies are proposed in this paper for multiple ?xed-wing unmanned aerial vehicles (UAVs) under actuator faults, sensor faults, and wind disturbances. Firstly, the faulty model is introduced while the effectiveness loss, deviation of thrust throttle setting, and pitot sensor faults are considered. Secondly, the faulty UAV model with wind disturbances is linearized and the system is then converted into two subsystems by using state and output transformations. Further, cooperative unknown input observers (UIOs) are developed to estimate the faults, disturbances, and states.  By combining with the observers¡¯ estimations, adaptive thresholds are designed to detect actuator and sensor faults in the system. Then, considering state constraints, a backstepping-based FTCC scheme is proposed for multiple UAVs (multi-UAVs) suffering from actuator faults, sensor faults, and wind disturbances. It is shown by Lyapunov analysis that the tracking errors are ?xed-time convergent. Finally, the effectiveness of the FD and FTCC scheme is veri?ed by numerical simulation.
+¡¡Keywords:   fault  detection;   fault-tolerant  cooperative  control;   sensor  fault;   actuator  fault; wind disturbance
+
+
+1. Introduction
+¡¡¡¡¡¡Due to low cost and ?exible deployment characteristics, unmanned aerial vehicles (UAVs) have been increasingly, and more widely, used in numerous ?elds, such as forest ?re monitoring [1,2], search and rescue [3], and power grid inspection [4]. Among these uses, ?xed-wing UAVs have been widely used in wide-area coverage search [5], long-distance logistics transportation [6], and communication relays [7], due to their strong carrying capacity, fast ?ight speed, and long endurance.
+¡¡¡¡¡¡With the development of UAV autonomous technology, cooperative control of mul- tiple UAVs (multi-UAVs) has become an important research direction [8¨C12].  Through cooperative operations, multi-UAVs demonstrate high task execution ef?ciency, superior coordination, intelligence, and autonomy. To ensure the cooperative control performance of multi-UAV systems during mission execution, operational safety has become a hot research issue in the ?eld of ?ight control. When multi-UAVs cooperate in performing tasks, such as environmental monitoring, ?re monitoring, and collaborative search, there is a risk of losing control of the faulty UAVs if one or more UAVs encounter physical faults. In severe cases, the faulty UAVs may collide with surrounding UAVs, resulting in the entire ?ight formation losing control. Therefore, studying the problem of fault detection (FD), fault estimation, and fault-tolerant cooperative control (FTCC) is of great theoretical signi?cance and practical necessity for the safe ?ight of monitoring missions and the safe control of multi-UAV systems.
+
+
+
+Drones 2023, 7, 503. https://doi.org/10.3390/drones7080503                                                                                        https://www.mdpi.com/journal/drones
+
+
+¡¡¡¡¡¡It is worth noting that, with increases in operating time, environmental complexity, and severity, actuators and sensors may experience wear and aging. Furthermore, in the cooperative formation ?ight of multi-UAVs, the number of system components in the entire system signi?cantly increases. The multi-UAVs system involves communication network connections, which provide the faulty UAVs with the opportunity to send perturbed state information to all nearby UAVs, greatly increasing the probability of collision and failure of the mission undertaken.  Compared with the FD and fault-tolerant control (FTC) for single UAVs, the FD and FTCC for multi-UAVs are increasingly complicated. In addition, the external disturbances encountered by UAVs and the system nonlinearity also pose great challenges and dif?culties in researching multi-UAVs. How to detect various faults in a multi-UAV system affected by disturbances, and to deal with the faults effectively, have become signi?cant research topics to ensure the safe and cooperative formation ?ight of multi-UAVs.
+¡¡¡¡¡¡In order to discover faults in the system in a timely and accurate manner, many scholars have carried out extensive research on this topic [13¨C16]. In [17], two sensor fault estimation schemes were proposed for a class of nonlinear systems with uncertainties, which were then applied to satellite control systems. The incipient fault diagnosis of a class of Lipschitz nonlinear systems was studied in [18]. By constructing total measurable fault information residual (ToMFIR), the incipient faults of multiple sensors can be detected.  The linear descriptor reduced-order observer and descriptor sliding-mode observer were proposed to solve the state and fault estimation problems of linear systems with disturbances, sensor and actuator faults in [19].   Nevertheless, the FD results on multi-UAV systems with actuators and sensor faults and disturbances are very rare.
+¡¡¡¡¡¡In practical situations, the consideration of a state constraint is very important for UAVs, since this consideration can simultaneously prevent the occurrence of accidents, ensure the safety of UAVs, improve system stability, enhance performance and ef?ciency, and reduce energy consumption during ?ight. In recent years, some methods have been pro- posed in regard to constraint control problems, including the invariant-set method [20,21], model predictive control (MPC) [22,23], and barrier Lyapunov function (BLF) [24,25], etc. A distributed FTC method and state transformations with the scaling function were proposed for ?xed-wing UAVs subject to actuator faults and full state constraints, maintaining speed and attitude within the corresponding constraint ranges [26].  In [27], an adaptive FTC scheme, based on reinforcement learning and barrier Lyapunov control technology, was designed to solve the attitude tracking problem of ?ying-wing UAVs under actuator fault, actuator saturation, and attitude angle constraints. A novel integral barrier Lyapunov func- tion (IBLF) was proposed for the FTC of ?xed-wing UAVs with asymmetric time-varying full state constraints [28]. Nevertheless, the state constraint problem of multiple ?xed-wing UAVs is rarely considered, which needs further investigations.
+¡¡¡¡¡¡To better improve the cooperative operation performance of the entire multi-UAV system, numerous researchers have achieved a quantity of exploratory FTCC results. At present, FTCC schemes are mainly developed based on the leader¨Cfollower forma- tion [29¨C31] and distributed communication architectures [32¨C34].   In [35], a dynamic surface ?xed-time FTC scheme, based on a neoteric disturbance observer, was proposed for ?xed-wing UAVs against actuator faults and external disturbances. A fault detection observer was proposed by using the H¡Þ method for sensor faults in a multi-UAV system. Then, a distributed fault-tolerant formation controller was designed in [36]. In [37], by us- ing intelligent learning architecture and fractional-order calculus, an FTCC strategy was proposed for multiple ?xed-wing UAVs with actuator and sensor faults. In addition, there is a high demand to design ?xed-time FTCC schemes to ensure rapid fault tolerance.
+¡¡¡¡¡¡Based on the above discussions, in this paper, the FD and FTCC strategy are proposed to solve the cooperative control problem of multiple ?xed-wing UAVs with actuator faults, sensor faults, and wind disturbances. The contributions of this paper are mainly as follows.
+1.     Compared with the previous results on FD and fault estimation methods in [17¨C19], a newly constructed cooperative unknown input observer (UIO) is developed to
+
+
+estimate states, faults, and disturbances. Combined with the observers¡¯ estimations, adaptive thresholds are designed to detect actuator and sensor faults in the system.
+2.     Tangential barrier Lyapunov function (TBLF) is combined with the state transforma- tion with scaling function to constrain the states.
+3.     Differing from existing FTC strategies for ?xed-wing UAVs [35¨C37], a backstepping- based ?xed-time FTCC scheme is proposed for multi-UAVs suffering from actuator faults, sensor faults, and wind disturbances.
+¡¡¡¡¡¡The rest of this paper is organized as follows.  Section 2 introduces the ?xed-wing UAV models with wind disturbances, actuator fault, sensor fault, and the preliminaries for controller design. FD and fault estimation schemes are proposed in Section 3. An FTCC scheme is designed in Section 4. Section 5illustrates the simulation results. Conclusions are presented in Section 6.
+2. Preliminaries and Problem Statement
+2.1. UAV Dynamics
+¡¡¡¡¡¡In this paper, a group of ?xed-wing follower UAVs and a virtual leader are considered. The dynamic model of the follower UAV#i with wind disturbances is given as follows [38]:
+>(x¨Bi  = Vi cos ¦Ãi cos ¦Öi + Wx
+{y¨Bi  = Vi cos ¦Ãisin ¦Öi + Wy                                                                       (1)
+(>z¨Bi  = Vi sin ¦Ãi + Wz
+where pi= [xi, yi, zi]T is the position of the UAV#i in the inertial frame for i  ¡Ê {1, 2, . . . , N}. Vi, ¦Öi, and ¦Ãi denote the velocity, heading angle, and ?ight path angle, respectively. Wx, Wy, and Wz are the components of the wind speed vector along the x, y and z axes of the inertial coordinate system.
+The force equations are expressed as:
+>(V¨Bi  = (-Di+ Ti)/m - g sin ¦Ãi - W¨Bx cos ¦Ãi cos ¦Öi - W¨By cos ¦Ãisin ¦Öi - W¨Bz sin ¦Ãi
+{¦Ö¨B i  = Li sin ¦Õi/mVi cos ¦Ãi+(W¨Bx sin ¦Öi  - W¨By cos ¦Öi )/Vi cos ¦Ãi                                                                                                (2)
+(> ¦Ã¨B i  = Li cos ¦Õi/mVi - mg cos ¦Ãi/Vi+(W¨Bx sin ¦Ãi cos ¦Öi+ W¨By sin ¦Ãisin ¦Öi - W¨Bz cos ¦Ãi )/Vi
+where m and g are the mass and gravitational constant, respectively. Ti, Di, and Li represent the thrust, drag, and lift forces, respectively. ¦Õi denotes the bank angle.
+The forces Ti and Di are described as:
+{ii iit0                                                                                    (3)
+where Tmax and ¦Äti denote the maximal engine thrust force and instantaneous thrust throttle
+setting, respectively. The value i  = 1/2¦ÑVi 2 denotes the the dynamic pressure and ¦Ñ is the
+air density, si denotes the wing area. CiD0 is the aerodynamic coef?cient.
+De?ne x1i  = [xi, yi, hi]T, x2i  = [Vi, ¦Öi, ¦Ãi]T, ui  = [¦Äti, ¦Õi, Li]T, one has:
+{i                                                                        (4)
+where F1i, G1i, F2i, G2i, Wi, i are given as
+
+
+
+
+
+2.2. Faulty UAV Model
+¡¡¡¡¡¡Actuator and sensor faults may give rise to the degradation of ?ight performance and affect the safety of the formation team. The thrust output of the engine may differ from the expected value due to wear or fault of the engine. Pitot may be faulty due to environmental erosion or in?uence. For the above reasons, we considered the effectiveness loss, deviation of thrust throttle setting, and pitot faults in this paper, given as ¦Äti   = ¦Ñti¦Ät0i + ¦Ätbi  and Vsi  = QviVi+ Vbi. Thus, the following fault models are obtained [37]:
+ui  =¦Ñiu0i + ubi                                                                                 (5)
+=u0i+ fai
+where ui  and u0i  = [u01i,  u02i,  u03i]T  denote the applied and commanded control input signals, respectively. ¦Ñi  = diag{¦Ñti,  1,  1}, ¦Ñti  ¡Ê (0,  1] denotes the control effectiveness. ubi  = [¦Ätbi, 0, 0]T denotes the deviation value. f ai  = (¦Ñi ? I)u0i+ ubi  = [fa1i, fa2i, fa3i]T .
+2i  =Q ix2i + xbi                                                                                 (6)
+=x2i+ fsi
+where 2iand x2i denote the measured and real state signals, respectively. Qi  = diag{Q vi, 1, 1}, Q vi  ¡Ê (0, 1] denotes the measurement effectiveness. xbi  = [Vbi, 0, 0]T denotes the deviation value. f si  = (Qi ? I)x2i+ xbi  = [fs1i, fs2i, fs3i]T .
+By substituting (5) and (6) into (4), the faulty UAV model is presented as:
+
+2.3. Communication Network
+¡¡¡¡¡¡Leader and N follower UAVs were considered in the multi-UAV system. The com- munication network among the follower UAVs is presented by an undirected topology G ÂÀ (¦Ô, ¦Å), where ¦Ô = {1, 2, ¡¤ ¡¤ ¡¤ , N} is a set of follower UAVs and ¦Å ? ¦Ô ¡Á ¦Ô is an edge set.  If (i, j) ¡Ê ¦Å, the jth UAV is a neighbor of the ith UAV. ¦¸i   = {j ¡Ê ¦Ô|(i, j) ¡Ê ¦Å } is the neighborhood set of the ith UAV. The adjacency matrix A =  [aij ] ¡Ê RN¡ÁN  is given by aij   = 1 if (i, j)  ¡Ê ¦Å and aij   = 0 otherwise.  The Laplacian matrix L ÂÀ D ? A, where D = diag(¦£i) ¡Ê RN¡ÁN  with ¦£i   = ¦²j¡Ê¦¸i  a ij.  Furthermore, the leader adjacency matrix C = diag{c1, c2, ¡¤ ¡¤ ¡¤ , cN} is given by ci  = 1 if the ith UAV can obtain the information of the leader and ci  = 0 otherwise.
+2.4. Control Objective
+¡¡¡¡¡¡FD and FTCC scheme for multiple ?xed-wing UAVs against actuator faults, sensor faults and wind disturbances are proposed in this paper and the objectives are listed as follows: (a) The actuator faults and sensor faults tobe detected by the fault detection scheme;
+(b) The faults and wind disturbances to be estimated by the developed cooperative UIOs;
+(c) The desired cooperative formation ?ight can be kept by the designed FTCC scheme.
+¡¡¡¡¡¡The following assumptions and lemmas may be used for the FD and FTCC designs. Assumption 1.  The communication network of multi-UAVs system is undirected and connected.
+
+
+¡¡Lemma 1 ([39]).  Consider the system x¨B  = f (x (t)),  x (0)  =  x0.  If there exists a Lyapunov function V(x) and constants ¦Á > 0, ¦Â > 0, p > 1, 0 < q < 1, and 0 < ¡Þ < ¡Þ such that:
+V¨B(x) ¡Ü -¦ÁVp(x) - ¦ÂVq(x) + ¡Þ                                           (8)
+¡¡¡¡Then, the system is practically ?xed-time stable.  The settling time T is presented as T  ¡Ü Tmax  =  +  with 0 < ¦Õ < 1. The convergence neighborhood is given by:
+
+3. Fault Detection and Estimation Scheme Design
+¡¡¡¡¡¡By using the feedback linearization, the ?xed-wing UAV model (1)¨C(2) in the presence of actuator and sensor faults can be rewritten as:
+                  (9)
+where Xi  = [xi, yi, hi, Vi,¦Öi, ¦Ãi]T represents the state variable, u0i  = [¦Äti, ¦Õi, Li]T denotes the input signal, yi  = [hi, Vi]T is output vector. ¦Çi (t, Xi, u0i) denotes the nonlinear term, which satis?es the Lipschitz constraints in Assumption 2. di(t, Xi) represents external disturbance. fa1i(t) and fs1i(t) are actuator fault signals and sensor fault signals, respectively. A, B, C, D, E, F, and M are constant matrices. ¦Çi (t, Xi, u0i), di(t, Xi), and the constant matrices are given as:
+
+
+
+The nominal form of system (1)¨C(2) can be written as:
+{¨Bi(t)) i i(t)) + BuN0i(t) + M¦Çi (t, X Ni, uN0i) + Ddi(t, X Ni)              (10)
+Assumption 2.  The nonlinear term ¦Çi (t, Xi, u0i) is assumed to be Lipschitz about x locally,
+
+¢ò¦Çi (t, X1i, u0i) - ¦Çi (t, X2i, u0i)¢ò ¡Ü Lp ¢òX1i  - X2i¢ò                         (11)
+where  is a positive constant. Lp  is the Lipschitz constant.
+
+
+¡¡¡¡¡¡Considering the in?uence of disturbances di(t, Xi) on FD, linear non-singular transfor- mation is carried out for the system (9) to realize the decoupling of disturbances and faults. Therefore, the introduced state and output transformation matrices T and S satisfy [18]:
+
+where T-1  ¡Ê R6¡Á6, S-1  ¡Ê R2¡Á2, 1i(t) ¡Ê R3, 2i(t) ¡Ê R3 .
+According to (9) and (12), one obtains
+{(())   ((), T-1i, u0i) + T Bu0i(t) + TDdi (t, T-1i ) + TEfa1i(t)                    (13)
+Further, it can be obtained from (13) that:
+{¨B(())   (())  sii(()) + ¦Çi (t, T-1i, u0i) + di (t, T-1i ) + fa1i(t)          (14)
+
+
+tem forms after linear non-singular transformation:
+{¨B  (())  (()) + 12 2i(t) + 1u0i(t) + 1¦Çi (t, T-1i, u0i) + 1di (t, T-1i )                         (15)
+('' ¨B 2i(t) = 21 1i(t) + 22 2i(t) + 2 u0i(t) + 2¦Çi (t, T-1i, u0i)
+<               +2di (t, T-1i ) + 2fa1i(t)                                                       (16)
+':2i(t) = 22 2i(t) + 2fs1i(t)
+According to [18,40], appropriate ?rst-order low-pass ?lters are designed as (17) and
+(18) for subsystems to convert sensor faults into pseudo-actuator faults. Then, the output 1i and 2i of subsystems shown in (15) and (16) are passed through the following ?lters,
+respectively:             ¨B3i(t) = A13i(t) + 11 1i(t) = A13i(t) + 1i(t)                           (17)
+
+¨B4i(t) = A24i(t) + 22 2i(t) + 2fs1i(t) = A24i(t) + 2i(t)               (18)
+where 3i and 4i are the states of ?lters, and ?lter matrices A1 and A2 are Hurwitz matrices to be designed.
+De?ne z1i(t) =  [  (()) ] ¡Ê R4, z2i(t) =  [  (()) ] ¡Ê R4 . Furthermore, according to
+(15) and (17), the following augmented system can be obtained:
+
+
+
+{¨B (())  t() + A122i(t) + B11u0i(t) + M11¦Çi (t, T-1i, u0i) + D10di (t, T-1i )                       (19)
+where A11   =   [    1 ]  ¡Ê  R4¡Á4,  A12    =   [    ]  ¡Ê  R4¡Á3,  B11   =   [  1   ]  ¡Ê  R4¡Á3,
+M11  = [  1   ] ¡Ê R4¡Á6,  D10  =  [  1   ] ¡Ê R4¡Á6, C1  = [     ] ¡Ê R2¡Á4 .
+Similarly, based on (16) and (18), there is:
+(''z¨B 2i(t) = A21z2i(t) + A221i(t) + B21u0i(t) + M21¦Çi (t, T-1i, u0i)
+<               +D20di (t, T-1i ) + E21fi (t)                                                        (20)
+':v2i(t) = C2z2i(t)
+where A21   =   [    2]   ¡Ê  R4¡Á4,  A22    =   [   ]  ¡Ê  R4¡Á3,  B21   =   [  2   ]   ¡Ê  R4¡Á3,
+¡¡M21  = [  2  ] ¡Ê R4¡Á6,  D20  = [  2  ] ¡Ê R4¡Á6, E21  = [2     2] ¡Ê R4¡Á2, C2  =  [    ] ¡Ê R2¡Á4, fi (t) = [ (()) ].
+Similarly, by using the linear non-singular transformation, the nominal form of system
+(10) can be transformed into the following two subsystems:
+{¨B (())  t() + A122Ni (t) + B11u0Ni (t) + M11¦Çi (t, T-1Ni, u0Ni )          (21)
+
+{¨B(())  t() + A221Ni (t) + B21u0Ni (t) + M21¦Çi (t, T-1Ni, u0Ni )          (22)
+¡¡¡¡¡¡To sum up, two augmenting subsystems (19) and (20) are obtained after the non- singular transformation of system (9), in which the subsystem formulated in (19) contains disturbances but is free from faults, and the augmenting subsystem (20) is subject to both disturbances and faults.  In this way, the actuator and sensor fault in system (9) can be transformed into actuator faults in the augmenting subsystem (20) for research [18].
+3.1. Cooperative Unknown Input Observers
+¡¡¡¡¡¡Based on the augmented subsystems (19) and (20), cooperative UIOs are designed for multi-UAVs to realize FD and fault estimation in this subsection.
+Assumption 3.  The disturbance di (t, T-1i ) in (19) is bounded and continuously differentiable, so make 1i (t, T-1i ) = D10di (t, T-1i ); that is, there are positive constants H1i and H2i, such that I 1i (t, T-1i ) I ¡Ü H1i, I ¨B 1i (t, T-1i ) I ¡Ü H2i.
+Assumption 4.  The fault fi (t) is bounded, but its upper bound is unknown, so de?ne 2i (t, T-1i ) = D20di (t, T-1i ) + E21fi (t), and 2i (t, T-1i ) is continuously differentiable; that is, there exists a positive constant H3i, such that I ¨B 2i (t, T-1i ) I  ¡Ü H3i.
+Assumption 5. For the subsystems (19) and (20), there exists a matrix Ri  of appropriate dimen-
+sions, which satis?es Ri (t, T-1i )¨B 1i (t, T-1i ) = D20di (t, T-1i ).
+
+
+¡¡¡¡¡¡Inspired by the work in [36], for the subsystem (19), the proposed cooperative UIOs have the following form:
+
+where 1i(t) is the state of observer, -2i(t) is the estimation of z-2i(t), -i  is the estima-
+tion of z-i, -1i (t, T-1-i )is the estimation of d-1i (t, T-1z-i ), ¦Õ1i  = ¦²j¡Ê¦¸i  a ij (1i(t) - 1j(t)),
+1i(t) = z1i(t) - 1i(t) is the estimation error of z1i(t) of UAV#i, i = 1, ..., N with total of N
+follower UAVs. ¦Æ1i(1i(t), ¦Õ1i (t)) and ¦Æ2i(1i(t), ¦Õ1i (t)) are given as
+
+where L1, L2  are positive constants, 0.5  <  a1   <  1, 0.5  <  b1   <  1, a2   =  2a1  - 1,  and b2  = 2b1 - 1 are parameters to be designed, sgn(?) denotes a sign function.
+Then, the following error system is obtained:
+
+where -1i (t, T-1i ) = d-1i (t, T-1z-i ) - d 1i (t, T-1-i )is the estimation error of d-1i (t, T-1z-i ),
+ (t, T-1-i, u0i) = ¦Çi (t, T-1z-i, u0i)- ¦Çi (t, T-1-i, u0i)is the estimation of ¦Çi (t, T-1z-i, u0i),
+-2i(t) = z-2i(t) - z2i(t) is the estimation error of z-2i(t).
+Similarly, according to the subsystem (20), the  cooperative UIOs are designed as:
+
+where  2i(t) is the  state  of observer,  -2i (t, T-1zi )is the estimation  of  d-2i (t, T-1z-i ),
+
+¦Æ3i(5i(t), ¦Õ2i (t)) and ¦Æ4i(5i(t), ¦Õ2i (t)) are given by
+
+where L3,  L4  are positive constants, 0.5  < a3  < 1, 0.5  < b3  < 1, a4  = 2a3  - 1, and b4  = 2b3  - 1 are designed parameters.  ¦Ä is a small constant.  Suppose the upper bound of
+
+
+d-2i (t, T¡ª1z-i ) is L, which is unknown.   is the estimation of L, and its adaptive law is
+designed as
+ = L3P2| 5i(t)| a3+1 + L4P2| 5i(t)| b3+2 + L3P2|¦Õ2i (t)| a3+1 + L4P2|¦Õ2i (t)| b3+2          (28)
+where P2 is a stable matrix to be designed.
+Further, the following error system is obtained:
+{(((t), ¡ª2=i(t)2(,1iz-(it), T¡ª¡ªii(,i()+,¦Õt()t), T¡ª1-i ) ¡ª( + ¦Ä )¦Æ3i(5i(t), ¦Õ2i (t))                    (29)
+where 2i(t) = z2i(t) ¡ª 2i(t) is the estimation error of z2i(t), -2i (t, T¡ª1-i ) = d-2i (t, T¡ª1z-i ) ¡ª -2i (t, T¡ª1-i )is the estimation error of d-2i (t, T¡ª1z-i ).
+Theorem 1.  The designed cooperative UIOs in the form of (23) and (26) can guarantee that the estimation errors are asymptotically stable, if there exist positive de?nite matrices P1 and P2, such that the following linear matrix inequality (LMI) is satis?ed.
+
+
+Proof. De?ne  the  vectors  as  1    =   [1, 2,  ¡¤ ¡¤ ¡¤ , N ]T,  2    =   [1, 2,  ¡¤ ¡¤ ¡¤ , N ]T,
+-1  = 1, 2,  ¡¤ ¡¤ ¡¤ ,  N ]T, -2  =  1, 2,  ¡¤ ¡¤ ¡¤ ,  N ]T, 5  =  [1, 2,  ¡¤ ¡¤ ¡¤ ,  N ]T, select a
+Lyapunov function as:
+V = V1 + V2                                                                                 (31)
+where V1  = (I ¢Ù P1)1 + - -1, V2  = (I ¢Ù P2)2 + - -2 + T  .  ¢Ù represents
+the Kronecker product.
+By considering (25), differentiating V1 yields:
+V.1  =  [I ¢Ù (P1A11 + A1P1)]1 + (I ¢Ù P1A12)-2 + (I  (I ¢Ù P1)-1
+¡ª  (c + I) ¢Ù P1L1| 1|a1sgn(1) ¡ª  (c + I) ¢Ù P1L2| 1| b1+1sgn(1)                                         (32)
++ - .1 ¡ª -  (c + I) ¢Ù L1| 1|a2sgn(1) ¡ª -  (c + I) ¢Ù L2| 1| b2+1sgn(1)
+Note that:
+
+¡ÜLp "T¡ª1 "¢ò-2i¢ò                                          (33)
+¡ÜLp "T¡ª1 "¢ò2i¢ò
+
+
+Based on (33), Assumption 2, and Young¡¯s inequality, it is shown that:
+ (I    
+¡ÜLp  (I    P111 )"T-1 "-2                                                       (34)
+¡ÜLp (I    P1M-11)"T-1 "2
+¡Ü P11 + L ¢òM-11¢ò2 "T-1 "2  (I    P1-1)2
+where 11  ¡Ê R4¡Á3, M-11  =  [11  0] ¡Ê R4¡Á4 .
+¡¡¡¡¡¡According to (32), (34) and using Young¡¯s inequality, the following inequality can be obtained:
+V.1  ¡Ü  [I     (P1A11 + A1P1+ P1)]1 +  (I    P112 )2 + (I    P1)-1 + - -1
++  L ¢òM-11¢ò2 "T-1 "2  (I    P1-1)2 - (c + I)    P1 (L1j 1(t)ja1+1 + L2j 1(t)j b1+2)               (35) +  . .1 +  (c + I) (L1j 1(t)j 2a2  + L2j 1(t)j 2b2+2)
+where 12  = [A12 0] ¡Ê R4¡Á4 .
+By considering (29) and differentiating V2, one has:
+V.2  =  [I     (P2A21 + A1P2)]2 + (I     (I    P2)-2
+-  [(c + I)    P2 ( + ¦Ä )](L3j 5ja3sgn(5) + L4j 5j b3+1sgn(5))              (36)
++ - .2 - -  (c + I)    L3j 5ja4sgn(5) - -  (c + I)    L4j 5j b4+1sgn(5)
++ TL. -(L - )[(c + I)    P2L3j 5ja3+1 + (c + I)    P2L3j 5j b3+2]
+Similarly, notice that:
+ (I    
+¡ÜLp  (I    P221 )"T-1 "-2                                   (37)
+¡ÜLp (I    P2)¢òM-21¢ò"T-1 "2
+where 21  ¡Ê R4¡Á3, M-21  =  [21  0] ¡Ê R4¡Á4 .
+¡¡¡¡¡¡According to (36), (37), and using Young¡¯s inequality, the following inequality can be obtained.
+V.2  ¡Ü  [I     (P2A21 + A1P2 + 2Lp ¢òM-21¢ò"T-1 "P2)]2 + (I    P2)-2 + - -2 - [(c + I)    P2¦Ä] (L3j 5(t)ja3+1 + L4j 5(t)j b3+2) +  . .2 + T  +  L.TL.
+- [(c + I)    P2L] (L3j 5(t)j a3+1 + L4j 5(t)j b3+2)
++  (c + I) (L3j 5(t)j 2a4  + L4j 5(t)j 2b4+2)
+De?ne  = [, , - , - ]T, then, one obtains
+
+
+
+
+V. =V.1 + V.2
+¡Ü  [I     (P1A11 + A1P1+ P1)]1 +  (I    P112 )2 + (I    P1)-1 + (I    P2)-2 +  [I     (P2A21 + A1P2 + 2Lp ¢òM-21¢ò"T-1 "P2 + L ¢òM-11¢ò2 "T-1 "2P1-1)]2
+- (c + I)    P1 (L1j 1(t)ja1+1 + L2j 1(t)j b1+2) + - -1 + - -2
+- [(c + I)    P2¦Ä] (L3j 5(t)j a3+1 + L4j 5(t)j b3+2)
++  (c + I) (L1j 1(t)j 2a2  + L2j 1(t)j 2b2+2) +  (c + I) (L3j 5(t)j 2a4  + L4j 5(t)j 2b4+2)
++  . .1  +  . .2  + T  +  L.TL. - [(c + I)    P2L] (L3j 5(t)ja3+1 + L4j 5(t)j b3+2)
+¡ÜT Q - (c + I)    P1 (L1j 1(t)ja1+1 + L2j 1(t)j b1+2)
+- [(c + I)    P2¦Ä] (L3j 5(t)j a3+1 + L4j 5(t)j b3+2)
++  (c + I) (L1j 1(t)j 2a2  + L2j 1(t)j 2b2+2) +  (c + I) (L3j 5(t)j 2a4  + L4j 5(t)j 2b4+2) +  . .1  +  . .2  + T  +  L.TL. - [(c + I)    P2L] (L3j 5(t)ja3+1 + L4j 5(t)j b3+2)
+¡¡¡¡¡¡Thus, according to the Lyapunov stability theorem, if Q < 0, the estimation errors are asymptotically stable and can converge to zero.
+This ends the proof.    
+3.2. Fault Detection and Estimation
+¡¡¡¡¡¡Considering the in?uence of disturbances on FD and fault estimation in the augmented subsystem (20), time-varying adaptive thresholds were designed to detect faults in the system. Combined with the estimation of the disturbances from the cooperative UIOs (23), the adaptive thresholds proposed were the following:
+{((    ((,,  -- - )) ((,,  -- -)) +-                                      (40)
+where Q1i and Q2i are the upper and lower bounds of the thresholds, respectively. Q1i  = [Q1i1, Q1i2]T, Q2i   =  [Q2i1, Q2i2]T, ¦Òi   =  [¦Òi1, ¦Òi2]T .  ¦Òi1  and ¦Òi2  are the offset of the adaptive
+thresholds, where ¦Òi1  = H1i/9, ¦Òi2  = H1i/3. i (t, T-1-i ) is given as
+
+According to the subsystems (20), (22), and the designed UIO (26), there is
+z2Ni (t) = 2i(t) - -2i (t, T-1-i )                                          (41)
+¡¡¡¡¡¡A set of residual signals can be calculated as ri  = v2i(t) - C2iz Ni(t). Then, the follow- ing FD conditions are given as follow:
+{i2i¡Ü<Q  i>, Q1i, rm                                                (42)
+
+
+where ri   =  [ri1, ri2]T .  In combination with the subsystem (20), it can be seen that the residuals ri1 and r i2 were caused by actuator fault and sensor fault, respectively. Therefore, the actuator fault and sensor fault in the system could be detected, respectively.
+For ease of analysis, de?ne i  = Ddi(t). According to Theorem 1, the estimation of the
+disturbances in system (19) 1i converge to 1i as the observation errors in (25) converge to
+zero. Further, the estimation of disturbances in system (20) can be expressed as D20i  =
+i 1i. Thus, 1i  = [  i    can be obtained. Then, the estimation of
+disturbances       in        the        original        system        can        be        expressed        as
+
+Similarly, according to the system (9), de?ne ai  = Efa1i, si  = Ffs1i. According to
+Theorem 1, the estimation of the disturbances in system (20) 2i converge to 2i. Further,
+the estimation of disturbances in system (20) can be expressed as 2i   = D20i + E21i .
+Thus, it can be obtained that E21i  = 2i  ¡ª Ri1i. Let E21 According to (13),
+the estimation of faults in the original system can be expressed as:
+
+4. Fault-Tolerant Cooperative Control Scheme Design
+¡¡¡¡¡¡Considering state constraint, a ?xed-time FTCC law is designed, based on backstep- ping control, in this subsection.
+¡¡¡¡¡¡De?ne x10  = [x0, y0, z0]T as the position vector of the leader. De?ne x1i  = [xi, yi, zi]T as the position vector of the follower UAV#i, i = 1, 2,  . . . , N. The expected relative position between UAVs is de?ned as Rij  ¡Ê R3, i, j  ¡Ê 0, 1, . . . , N. Thus, the cooperative formation position error is de?ned as:
+rij  = x1i  ¡ª x1j  ¡ª Rij, i, j ¡Ê 0, 1, 2, ¡¤ ¡¤ ¡¤ , N                                         (44)
+¡¡¡¡¡¡Further, by taking the communication network into account, the generalized position tracking error of the ith UAV is given as:
+
+where i = 1, 2,  ¡¤ ¡¤ ¡¤ , N, j = 0, 1, 2,  ¡¤ ¡¤ ¡¤ , N. ¦£i  = ¦²j¡Ê¦¸i  a ij, ¦¸i represents the neighbor set of the ith UAV. Then, let x1di  j¡Ê¦¸i   
+¡¡¡¡¡¡The state transformation with scaling function is proposed to keep the state variables within corresponding constraints. De?ne:
+
+where h  =  1,  2,  3.   2ih  is the estimation of x2ih,  x2ih  is the absolute value of lower bound of x2ih, 2ih  is the absolute value of upper bound of x2ih.  Then, the constraint of x2ih can be ensured, while the boundedness of X2ih is ensured. Thus, state x2ih satis?ed ¡ªx2ih  < x2ih  < 2ih if its initial condition satisfying ¡ªx2ih  < x2ih(0) < 2ih .
+
+
+Taking the derivative of X2ih provides:
+X.2ih  = ¦Çihx.2ih+ ¦Îih                                                                          (47)
+where X2i  = [X2i1, X2i2, X2i3]T, ¦Çih  = 1/(x2ih + 2ih)(x-2ih - 2ih), ¦Çi  = diag{¦Çi1, ¦Çi2, ¦Çi3}, ¦Îih  = (x2ih - x-2ih + 22ih).2ihx2ih/(x2ih + 2ih)2(x-2ih - 2ih)2, ¦Îi  = [¦Îi1, ¦Îi2, ¦Îi3]T .
+Choose the TBLF as:
+
+where kb is a constant. Then, the position tracking error e1ih,  h = 1, 2, 3, can be limited and satis?es je1ihj < kb if je1ihj < kb holds.
+By differentiating (48), one yields:
+
+
+
+
+
+where A1i  = diag{A1i1, A1i2, A1i3}, A1ih  = 1/ cos2 (¦Ðeih/2k), h = 1, 2, 3.
+K1i  = diag{(x2i1 + 2i1)(x-2i1 - 2i1), (x2i2 + 2i2)(x-2i2 - 2i2), (x2i3 + 2i3)(x-2i3 - 2i3)}. E2i  = X2i - X2di, X2di is the virtual control signal to be designed.
+Then, based on (49), the virtual control signal is designed as:
+X2di  = G                  (50)
+where 1i is the estimation of F1i, which contains the estimation of state variables. i is the
+¡¡estimation of Wi. K2i  = diag{K2i1, K2i2, K2i3} and K3i  = diag{K3i1, K3i2, K3i3} are designed parameter matrices, K2i1, K2i2, K2i3, K3i1, K3i2, K3i3   > 0.  pi, qi  are designed parameters, which satis?es 0.5 < pi  < 1, qi  > 1. siga (?) = j?j asgn(?).
+De?ne 2ih  = 2ih/(x2ih + 2ih)(x-2ih - 2ih),  h = 1,  2,  3. 2i  =  [2i1,  2i2,  2i3 ]T .
+Furthermore, considering the introduced sensor fault (6), the desired reference of 2i is
+developed as:
+
+
+where si  = [fsi2, 0, 0]T is the estimation of the sensor fault.
+A new variable 2di  is introduced to avoid direct differentiation of 2ci  by using
+dynamic surface control [41]. Then, a nonlinear ?lter is proposed as follows:
+
+where ¦Ç2i  = diag{¦Ç2i1, ¦Ç2i2, ¦Ç2i3} is a designed parameter matrix, ¦Ç2i1, ¦Ç2i2, ¦Ç2i3  > 0. s1i, s2i are positive constants.
+De?ne 2i  = 2i - 2di, E-2i  = 2di - 2ci. Choose the Lyapunov function as:
+
+
+
+By differentiating (53), one yields:
+.               T  .
+Vc2i  =E2iE2i
+=Ei (X.2i - X.2id)
+=Ei (¦Çix.2i+ ¦Îi - X.2id)
+=Ei [¦Çi (F2i+ G2iu0i+ G2if ai+ f. si+ W-i )+ ¦Îi - X.2id]
+where ¦Îi  = [¦Îi1, ¦Îi2, ¦Îi3 ]T, ¦Îih  = (x2ih - x-2ih+ 2x2ih)x.2ihx2ih/(x2ih+ x2ih)2(x-2ih - x2ih)2, h = 1, 2, 3.
+Finally, the FTCC law is designed as:
+u0i  =G21 [-F2i - G2if ai - f. si - W-i+ ¦Çi-1 (X.2id - ¦Îi)]
+- G21 ¦Çi-1 ( G1iK1iA1ie1i+ K4isig2pi-1(E2i )+ K5isig2qi-1(E2i ) + 2¦ÇE2i)
+where  F2i   is  the  nonlinear  function  containing  the  estimation  of  state  variables. Fai  = G2if ai= [f-ai4, 0, 0]T  is the estimation of the actuator fault.  W-i  is the estimation of W-i. K4i  = diag{K4i1, K4i2, K4i3} and K5i  = diag{K5i1, K5i2, K5i3} are parameter matrices to be designed, K4i1, K4i2, K4i3, K5i1, K5i2, K5i3  > 0. In conclusion, the developed scheme is shown in Figure 1.
+
+Fault Detection Scheme
+
+
+¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+Wind
+Disturbance
+¡¡¡¡¡¡¡¡
+
+
+Sensor Fault
+
+Figure 1. Overall FD and FTCC scheme.
+Theorem 2.  Consider a group of ?xed-wing UAVs (1)¨C(2) under actuator fault (5), sensor fault (6), and wind disturbances.  If the state transformation (46) and TBLF (48) are adopted to keep the state variables and position tracking errors within their constraints, the ?lter is proposed as (52), the control laws are designed as (50), (51), (55), and, then, the ?xed-wing UAVs can keep cooperative formation ?ight and the errors of the multi-UAVs system are ?xed-time convergent.
+Proof. Select the Lyapunov function as:
+Vi  =  eiA1ie1i + EiE2i  + E- iE-2i                                                       (56)
+¡¡¡¡¡¡By considering (49), (51), (54), (55), differentiating (56), and using Young's inequality, one yields:
+
+
+
+
+V.i  =eiA1ie.1i + i 2i + E- iE-.2i
+=eiA1i [G1iK1i (2i+ E-2i ) + 1i - 
++ i [¦Çi (2i + 
+- E- i 2ci - i (K4isig2pi-1(2i )+ K5isig2qi-1(2i ) + 2¦Ç2i)
+- iG1iK1iA1ie1i -  eiAe1i
+=E- i (-¦Ç2i (sigs1i-1 (E-2i) + sigs2i-1 (E-2i)) - E-2i) + E- i ( G1iK1iA1ie1i  - 2ci)                                   (57)
++ eiA1i (1i - 
+¡¡+ i¦Çi (2i +  ¡Ü - K2i¢òe1i¢ò2pi   - K3i¢òe1i¢ò2qi   - K4i "2i "2pi   - K5i "2i "2qi  - ¦Ç2i ¢òE-2i¢òs1i  - ¦Ç2i ¢òE-2i¢òs2i
++  (i 1i 
+w~here 1i   =  F1i  - 1i, 2i   =  F2i  -   = f ai  - ai  is the estimation error of f ai,
+f si  = f si - si is the estimation error of f si, ¡Þ is a positive constant, which is assumed to
+satisfy "G1iK1iA1ie1i - 2ci " ¡Ü ¡Þi.
+Further, choosing pi  = s1i/2 and qi  = s2i/2, one can obtain:
+V.i  ¡Ü -¦« 1iVip i   - ¦«2iViq i  + ¦«3i                                                           (58)
+where ¦« 1i   =  min{¦Ëmin(K2i)2pi ,  ¦Ëmin(K4i)2pi ,  ¦Ëmin(¦Ç2i )2pi }, ¦«2i   =  min{¦Ëmin(K3i)2qi , ¦Ëmin(K5i)2qi ,  ¦Ëmin(¦Ç2i )2qi }, ¦«3i   =  i.   ¦Ëmin(?) represents the minimum eigenvalue of
+the matrix. i is assumed to b~e th~e upper bound of ¦Åi  =  (i 1i G + i +
+i 2i iG  + W- W-i+ ¡Þ2 ).
+According to Lemma 1, the error signals of the multi-UAV system are fixed-time bound-
+ed and convergent, wherein Vi can converge to the following set {Vi ¡Ü min{ (  (1-¦« 1i  ,
+(  (1-¦«2i ) i  }}, and the setting time is presented as Tci  ¡Ü Tci max  =  + 
+with 0 < ¦Õi  < 1.
+This completes the proof of Theorem 2.    
+5. Simulation Results
+¡¡¡¡¡¡The effectiveness of the designed FD and FTCC scheme was veri?ed by means of simulations described in this section. The structure and aerodynamic parameters of ?xed- wing UAVs referred to [42]. In the simulations, actuator faults were encountered by UAV#1 at t = 15 s and by UAV#2 at t  = 45 s, respectively.  Sensor faults were encountered by UAV#2 at t = 40 s and by UAV#4 at t = 75 s, respectively. The actuator and sensor faults are given in Table 1. Wind disturbances were encountered by the UAVs at t = 10 s in the simulations, Wy  = 0, Wz  = 0, and Wx are given in Table 2.
+
+
+Table 1. Description of sensor and actuator fault models.
+
+	UAV#1	UAV#2	UAV#4
+Actuator fault
+
+Sensor fault	{	= 1, ¦Ätb1  = 0,             t < 15 s = 0.6, ¦Ätb1  = -0.05, t > 15 s
+\	
+	\
+
+
+Table 2. Description of wind disturbance model.
+
+	t < 10 s	10 s ¡Ü t < 30 s	30 s ¡Ü t < 60 s	t > 60 s
+Wx	0	-0.1e-0.5(t-10) + 0.1	0.4e-0.5(t-30) - 0.3	-0.5e-0.5(t-60) + 0.2
+
+¡¡¡¡¡¡The chosen design control parameters were Tmax  = 100, ¦Ç2i  = diag{0.6,  0.6,  0.6}, kb  = 0.5, x2i1  = 0, x-2i1  = 32, x2i2  = 0.2, x-2i2  = 0.2, x2i3  = 0.2, x-2i3  = 0.2, pi  = 0.95, qi  = 1.2, s1i  = 1.9, s2i  = 2.4, K2i  = diag{15, 23, 23}, K3i  = diag{10, 22, 22}, K4i  = diag{33, 3, 3}, K5i   = diag{36,  3,  3}.  The parameters for UIOs are designed as a1  = 0.65, b1  = 0.85, a3  = 0.55, b3  = 0.75, L1  = L2  = 32, L3  = 5, L4  = 6, L5  = 15, L6  = 16. The parameter for FD was designed as H1i  = 3. The initial conditions of ?xed-wing UAVs were x10(0) = [0, 0, 0]T m, x11(0) = [0, 0.01, 1030]T m, x12(0) = [-0.02, -27, 1012]T m, x13(0) = [0.02, 27, 1012]T m, x14(0) = [0.01, -18, 976]T m, x15(0) = [-0.01, 18, 976]T m, Vi(0) = 30 m/s, gi(0) = 0¡£, ci(0) = 0¡£.  The expected value of the relative position between ?xed-wing UAVs are shown in Table 3. The trajectory of the leader was given by x10 = [30t, 0, 1000]T m. The com- munication topology of the UAVs is shown in Figure 2. Thus, the Laplacian matrix and leader adjacency matrix could be calculated as:
+
+
+¡¡¡¡¡¡Solving the matrix inequality (30) by means of the LMI toolbox, matrices P1 and P2 could be calculated as:
+
+
+Table 3. Expected value of the relative position between ?xed-wing UAVs.
+
+	UAV#1 (i = 1)	UAV#2 (i = 2)	UAV#3 (i = 3)	UAV#4 (i = 4)	UAV#5 (i = 5)
+Ri0  [m]	[0, 0, 30]T	[0, -27, 12]T	\	\	\
+Ri1  [m]	\	[0, -27, -18]T	[0, 27, -18]T	[0, -18, -54]T	\
+Ri2  [m]	[0, 27, 18]T	\	[0, 54, 0]T	\	[0, 45, -36]T
+Ri3  [m]	[0, -27, 18]T	[0, -54, 0]T	\	\	\
+Ri4  [m]	[0, 18, 54]T	\	\	\	[0, 36, 0]T
+Ri5  [m]	\	[0, -45, 36]T	\	[0, -36, 0]T	\
+
+
+
+
+
+UAV#1
+Actuator Fault
+(t=15 s)
+
+
+UAV#0 Leader
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+UAV#2
+(t=45 s)                      
+Sensor Fault
+
+
+Figure 2. Communication topology.
+¡¡¡¡¡¡Figure 3illustrates the ?ight paths of multi-UAVs. It can be seen that the ?xed-wing UAVs kept cooperative formation ?ight even if the multi-UAV system was subjected to actuator faults, sensor faults, and wind disturbances.  The thrust throttle setting of UAV#i (i  = 1,  2,  3,  4,  5) is presented in Figure 4.  The control inputs enabled a quick response as the faults and disturbances were encountered.  Figure 5 demonstrates the generalized position tracking errors of the ith UAV, and it can be observed that the errors were convergent to a neighborhood containing zero.  Figure 6 shows the residuals and thresholds of UAV#1, 2, 4 for the FD unit, respectively. It can be seen from the FD results that the residual functions for actuator fault and sensor fault exceeded the corresponding FD thresholds when an actuator fault or a sensor fault occurred. Meanwhile, the residual signals were smaller than the corresponding FD thresholds if no faults occurred. Therefore, the occurrence of actuator and sensor faults could be promptly detected by utilizing the designed FD scheme.  The estimations of wind disturbances, airspeed, and faults are demonstrated in Figure 7, Figure 8, and Figure 9, respectively. It can be observed that the developed cooperative UIOs had excellent observation capabilities. The states of the multi- UAV system, disturbances, and faults approximated rapidly and accurately. Furthermore, it was found from the above simulation results that the ?ight performance of UAVs was affected if neighboring UAVs sufferred from faults.
+
+
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+
+t = 0 s
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+UAV#2
+1000
+UAV#3
+980
+t = 70 s
+UAV#5
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+X [m]
+Figure 3. Flight paths of  multi-UAVs.
+
+
+t1
+UAV#2
+UAV#1    Sensor Fault
+Actuator Fault       \
+\        ¡¤	UAV#4
+Sensor Fault	t2
+t3
+t4
+t5
+	¡¡¡¡¡¡¡¡	
+	\ UAV#2	
+Actuator Fault
+0             20            40            60            80            100 Time [seconds]
+Figure 4. ¦Ät0i  of the ith UAV.
+
+
+
+
+¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡
+
+
+
+
+
+0.04
+0.02 0
+-0.02
+0            20           40           60           80          100
+Time [seconds]
+
+
+e21
+e22
+e23
+0.05
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+0
+0            20           40           60           80           100
+Time [seconds]
+
+
+0.05
+Wind Disturbances
+
+0
+
+-0.05
+0            20           40           60           80          100
+Time [seconds]
+
+
+
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+
+
+
+
+
+0.05                                                                      e41 e42 e43
+0
+UAV#4 Sensor Fault
+-0.05
+0            20           40           60           80          100
+Time [seconds]
+
+
+0.04
+0.02 0
+-0.02 -0.04
+0            20           40           60           80          100
+Time [seconds]
+
+Figure 5. The generalized position tracking errors of the ith UAV.
+
+ri1                       ri2               ----- Threshold for actuator fault       ---- Threshold for sensor fault
+
+
+							
+UAV#2 Sensor Fault          UAV#2 Actuator Fault
+
+	i = 2       
+							
+0             20            40            60            80            100        0             20             40            60            80            100        0              20            40            60            80            100 Time [seconds]                                                         Time [seconds]                                                          Time [seconds]
+Figure 6. Residuals and thresholds for FD.
+
+
+
+¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡
+UA
+¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡
+
+
+
+
+UAV#2
+Actuator Fault
+0
+UAV#1
+Actuator Fault
+-0.4                                                                                    -0.4                                                                                     -0.4
+0             20            40            60            80           100         0             20            40            60            80           100         0             20            40           60            80            100
+Time [seconds]                                                         Time [seconds]                                                         Time [seconds]
+
+Figure 7. Wind disturbances and estimations.
+
+
+
+
+¡¡¡¡¡¡
+<
+¡¡¡¡¡¡
+¡¡¡¡¡¡
+
+
+
+
+30.5
+r1
+r1
+30
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+UAV#1 Actuator Fault
+29.5
+0             20           40           60            80           100
+Time [seconds]
+
+
+31
+UAV#2
+r2
+Sensor Fault
+30.5
+<
+30
+UAV#2
+Actuator Fault
+29.5
+0             20           40           60            80           100
+Time [seconds]
+
+
+30.5
+r3
+r3
+30
+Wind Disturbances
+29.5
+0             20           40           60            80           100
+Time [seconds]
+
+
+
+
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+<
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+
+
+
+
+30.5
+r4
+r4
+30
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+UAV#4 Sensor Fault
+29.5
+0             20           40           60            80           100
+Time [seconds]
+
+
+30.5
+r5
+r5
+30
+Wind Disturbances
+29.5
+0             20           40           60            80           100
+Time [seconds]
+
+Figure 8. Airspeeds and estimations.
+
+
+
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+<
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+
+
+
+
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+<
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+
+
+
+
+0.1
+fa11
+fa11
+UAV#1 Actuator Fault
+
+
+
+¡¡¡¡¡¡¡¡¡¡
+0            20           40           60           80           100
+Time [seconds]
+¡¡¡¡¡¡¡¡¡¡
+fs12 fs12
+UAV#2 Sensor Fault
+-5
+
+-10
+0             20            40            60            80           100
+Time [seconds]
+
+
+fa12
+fa12
+<
+-0.05          UAV#2
+Actuator Fault
+-0.1
+-0.15                                                             
+0            20           40           60           80          100 Time [seconds]
+2
+fs14
+fs14
+<
+UAV#4 Sensor Fault
+
+-4
+¡¡¡¡¡¡¡¡¡¡¡¡
+0             20            40            60            80            100
+Time [seconds]
+
+Figure 9. Faults and estimations.
+¡¡¡¡¡¡The comparative simulations between the proposed cooperative FD scheme and the individual FD scheme demonstrated the superiority of the proposed scheme. Note that the comparative individual FD scheme was derived by removing cooperative terms, including ¦Õ1i  and ¦Õ2i  from the UIOs.  Consider the fact that UAV#2 simultaneously encountered actuator and sensor faults, only the generalized position tracking error and estimations of the velocity, faults, and wind disturbances of UAV#2 are presented to show the superiority of the developed method. It can be seen from Figure 10that the convergence rate of tracking errors under the developed method was faster than the comparative scheme. Therefore, one can conclude that the performance of the developed FD scheme is enhanced by introducing cooperative terms.
+
+
+
+
+
+
+¡¡¡¡¡¡
+¡¡¡¡¡¡
+¡¡¡¡¡¡
+
+
+
+
+
+
+
+¡¡¡¡¡¡
+
+
+
+
+
+
+e21                                                   e 21c
+¡¡¡¡¡¡¡¡
+¡¡0.1 0.05
+0
+40          41          42          43          44
+0
+0            20           40           60           80           100
+Time [seconds]
+¡¡¡¡
+31
+30.5
+29.81
+30
+40.6
+29.5
+0            20           40           60           80           100
+Time [seconds]
+
+
+
+¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
+0
+0
+-0.05 -0.1
+-0.15
+0            20           40           60           80          100
+Time [seconds]
+
+¡¡¡¡¡¡¡¡
+0
+-5
+UAV#2
+-5
+
+-10
+0             20            40            60            80           100
+Time [seconds]
+
+
+¡¡¡¡¡¡
+0.2
+-0.31
+0.205 0.2
+0.195
+75          76           77           78
+
+0            20           40           60            80           100
+Time [seconds]
+
+
+0.2
+0
+¡¡0.02 0.01	0 -0.01
+-0.02
+75           76             77             78
+
+0            20           40           60           80           100
+Time [seconds]
+
+Figure 10. Comparison between the proposed cooperative FD scheme and the individual FD scheme.
+6. Conclusion and Future Work
+¡¡¡¡¡¡In this study, the FD and FTCC schemes were propounded for multiple ?xed-wing UAVs against actuator faults, sensor faults, and wind disturbances. In the FD unit, the faulty UAV model with wind disturbances was linearized and the system was converted into two subsystems by using state and output transformations. Then, cooperative UIOs were developed to estimate the states, faults, and disturbances. The adaptive thresholds were designed to detect actuator and sensor faults by using the observers¡¯ estimations. In the FTCC unit, state constraints were considered. Furthermore, backstepping-based ?xed-time FTCC laws were proposed for multi-UAVs suffering from actuator faults, sensor faults, and wind disturbances.  Lyapunov analysis proved the ?xed-time convergence of the tracking errors in the multi-UAV system. The simulation results showed the effectiveness of the FD and FTCC strategies.
+¡¡¡¡¡¡In the current study, only the effectiveness loss, deviation of thrust throttle setting, and pitot faults were considered in the FD and FTCC scheme design for the ?xed-wing follower UAVs. As one of future works, more actuator and sensor faults, such as actuator stuck faults, will be investigated. Furthermore, the effects of faults and wind disturbances on real UAV testbeds with one leader UAV, or even multiple leader UAVs, will be considered in future research.  Eventually, implementation and experimental tests of the proposed scheme on systems with real UAVs will be carried out.
+Author Contributions: Conceptualization, Y.C., G.X. and Y.Z.; Methodology, Z.Y. (Zhongyu Yang) and M.L.; Supervision, Z.Y. (Ziquan Yu) and G.X.; Validation, Z.Y. (Zhongyu Yang) and M.L.; Visu- alization, Z.Y. (Zhongyu Yang); Writing¡ªoriginal draft, Z.Y. (Zhongyu Yang); Writing¡ªreview & editing, Z.Y. (Ziquan Yu), Y.C. and Y.Z. All authors have read and agreed to the published version of the manuscript.
+¡¡Funding: This work was supported in part by the National Natural Science Foundation of China (No. 62003162, 61833013, 62233009), the Natural Science Foundation of Jiangsu Province of China (No.   BK20200416, BK20222012), the China Postdoctoral Science Foundation (No.   2020TQ0151, 2020M681590),  the Industry¨CUniversity Research Innovation Foundation for the Chinese Min- istry of Education (No. 2021ZYA02005), the Science and Technology on Space Intelligent Con- trol Laboratory (No.   HTKJ2022KL502015), the Aeronautical Science Foundation of China (No. 20220007052003, 20200007018001), the Postgraduate Research & Practice Innovation Program of NUAA (No. xcxjh20220325); and the Natural Sciences and Engineering Research Council of Canada.
+¡¡Data Availability Statement: The data presented in this study are available on request from the corresponding author upon reasonable request.
+Con?icts of Interest: The authors declare no con?ict of interest.
+
+
+References
+1.      Yang, X.S.; Tang, L.B.; Wang, H.S.; He, X.X. Early detection of forest ?re based on unmaned aerial vehicle platform. In Proceedings of the IEEE International Conference on Signal, Information and Data Processing, Chongqing, China, 11¨C13 December 2019.
+2.     Yfantis, E.A. A UAV with autonomy, pattern recognition for forest ?re prevention, and AI for providing advice to ?re?ghters ?ghting forest ?res. In Proceedings of the IEEE 9th Annual Computing and Communication Workshop and Conference, Las Vegas, NV, USA, 7¨C9 January 2019.
+3.      Bi, J.T.; Mao, W.B.; Gong, Y.J. Research on image mosaic method of UAV image of earthquake emergency.  In Proceedings of the International Conference on Agro-Geoinformatics, Beijing, China, 11¨C14 August 2014.
+4.      Li, Z.R.; Liu, Y.; Walker, R.; Hayward, R.; Zhang, J.L. Towards automatic power line detection for a UAV surveillance system
+using pulse coupled neural ?lter and an improved Hough transform. Mach. Vis. Appl. 2010, 21, 677¨C686. [CrossRef]
+5.      Hristov, G.; Raychev, J.; Kinaneva, D.; Zahariev, P. Emerging methods for early detection of forest ?res using unmanned aerial vehicles and lorawan sensor networks. In Proceedings of the 28th EAEEIE Annual Conference, Hafnarfjordur, Iceland, 26¨C28 September 2018.
+6.      Fahmani, L.; Garfaf, J.; Boukhdir, K.; Benhadou, S.; Medromi, H. Unmanned aerial vehicles inspection for overhead high voltage transmission lines. In Proceedings of the International Conference on Innovative Research in Applied Science, Engineering and Technology, Meknes, Morocco, 16¨C19 April 2020.
+7.      Wu, G.F.; Gao, X.G.; Fu, X.W.; Wan, K.F.; Di, R.H. Mobility control of unmanned aerial vehicle as communication relay in airborne multi-user systems. Chin. J. Aeronaut. 2019, 32, 1520¨C1529. [CrossRef]
+8.      Peng, H.; Shen, L.C.; Zhu, H.Y.  Multiple UAV cooperative area search based on distributed model predictive control.  Acta Aeronaut. Astronaut. Sin. 2010, 31, 593¨C601.
+9.      No, T.S.; Kim, Y.D.; Tahk, M.J.; Jeon, G.E. Cascade-type guidance law design for multiple-UAV formation keeping. Aerosp. Sci. Technol. 2011, 15, 431¨C439. [CrossRef]
+10.    Seo, J.B.; Kim, Y.D.; Tsourdos, A.; White, B.A.  Multiple UAV formation recon?guration with collision avoidance guidance via differential geometry concept.  In Proceedings of the International Congress of the Aeronautical Sciences ICAS, Brisbane, Australia, 23¨C28 September 2012; pp. 1¨C8.
+11.    Bai, R.G.; Sun, X.; Chen, Q.S.; Quan, X.W. Multiple UAV cooperative trajectory planning based on Gauss pseudospectral method.
+J. Astronaut. 2014, 35, 1022¨C1029.
+12.    Yu, Z.Q.; Zhang, Y.M.; Qu, Y.H. Prescribed performance-based distributed fault-tolerant cooperative control for multi-UAVs. Trans. Inst. Meas. Control 2019, 41, 975¨C989. [CrossRef]
+13.    Chi, C.Z.; Su, L.; Lyu, Y.X.; Shi, J.P.; Huang, S. Research on real-time fault detection of UAV ?ight control system sensor based on Riemannian manifold. In Advances in Guidance, Navigation and Control: Proceedings of 2022 International Conference on Guidance, Navigation and Control, Harbin, China, 5¨C7 August 2022; Springer: Berlin/Heidelberg, Germany, 2023; pp. 1219¨C1227.
+14.    Grehan, J.; Ignatyev, D.; Zolotas, A. Fault detection in aircraft ?ight control actuators using support vector machines. Machines 2023, 11, 211. [CrossRef]
+15.    Al-Haddad, L.A.; Jaber, A.A.  An intelligent fault diagnosis approach for multirotor UAVs based on deep neural network of multi-resolution transform features. Drones 2023, 7, 82. [CrossRef]
+16.    Liu, Z.B.; Wang, L.N.; Song, Y.C.; Dang, Q.Q.; Ma, B.D.  Fault diagnosis and accommodation for multi-actuator faults of a ?xed-wing unmanned aerial vehicle. Meas. Sci. Technol. 2022, 33, 075903. [CrossRef]
+17.    Zhang, J.; Swain, A.K.; Nguang, S.K. Robust sensor fault estimation scheme for satellite attitude control systems. J. Frankl. Inst. 2013, 350, 2581¨C2604. [CrossRef]
+18.    Wu, Y.K.; Jiang, B.; Lu, N.Y.; Yang, H.; Zhou, Y. Multiple incipient sensor faults diagnosis with application to high-speed railway traction devices. ISA Trans. 2017, 67, 183¨C192. [CrossRef]
+19.    Yin, S.; Gao, H.J.; Qiu, J.B.; Kaynak, O. Descriptor reduced-order sliding mode observers design for switched systems with sensor and actuator faults. Automatica 2017, 76, 282¨C292. [CrossRef]
+20.    Atallah, M.; Okasha, M.; Dief, T.N.; Jallad, A.H. Optimal consensus control for multi-satellite assembly in elliptic orbit with input saturation. Acta Astronaut. 2023, 208, 82¨C90. [CrossRef]
+21.    Yu, Y.S.; Shi, C.B.B.; Shan, D.; Lippiello, V.; Yang, Y.  A hierarchical control scheme for multiple aerial vehicle transportation systems with uncertainties and state/input constraints. Appl. Math. Model. 2022, 109, 651¨C678. [CrossRef]
+22.    Chen, Q.J.; Jin, Y.Q.; Wang, T.Y.; Wang, Y.; Yan, T.L.; Long, Y.F. UAV formation control under communication constraints based on distributed model predictive control. IEEE Access 2022, 10, 126494¨C126507. [CrossRef]
+23.    Aliyari, M.; Wong, W.K.; Bouteraa, Y.; Naja?nia, S.; Fekih, A.; Mobayen, S. Design and implementation of a constrained model predictive control approach for unmanned aerial vehicles. IEEE Access 2022, 10, 91750¨C91762. [CrossRef]
+24.    Yan, K.; Wu, Q.X. Adaptive tracking ?ight control for unmanned autonomous helicopter with full state constraints and actuator faults. ISA Trans. 2022, 128, 32¨C46. [CrossRef]
+25.    Wang, Z.X.; Yang, P.; Hu, X.K.; Zhang, Z.Q.; Wen, C.W. Sliding mode fault tolerant control of quadrotor UAV with state constraints under actuator fault. Int. J. Innov. Comput. I 2021, 17, 639¨C653.
+26.    Zhang, B.Y.; Sun, X.X.; Lv, M.L.; Liu, S.G.; Li, L. Distributed adaptive ?xed-time fault-tolerant control for multiple 6-DOF UAVs with full-state constraints guarantee. IEEE Syst. J. 2021, 16, 4792¨C4803. [CrossRef]
+
+
+27.    Li, Z.; Chen, X.; Xie, M.Y.; Zhao, Z.H.  Adaptive fault-tolerant tracking control of ?ying-wing unmanned aerial vehicle with system input saturation and state constraints.  Trans. Inst. Meas. Control 2022, 44, 880¨C891. [CrossRef]
+28.    Zhou, Y.; Dong, W.H.; Liu, Z.C.; Lv, M.L.; Zhang, W.Q.; Chen, Y. IBLF-based ?xed-time fault-tolerant control for ?xed-wing UAV with guaranteed time-varying state constraints. IEEE Trans. Veh. Technol. 2022, 72, 4252¨C4266. [CrossRef]
+29.    Jin, X. Fault tolerant ?nite-time leader¨Cfollower formation control for autonomous surface vessels with LOS range and angle constraints. Automatica 2016, 68, 228¨C236. [CrossRef]
+30.    Li, J.Q.; Kumar, K.D. Fault tolerant attitude synchronization control during formation ?ying. J. Aerosp. Eng. 2011, 24, 251¨C263. [CrossRef]
+31.    Zhang, J.X.; Yang, G.H. Fault-tolerant leader-follower formation control of marine surface vessels with unknown dynamics and actuator faults. Int. J. Robust Nonlinear Control 2018, 28, 4188¨C4208. [CrossRef]
+32.    Cui, B.; Zhao, C.H.; Ma, T.D.; Feng, C.  Distributed adaptive neural network control for a class of heterogeneous nonlinear multi-agent systems subject to actuation failures. Int. J. Syst. Sci. 2017, 48, 559¨C570. [CrossRef]
+33.    Zhou, N.; Xia, Y.Q. Distributed fault-tolerant control design for spacecraft ?nite-time attitude synchronization.  Int. J. Robust Nonlinear Control 2016, 26, 2994¨C3017. [CrossRef]
+34.    Yu, Z.Q.; Zhang, Y.M.; Liu, Z.X.; Qu, Y.H.; Su, C.Y. Distributed adaptive fractional-order fault-tolerant cooperative control of networked unmanned aerial vehicles via fuzzy neural networks. IET Contr. Theory Appl. 2019, 13, 2917¨C2929. [CrossRef]
+35.    Wu, Z.H.; Zheng, S.P.   Fixed-time fault-tolerant tracking control of ?xed-wing UAVs with actuator fault and unmatched disturbances. Int. J. Aerosp. Eng. 2022, 2022. [CrossRef]
+36.    Han, B.; Jiang, J.; Yu, C.J.; Cao, T. Distributed fault estimation and ?xed-time fault-tolerant formation control for multi-UAVs subject to sensor faults. J. Intell. Robot. Syst. 2022, 105, 80. [CrossRef]
+37.    Yu, Z.Q.; Zhang, Y.M.; Jiang, B.; Su, C.Y.; Fu, J.; Jin, Y.; Chai, T.Y. Fractional-order adaptive fault-tolerant synchronization tracking control of networked ?xed-wing UAVs against actuator-sensor faults via intelligent learning mechanism.  IEEE Trans. Neural Netw. Learn. Syst. 2021, 32, 5539¨C5553. [CrossRef]
+38.    Shao, S.Y.; Chen, M.; Shi, P. Robust Discrete-Time Flight Control of UAV with External Disturbances; Springer: Berlin/Heidelberg, Germany, 2021; Volume 317.
+39.    Cui, G.Z.; Yang, W.; Yu, J.P.; Li, Z.; Tao, C.B. Fixed-time prescribed performance adaptive trajectory tracking control for a QUAV. IEEE T. Circuits-II 2021, 69, 494¨C498. [CrossRef]
+40.    Yan, X.G.; Edwards, C. Sensor fault detection and isolation for nonlinear systems based on a sliding mode observer. Int. J. Adapt. Control Signal Process. 2007, 21, 657¨C673. [CrossRef]
+41.    Lv, M.L.; Yu, W.W.; Cao, J.D.; Baldi, S. Consensus in high-power multiagent systems with mixed unknown control directions via hybrid nussbaum-based control. IEEE T. Cybern. 2020, 52, 5184¨C5196. [CrossRef]
+42.    Lin, W. Distributed UAV formation control using differential game approach. Aerosp. Sci. Technol. 2014, 35, 54¨C62. [CrossRef]
+
+¡¡Disclaimer/Publisher's Note: The statements, opinions and data contained in all publications are solely those of the individual author(s) and contributor(s) and not of MDPI and/or the editor(s). MDPI and/or the editor(s) disclaim responsibility for any injury to people or property resulting from any ideas, methods, instructions or products referred to in the content.

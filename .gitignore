@@ -1,0 +1,81 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Data (large, can be regenerated)
+data/csv_raw/
+data/processed/online_cache/
+data/processed/seq_cache/
+data/processed/*.sqlite
+data/processed/*.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+.pytest_cache/
+.ruff_cache/
+.venv-cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups
+models_backup_*/
+
+# Dashboard
+apps/dashboard/frontend/node_modules/
+apps/dashboard/frontend/dist/
+apps/dashboard/frontend/.env
+apps/dashboard/backend/.venv/
+apps/dashboard/backend/runtime/
+apps/dashboard/backend/runtime_test/
+apps/dashboard/backend/*.db
+apps/dashboard/backend/logs/
+apps/dashboard/backend/instance/
+apps/dashboard/backend/.env
+
+# Legacy local runtime paths
+dashboard/frontend/node_modules/
+dashboard/frontend/dist/
+dashboard/backend/.venv/
+dashboard/backend/runtime/
+dashboard/backend/logs/
+
+# Local docs / tests / assets not for GitHub
+docs/*
+!docs/migration-monorepo.md
+!docs/model_training_pipeline.md
+!docs/autodl_training_runbook.md
+/tests/*
+!/tests/test_monorepo_layout.py
+/data/
+/logs/
+/competition/
+results/
+tmp/
+vendor/
+%LOG_ROOT%/
+%OUTPUT%/
+AGENTS.md
+WORK_LOG.md
+shadcn-analytics.tsx
+.superpowers/
+Git规范.md
+/关于举办*.pdf
+/无人机故障检测系统.txt
+competition_docs/
+服务器更新命令.md
+packages/uav_fault/uav_fault/*.csv
+assets/models/*.csv
+/uav_5g_results_stride5/full_run_stride5.log
+.qoder
+
+# Keep curated archived docs visible to Git even though most docs are local-only.
+!docs/archive/
+!docs/archive/**

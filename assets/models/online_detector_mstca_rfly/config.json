@@ -1,0 +1,23 @@
+{
+  "model": "mstca",
+  "mode": "fewshot",
+  "task": "online_binary",
+  "feature_schema": "rfly_seq_columns_v1",
+  "window_size": 150,
+  "feature_count": 31,
+  "in_channels": 31,
+  "num_classes": 2,
+  "hidden_size": 64,
+  "num_layers": 1,
+  "dropout": 0.2,
+  "label_names": [
+    "normal",
+    "fault"
+  ],
+  "epochs_trained": 49,
+  "best_val_f1": 0.9511143947789681,
+  "gamma": 2.0,
+  "lr": 0.0003,
+  "batch_size": 512,
+  "n_params": 108338
+}

@@ -1,0 +1,493 @@
+http://hkxb. buaa. edu. cn hkxb@buaa. edu. cn
+
+引用格式：陈涛，陈建． 基于学习观测器的无人机故障弹性容错控制［J］． 航空学报，2025，46（11）：531346．  CHEN T，CHEN
+J.    Learning-observer-based   resilient   fault-tolerant   control  for   quadrotor   unmanned   aerial  vehicles［J］.    Acta Aeronautica et Astronautica Sinica，2025，46（11）：531346（in Chinese）.  doi：10. 7527/S1000-6893. 2024. 31346
+
+低空经济专刊
+基于学习观测器的无人机故障弹性容错控制
+
+陈涛 1，2 ， 陈建 1，*
+1． 中国农业大学 工学院，北京  100083
+2． 中国科学院 沈阳自动化研究所 机器人学国家重点实验室， 沈阳  110016
+
+　摘    要 ：针对具有传感器故障与加性执行器故障的四旋翼无人机的控制问题，提出一种基于学习观测器的故障弹性容错控制方案 。通过处理传感器的故障输出信号 ，引入新的系统变量 ，并基于坐标变化构造扩张系统 ，进而利用传感器故障输出设计学习观测器在线估计系统故障函数与实际输出 ，进而设计自适应神经网络反步弹性容错控制器实现在无人机同时发生传感器故障与加性执行器故障的情况下 ，系统实际输出跟踪参考信号 ，基于 Lyapunov 稳定性理论证明了闭环系统稳定性 。最后，使用四旋翼无人机进行了仿真和户外试验，结果验证了所提方法的有效性 。
+关键词 ： 四旋翼无人机 ； 弹性容错控制 ；学习观测器 ；传感器故障 ；执行器故障
+中图分类号 ：V24      文献标识码 ：A       文章编号 ：1000-6893（2025）11-531346-13
+
+
+　　　四 旋 翼 无 人 机（Unmanned Aerial Vehicle， UAV）作为低空经济的重要组成，具有结构简单 、灵活性强且能够垂直起降和定点悬停等优点 ，在农业植保 、表型监测 、灾难救援等领域得到广泛应用［1-2］。但受低空未知的复杂工作环境的影响，无人机在飞行过程中传感器和执行器可能会发生故障导致其飞行性能受到影响 ，甚至影响飞行安全 。 因此要求控制系统具有容错性能 ，能在无人机传感器与执行出现故障时 ，保证无人机稳定
+安全飞行［3-4］。
+　　　近年来 ，针对无人机弹性容错控制问题 ，国内外学者针对不同类型的无人机故障问题提出解决方案［5-6］，其中弹性控制是指系统能够忍受系统结构和设计参数 、控制装置结构和参数引起的
+
+
+　波 动 ，即 在 异 常 情 况 下（包 含 恶 意 和 灾 难 性 威 胁下）系统维持状态已知和可以接受的一定恢复程度的正常运行［7］。针对无人机传感器故障问题 ，文献［8］考虑了四旋翼无人机姿态系统存在四种传 感 器 故 障（偏 差 、漂 移 、失 准 、失 效）的 情 况 ，提出了一种模糊自适应非线性容错控制方案 ，将欧拉角回路中的传感器故障等效转化为不确定项 ，将 角 速 度 回 路 中 的 其 他 未 知 项（包 括 故 障 、不 确定参数和外部干扰）集中到一个未知的非线性函数 ，并使用模糊逻辑系统近似该非线性函数 。文献［9］研究了包含多架无人机的无人系统编队容错控制问题 。针对多传感器同时出现故障的问题 ，文献［10］采用卡尔曼滤波器设计了一种用于多传感器故障的容错策略 ，可以实现 2 种硬件传
+
+收稿日期： 2024- 10-08； 退修日期： 2025-01-03； 录用 日期： 2025-02- 19； 网络出版时间： 2025-02-28  13：34
+网络出版地址： https：//hkxb. buaa. edu. cn/CN/Y2025/V46/I11/531346
+基金项目： 国家自然科学基金资助项目（52472463，12426518）；中国高校产学研创新基金资助项目（2024HT004）；机器人与智能系统全国重点实验室开放基金资助项目（2024-O01）；中国农业大学学科交融拓新计划项 目；中国农业大学研究生自主创新研究基金项目资助
+* 通信作者 ． E-mail：jchen@cau. edu. cn
+
+
+
+感器同时出现故障的容错控制 。然而在实际系统中 ，传感器可能会因复杂的环境因素而多次发生故障 。 例如 ，当传感器环境超过传感器的要求时 ，数据偏差会导致故障 ，当环境恢复正常时 ，这些故障会消失 ，当环境发生变化时 ，故障会发生变化 。例如 ，无人机中的加速度计 、陀螺仪和磁力计等传感器基于半导体材料 ，而半导体对温度非常敏感 ，当无人机执行任务时 ，外部温度会随着高度而变化 ，无人机的长期飞行必然会使电池等内部结构升温 ，从而使传感器故障发生变化 。并且由于无人机常采用的电池为锂 电 池 ，锂 电 池 的 最 佳 工 作 温 度 范 围 为 25 ℃ ~ 40 ℃ , 并 且 要 求 电 池 系 统 内 的 温 差 要 求 不 超 过5 ℃［11］，而在低空空域内 ，环境温度超过该范围 ，会导致无人机电池性能下降 ，进而可能导致传感器故障 。 因此 ，对于传感器故障问题 ，设计的容错控制系统需具有弹性能够解决传感器出现多次故障的问题 。
+　　　针对四旋翼无人机的执行器故障 ，文献［12］提出了一种将快速终端滑模控技术与神经网络相结合的四旋翼无人机姿态系统自适应容错控制方法，通过自适应律估计执行器故障系数，实现对四旋翼无人机执行器故障容错控制 。文献［13］考虑了四旋翼无人机桨叶缺损故障 ，基于自抗扰控制技术提出一种迭代学习复合抗扰容错控制器 ，能够实现在无人机桨叶缺损 35% 的情况下的稳定飞行 。对于多旋翼无人机发生多执行器故障问题 。 文 献［14］研 究 了 多 旋 翼 无 人 机 推 力 系 统 存在故障的问题 ，即执行器故障问题 ，所提方法能够实现多旋翼无人机在多个执行器发生故障的情况下稳定飞行 。旋翼无人机电机故障是执行器 故 障 容 错 技 术 的 难 点 ，针 对 该 问 题 ，文 献［15］基于非线性干扰观测器和滑模控制策略 ，设计 一种 自 适 应 容 错 控 制 方 案 。 文 献［16］分 别 针 对 单旋翼 、双旋翼以及三旋翼故障 ，提出的一种被动容错控制算法 ，保证了四旋翼飞行器在大比例旋翼完全失效情况下无人机的安全飞行 ，提高了四旋翼飞行器的可靠性 ，所提方法能在不依赖故障检测的情况下 ，自主地实现不同执行机构故障下的容错控制 。
+在实际的工程系统中 ，除了系统输出之外 ，
+
+
+很难直接获得其他系统状态 。 如果系统输出测量传感器发生故障 ，则所考虑系统中的所有实际状态都不可用 ，因此只能依赖传感器的故障输出 。基于状态观测器的控制方法作为解决该问题的有效途径之一被广泛应用于故障容错控制问题［17-20］。与其他观测器相比 ，学习观测器能够根据先前的观测器输入和系统输出与观测器输出之间的先前输出误差在线估计系统状态 ，并且能够检测和估计恒定 、周期性或周期性时变的对象 。在文献［21］中 ，提出了一种基于学习观测器的事件触发控制方法 ，用于解决航天器在执行器故 障 和 外 部 干 扰 下 的 姿 态 控 制 问 题 。 文 献［22］构造一类卡尔曼学习观测器 ，实现了四旋翼无人机 传 感 器 和 执 行 器 故 障 的 在 线 检 测 。 文 献［23］基于学习观测器解决了具有执行器故障和传感器故障的非线性系统容错控制问题 。
+　　　上述文献表明 ，分别针对无人机传感器和执行器故障的容错控制问题得到广泛研究，但针对无人机传感器和执行器同时出现故障的容错控制技术的研究较少 。因此，本文针对四旋翼无人机传感器和执行器同时发生故障时的跟踪控制问题，提出一种基于学习观测器的自适应神经网络反步弹性容错控制器 。首先通过处理故障传感器的测量输出，将故障信号分离为实际系统输出与传感器的故障输出，并重构系统方程，紧接着将迭代学习策略应用于状态观测器，设计学习观测器分别估计构造的传感器故障函数与执行器故障函数，进而设计自适应神经网络反步控制器，实现系统实际输出跟踪参考信号 。最后，使用四旋翼无人机进行仿真和户外试验，验证了所提方法有效性。
+1    问题描述
+
+1. 1     系统模型
+　　　四旋翼无人机拥有 4 个螺旋桨 ，呈十字或交叉型对称分布 ，无人机获得的动力是由 4 个螺旋桨转动产生 ，同时通过 4 个旋翼产生升力差来进行飞行状态的控制 。交叉型四旋翼如图 1 所示 ，坐标原点 O 为无人机重心 ，x 轴为无人机重心指向机头方向 ，y 轴为无人机重心指向左侧 ，z 轴由重心按右手法则指向无人机上方［24］。
+
+
+
+　　　　
+图 1     四旋翼无人机
+Fig . 1    Quadrotor unmanned aerial vehicle
+
+　　　将 4 个旋翼产生的力的组合形式简化为 4 个高度 、滚 转 、俯 仰 、偏 航 4 个 通 道 的 输 入 ：u 1  = (F1  +F2  +F3  +F4 )m，u2  = l (F1  +F2  -F3  -F4 )Jyy， u3 = l (-F1 + F2 + F3  - F4 )Jzz，u4  = l (F1  - F2  + F  - F )J    则四旋翼无人机动力学模型为［24］
+
+
+
+í
+
+
+	 = u1 ( sin θ sin ψ + sin φ cos θ cos ψ ) - r1 x./m
+ = u1 (-sin θ cos ψ + sin φ cos θ sin ψ ) - r2 y./m
+ = u 1  cos ψ cos φ - g - r3 z./m
+ = u2  - r4 lθ. Jyy
+ = u3  - r5 lφ./Jzz
+ = u4  - r6 lψ./Jxx
+式 中 ：F 1、F2、F3、F4 分 别 表 示 各 旋 翼 所 产 生 的 升
+力 ；ψ、θ、φ 分别为滚转角 、俯仰角 、偏航角 ；、、
+　分别为无人机沿各轴的加速度 ；Jxx、Jyy、Jzz 分别是围绕机体各轴的转动惯量 ；m 为无人机质量 ；l 为无人机重心到各螺旋桨中心距离 ；r1、r2、r3、r4、r5、 r6 分别为 3 个平动空气阻力系数及 3 个转动的空气阻力力矩系数 。
+定义：
+  ((-sinss insscscss)φ )
+u 1z = u 1  cos φ cos ψ
+则描述无人机位姿动力学的模型为［24］
+ --- -yx.z.m
+ = u2 - r4 lψ.Jyy                                                                  （1）
+? = u3 - r5 lθ.Jxx
+ = u4 - r6 lφ.Jzz
+
+
+由式（1）得：
+2()()(t)，X2(t)) + U (t)            （2）
+　式中：X1 (t ) = [x，y，z，ψ , θ , φ]T；X2 (t ) = [x.，y.，z.， ψ.，θ.，φ. ]T；F (t ) = [- r1 x.m，-r2 y.m，-g -r3 z.m， -r4 lψ.Jyy，-r5 lθ. Jxx，-r6 lφ.Jzz ]T；U (t ) =[u1x，u 1y， u1z，u2，u 3，u4 ] 。
+　　考虑传感器发生故障［25］，描述传感故障的函数定义为
+　YF (t ) = ηY (t ) + μ [ tm，tm + 1)              （3）式中：YF (t ) 为传感器测量输出信号 ；Y(t ) 为系统实际输出信号 ；0< η≤ 1，μ =[ μx，μy，μz，μθ,μφ,μψ ]T定 义 为 描 述 时 间 间 隔 (0，∞ ) 内 传 感 器 故 障 的 时变 参 数（当 η = 1，μ = 0 时 ，传 感 器 未 发 生 故 障 ，即 YF (t ) = Y (t )）；[ tm，tm + 1) 表示发生一次传感器故障的时间间隔 ，并且假设在时间间隔 [ tm，tm + 1)内 ，描述该次传感器故障的参数 η 和 μ 是未知的 ，但该次时间间隔内 η 和 μ 的数值保持不变 。
+　　考虑执行器出现加性故障［26］，描述执行器故障的函数定义为
+　UF (t ) = U (t ) + ρ (t )                         （4）式中：ρ (t ) 为非线性函数 ，且 l ρ (t ) l≤ ρ*，ρ* 为有界常数 。
+　　　备 注 1     所 考 虑 的 故 障 的 物 理 意 义 为 ：对 于无人机传感器 ，如陀螺仪 、加速度计 、气压高度传感器等 ，可能会因环境温度 、湿度 、机械振动和冲击 、电磁干扰 、电源不稳等原因导致出现故障 ，其故障类型主要分为漂移偏置故障 、部分失效故障 、失效偏置故障和完全失效故障［27］，通过更 新 式（3）的 参 数 η 和 μ, 可 以 动 态 模 拟 上 述 故障 。对于执行器 ，加性故障主要指因外部输入 ，例如风或其他负载 ，由摩擦引起的阻尼 ，或由电动 机 的 电 调 故 障 等 引 起 的 力 偏 差［28］。针 对 传 感器与执行器完全失效故障 ，其技术框架与本文所考虑的框架不同 ，特别是系统的可观测性与可控性问题 ，并且硬件系统必须能够提供足够的冗余 。
+
+
+
+　　　由式（2）~ 式（4）可知 ，考虑传感器故障与执行器故障的无人机动力模型为
+
+　　　控 制 目 标    设 Yd (t ) 为 参 考 信 号 ，跟 踪 误 差为 Z1 (t ) = Y (t ) - Yd (t )。 当 系 统 输 出 传 感 器 与执行器发生故障时 ，基于反步控制框架 ，仅通过系 统 故 障 输 出 YF (t ) 设 计 弹 性 容 错 控 制 器 ，实 现跟踪误差 Z1 (t ) 收敛 。
+　　　备注 2    本文所提基于学习观测器的无人机故障弹性容错控制方法 ，弹性容错控制主要解决参数未知的时变传感器故障与执行器故障 ，使无人机在时变故障情况下能够稳定飞行 。所提方法通过处理传感器的故障输出信号 ，引入新的系统变量 ，并基于坐标变化构造扩张系统 ，进而利用传感器故障输出设计学习观测器在线估计系统故障函数与实际输出 ，实现基于学习观测器的无人机故障弹性容错控制 。
+1. 2    相关引理
+　　　引 理 1［29］       给 定 2 个 具 有 相 同 维 数 的 矩 阵 X和 Y，对于任意正常数 ρ,不等式成立：
+
+　　　引理 2［30］  非线性函数 F(X ) 可以用径向基函数神经网络表示为
+F (X ) = Θ *TΨ (X ) + ε (X )
+式 中 ：Θ*  为 最 优 权 值 向 量 ；Ψ(X ) 为 高 斯 基 函 数向量；ε (X ) 为神经网络近似误差 。
+最优权值向量 Θ* 定义为
+
+式中：Ω 和 U 是 Θ 、X 的紧集 。
+　　　假 设 1     存 在 一 个 正 常 数 k ε , 使 得 最 小 近 似误差 | ε (X ) |≤ k ε 成立 。
+2    控制方案设计
+　　　针对无人机出现传感器故障与执行器故障 ，本节首先对系统进行状态转换 ，引入一项扩张变
+
+
+量 ，重构系统方程 ，紧接着设计神经网络学习观测器估计系统状态与故障函数 。此外结合设计的学习观测器 ，提出基于神经网络学习观测器的弹性容错控制方案 。
+2. 1     系统重构
+　　传感器反馈到控制系统的输出是 YF (t )，因此首先对 YF (t ) 转换为
+
+对方程（6）求导，得：
+X.0 (t ) = YF (t ) = ηX1 (t ) + μ = X1 (t ) +
+　　( η - 1) X1(t ) + μ = X1(t ) + F0(t )      （7）式中：F0(t ) = ( η - 1) X1(t ) + μ。
+结合方程（5），得：
+
+令 Msf(t ) = F0 (t )，M af(t ) = ρ (t )，则有：
+
+式中：X0 (t ) 为新引入的扩张变量 ；Y0 (t ) 定义为新的系统输出 ；假设只有 X0 (t ) 可以直接获得 ，其余的状态 X1 (t )、X2 (t ) 需要由观测器进行估计 。
+2. 2    学习观测器设计
+　　　为 了 估 计 系 统 不 可 测 状 态 ，当 系 统 式（8）的状 态 不 完 全 可 知 时 ，设 计 如 式（9）所 示 学 习 状 态观测器：
+
+（9）
+
+
+
+式中：i (t ) 定义为 Xi (t ) 的估计值 ；(t ) 定义为观
+测器输出 ；f(t ) 定义为故障估计 ；κi 为观测器增
+益 ；f(t - τ ) 为 观 测 器 在 历 史 时 刻 t - τ 的 故 障
+估计值；Ks(fi)、Ka(fi) 为观测器设计参数 。
+　　令观测误差 i (t ) = Xi (t ) - i (t )，故障估计误差 f(t ) = Mf(t ) - f(t )，则有：
+
+（10）
+根据神经网络，可得：
+ (  (t ) ) = Θ T (t ) Ψ (  (t ) )
+　　基于式（10），状态向量的动态误差方程可以表示为
+. (t ) = A (t ) + E (t ) + Bt ) Ψ (  (t ) ) +
+ε + ΔF)                    （11）
+　式 中 ：  E = diag (1，0，1) ；B = [ 0，0，1]T ； ΔF = F (X ) - F    矩 阵 A 满 足 存 在 一 个 正 定 矩 阵 P 使 得
+AT P + PA= - 2Q，其 中 Q = QT  是 给 定 的 正 定矩阵 。
+　　　假 设 2［31］       假 设 误 差 项 ΔF 是 有 界 的 ，且l ΔF l≤ kΔF，kΔF 是正常数 。
+故障函数的估计误差可以表示为
+ (t ) = M (t ) -  (t ) = K1  (t - τ ) -
+K2 C (t ) - K3 C (t - τ ) + δ (t )      （12）
+式中：δ (t ) = M (t ) - K1 M (t - τ )。
+　　　假 设 3［21，29］      假 设 误 差 项 δ(t ) 是 有 界 的 ，且l δ (t ) l≤ kδ, k δ 是正常数 。
+　　　为证明所提神经网络学习观测器稳定性 ，构造 Lyapunov 函数为
+
+
+对式（13）求导，可得
+
+
+V.e (t ) = 2T (t ) P. (t ) +  T (t )  (t ) -
+ T (t - τ )  (t - τ ) + T (t )  (t ) -
+T (t - τ )  (t - τ ) = - 2T (t ) Q (t ) +   2T (t ) PE (t ) + 2T (t ) PB T (t ) Ψ (t ) + 2T (t ) PBε + 2T (t ) PBΔF +
+
+
+                       （14）
+
+T (t - τ ) (I -  K K1 )  (t - τ ) -
+T (t - τ ) (I -  CT K K3 C )  (t - τ ) +
+X~~T (t)  CT KK2 C - 2PEK2~C )  (t) +
+
+
+
+T (t ) (2PE - 3CT K) δ (t ) +  δ T (t ) δ (t ) +
+3 T (t -τ ) K δ (t ) - 3T (t -τ ) CT K δ (t ) +
+2T (t ) PB T (t ) Ψ (t ) + 2T (t ) PBε +
+
+令 PE  CT K，则有：
+
+
+（15）
+由引理 1，可得：
+
+
+
+
+
+
+3 T (t - τ ) K δ (t ) ≤  δ T (t ) δ (t ) +
+  T (t - τ ) K K1  (t - τ )          （17）
+
+ T (t - τ ) CT K K3 C (t - τ )       （18）
+
+
+
+2T (t ) PB T (t ) Ψ (t ) ≤ ρ4 T (t ) PPT  (t ) +
+
+
+（20）
+2T (t ) PBΔF ≤ ρ6 T (t ) PPT  (t ) +
+1        T            T
+
+式中：ρ 1、ρ2、ρ3、ρ4、ρ5、ρ6 为设计参数 。
+将不等式（16）~式（21）代入式（15），可得：
+
+V.e (t ) ≤ - T (t ) [PEK2C + 2Q - I - (ρ 4 + ρ 5 + ρ 6) PPT] (t ) -
+ T (t - τ ) êI - (1 +  +  K K1ú  (t - τ ) -
+T (t - τ ) êI - (1 +  +  CT K K3 Cú  (t - τ ) +   T (t) BBT t) +  ε T BBT ε +
+ ΔFT BBT ΔF + 1 + ρ 2 + ρ 3) δ T (t ) δ (t ) -  T (t )  (t ) -   T (t )  (t )                （22）
+令构造的参数矩阵满足：                                    X0d(t )，并 按 如 式（24）所 示 方 式 构 造 虚 拟 误 差
+) PPT  ≥ 0    =t，)-，0(d)(
+ CT K K3 C ≥ 0             0 。)0的(t求)-导X结0d果(t
+由式定（2）)：= [  (t)， (t - τ )， (t - τ )]，则           (( ))  (( )) +- 0f(())  sf(t) - X.0d(t)
+ ≤ - ξ l χ                                构造 Lyapunov 函数为
+                           对式（26）求导可得
+V.0 (t ) = Z (t ) Z. 0 (t ) =
+T (t )  (t ) -   T (t )  (t )         （23）       Z (t ) (Z 1(t ) + α 0(t ) + 1 (t ) +
+式中：ξ = λmin(diag ( Π 1，Π 2，Π 3) )。                                     sf(t ) + sf(t ) - X.0d(t ))          （27）
+构造虚拟控制函数 α 0 (t ) 为
+2. 3    容错控制器设计                                                  α 0 (t ) = - c0 Z0 (t ) - sf(t ) + X.0d(t )        （28）
+步 骤 1     首 先 ，假 设 存 在 虚 拟 参 考 信 号 向 量               将式（28）代入式（27），可得
+
+
+
+V.0 (t ) =
+
+
+
+Z  sf(t )                                （29）
+　　　由 于 Y(t ) 是 系 统 的 实 际 输 出 ，因 此 需 要 使Y (t ) 跟踪参考信号 。根据反步控制方法，α 0 (t ) 为变 量 X1 (t ) 的 虚 拟 参 考 信 号 ，由 于 系 统 实 际 输 出Y (t ) = X1 (t ) 需跟踪参考信号 ，因此 α 0 (t ) 需等价于 Y(t ) 的参考信号 ，因此假设参考信号是 Xd (t )，可得：
+Xd (t ) = α 0 (t )                                 （30）由 X.0d(t ) = Xd (t ) + c0 Z0 (t ) + sf(t )，可得：
+
+备注 4    当式（24）中的虚拟参考信号 X0d(t )满
+足式（31）时，实际输出 Y(t ) 可以跟踪 Xd (t )。
+　　　步 骤 2     由 步 骤 1，可 得 Xd (t ) = α 0 (t )，定 义误差向量为
+Z 1 (t ) = 1 (t ) - α 0 (t )                        （32）
+Z2 (t ) = 2 (t ) - v2 (t )，w 2 (t ) = v2 (t ) - α 1 (t )（33）
+式 中 ：w 2 (t ) 是 v2 (t ) 和 α 1 (t ) 之 间 的 误 差 ，其 中v2 (t ) 是 滤 波 器 输 出 ，虚 拟 控 制 器 α 1 (t ) 为 滤 波 器输入 。
+　　采 用 滤 波 器 目 的 为 避 免 虚 拟 控 制 函 数 多 次求导而导致“微分爆炸”，其形式为
+λv.2 (t ) + v2 (t ) = α 1 (t )，v2 (0 ) = α 1 (0 )       （34）式中：λ > 0 为设计参数 。
+对式（32）求导可得：
+Z. 1 (t ) = 2 (t ) + κ 1 0 (t ) - X.d (t ) = Z2 (t ) +
+w 2 (t ) + α 1 (t ) + κ 1 0 (t ) - X.d (t )       （35）
+构造 Lyapunov 函数为
+
+对式（36）求导可得：
+V. 1 (t ) = Z(t ) Z. 1 (t ) =
+Z (t )(Z2(t ) +w2(t ) +α1(t ) +κ10 (t )-X.d (t ))
+（37）
+设计虚拟控制函数 α 1 (t ) 为
+
+
+α 1 (t ) = - c1 Z 1 (t ) - Z0 (t ) - κ 1 0 (t ) + X.d (t )（38）
+将式（38）代入式（37），可得：
+V.1 (t ) ≤ -c1 lZ 1 (t ) l2  + Z (t ) Z2 (t ) +
+Z (t ) w2 (t ) - Z (t ) Z0 (t )              （39）
+步骤 3     由式（33），可得：
+Z. 2 (t ) = 2 (t ) - v.2 (t ) =  ( 1 (t )，2 (t )) +
+U (t ) + af(t ) + κ 2 0 (t ) - v.2 (t )      （40）
+由  于  通  过  神  经  网  络  对  未  知  函  数
+ ( 1 (t )，2 (t ) )，因此构造 Lyapunov 函数为
+
+　　 Θ T (t ) Θ (t )                           （41）式中  = Θ *  - Θ 为参数估计误差向量；Θ* 为参数精确值向量；Γ > 0 为设计参数 。
+　　对式（41）求导，可得： V.2 (t ) =
+
+Z(t)( Θ T(t ) Ψ (t ) +U(t ) + af(t ) + κ 2 0 (t ) -
+
+（42）
+由式（34），可得：
+
+（43）
+　式中：G (t ) 是连续的有界函数向量 ，lG (t ) l≤ kG， kG 为正常数。
+　　设计控制函数 U(t ) 和参数自适应律为U (t ) = - c2 Z2 (t ) - Z1 (t ) - Θ T (t ) Ψ (t ) -
+
+Θ. (t ) = ΓΨ (t ) Z2 (t ) - ΛΘ (t )              （45）
+式中：c2 > 0，Λ > 0 为设计参数 。
+式（43）~式（45）代入式（42），可得：
+
+
+
+
+
+
+设计 Lyapunov 函数：
+V (t ) = Ve (t ) + V0 (t ) + V1 (t ) + V2 (t )    （47）对式（48）求导，可得：
+V. (t ) ≤-ξ l χ (t ) l2 - c0 l Z0 (t ) l2 - c1 l Z 1 (t ) l2 -
+
+Z (t ) 1 (t ) + Z (t ) sf(t ) + Z (t ) w2 (t ) +
+w (t ) G (t ) 
+
+ T (t )  (t )                           （48）
+由引理 1，可得：
+
+Z (t ) w2 (t ) ≤  l Z 1 (t ) l2 +  l w2 (t ) l2 ?w (t ) G (t ) ≤  l w2 (t ) l2 +  k
+
+
+
+（49）
+将式（49）代入式（48），可得：
+(c1 -  l Z1 (t) l2 - (c2 -  l Z2 (t) l2 -  - 1)l w2 (t) l2 -
+
+
+　　定义Ω (t ) =
+　　[ χ (t )，Z0 (t )，Z 1 (t )，Z2 (t )，w 2 (t )， t ) ]T  
+则 Lyapunov 函数满足：
+
+
+式中：L = min (ξ, c0 - 1，c 
+
+　　　由 式（51）可 知  ，当  Ll Ω (t ) l2 > Ξ  时 ， V. (t ) < 0，根据 Lyapunov 稳定性理论［32］，Ω (t ) 收
+敛 于 稳 定 域 l Ω (t ) l≤ :L- 1Ξ 。 因 此 ，误 差 变 量Ω (t ) 最终一致有界 。
+3    仿真分析
+　　　为验证所提算法可行性 ，首先对本文所设计的四旋翼飞行控制算法进行数值仿真试验 。无人机模型参数由表 1 给出 。假设在四旋翼无人机x 通道发生随机传感器故障，y 通道发生执行器故障 ，在 z 方向高度通道同时发生传感器与执行器故障，仿真结果如图 2~图11 所示 。
+表 1     四旋翼无人机参数
+Table 1    Parameters of quadrotor UAV
+
+参数	数值
+m /kg	0. 063
+l/m	0. 062 4
+Jxx /（g ·m2）	0. 058 285 7
+Jyy/（g ·m2）	0. 071 691 4
+Jzz /（g ·m2）	0. 100 000 0
+Jr/（g ·m2）	0. 102 1× 10— 3
+
+　　　图 2 为 x 通道的轨迹跟踪曲线 ，x 通道施加了时变传感器故障，其形式为
+
+　　　由图 2 可知当传感器出现故障时，无人机实际位置 x 与传感器测量输出 xf 有明显的区别，xd 表示期望的位置 。 图 3 为观测器输出的位置估计结果以及不采用容错控制时的无人机 x 通道轨迹，可知当传感器出现故障时，不具有容错性的控制器无法实现系统实际输出跟踪参考信号，图 4 为基于学习观测器估计构造的传感器故障函数的结果。
+
+
+
+　　
+图 2    x 通道位置跟踪轨迹
+Fig . 2    Position tracking trajectories of x channel
+
+　　
+图 3    x 通道位置跟踪轨迹估计
+Fig . 3    Estimation of position trajectories for x channel
+
+　　
+图 4    x 通道传感器故障估计
+Fig . 4    Estimation of sensor fault in x channel
+
+　　
+图 5    y 通道位置跟踪轨迹
+Fig . 5    Position tracking trajectories of y channel
+
+图 5 为 y 通道的轨迹跟踪曲线，y 通道假设存
+　在时变加性执行器故障，其故障函数为ρy (t ) = 0. 2sin (0. 5πt )
+　　　由 图 5 可 知 在 执 行 器 发 生 加 性 故 障 的 情 况下 ，采用本文所提方法能够实现系统输出跟踪参考信号 ，并且如图 6 所示 ，所提方法能够有效估计执行器故障函数 。
+
+
+　　
+图 6    y 通道执行器故障估计
+Fig . 6    Estimation of actuator fault in y channel
+
+　　
+图 7    z 通道位置跟踪轨迹
+Fig . 7    Position tracking trajectories of z channel
+　　　图 7 为 z 通道的轨迹跟踪曲线 ，本文假设在 z通道同时发生传感器故障与时变加性执行器故障，故障参数为
+
+
+　　　由图 7 可知，所提方法能够有效解决传感器与执行器同时发生故障的问题 ，并且由图 8 可知 ，当传感器与执行器同时出现故障 ，不具有容错性的控制系统无法使无人机稳定飞行 ，且系统输出发散 。 图 9 和图 10 分别展示了基于本文所提学习观测器对于传感器故障函数和执行器故障函数的估计结果 ，所提方法能够有效估计故障类型 。 图 11为应用本文所提弹性容错方法 ，四旋翼无人机在多通道出现传感器与执行器故障情况下的姿态输出结果，可以看出无人机姿态输出稳定。
+　　综上所述 ，数值仿真验证了所提方法能够有效解决四旋翼无人机多通道出现传感器与执行器同时故障的问题 ，所提出的基于学习观测
+
+
+
+　　
+图 8    ≈ 通道位置跟踪轨迹估计
+Fig . 8    Estimation of position trajectories for ≈ channel
+
+　　
+图 9    ≈ 通道传感器故障估计
+Fig . 9    Estimation of sensor fault in ≈ channel
+
+　　
+图 10    ≈ 通道执行器故障估计
+Fig . 10    Estimation of actuator fault in ≈ channel
+
+　　
+图 11    无人机姿态轨迹
+Fig . 11    Trajectories of UAV attitude
+
+器的无人机弹性容错控制策略对于故障有较强的鲁棒性 。
+4    试验分析
+　　　为进一步验证所提出的基于学习观测器的无人机弹性容错控制策略的有效性 。本文使用四旋翼无人机进行了真实的户外飞行试验 ，试验结果如图 12~图15 所示 。
+试验中在无人机高度通道中同时考虑输出
+
+
+　
+图 12    无人机飞行轨迹
+Fig . 12    UAV flight trajectory
+
+　
+图 13    无人机飞行视频帧
+Fig . 13    Video frames of UAV flight
+
+　　
+图 14    无人机高度跟踪轨迹
+Fig . 14    Altitude tracking trajectories of UAV
+
+　　
+图 15    无人机位姿轨迹
+Fig . 15    Position and attitude trajectories of UAV
+
+测量传感器故障与执行器故障问题 ，设传感器与执行器故障为
+≈ (t )              0 < t ≤ 10
+
+ρ ≈(t ) = 0. 1sin (0. 1πt )
+
+
+
+　　　针对执行器故障问题 ，通过在控制系统中直接在控制输入端增加加性执行器故障函数时 ，并且通过裁剪无人机桨叶进一步模拟加性执行器故 障 。 图 12 显 示 了 无 人 机 的 飞 行 轨 迹 ，图 13 展示了不同时刻时无人机的飞行状态 。
+　　无人机高度的轨迹跟踪结果如图 14 所示 ，所提方法在实际无人机飞行中能够有效处理传感器与执行器故障 ，其输出轨迹能够跟踪参考信号 ，而不具有容错性能的控制器在传感器和执行器故障的情况下无法实现系统实际输出跟踪参考信号 。并且在进行户外飞行试验时 ，由于在控制输入端增加加性执行器故障时无容错控制的无人机无法正常起飞 ，因此在进行对比试验时 ，无容错控制的控制系统没有增加执行器故障 ，仅考虑传感器故障 。
+　　　图 15 是无人机在高度通道出现传感器故障与执行器故障时的位置和姿态的试验结果 ，可以看出系统状态稳定收敛在期望值附近 。
+　　　根据户外试验结果 ，所提方法能够实现无人机在传感器与执行器出现故障时的容错控制问题 ，并且本文设计的容错控制器具有弹性 ，当故障类型与幅值发生变化时 ，所提方法仍能保障系统稳定跟踪期望信号 。
+5  结    论
+　　　针对四旋翼无人机同时发生传感器故障与加性执行器故障的轨迹跟踪控制问题 ，本文提出一 种 基 于 学 习 观 测 器 的 自 适 应 神 经 网 络 弹 性 容错控制策略 。通过坐标变换 ，处理故障传感器的输出信号 ，引入新的变量 ，构造了基于传感器故障输出的扩张系统模型 ，紧接着基于迭代学习策略 ，构建了学习观测器在线估计传感器故障函数 、执行器函数以及系统不可测状态 ，进而设计了 自 适 应 神 经 网 络 反 步 控 制 器 实 现 系 统 实 际 输出 跟 踪 参 考 信 号 。基 于 Lyapunov 稳 定 性 理 论 ，证明了闭环系统的稳定性 ，且跟踪误差有界 。最后 ，分别通过数值仿真和户外试验验证了所提方法的有效性 。
+参    考    文    献
+［1］ 郭洪振，陈谋 . 基于预设性能的四旋翼无人机编队安全控制［J］. 航空学报，2021，42（8）：525789.
+
+
+　GUO H Z ， CHEN M . Safety formation control of quadrotor UAVs based on prescribed performance［J］. Acta Aeronautica et Astronautica Sinica ，2021 ，42（8）： 525789（in Chinese）.
+［2］ KHALID A ，MUSHTAQ Z ，ARIF S ，et al. Control schemes for quadrotor UAV ：taxonomy and survey［J］. ACM Computing Surveys，2024，56（5）：1-32.
+［3］ 郭雷，朱玉凯，乔建忠，等 . 无人系统生存智能与安全、免疫、绿色控制技术［J］. 航空学报，2022，43（10）：527129. GUO L ，ZHU Y K ，QIAO J Z ，et al. Survival intelli- gence and safety ，immunity and green control technolo- gies for unmanned systems［J］. Acta Aeronautica et As- tronautica Sinica，2022，43（10）：527129（in Chinese）.
+［4］ ZUO Z Y，LIU C J，HAN Q L，et al. Unmanned aerial vehicles： Control methods and future challenges［J］. IEEE/CAA Journal of Automatica Sinica ，2022 ，9（4）： 601-614.
+［5］ SAIED M，SHRAIM H，FRANCIS C. A review on re- cent development of multirotor UAV fault-tolerant con- trol systems［J］. IEEE Aerospace and Electronic Sys- tems Magazine，2024，39（9）：146-180.
+［6］ YU Z Q，ZHANG Y M，JIANG B ，et al. A review on fault-tolerant cooperative control of multiple unmanned aerial  vehicles［J］.  Chinese  Journal  of Aeronautics， 2022，35（1）：1-18.
+［7］  马 静 ，叶 泳 ，贾 秋 生 . 弹 性 控 制 综 述［J］. 信 息 与 控 制 ， 2015，44（1）：67-75.
+MA J，YE Y，JIA Q S. Review of resilient control［J］. In- formation and Control，2015，44（1）：67-75（in Chinese）.
+［8］ HU C F ，CAO L ，ZHOU X P ，et al. Fuzzy adaptive nonlinear sensor-fault tolerant control for a quadrotor un- manned aerial vehicle［J］. Asian Journal of Control， 2020，22（3）：1163-1176.
+［9］  马亚杰，王娟，姜斌，等 . 一种无人机-无人车编队系统容错控制方法［J］. 航空学报，2023，44（8）：327216.
+　MA Y J ，WANG J ，JIANG B ，et al. A fault-tolerant control scheme for UAVs-UGVs formation systems［J］. Acta Aeronautica et Astronautica Sinica ，2023 ，44（8）： 327216（in Chinese）.
+［10］ HAMADI H，LUSSIER B，FANTONI I，et al. Data fu- sion fault tolerant strategy for a quadrotor UAV under sensors and software faults［J］. ISA Transactions，2022， 129：520-539.
+［11］ XIONG R ，SUN W Z，YU Q Q ，et al. Research prog- ress ，challenges and prospects of fault diagnosis on bat- tery system of electric vehicles［J］. Applied Energy， 2020，279：115855.
+［12］ GAO B K ， LIU Y J ， LIU L. Adaptive neural fault- tolerant control of a quadrotor UAV via fast terminal slid-
+
+
+
+ing mode［J］. Aerospace Science and Technology，2022， 129：107818.
+［13］ WANG S B，CHEN J，HE X K . An adaptive composite disturbance  rejection  for  attitude  control  of  the  agricul-	tural quadrotor UAV［J］. ISA Transactions ，2022 ，129 （Pt A）：564-579.
+［14］ CHUNG W ，SON H . Fault-tolerant control of multiro- tor  UAVs  by  control  variable  elimination［J］.  IEEE/ ASME  Transactions  on  Mechatronics ， 2020 ， 25（5）： 2513-2522.
+［15］ XUE Y  X ，ZHEN  Z Y ，YANG  L  Q ，et al. Adaptive fault-tolerant control for carrier-based UAV with actua- tor   failures［J］.   Aerospace   Science   and   Technology， 2020，107：106227.
+［16］ KE C X ，CAI K Y ，QUAN Q. Uniform passive fault - tolerant control of a quadcopter with one，two ，or three rotor failure［J］. IEEE Transactions on Robotics ，2023， 39（6）：4297-4311.
+［17］ ZHANG L L，YANG G H . Observer-based fuzzy adap- tive  sensor  fault  compensation  for  uncertain  nonlinear strict-feedback systems［J］. IEEE Transactions on Fuzzy Systems，2018，26（4）：2301-2310.
+［18］ WANG  W  L ，LIN  Y ，MENG  Q  R .  Output  feedback tracking control for a class of nonlinear systems with sen- sor  uncertainties［J］.  IEEE  Transactions  on  Industrial Electronics，2023，70（1）：762-772.
+［19］ WANG C L，WEN C Y，ZHANG X Y ，et al. Output - feedback adaptive control for a class of MIMO nonlinear systems with actuator and sensor faults［J］. Journal of the Franklin Institute，2020，357（12）：7962-7982.
+［20］ ZHANG H  G ，MU Y F ，GAO Z Y ，et al. Observer - based  fault  reconstruction  and  fault-tolerant  control  for nonlinear  systems  subject  to  simultaneous  actuator  and sensor faults［J］. IEEE Transactions on Fuzzy Systems， 2022，30（8）：2971-2980.
+［21］ ZHANG C X，WANG J H，ZHANG D X，et al. Learn- ing observer based and event-triggered control to space- craft  against  actuator  faults［J］.  Aerospace  Science  and Technology，2018，78：522-530.
+［22］ ABBASPOUR A，ABOUTALEBI P，YEN K K，et al. Neural adaptive observer-based sensor and actuator fault detection in nonlinear systems：Application in UAV［J］. ISA Transactions，2017，67：317-329.
+［23］ CHEN L H，ZHU Y Z，WU F ，et al. Fault estimation observer design for Markovian jump systems with nondif- ferentiable actuator and sensor failures［J］. IEEE Trans- actions on Cybernetics，2023，53（6）：3844-3858.
+
+
+［24］ 王术波，韩宇，陈建，等 . 基于 ADRC 迭代学习控制的四
+旋 翼 无 人 机 姿 态 控 制［J］. 航 空 学 报 ，2020 ，41（12）： 324112.
+　WANG  S  B ，HAN  Y ，CHEN  J ，et  al. Active distur- bance rejection  control  of UAV  attitude  based  on  itera- tive  learning  control［J］. Acta Aeronautica  et Astronau- tica Sinica，2020，41（12）：324112（in Chinese）.
+［25］ NIE   L ， ZHOU   M ， ZHANG   X ， et   al.   Compound estimation-based  output-feedback  hysteresis   compensa-	tion  and  sensor  fault-tolerant  control  strategy ：Applica-	tion  to  piezoelectric  micropositioning  stage［J］.  IEEE/ ASME   Transactions  on  Mechatronics ，（2024-08-07） ［2024-10-08］.  https：∥ieeexplore. ieee. org/document/ 10628048.
+［26］ 邵书义，陈谋，招启军 . 基于干扰观测器的四旋翼无人机离散时间容错控制［J］. 航空学报，2020，41（S2）：724283.
+　SHAO S Y，CHEN M，ZHAO Q J. Discrete-time fault - tolerant  control  of  quadrotor  UAV  based  on  disturbance observer［J］.  Acta  Aeronautica   et  Astronautica   Sinica， 2020，41（S2）：724283（in Chinese）.
+［27］  陈 谋 ，马 浩 翔 ，雍 可 南 ，等 . 无 人 机 安 全 飞 行 控 制 综 述［J］. 机器人，2023，45（3）：345-366.
+CHEN M ，MA H X ，YONG K N ，et al. Safety flight control  of UAV ：A  survey［J］.  Robot ，2023 ，45（3）： 345-366（in Chinese）.
+［28］ MA H J，LIU Y L，LI T B ，et al. Nonlinear high-gain observer-based diagnosis  and  compensation  for  actuator and sensor faults in a quadrotor unmanned aerial vehicle ［J］. IEEE Transactions on Industrial Informatics，2019， 15（1）：550-562.
+［29］ TIAN  Y  M ， DU  K  N ， QU  J  F ， et  al.  A   learning observer-based control strategy for PM SM with position sensor fault in railway［J］. Control Engineering Practice， 2024，142：105705.
+［30］ LEI X S，LU P . The adaptive radial basis function neural network   for   small   rotary-wing   unmanned   aircraft［J］.	IEEE  Transactions  on  Industrial Electronics ，2014 ，61 （9）：4808-4815.
+［31］ MIN  H  F ，XU  S Y ，FEI S M ，et al. Observer-based NN  control  for  nonlinear  systems  with   full-state  con- straints and external disturbances［J］. IEEE Transactions on  Neural  Networks  and  Learning  Systems ， 2022 ， 33 （9）：4322-4331.
+［32］ CORLESS M ，LEITMANN  G . Continuous state feed- back guaranteeing uniform  ultimate boundedness  for un- certain dynamic systems［J］. IEEE Transactions on Auto- matic Control，1981，26（5）：1139-1144.
+
+
+（责任编辑： 宋金超）
+
+
+
+
+　Learning-observer-based resilient fault-tolerant control for quadrotor unmanned aerial vehicles
+
+CHEN Tao1，2，CHEN Jian1，*
+1.  College of Engineering，China Agricultural University，Beijing     100083，China
+2.  State key Laboratory of Robotics，Shenyang Institute of Automation，Chinese Academy of Sciences， Shenyang    110016，China
+Abstract： This paper proposed a  learning-observer-based  resilient fault-tolerant control scheme for the control prob ? lem of quadrotor unmanned aerial vehicles with sensors and actuators faults .  By processing the fault output signals of sensors，and based on coordinate changes，an extended system  is constructed.  Then，to estimate the system fault function  and  actual  output  online ，a  learning  observer  is  designed  using  sensor fault  outputs .   Further ，an  adaptive neural network  backstepping  resilient fault-tolerant controller  is designed to achieve the actual system  output tracking the reference signal in the event of sensor faults and additive actuator faults in the unmanned aerial vehicle .  Based on the  Lyapunov stability theory ，the stability of closed-loop system  is  proven .   Finally ，simulations and  outdoor experi ? ments are conducted  using quadrotor unmanned aerial vehicle and the  results validated the effectiveness of the pro ? posed method.
+　Keywords： quadrotor unmanned aerial vehicles ； resilient fault-tolerant control ； learning observer； sensor fault； actuator fault
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Received： 2024-10-08； Revised： 2025-01-03； Accepted： 2025-02-19； Published online： 2025-02-28    13：34
+URL： https：//hkxb. buaa. edu. cn/CN/Y2025/V46/I11/531346
+Foundation items： National  Natural  Science  Foundation  of  China（52472463 ，12426518）；China  University  Industry-University- Research  Innovation  Fund（2024HT004）；The  Open  Fund  of State  Key  Laboratory of  Robotics and  Intelligent Systems（2024-O01）；The  Discipline  Integration  and  Innovation  Project  of  China  Agricultural  University ；The Independent Innovation Research Fund for Graduate Students of China Agricultural University
+* Corresponding author.  E-mail：jchen@cau . edu. cn

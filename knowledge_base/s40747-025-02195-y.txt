@@ -1,0 +1,957 @@
+Complex & Intelligent Systems (2026) 12:62 https://doi.org/10.1007/s40747-025-02195-y
+﹛
+check for updates
+Real-time fault detection in multirotor UAVs using lightweight deep
+﹛learning and high-?delity simulation data with single and double fault magnitudes
+Md. Najmul Mowla1o ﹞ Davood Asadi1? ﹞ Ferdous Sohel2o
+
+Received: 17 April 2025 / Accepted: 23 November 2025 / Published online: 4 December 2025
+? The Author(s) 2025
+
+Abstract
+﹛Robust fault detection and diagnosis (FDD) in multirotor unmanned aerial vehicles (UAVs) remains challenging due to limited actuator redundancy, nonlinear dynamics, and environmental disturbances. This work introduces two lightweight deep learning architectures: the Convolutional-LSTM Fault Detection Network (CLFDNet), which combines multi-scale one-dimensional convolutional neural networks (1D-CNN), long short-term memory (LSTM) units, and an adaptive attention mechanism for spatio-temporal fault feature extraction;and the AutoencoderLSTM Multi-loss Fusion Network(AELMFNet), a soft attention每enhanced LSTM autoencoder optimized via multi-loss fusion for ?ne-grained fault severity estimation. Both models are trained and evaluated on UAV-Fault Magnitude V1, a high-?delity simulation dataset containing 114,230 labeled samples with motor degradation levels ranging from 5% to 40% in the take-off, hover, navigation, and descent phases, representing the most probable and recoverable fault scenarios in quadrotor UAVs. Including coupled faults enables models to learn correlated degradation patterns and actuator interactions while maintaining controllability under standard ?ight laws. CLFDNet achieves 96.81% precision in fault severity classi?cation and 100% accuracy in motor fault localization with only 19.6K parameters, demonstrating suitability for real-time onboard applications. AELMFNet achieves the lowest reconstruction loss of 0.001 with Huber loss and an inference latency of 6 ms/step, underscoring its ef?ciency for embedded deployment. Comparative experiments against 15 baselines, including ?ve classical machine learning models, ?ve state-of-the-art fault detection methods, and ?ve attention-based deep learning variants, validate the effectiveness of the proposed architectures. These ?ndings con?rm that lightweight deep models enable accurate and ef?cient diagnosis of UAV faults with minimal sensing.
+﹛Keywords  Multirotor UAV ﹞ Fault detection ﹞ High-?delity simulation ﹞ Motor fault analysis ﹞ Deep learning ﹞ Loss function optimization
+
+Nomenclature
+Latin Symbols
+
+AE	Autoencoder
+AE每LSTM	Autoencoder每LSTM Network
+AELMFNet	Attention-Enhanced LSTM Multi-Loss Fault Network
+Acc	Accuracy
+Adam	Adaptive Moment Estimation (optimizer)
+ALFA	Air Lab Fault and Anomaly
+Attn	Attention Mechanism
+CLFDNet	﹛Convolutional每LSTM Fault Diagnosis Net- work
+CNN	Convolutional Neural Network
+DL	Deep Learning
+
+
+
+
+DIGPGNN
+
+FC
+FDD
+FLOPs
+FN
+FP
+FPGA
+FTC
+GAP
+GatedGCN
+GNN
+GRU
+Huber
+IMU
+KNN
+LOE
+LPV
+LR
+LSTM
+MAC
+MAE
+MISAL
+
+ML
+MPC MSE
+mx , my , mz
+
+N
+p , q , r po
+pe
+Prec
+﹛QoS Rec
+ReLU RNN SNR
+t
+TN
+TP
+UAV 汛
+耳 v牟 肉 肋 老
+考
+y , 
+
+
+Directional Information and Global Percep- tion Fusion
+Fully Connected (layer)
+Fault Detection and Diagnosis
+Floating Point Operations per Second False Negative
+False Positive
+Field-Programmable Gate Array Fault-Tolerant Control
+Global Average Pooling
+Gated Graph Convolutional Network Graph Neural Network
+Gated Recurrent Unit
+Huber Loss Function
+﹛Inertial Measurement Unit k-Nearest Neighbors
+Loss of Effectiveness (fault type) Linear Parameter-Varying
+Learning Rate
+Long Short-Term Memory
+Multiply每Accumulate Operations Mean Absolute Error
+Improved Self-Attention LSTM with Similar-
+ity Space Mapping
+Machine Learning
+Model Predictive Control Mean Squared Error
+Motor command signals (normalized thrust inputs)
+Number of samples
+Body angular rates about x-, y-, z-axes Observed agreement (Cohen＊s Kappa)
+Expected agreement (Cohen＊s Kappa)
+Precision
+﹛Quality of Service Recall
+Recti?ed Linear Unit (activation) Recurrent Neural Network
+Signal-to-Noise Ratio
+Time
+True Negative
+True Positive
+Unmanned Aerial Vehicle
+Threshold parameter in Huber loss Roll angle
+Pitch angle Yaw angle
+Angular velocity
+Correlation coef?cient
+Standard deviation
+True and predicted labels
+
+
+Introduction
+﹛Unmanned aerial vehicles (UAVs) have emerged as critical components of modern intelligent systems, revolutionizing operations in the  civilian, industrial,  and  defense  sectors [1]. Their  capabilities in  executing  autonomous missions with high spatial accuracy and temporal responsiveness have enabled signi?cant advances in infrastructure inspection [2], smart agriculture [3], disaster response [4], environmental monitoring  [5],  and  delivery  last  mile  [6].  Compared  to traditional inspection methodologies, UAVs offer enhanced maneuverability, rapid deployment, and the ability to access remote  or  hazardous  environments  with  minimal  human supervision [7]. These advantages are further enhanced by continuous innovations in onboard perception, real-time con- trol systems, and intelligent navigation algorithms, which collectively expand the operational envelope of UAVs, par- ticularly in safety-critical and resource-constrained environ- ments.
+﹛﹛Among the various subsystems that contribute to UAV performance and mission reliability, the propulsion system, particularly the propellers, plays a crucial role in ensuring ?ight  stability, generating thrust, and maintaining control authority  [8].  However,  these  components  are  frequently exposed to adverse operating conditions [9] such as mechan- ical fatigue [10], aerodynamic loads [11], particulate erosion [12], and thermal ?uctuations [13]. Over time, these stressors can lead to progressive degradation and abrupt structural fail- ures, which pose severe risks to ?ight stability and mission success [14,15]. The vulnerability is especially acute in mul- tirotor con?gurations such as quadrotors, which inherently lack actuator redundancy [16]. Many UAV mission failures are traceable to faults in the propulsion subsystem, under- scoring the need for timely and accurate Fault Detection and Diagnosis (FDD) to ensure safe and resilient UAV operation [17, 18].
+﹛﹛Despite extensive research, developing robust, real-time FDD systems for UAVs remains an open challenge due to the complex interplay of mechanical, electrical, and software components, each with unique failure modes and nonlinear dynamics  [17, 19]. These challenges are compounded by external disturbances such as wind gusts, turbulence, and sensor noise,  which  can mask fault  signatures  or induce false alarms [20, 21]. The constraints of onboard processing, where real-time response and low power consumption are imperative, exacerbate thesedif?cultiesand limit the applica- bility of computationally intensive diagnostic methods [22].
+Recent advances in data-driven UAV fault diagnosis
+
+Traditional fault detection and diagnosis (FDD) approaches are broadly categorized into model-based and data-driven methods, each offering distinct advantages and limitations.
+
+
+
+Model-based schemes leverage analytical redundancy and observer-based estimation to detect deviations from nomi- nal behavior, as seen in the model predictive control (MPC) framework of Mohammadi et al. [23] and the adaptive fault- tolerant control (FTC) design of Mazare et al. [24]. Similarly, Zabiha et al. [25] developed a hybrid FDD framework inte- grating  vehicle  sensor  and  actuator  fault  analysis,  while Zhu et al. [26] formulated a linear parameter-varying (LPV) model-based actuator FDD scheme using interval observers for quadrotor UAVs with cable-suspended payloads. Despite their robustness, these analytical approaches rely on precise modeling ofUAV dynamics, which is often impractical due to the nonlinear, time-varying, and disturbance-sensitive nature of?ight operations[27每29]. Moreover, they struggle to detect incipient or partial faults, such as propeller degradation, that can be masked by nominal variations [30, 31].
+﹛﹛In response, data-driven methods have gained prominence for capturing complex fault patterns directly from raw sen- sor data  [32]. Recent studies have increasingly employed machine learning (ML) and deep learning (DL) frameworks for fault diagnosis in multirotor UAVs. For instance, Cacace et al. [33] and Scognamiglio et al. [34] utilized recurrent neu- ral networks (RNNs) with long short-term memory (LSTM) units to model external wrench disturbances associated with motor faults. Kumar et  al.  [35] proposed  a  CNN每LSTM attention network to enhance detection accuracy, while Ma et al. [36] applied conventional ML classi?ers to vibration data from MEMS sensors for structural fault diagnosis. These methods demonstrate the increasing reliance on data-driven architectures for high-?delity UAV fault identi?cation but also reveal limitations related to binary fault labeling, depen- dence on auxiliary sensors, and narrow operational datasets.	Building on these developments, recent years have wit- nessed       a       decisive        shift       toward       advanced data-driven  paradigms  that  leverage  deep  spatiotemporal representations and attention mechanisms to achieve robust- ness  in  the  face  of  real-world  uncertainty.  Within  this evolution, compact hybrid networks, graph-based reason- ing, and ensemble fusion have emerged as key enablers of resilient, noise-tolerant UAV fault detection. A growing line of research explores the use of selective attention over multi- channel ?ight data to balance local feature extraction and global context aggregation. For example, Guo et al.  [37] introduced an attention-augmented architecture for multi- channel telemetry, while Meng Zhang et al. [38] combined causal convolutions and gated recurrent units (GRUs) to pre- serve temporal  causality  and robustness under noisy  and imbalanced conditions using the air lab fault and anomaly (ALFA) dataset. Collectively, these  studies exemplify the broader transition from conventional convolutional pipelines toward attention-augmented temporal learning architectures.	In parallel,  graph  neural  networks  (GNNs)  have been employed to model inter-signal dependencies among ?ight
+
+
+﹛states, thereby capturing complex correlations that extend beyond conventional channel-wise representations. Junru Li et al. [39] modeled ?ight-control variables as graph struc- tures and integrated a gated graph convolutional network (GatedGCN) with a CNN-transformer backbone for ?xed- wing fault diagnosis. In contrast, Zhiwei Wang et al. [40] reformulated propeller fault detection as a node classi?ca- tion problem on KNN-based ?ight log graphs, incorporating local and global attention mechanisms to enhance sensitivity. Complementary efforts have focused on signal-centric and multimodal pipelines, emphasizing feature engineering and denoising strategies for noisy measurements. Yongtian Zou et al. [41] derived IMU-based indicators using symmetrized dot-pattern features, while Yuchen He  [42] improved low signal每to每noise ratio(SNR)vibration analysis through adap- tive dual-tree complex wavelet transforms combined with attention-weighted ensemble learning, achieving high accu- racy on UAV-FD and DJI datasets.
+﹛﹛Practical  deployment  considerations  have  also  drawn increasing attention. Ghazali et al [43] developed a fuzzy- logic  decision  system  integrated  with  smartphone-based LoRa communication for cost-effective UAV health mon- itoring,  and  Sadhu  et  al.  [44]  demonstrated  a  hardware- accelerated CNN每LSTM model using ?eld-programmable gate array (FPGA) recon?guration, achieving approximately 40℅ inference speed-up and sub-3  ms latency, underscor- ing the role  of hardware-aware  optimization in real-time fault diagnosis. Further, Yizong Zhang et al. [45] proposed a heterogeneous deep multi-task learning (HDMTL) architec- ture that combines CNN and LSTM branches with adaptive attention  sharing for  small-sample robustness, while Chu et  al.  [46]  introduced  an  improved  self-attention  LSTM with  similarity  space  mapping  (MISAL),  a  hybrid  atten- tion每LSTM  framework  guided by  maximum  information coef?cients to detect sensor bias and drift. Similarly, Huang et al.  [47] demonstrated that ensembling CNN, BiLSTM, and BiGRU networks with optimized weighting can substan- tially improve fault recognition accuracy and generalization, achieving over 99% performance across multiple fault sce- narios.
+﹛﹛Recent studies have also advanced the development of graded fault severity estimation and localization. Khaneghaei et al. [48] combined CNN and LSTM modules for sever- ity estimation across 25,000 hardware-in-the-loop scenarios, and  Wang  et  al.  [49]  proposed  the  directional  informa- tion and global perception fusion (DIGPGNN) framework, which employs directed-graph learning with bidirectional aggregation and global transformers for UAV telemetry anal- ysis.  Moreover,  cross-domain  studies,  such  as  those  by Zhaoxu Wang et  al.  [50]  on  quadruped robots, reinforce the generalizability of hybrid attention-based architectures. As summarized in Table 1, these recent advances collec- tively demonstrate diverse modeling strategies encompassing
+
+
+
+﹛attention, graph, and ensemble paradigms. Nonetheless, most approaches still rely on auxiliary sensors, lack uni?ed graded severity estimation and localization, or remain unsuitable for real-time onboard deployment, motivating the research gaps discussed next.
+
+Research gaps
+
+﹛Despite  notable  progress  in  data-driven  UAV  fault  diag- nosis, several fundamental challenges remain insuf?ciently explored. A primary limitation lies in the continued depen- dence  of many  FDD  frameworks  on  auxiliary  vibration, current, or acoustic sensors, which increase payload, energy consumption, and system complexity. Developing a robust, plug-and-play diagnostic paradigm that operates exclusively on built-in telemetry, principally inertial measurements and motor command data, remains an open problem, particularly for lightweight aerial platforms constrained by power and computational resources. Another critical limitation is the predominance of binary fault classi?cation within DL mod- els, which often fails to capture the degree of degradation or to identify the speci?c actuator responsible for the fault. Designing a uni?ed and computationally ef?cient architec- ture capable of both graded fault-severity estimation and actuator-level localization is therefore essential to enable interpretable, predictive, and real-time fault management. A further concern relates to computational scalability and inference latency: many DL-based approaches exhibit sig- ni?cant degradation in accuracy or response speed across diverse ?ight regimes, which undermines their suitability for embedded, real-time deployment under nonstationary and noisy ?ight conditions.
+﹛﹛Beyond  these  immediate   limitations,  several  broader research dimensions also remain underdeveloped. One per- sistent challenge involves cross-platform and domain gener- alization, as diagnostic models frequently experience severe performance loss when transferred across airframes, propul- sion  con?gurations,  or  environmental  settings.  Effective domain adaptation and few-shot transfer strategies are still largely absent. In addition, the majority of existing methods operate under closed-set assumptions, producing determinis- tic predictions without quantifying uncertainty. Such a lack of con?dence calibration renders UAV systems vulnerable to unseen or out-of-distribution fault conditions, emphasiz- ing  the  need  for  open-set  robust  frameworks.  Moreover, most  current  studies  regard  faults  as  isolated  or  steady- state events and rarely consider their temporal evolution. Research addressing concurrent or progressive fault propaga- tion, early-warning prediction, and detection latency remains scarce. Nevertheless, these aspects are indispensable for pre- dictive maintenance and long-term autonomous reliability in safety-critical operations.
+
+
+Proposed framework and key contributions
+
+﹛Motivated  by  the  aforementioned  challenges,  this  study develops  a  telemetry-only  fault  detection  and  diagnosis (FDD) framework that operates exclusively on onboard iner- tial and control  signals, thereby eliminating the need for auxiliary sensors. The proposed framework integrates two complementary lightweight deep learning architectures: (i) a hybrid CNN每LSTM每attention classi?er designed for mul- ticlass fault-severity grading and actuator-level localization, and (ii) an attention-enhanced LSTM autoencoder tailored for ?ne-grained severity estimation through reconstruction- based residual analysis. By exploiting spatiotemporal corre- lations inherent in multichannel UAV telemetry, the frame- work  achieves  robust  performance  under  dynamic  ?ight regimes while maintaining computational ef?ciency suitable for real-time, embedded deployment. The proposed mod- els are extensively validated on a large-scale, phase-diverse dataset that emulates realistic ?ight conditions and multi- ple degradation levels. This investigation directly addresses the  persistent  limitations  identi?ed  in  prior  research  by enabling sensor-minimal operation, uni?ed severity grading and localization, and ef?cient onboard inference. Moreover, a  high-?delity  synthetic  dataset  simulating  graded  thrust degradation  (5每40%)  under  realistic  noise  conditions  is introduced, bridging the gap between simulation-based and operational data and supporting reproducible benchmarking for future studies.
+﹛﹛The principal contributions of this study are outlined as follows:
+
+? This study introduces two novel pipelines, CLFDNet and AELMFNet, for detecting and estimating the severity of UAV motor faults. CLFDNet integrates1D CNN, LSTM, and self-attention mechanisms. AELMFNet is based on a hybrid AutoEncoder-LSTM structure.
+? A comprehensive simulation dataset for multirotorUAVs fault with their single and double magnitude V1 is devel- oped, incorporating realistic  sensor noise  and  diverse ?ight conditions(takeoff, hovering, navigation, and land- ing). It includes graded motor faults ranging from 5% to 40% and captures key ?ight dynamics, such as angu- lar  velocities,  Euler  angles,  and  linear  accelerations, addressing gaps in existing datasets.
+? In contrast to prior work focused solely on binary fault detection, this study proposes a uni?ed framework that identi?es faults and classi?es their severity. This dual capability enhances the applicability of the models in predictive maintenance strategies.
+? The performance of six loss functions is evaluated for AELMFNet. Huber loss is identi?ed as the most effec- tive (minimum loss: 0.001), signi?cantly improving the
+
+
+
+
+Table 1   Comparative summary of recent UAV fault diagnosis methods. Metrics are reported as in the original papers and may not be directly comparable across datasets or evaluation protocols.
+
+Reference	Signals / Modality	Model / Core Idea	Extra Sensors	Outputs	Dataset / Setting	Real-time Notes	Strength / Limitation
+[37]	Multichannel telemetry	﹛SPCFormer                     (CNN每 Transformer)    with    selective patch/channel attention	No	Detection
+(multi-class)	SIL/HIL,   actuator   and sensor faults	Lightweight	+ Channel attention; 每 No severity or localization
+[39]	Flight-control      sig- nals	﹛GatedGCN          +          CNN每 Transformer    (graph每temporal hybrid)	No	Detection	Real ?ight (?xed-wing)	None	﹛+ Inter-signal graph learn- ing; 每 Fixed-wing focus
+[38]	Telemetry (ALFA)	CCTFANet (causal conv + GRU + attention)	No	Detection	ALFA                   dataset (noise/imbalance)	None	+Temporal causality;每No graded estimation
+[41]	IMU	﹛SDP features + OTSU quanti?- cation	No	Detection
+(propeller)	Bench/?ight IMU data	None	+   IMU-only   feasibility;
+每   Hand-crafted,   limited scope
+[42]	Vibration	ADTCWT        denoising        + attention-weighted GBDT	Yes	Detection	UAV-FD, DJI	None	+ Robust under low SNR;
+每 Sensor-dependent
+[43]	﹛Vibration, speed, cur- rent	﹛Fuzzy logic  decision  +  smart- phone LoRa	Yes	Health   states (3 levels)	Lab test bench	None	+  Low-cost,   deployable;
+每  Added  payload,  coarse states
+[48]	Telemetry	﹛1D CNN + LSTM for severity estimation	No	Detection     + Severity	25k HIL scenarios	Real-time on rig	﹛+ Severity-aware; 每 Motor faults only
+[49]	Telemetry (graph)	DIGPGNN (directed graph, bi- agg + global transformer)	No	Detection	Public     and     in-house UAVs	None	﹛+ Robust graph learning; 每 High computational cost
+[50]	Robot joint telemetry	CNN每GRU + attention	None	Detection     + Isolation	Quadruped robot	None	﹛+ Cross-domain validity; 每 Non-UAV application
+[47]	Vib.   +   acoustic   + freq. domain	Ensemble  of  CNN,  BiLSTM, BiGRU	Yes	Detection	Mixed UAVs	None	﹛+ Ensembling accuracy; 每 High sensor cost
+[44]	Inertial + navigation	CNN/BiLSTM          AE          + CNN/LSTM classi?er (FPGA)	No	Detection     + Cause class	Simulation + experiment	~40℅     speed-up;
+2.6ms latency	﹛+   Real-time   FPGA;   每 Multi-stage complexity
+[46]	Telemetry	MISAL  (MIC  ?ltering  +  self- attn + LSTM)	No	Bias/drift
+detection	Sim + ?ight data	None	+ Spatiotemporal learning;
+每 Limited to sensor drift
+[45]	Telemetry       (?xed- wing)	﹛HDMTL (CNN/LSTM + adap- tive attention sharing)	No	Detection (small-
+sample)	Fixed-wing UAVs	None	﹛+ Few-shot robustness; 每 Limited transferability
+[40]	Telemetry (graph)	LGA-GNN (local每global atten- tion on KNN graph)	No	Detection
+(propeller)	Real quadrotor logs	None	﹛+   Relation   learning;   每 Detection-only focus
+This work (ours)	IMU + motor com- mands    (telemetry- only)	﹛CLFDNet         (CNN每LSTM每 attn)          +          AELMFNet (AE每LSTM + attn)	No	Detection    +
+Localization
++       Graded Severity	Large,     phase-diverse dataset (5每40%)	Low-latency	﹛+  Uni?ed  graded  diag- nosis;  每  Cross-platform generalization  as  future work
+Bold represents the best results
+
+
+
+model＊s  sensitivity to fault magnitude  estimation  and guiding optimal training strategies.
+? Comparative experiments demonstrate that the proposed models outperform traditional machine learning algo- rithms (e.g., SVM, KNN) and advanced DL baselines. CLFDNet achieves high classi?cation accuracy across scenarios, af?rming its robustness and readiness for real- world applications.
+﹛﹛In summary, this study proposes a lightweight, telemetry- based  deep  learning  framework  for  real-time  UAV  fault detection, localization, and severity estimation, utilizing only onboard inertialand control data. The remainder ofthis paper is organized as follows. Section 3 details the proposed net- work architectures, dataset design, and training procedure. Section 4 describes the experimental  setup, loss function optimization, and evaluation metrics. Section 5presents the experimental results and ablation studies, while Section 6 provides an in-depth discussion covering comparative per- formance analysis, computational cost, inference ef?ciency, fault detection latency, and identi?ed limitations alongside potential future research directions. Finally, Section 7 sum- marizes the main ?ndings and concludes the paper.
+
+Materials and methods
+
+﹛This section discusses the system dynamics, data generation, preprocessing process, and proposed architecture within the fault detection and classi?cation domain in multirotor UAVs. It elaborates on the selection of hyperparameters and the speci?cation of the application loss function, including their respective attributes. Additionally, it offers a detailed account of the experimental setup for the investigated models.
+﹛Dataset overview: acquisition, structure, and constraints
+This  study  presents  a  novel  multirotor  UAV  faults  with their single and double magnitude-V1 dataset, a high-?delity time-series resource speci?cally developed to support intelli- gent systems＊ advancement and rigorous evaluation for fault detection, isolation, and magnitude estimation in multirotor UAVs. The dataset comprises114,230labeled instances, each characterized by 14 carefully selected features encapsulat- ing the UAV＊s dynamic, kinematic, and actuation responses across  a  wide  range  of nominal  and  fault-induced  oper- ating conditions. Speci?cally developed for real-time and safety-critical aerospace applications, this dataset is a robust foundation for advancing research in fault-tolerant naviga- tion, autonomous fault recovery, and predictive maintenance.
+﹛﹛The  data  were  generated  using  a  high-?delity  MAT- LAB每Simulink simulation environment grounded in a non-
+
+
+﹛linear six-degree-of-freedom (6DOF) UAV model, incorpo- rating realistic sensor noise characteristics and environmen- tal effects to emulate real-world conditions. During key ?ight phases, including takeoff, hovering, trajectory tracking, and landing, data were collected under both healthy and faulty conditions. Within these phases, random motor faults were introduced with varying severity levels ranging from mild (5%) to severe (40%), ensuring diversity and robustness in model training and generalization. The fault classi?cation and localization performance reported in this paper are based on a comprehensive dataset that includes both single and dou- ble motor faults across all four rotors.
+﹛﹛Statistical sensor noise models were applied to enhance dataset realism. Gyroscope noise was con?gured at approx- imately 0.01 degrees per second, while accelerometer noise was set at 0.0004 g. A low-pass ?lter was also employed to balance signal ?delity and noise suppression, enabling the data to retain essential dynamic properties while ?lter- ing out high-frequency noise. Each data instance includes a time index column (t/s), making the dataset particularly suitable for temporal modeling approaches such as recurrent neural networks (RNNs), temporal convolutional networks (TCNs), and attention-based architectures. The 14 features consist of angular velocity components(p, q, r), linear accel- eration components (ax, ay, az ), and Euler angles (朴 for roll, 成 for pitch, 朵 for yaw). Additionally, the dataset includes the motor outputs (m 1 , m2 , m3 , m4), representing the real-time thrust or torque values produced by each of the four rotors.
+﹛﹛One of the de?ning strengths of this dataset is its detailed fault  modeling  framework,  which  includes  both   single- motor and double-motor failure  scenarios. In the case of single-motor faults, only one rotor experiences performance degradation. For instance,  an instance with motor values m 1  = 0.2, m2  = 0.0, m3  = 0.0, and m4  = 0.0 signi?es a fault condition localized to motor 1. Double-motor faults, on the other hand, involve simultaneous degradation in two rotors, thereby simulating more complex or correlated failure modes. For example, m 1  = 0.3, m2  = 0.4, m3  = 0.0, and m4  = 0.0 indicates concurrent faults in motors 1 and 2.
+﹛﹛Table2presentsa comprehensive overview ofeach record, detailing a unique identi?er, corresponding time-step data, angular  velocity  and  translational  acceleration  measure- ments, orientation angles, and the applied fault magnitudes, both  single and double, for each motor (m 1  to  m4). The dataset is organized into three primary operational classes:
+﹛6,015 instances represent single-motor faults, 50,668 corre- spond to double-motor faults, and 57,547 pertain to nominal (fault-free)operation. This results inan approximate fault-to- normal instance ratio of 0.99:1, ensuring a nearly balanced dataset. Such a distribution is critical for minimizing bias during model training in supervised learning scenarios.
+
+
+Table 2   Sample of data for fault detection in multirotor UAVs, including single and double fault magnitudes
+
+t /s	p	q	r	ax	ay	az	朴	成	朵	m1	m2	m3	m4
+7.58	每0.0185	0.0802	0.0044	0.0057	0.2287	每0.0001	每2.2899	0.0581	每0.0177	0.05	0	0	0
+13.66	0.0047	每0.1885	0.0044	每0.0002	0.0001	每0.0323	每1.8021	每0.0013	每0.0020	0	0.15	0	0
+9.85	0.0097	0.0175	0.0096	每0.0009	0.2688	每0.0008	每2.7028	每0.0067	1.7764	0	0	0.25	0
+13.93	每0.0070	每0.4171	每0.0167	0.0015	0.0123	0.0053	每0.1235	0.0143	每0.2558	0	0	0	0.4
+9.73	0.0051	0.0148	0.0047	每0.0019	0.2670	每0.0016	每2.6208	每0.0143	0.2274	0.05	0.05	0	0
+10.91	0.0200	每 0.0180	每0.0023	0.0051	0.2487	每0.0010	每2.4990	0.0540	每0.0314	0.05	0	0.05	0
+11.6	每0.0553	-0.0949	每0.0038	0.0233	0.3038	0.0019	每3.1382	0.2388	每0.1984	0.15	0	0	0.25
+10.3	0.0429	每0.0917	每0.0023	每0.0102	0.2875	0.0025	每2.9290	每0.1138	每0.0973	0	0.1	0	0.15
+
+
+
+Data acquisition
+
+﹛The  data  acquisition  process  consists  of  four  key  com- ponents: UAV dynamic modeling, data con?guration, data format speci?cation, and key metrics. These components are discussed in detail below.
+UAV Dynamics Modeling
+A  quadrotor＊s  motion  is  described  using  two  refer-
+ence  frames.  As  shown  in  Figure  1,  the  inertial  frame
+
+
+
+
+
+
+
+
+﹛﹛The linear and angular velocity vectors of the quadro- tor in the body coordinate system are V  = [u, v, w]T  and 次 = [p, q, r]T , respectively [51]. Accordingly, the veloc- ity relationships between the two coordinate  systems are expressed as:
+
+l                                                                        (1)
+
+The conversion is given by the following expression, where R and N are the transformation matrices:
+
+
+
+﹛where C(﹞), S(﹞), and T(﹞) stand for cos(﹞), sin(﹞), and tan(﹞), respectively.
+
+
+﹛
+Fig. 1   The quadrotor＊s inertial and body frames
+
+﹛﹛According to Newton＊s law of motion and Euler＊s equa- tion, the  dynamics  equation  of a  quadrotor UAV  can be obtained as follows:
+
+
+
+
+﹛﹛where  FM ,  FA,  and  FG   are  motor,  aerodynamic,  and gravitational forces, and MM , MA, and MG  are the motor, aerodynamic, and gyroscopic moments due to the rotation of the propeller, respectively. By substituting Eqs. 1 and 3 into Eq. 4, the translational and rotational equations of the quadrotor are expanded to:
+
+pitching, and yawing torques, respectively. The parameters d  and b refer to the aerodynamic drag and thrust forces, respectively. The S500 quadrotor with 12-inch diameter pro- pellers and EMAX MT3506 motors is selected in this paper. More detailed information about the selected frame is given in Table 3.
+﹛﹛The most common fault in brushless DC motors is a loss ofeffectiveness(LOE), characterized by a reduction in motor speed, leading to decreased thrust and, consequently, reduced maneuverability or potential collisions. In our paper, we have studied the LOE actuator faults, in which the faulty actua- tor output is de?ned based on the actual input signal U as follows [53]:
+Fig. 2   Multirotor UAV＊s concepts of operation
+
+
+
+
+
+
+
+
+
+
+
+Where m indicates the quadrotor＊s total mass, l refers to the arm＊s length or the distance between the quadrotor＊s center and any actuator, g denotes the gravitational acceleration, Ix , Iy , and Iz  determine the moments of inertia corresponding to each x , y , and z axis in the Earth frame, and Jr  refers to the motor＊s inertia moment. The parameters KAx, KAy, KAz , KAmx , KAmy, and KAmz  are the translational and rotational aerodynamic (drag) coef?cients, respectively [52].
+﹛﹛The following control equations, in terms of rotor speeds, present the total thrust, rolling, pitching, and yawing torques generated by the quadrotor＊s motors:
+
+﹛where 肋 1 , 肋2 , 肋3, and 肋4  are the speeds of each motor, U = [U1, U2, U3, U4]T  is the input vector in which T rep- resents the total thrust, and 而耳, 而牟 , and 而肉  denote the rolling,
+
+
+
+(8)
+﹛where t f  is the fault time, 0 ≒ fi   < 1, and fi  = 1, fi  = 0 represent the healthy and the failure cases, respectively.
+Dataset Con?guration
+﹛﹛Motor faults in this study are represented by a controlled decrease in the thrust output of one or more rotors, with the severity of each fault varying between 5% and 40%. These faults are applied randomly throughout different phases of ?ight  to  mimic  how  performance  reduction  might  occur unexpectedly in real UAV operations. This dataset consists of both single-fault and multi-fault data for each motor. The total number of data of this dataset is
+﹛﹛As  shown  in Figure 2,  a  standardized  mission pro?le is followed throughout the simulations to ensure a realis- tic evaluation environment. This pro?le includes key ?ight maneuvers commonly encountered in typical UAV tasks:
+
+? Vertical climb: The drone lifts off from a  stationary position, requiring tight control to maintain balance and initiate the ?ight path smoothly.
+? Altitude hold: The vehicle remains stable ata?xed point for a period of time, a maneuver crucial for imaging, monitoring, or scanning missions.
+? Navigation: The UAVis guided through a series ofpreset spatial targets in cruise ?ight. This phase involves both linear movements and complex turns at ?xed altitudes.
+? Descent  phase:  The  vehicle  gradually  descends  and slows down for landing, demanding accurate handling of altitude and velocity.
+
+﹛﹛Faults are injected at varying times and magnitudes within these phases, introducing unpredictable faults, replicating how real-world systems might experience degradation.
+﹛﹛Figures3and4highlight representative data samples from the dataset, illustrating how system dynamics respond when
+
+
+Parameter	Value & Unit	Parameter	Value & Unit
+M	1.6 kg	Ix , Iy	0.0213 kg﹞m2
+l	0.243 m	Iz	0.028 kg﹞m2
+d	8.43 ℅ 10?9 Nm/rpm2	Jr	6.8 ℅ 10?5 kg﹞m2
+b	4.072 ℅ 10?7 N/rpm2	g	9.8 m/s2
+KAx, KAy	5.56 ℅ 10?4 N/(m/s)	KAmx, KAmy	5.56 ℅ 10?4 N/(rad/s)
+KAz	6.3 ℅ 10?4 N/(m/s)	KAmz	6.354 ℅ 10?4 N/(rad/s)
+
+﹛
+Fig. 3   Flight data re?ecting various Motor 1 fault types during sustained hover conditions
+﹛
+Fig. 4   Dataset parameters capturing diverse fault conditions affecting Motor 1 during a descending turn maneuver
+
+
+
+﹛faults occur mid-?ight. These examples underscore the com- plexity and variability captured by the simulation, reinforcing its value as a training and validation tool for robust UAV fault detection systems.
+Data Format and Key Metrics
+﹛﹛Nine primary features are included, each directly correlat- ing with the UAV＊s physical motion and control responses in real operating conditions. Data are collected for each detected fault event within a 1-second window spanning 0.5 seconds before and after the fault＊s onset. This sampling strategy cap- tures a complete picture of the fault＊s temporal in?uence on ?ight behavior. The dataset captures both angular and linear dynamics, including:
+
+? Body angular rates (p, q, r): These represent rotational velocities around the UAV＊s principal axes; roll, pitch, and yaw are measured in radians per second.
+? Orientation angles (朴, 成, 朵): Euler angles correspond- ing to the UAV＊s attitude in 3D space, providing insight into its spatial orientation.
+? Linear accelerations (ax, ay, az ): These values quan- tify the translational forces acting along the UAV＊s body frame axes, expressed in meters per second squared.
+
+﹛﹛To align with practical sensor usage, all variables undergo low-pass?ltering, which reduces high-frequency signal noise while preserving meaningful system behavior.
+
+Constraints and scope of the dataset
+
+﹛This  dataset  is  prepared  for  a  speci?c  quadrotor  setup, developed using a ?xed con?guration of aerodynamic char- acteristics, structural parameters, and a prede?ned control architecture. Therefore, its generalizability to other multi- rotor designs is inherently limited. Systems with different dynamics may respond differently under similar fault condi- tions, reducing the dataset＊s direct transferability to alterna- tive UAV platforms.
+﹛﹛Moreover, although the simulation includes realistic sen- sor disturbances and standard maneuver sequences, it does not factor in dynamic environmental in?uences like wind gusts or atmospheric turbulence. These real-world elements play  a  signi?cant  role  in  ?ight  behavior,  especially  dur- ing outdoor missions, where distinguishing between faults and environmental disturbances becomes increasingly dif- ?cult.  For  instance,  wind  disturbances  and  partial  motor failures can similarly affect UAV attitude and stability, poten- tially confounding fault diagnosis without additional sensing or estimation mechanisms. Future iterations of the dataset would bene?t from integrating variable environmental condi- tions and turbulence models to enhance realism and broaden applicability.
+
+
+Data pre-processing
+
+﹛The dataset comprises a rich set of sensory and actuator- related features, including angular velocities (p, q, r), lin- ear accelerations (ax, ay, az ), Euler angles (朴,成,朵), and motor  commands  associated  with  four  individual  actua- tors (m 1, m2, m3, m4). These features represent the dynamic states of the system and are essential for accurately modeling the underlying physical processes.
+﹛﹛To assign a discrete label to each sample, the class with the highest probability is selected using the argmax operator:
+
+argmax(x) = arg max(xi),   i  = 1, 2, . . . , C                   (9) i
+﹛﹛where x  ﹋ RC  denotes the probability distribution over C classes, and xi  is the predicted probability of class i. The selected class index is then converted into an integer label via label encoding, ensuring compatibility with machine learn- ing models:
+
+LabelEncoder(y) = {yi  ﹋ Z+  | i  = 1, . . . , N}             (10)
+﹛﹛Here, each yi  represents a unique class mapped to a non- negative integer.
+﹛﹛Before training, all input features undergo standardization using the z-score method, which transforms each feature to have zero mean and unit variance:
+
+
+﹛﹛where x (i) is the i-th feature value, 米(i) is the mean, and 考 (i) is the standard deviation of that feature across the train- ing set. This transformation improves numerical stability and accelerates model convergence during gradient-based opti- mization.
+﹛﹛The dataset is divided into training  (80%) and testing (20%) subsets using strati?ed sampling to preserve class dis- tribution. For compatibility with temporal DL models, such as 1D Convolutional Neural Networks (1D CNN) and Long Short-Term Memory  (LSTM) networks, the input data is reshaped into a three-dimensional tensor:
+
+X ﹋ RN℅T℅F                                                                                       (12)
+﹛﹛Here, X denotes the input data, N is the number of sam- ples, T is the number of time steps per sample, and F is the number of features at each time step. For the present study, each sample contains F = 14 features, including time
+
+
+
+﹛stamp  T , orientation angles  (成,朴,朵), angular velocities (p, q, r), linear accelerations (ax, ay, az ), and motor com- mands (m 1, m2, m3, m4).
+﹛﹛To  support  the  use  of  categorical  cross-entropy  loss, all integer-encoded class labels are converted into one-hot encoded vectors:
+
+OneHot ij  se              (13)
+﹛﹛This  encoding  facilitates  multi-class  classi?cation  by enabling the model to perform probabilistic prediction across all categories.
+
+Proposed architecture
+﹛This study introduces two state-of-the-art DL models for fault classi?cation and detection in multi-motor UAVs. The primary aim is to develop a novel, lightweight architecture tailored to this task. By leveraging recent advances in DL, the proposed models enhance the accuracy and ef?ciency of multirotor UAV fault detection systems. A detailed descrip- tion of each model is provided below.
+
+CLFDNet architecture
+
+﹛This  study  proposes  a  dual-branch  DL-based  CLFDNet architecture designed to enhance the FDD capabilities of multirotor UAVs across various ?ight regimes. The proposed framework integrates a multi-scale CNN and an LSTM net- work, bridged by an attention mechanism to capture local temporal  patterns  and  global  sequence  dependencies,  as shown in Figure 5. The architectural design is motivated by the need to simultaneously exploit low-level discriminative features and long-term temporal correlations inherent in sen- sor signals recorded during UAV operations. The architecture is end-to-end trainable and optimized for multiclass classi?- cation. Algorithm1illustrates the comprehensive operational ?ow of the proposed CLFDNET framework. The algorithm systematically outlines each step, starting from data prepro- cessing and feature extraction through the CNN and LSTM branches, followed by the attention-driven feature re?nement and culminating in the classi?cation of UAV fault types.
+﹛﹛CLFDNet was trained on discretized fault magnitudes at 5% intervals, with each class representing a speci?c range (e.g., [2.5%, 7.5%) ↙ 0.05). Intermediate fault magnitudes are assigned to the nearest class based on these intervals. For continuous estimation of fault severity, AELMFNet pro- vides a reconstruction loss correlated with fault magnitude, enabling  ?ner-grained  predictions  beyond  the  discretized classes.
+
+
+
+Algorithm 1 CLFDNet Model Training Algorithm
+Require: X tr_cnn , X tr_lstm , ytr , X ts_cnn , X ts_lstm , yts , num_classes
+Ensure: Trained DL model
+1: Step 1: De?ne input shape
+2: Set input_shape ↘ (T , 1)
+3: Step 2: CNN Branch - Feature Extraction
+4: for i = 1 to 6 do
+5:      if i ﹋ {1, 2, 6} then
+6:           Apply Conv1D(32, 3, activation = ReLU)
+7:      else if i  ﹋ {3, 4} then
+8:           Apply Conv1D(48, 5, activation = ReLU)
+9:      else if i = 5 then
+10:           Apply Conv1D(64, 3, activation = ReLU)
+11:      end if
+12:      Apply GlobalAveragePooling1D()
+13: end for
+14: Concatenate all CNN outputs ? Fcnn
+15: Apply Dense(32, ReLU), Dropout(0.05), Dense(32, ReLU)
+16: Result: Zcnn  ﹋ R32
+17: Step 3: LSTM Branch - Temporal Modeling
+18: Input Xlstm  ﹋ RT℅1
+19: Apply LSTM with 32 units, return_sequences=True
+20: Output: H = [h 1, h2 , . . . , hT ]
+21: Step 4: Additive Attention Mechanism
+22: for t = 1 to T do
+23:      Compute attention score:
+et  = vT tanh(Whht  + WcZcnn)
+24: end for
+25: Normalize:
+汐t  =		exp(et )      
+曳=1exp(et/)
+26: Compute context vector:
+T
+
+27: Step 5: Feature Fusion and Classi?cation
+28: Concatenate Z fusion  = Concat(Zcnn , Zatt)
+29: Apply Dense(64, ReLU)
+30: Output layer:
+ = Softmax(WZ fusion + b)
+
+? CNN Branch: The CNN branch is constructed to extract localized temporal features from univariate time-series inputs. The input to this branch is a vector Xcnn  ﹋ RT℅1 , where T is the number of time steps. Six parallel convo- lutional paths ensure robustness to fault types of varying temporal characteristics, each with different kernel con- ?gurations.  Speci?cally, the design includes  ?lters of sizes k  = 3  and k  = 5 with depths ranging from  32 to 64. The use of six parallel Conv1D blocks enables multi-scale temporal feature extraction, where?lters with smaller and larger receptive ?elds capture both short- term transients and longer-term dynamic variations in the UAV signals. This design enhances robustness to diverse fault dynamics and ensures richer feature representation prior to fusion with the LSTM branch. Each convolu- tional block consists of a one-dimensional convolution layer with ReLU activation, followed by global average pooling (GAP) to reduce the spatial dimensionality and retain only the most informative activation values. The resulting feature maps F(i) from each path are then con- catenated as follows:
+Fcnn  = Concat([F(1) , F(2) , . . . , F(6)])                     (14)
+
+﹛Subsequently,  the  merged  CNN  features  are  passed through two fully connected layers with ReLU activa- tions. A dropout layer with a rate of 0.05 is incorporated to mitigate over?tting:
+
+Zcnn  = ReLU(W2﹞Dropout(ReLU(W1﹞Fcnn +b1))+b2)
+(15)
+
+
+﹛﹛﹛﹛
+Fig. 5   CLFDNet architecture: a hybrid framework integrating 1D-CNN, LSTM, and a context-based additive attention mechanism
+
+
+? LSTM Branch A parallel LSTM branch accounts for the sequential structure of UAV telemetry data. The input to the LSTM branch, denoted as Xlstm  ﹋ RT℅1 , is identical in structure to the CNN input. Speci?cally, the LSTM branch receives the same multivariate telemetry stream as the CNN branch, i.e., Xlstm   ﹋ RT℅F  with  F  =  14 features comprising body angular rates (p, q, r), linear accelerations(ax, ay, az ), Euler angles(朴,成,朵), motor outputs (m 1, m2, m3, m4), and the time index. All fea- tures are z-score standardized, and each input window spans approximately one second (0.5s pre- and post-fault onset) to capture both pre- and post-event dynamics.
+The LSTM layer is con?gured with 32 hidden units and set to return sequences to preserve temporal dimension- ality:
+
+H = LSTM32(Xlstm)                                            (16)
+The hidden state matrix H ﹋ RT℅32 represents the evolv- ing internal memory of the network as it processes each time step, enabling it to model both short- and long-term dependencies.
+? Attention Mechanism Following the LSTM process- ing, an attention mechanism is applied to enhance the model＊s ability to focus on temporally salient informa- tion. The attention model implemented here is a context- based additive attention mechanism, which dynamically computes a weighted sum over the LSTM outputs by measuring their relevance for the context vector derived
+from the CNN branch. This formulation can be described as:
+exp(vT tanh(Whht  + WcZcnn ))
+曳t/ exp(vT tanh(Whht/  + WcZcnn ))
+
+
+
+T
+
+﹛Here, 汐t  denotes the attention weight for time step t , ht is the LSTM output at time t , v , Wh, W c  are trainable parameters. The context vector Zcnn  acts  as the query guiding the alignment process. This attention mechanism effectively performs temporal alignment by emphasiz- ing LSTM outputs most relevant to the features extracted by the CNN, thus improving fault localization and inter- pretability.
+﹛The attention-augmented LSTM output is then pooled using global average pooling to form a ?xed-length vec- tor:
+Zlstm  = GAP(Zatt)                                                 (19)
+? Feature  Aggregation  and  Fault  Classi?cation:  The ?nal classi?cation layers integrate the outputs from both the CNN and LSTM branches. The two vectors Zcnn and Zlstm  are concatenated to form a comprehensive repre- sentation:
+Z fusion  = Concat(Zcnn, Zlstm)                                (20)
+
+This fused representation is processed by a fully con- nected layer with 64 hidden units using ReLU activation. The ?nal output layer employs a softmax activation to yield the class probabilities over C possible fault cate- gories:
+ = softmax(W4  ﹞ Z fusion + b4)                             (21)
+
+
+
+The architecture was implemented using TensorFlow and Keras backends, and the model was trained using cate- gorical cross-entropy loss and the Adam optimizer. As discussed in the subsequent section, all hyperparame- ters were optimized using a randomized search combined with strati?ed k-fold cross-validation.
+﹛The hybrid CNN-LSTM-attention architecture is rooted in the theoretical premise that UAV fault signals exhibit both localized anomalies and sequential progression over time. CNNs are pro?cient in identifying local patterns, such as abrupt ?uctuations in motor RPM or vibration, whereas LSTMs capture sequential transitions, including drift  or progressive  degradation. Integrating  an  atten- tion mechanism further enhances the network＊s ability to focus on temporally  signi?cant moments that may signify  the  onset  or  escalation  of  faults.  Moreover, the dual-branch structure enables the network to learn from independent  and temporally  dependent features, leading to a more robust decision boundary in the high- dimensional fault space.
+
+AELMFNet architecture
+
+The Autoencoder framework adopted in this work comprises an  encoder-decoder  structure  built  entirely  from  stacked LSTM layers, as shown in Figure 6. This architecture was selected due to the LSTM unit＊s superior capability to model sequential dependencies by mitigating gradient vanishing and exploding problems encountered in RNNs. Algorithm 2represents the comprehensive architecture of AELMFNet.
+The input sequence is de?ned as:
+X = {x 1 , x2 , . . . , xT }                                               (22)
+﹛where T denotes the length of the sequence and xt represents the input at time step t .
+﹛﹛represent the input multivariate time-series data, where xt  ﹋ Rn denotes the feature vector at time step t . The primary objective of the Autoencoder is to learn a latent representa- tion z and reconstruct the original sequence X from z with minimal information loss.
+﹛﹛The LSTM unit operates based on a gated mechanism, allowing selective information ?ow through three gates: the input gate it , forget gate ft , and output gate ot . The hidden state ht  and cell state ct  at each time step t  are updated as follows:
+it  = 考(Wixt  + Uiht?1 + bi)                                     (23)
+
+ft  = 考(Wf xt  + Uf ht?1 + bf )                                    (24)
+ot  = 考(Woxt  + Uoht?1 + bo)                                    (25)
+
+
+Algorithm 2 AELMFNet Model Training Algorithm with Soft Attention
+Require: X train_reshaped , X train_scaled
+Ensure: Trained autoencoder model
+1: Initialization:
+2: Latent dimension ↘ 3; number of losses ↘ 6
+3: De?ne Input Layer:
+4: input_layer ↘ Input(shape = (T , F))           D T: time steps, F: features
+5: Encoder:
+6: for i = 0 to 3 do
+7:      units ↘ 100 ? 25 ℅ i
+8:      x  ↘ LSTM(units , activation=ReLU, return_sequences=True) (x)
+9: end for
+10: latent_features ↘ LSTM(3, activation=ReLU, return_sequences=True)(x)
+11: Soft attention mechanism:
+12: Compute alignment scores: et ,i  = tanh(W1ht  + W2hi  + b)
+
+
+15: context_aware ↘ Concatenate(ct, ht )
+16: Decoder:
+17: x  ↘ RepeatVector(T)(context_aware)
+18: for i = 1 to 4 do
+19:      x  ↘ LSTM(25 ℅ i , activation=ReLU, return_sequences=True) (x)
+20: end for
+21: decoder ↘ TimeDistributed(Dense(F), activation=sigmoid)(x)
+22: Model De?nition:
+23: autoencoder   ↘  Model(inputs   =  input_layer , outputs   = decoder)
+24: Compilation:
+25: Compile model with loss={BCE, Huber, MSE, SmoothL1, MAE, Hinge}
+26: Optimizer = Adam
+
+
+
+t  = tanh(Wcxt  + Ucht?1 + bc)                                  (26)
+
+
+ct  = ft  成 ct?1 + it  
+
+
+ht  = ot  成 tanh(ct )                                                     (28)
+﹛﹛where  考(﹞)  denotes  the  sigmoid  activation  function, tanh(﹞) is  the  hyperbolic  tangent  function,  成  represents element-wise multiplication, and  Wi , Wf , Wo , Wc  are the input  weight  matrices,   Ui , Uf , Uo , Uc   are  the  recurrent weight matrices, and bi, bf , bo, bc  are bias vectors.
+﹛﹛In the encoder phase, the input sequence X is compressed through multiple LSTM layers to a lower-dimensional latent vector z  ﹋ Rd  (in this case, d  =  3), which is intended to capture the most salient temporal features of the input data.
+
+
+﹛
+Fig. 6   AELMDFNet architecture: auto-encoder with LSTM for motor fault detection network
+
+
+﹛The latent dimensionality was selected via validation-based model order selection over d  ﹋  {2, 3, 4, 6, 8}, targeting a balanced trade-off between reconstruction ?delity and edge- inference cost; an elbow was observed at d  = 3, which we adopt for all reported results.
+﹛﹛The decoder mirrors the encoder, beginning with the latent vector z , which is repeated across the temporal axis to match the original sequence length. The decoder LSTM layers then reconstruct the output sequence:
+
+ = {1 , 2 , . . . , T }
+
+﹛﹛The reconstruction quality is assessed by minimizing the Binary Cross-Entropy (BCE) loss, de?ned as:
+
++(1 ? xt ,j) log(1 ? t ,j)]                                           (29)
+﹛﹛where n is the number of features, and T is the number of time steps.
+
+? Attention Mechanism:
+﹛A  soft  attention  mechanism  is  incorporated  into  the Autoencoder structure to improve the model＊s ability to handle long-range dependencies and context relevance. This mechanism allows the decoder to assign adaptive weights to each encoded hidden state, enabling the model to dynamically emphasize signi?cant temporal segments during reconstruction.
+Given the encoder＊s hidden states:
+H = {h 1, h2 , . . . , hT }                                         (30)
+﹛and the decoder state at the current time step st , the atten- tion weights 汐t ,i   are computed through  an  alignment score,  often  realized  via  a  feedforward  compatibility
+
+
+function:
+et ,i  = vT tanh(Whhi  + Wsst  + batt)                        (31)
+The normalized attention weights are obtained using the softmax function:
+
+The attention-based context vector ct  is then derived as a weighted sum of the encoder hidden states:
+
+T
+
+﹛This context vector ct is concatenated with the decoder＊s hidden state before passing it to the ?nal output layer for sequence reconstruction. This dynamic selection process mitigates  the  limitations  of  ?xed-length  context  vec- tors by providing ?exible, time-dependent access to the encoded features.
+﹛Furthermore,  the  AELMFNet  architecture  is  trained using the six-loss function and optimized using the Adam optimizer, as discussed in the next subsection 4.1. It is a popular choice for training neural networks due to its adaptive learning rate properties. The training process involves reshaping the input data to match the expected input shape of the autoencoder and training the model on the data over multiple epochs. The validation split ensures robustness by evaluating the model＊s performance on unseen data during training.
+
+Experimental setup
+
+
+﹛﹛The comprehensive exploratory analyses conducted for this research were executed within the Google Colabora-
+
+
+
+
+Table 4
+
+
+
+
+
+
+
+
+
+
+
+
+Table 5	Fault Magnitude
+
+
+
+
+
+
+
+
+
+
+
+
+Motor Attributes	Fault	Magnitude
+No-Fault	0.0
+Fault 1	0.05
+Fault 2	0.10
+Fault 3	0.15
+Fault 4	0.20
+Fault 5	0.25
+Fault 6	0.30
+Fault 7	0.35
+Fault 8	0.40
+
+Attributes	Values
+Motor 1	m1
+Motor 2	m2
+Motor 3	m3
+Motor 4	m4
+
+
+
+﹛tory (Colab) environment. The CUDA version was employed 12.2.  The  entire  implementation  of  the  DL  model  was precisely carried out using Python programming code, incor- porating the Keras framework with the TensorFlow backend.
+﹛﹛In this study, we introduce CLFDNet and AELMFNet for fault detection and classi?cation with their magnitude, respectively, in the context of advancing FDD methodologies for multirotor UAVs. The CLFDNet model represents a sig- ni?cant advancement in multiclass classi?cation, delineating nine distinct output classes that provide a comprehensive framework for characterizing fault severity. These classes range from ＊No Fault,＊ indicating the absence of any fault, to ＊Fault 8,＊ signifying a substantial 40% fault in one of the four motors shown in Tables 4 and 5. Label encoding facilitates classi?cation, attributing fault magnitudes as ＊fault classi?- cation＊ and motor designations from Motor 1 to Motor 4 as ＊label column.＊Leveraging this encoding scheme, the CLFD- Net model was deployed for fault and motor classi?cation tasks, showcasing its versatility and ef?cacy in fault detec- tion scenarios.
+﹛﹛To assess performance and generalizability, the CLFDNet was compared against ?ve conventional ML classi?ers and ?ve attention architectures. All models were trained under identical dataset splits and preprocessing pipelines to ensure fairness. ML classi?ers were optimized using a grid search and ?ve-fold cross-validation, and their optimal con?gura- tions are summarized.
+Loss function for AELMFNet architecture
+
+In DL, loss functions measure the gap between predicted outputs and ground truth, guiding model training and perfor-
+
+
+mance. For fault detection and overall loss computation in the AELMFNet model, six loss functions were utilized:
+
+? Binary Cross-Entropy (BCE) Loss
+﹛BCE loss function is instrumental in binary classi?ca- tion tasks, offering a principled approach to evaluating prediction disparities. It is de?ned as:
+
+
+(34)
+﹛where y represents the true binary labels,  denotes the predicted probabilities, and N signi?es the total number of samples.
+? Mean Squared Error (MSE) Loss
+﹛MSE loss function constitutes a cornerstone in regression tasks, quantifying the average squared deviation between predicted and actual values.
+
+
+﹛where y denotes the true values,  signi?es the predicted values, and N  denotes the sample size. It emphasizes the ?delity of predictions by penalizing larger deviations more severely.
+?  Smooth L1 Loss
+﹛Smooth L1 loss presents a nuanced variant of the tradi- tional L1 loss, blending robustness with differentiability. It is expressed as follows:
+
+SmoothL i| < 1
+(36)
+
+﹛Smooth L1Loss adeptly navigates between the character- istics of L1 and L2 losses, offering resilience to outliers while preserving smoothness.
+?  Squared Hinge Loss
+﹛Squared Hinge Loss is  essential in  SVMs for binary classi?cation  tasks.  It  enforces  a  margin  of  separa- tion between classes while penalizing misclassi?cations quadratically:
+
+
+here, y represents true binary labels (1 or ?1),  signi?es model predictions, and N denotes the sample size.
+
+
+
+? Mean Absolute Error (MAE) Loss
+﹛Like MSE, MAE loss ?nds utility in regression scenarios with a different emphasis on error computation. It com- putes the mean of absolute deviations between predicted and true values:
+
+? Huber Loss
+﹛It is a multipurpose alternative to conventional regression loss functions, offering a balanced compromise between MSE and MAE. It switches between quadratic and linear error based on a threshold parameter 汛:
+
+Huber 
+(39)
+
+Evaluation metics
+
+﹛Model  performance  was  rigorously  assessed  using  stan- dard  classi?cation metrics, including  accuracy, precision, recall, and F1-score, which collectively provide a robust and interpretable evaluation across imbalanced datasets. These metrics are mathematically de?ned as:
+
+
+
+
+
+
+
+
+
+
+
+﹛﹛Here, TP , TN , FP , and FN denote true positives, true negatives, false positives, and false negatives, respectively; po is the observed agreement, and pe  is the expected agree- ment by chance.
+
+Effective hyperparameter selection
+Effective hyperparameter tuning is critical for optimizing DL  models,  improving  convergence,  generalization,  and
+
+
+Table 6   Optimization of hyperparameter con?gurations for multirotor UAVs＊ fault classi?cation and detection
+
+Hyperparameter	CLFDNet	AELMFNet
+Data split	80:20	80:20
+Batch size	32	32
+Activation	softmax	sigmoid
+Optimizer	Adam	Adam
+Learning rate	0.04	0.01
+No of epochs	100	100
+
+﹛accuracy [54每56]. Adjusting dropout rates mitigates over?t- ting, while optimized learning rates ensure ef?cient weight updates during training[57]. The number ofepochsandbatch sizes directly affect training speed and stability [58]. Table
+6summarizes the hyperparameters. Training is conducted in
+32 batches over 100 epochs. A ModelCheckpoint callback saves the model with the best validation accuracy.
+﹛﹛The  architecture  incorporates  global   average  pooling (GAP) to capture spatial features computed as:
+
+
+﹛﹛where GAP(F)c  is the c-th channel of the feature map. Dropout layers with rates of 0.1 and 0.2 are applied to reduce over?tting, represented as:
+
+Dropout(x) = mask ﹞ x ,                                               (45)
+﹛﹛where mask is a binary matrix randomly setting values of x to zero with probability p (the dropout rate).
+﹛﹛Training optimization utilizes the Adam optimizer, with learning rates of 0.04 for classi?cation and 0.01 for detection tasks. Sparse categorical cross-entropy is employed for loss computation, given by:
+
+
+﹛﹛where N is the number of samples, C is the number of classes, yij  = 1 if sample i belongs to class j, and ij  is the predicted probability.
+
+Experimental results
+To rigorously evaluate the proposed AELMFNet architec- ture, we compared six distinct loss functions under identical
+
+
+
+Table 7   Comparative results of AELMFNet under six loss functions, showing Huber loss achieved the lowest reconstruction error with ef?- cient training and inference
+
+Loss	Total Loss	Train Time	Prediction ms/step
+Huber	0.001	6:58 sec	6 ms/step
+Smooth L1	0.002	6:32 sec	5 ms/step
+MSE	0.003	6:58 sec	5 ms/step
+MAE	0.342	6:31 sec	4 ms/step
+Squared Hinge	0.414	7:32 sec	4 ms/step
+BCE	0.658	6:32 sec	7 ms/step
+
+hyperparameter  settings,  data  splits,  and  training  condi- tions. This design ensures a fair benchmark that isolates the impact of the loss function on performance. Table 7 summa- rizes reconstruction loss, training time, and inference latency per prediction step, while Figure 7 illustrates representative reconstructions and latent space representations.
+﹛﹛Among all tested con?gurations, the Huber loss achieved the lowest reconstruction error (0.001), combining the sen- sitivity of MSE to small errors with the robustness of MAE against outliers, an advantage for noisy UAV signals. Smooth L1  and  MSE  followed  closely  (0.002  and  0.003),  while MAE  and  Squared  Hinge  produced  substantially  higher losses (0.342 and 0.414), indicating limited suitability for ?ne-grained temporal reconstruction. The least effective per- formance  was  observed  with  BCE  (0.658),  re?ecting  its mismatch with continuous-valued regression tasks such as UAV dynamics modeling. Training times were consistent across all con?gurations (6:31每7:32 minutes), and inference latency ranged from 4 to 7 ms/step, with Huber and Smooth L1  offering both  accuracy  and  low  latency  for real-time deployment. Overall, Huber emerged as the most effective choice, delivering robust accuracy, ef?ciency, and clearer latent space separation between normal and fault states (Fig- ure7), underscoring the importance ofloss-functionselection in UAV fault detection.
+﹛﹛To ensure a fair and comprehensive evaluation, CLFDNet was benchmarked against both standard AI classi?ers (RF, XGB, KNN, SVM, and NB) commonly employed in existing studies and representative model-based and attention-driven approaches extensively adopted in prior UAV fault-detection research, including the Extended Kalman Filter (EKF), Par- ticle Filter (PF), Spatial Attention Module (SAM), Temporal Attention  Module  (TAM),  Bottleneck  Attention  Module (BAM),  Squeeze-and-Excitation  Attention  (SEAM),  and Local Attention Module (LAM). The comparative results of the baseline methods  and the proposed  CLFDNet  are summarized in Table 8. Among traditional machine learning methods, Random Forest achieved the strongest performance with 93.31% accuracy, precision, and recall close to 87%, and an F1-score of 87%. XGBoost followed with 92.06%
+
+
+﹛accuracy and an F1 of 84.9%, while KNN and SVM attained accuracy around 90% with F1-scores near 82每83%. In con- trast, Na?ve Bayes performed weakly, yielding only 72.53% accuracy and an F1 of 43%, which highlights the limitations of simple probabilistic models in capturing the nonlinear dynamics  of UAV  fault  data.  These  results  con?rm  that ensemble methods  such as Random Forest and XGBoost are better suited for high-dimensional sensor features than distance-based or linear classi?ers.
+﹛﹛Classical model-based approaches showed mixed effec- tiveness. The EKF residual每based classi?er achieved 93.5% accuracy, with balanced precision, recall, and F1 scores of around 89%, demonstrating that residual signals from state estimation  can  serve  as  discriminative  features.  By  con- trast, the particle ?lter approach yielded suboptimal results, dropping accuracy to 48.6% and F1 to 19.1%. This decline re?ects the particle ?lter＊s sensitivity to modeling assump- tions and measurement noise, which reduces its robustness when applied to real multirotor UAV datasets with diverse fault modes. The unsupervised autoencoder with threshold- ing  reached  54.6%  accuracy,  but  its  F1  was  only  7.9%. This  outcome  indicates  that  the  method  effectively  dis- tinguishes  normal  from  abnormal  conditions  but  cannot adequately separate the eight graded fault severities, consis- tent with its anomaly-detection design. Similarly, the wrench + LSTM model and the neural network observer baseline both demonstrated limited effectiveness, attaining accuracies ofapproximately55%and macro-F1valuesbelow1%. These results are expected, as both approaches depend on assump- tions about external forces or observer dynamics that are not fully represented in the available dataset.
+﹛﹛The attention-based baselines provided stronger perfor- mance. LAM emerged as the best of this group, with 93.7% accuracy and an F1-score of 88%. SEAMandBAM followed closely, with accuracies of93.46%and92.14%and F1-scores of 87.7% and 84.8%, respectively. These results con?rm that attention mechanisms signi?cantly capture temporal depen- dencies in UAV sensor data. However, even the strongest attention baseline plateaued below 94% accuracy, suggest- ing that further architectural enhancements are required.
+﹛﹛The proposed CLFDNet achieved the best overall perfor- mance. For fault magnitude classi?cation, it reached 96.81% accuracy with macro precision, recall, and F1 in the 94每95% range. This corresponds to a 3.1 percentage-point improve- ment  in  accuracy  and  a  six  percentage-point  gain  in  F1 compared to the strongest baseline, LAM. More importantly, CLFDNet achieved perfect performance in motor-speci?c fault classi?cation, with  100% accuracy, precision, recall, and F1 across all classes. These results demonstrate that CLFDNet surpasses existing data-driven and model-based methods and offers robust capability for fault severity detec- tion and actuator-level localization in UAVs.
+
+
+﹛﹛﹛﹛
+Fig. 7   Original input vs. reconstructed output for various loss functions and latent space representation for various loss functions
+Table 8   Comparison of baseline methods and the proposed CLFDNet. Metrics are reported as macro-averages over classes
+
+Model	Acc (%)	Precision (%)	Recall (%)	F1-score (%)
+KNN [36, 59]	90.97	85.00	83.00	83.00
+NV [60]	72.53	43.00	46.00	43.00
+RF [36]	93.31	88.00	87.00	87.00
+SVM [36, 59, 61]	90.19	84.00	82.00	82.00
+XGB [62]	92.06	85.00	84.78	84.89
+EKF residual features [63]	93.50	88.90	88.50	88.60
+Particle Filter [64]	48.60	20.50	23.80	19.10
+Unsupervised Autoencoder (AE + Thresholding) [65]	54.60	6.10	11.10	7.90
+Wrench + LSTM [33, 66]	54.50	0.83	11.30	0.84
+NN Observer [66每68]	54.80	0.61	11.10	0.79
+BAM	92.14	87.00	84.78	84.78
+LAM	93.70	88.00	88.00	88.00
+SEAM	93.46	88.44	87.78	87.67
+SAM	87.36	80.22	68.67	69.56
+TAM	88.25	80.44	77.00	76.67
+CLFDNet (fault magnitude class)	96.81	95.00	94.00	94.00
+CLFDNet (motor class with fault)	100.00	100.00	100.00	100.00
+
+
+Bold represents the best results
+
+﹛﹛The comparative results shown in Fig. 8include state-of- the-art classical ML, ?lter-based, DL, and attention-based methods evaluated under identical experimental conditions on the proposed dataset. As observed, the proposed CLFD- Net  achieves  the  highest  F1-score  among  all  compared approaches, con?rming its superior capability in accurately detecting  and  classifying  diverse  fault  conditions  while maintaining  a balanced  trade-off between  sensitivity  and speci?city.
+
+
+
+
+﹛﹛To further examine the model＊s per-class performance, the confusion matrices for both fault magnitude classi?ca- tion and motor fault localization are presented in Fig. 9. The proposed CLFDNet demonstrates near-perfect classi?- cation across all categories, with only minor misclassi?ca- tions observed between neighboring fault magnitudes (e.g., F2每F3and F5每F6)that share similar dynamic characteristics. For the motor fault localization task (Fig. 9(b), CLFDNet achieves 100% accuracy across all motor classes, indicating precise isolation of the faulty actuator without any cross-
+
+
+﹛﹛﹛﹛
+
+
+﹛Fig.  8   Comparison  of F1-scores  obtained  by  the proposed  CLFD- Net variants: (a) fault magnitude classi?cation (FM) and (b) motor fault classi?cation (MC), against various baseline approaches, includ-
+
+
+
+ing classical ML (KNN, NV, RF, SVM, XGB), ?lter-based (EKF-Res, Particle Filter), DL (AE-Thresholding, Wrench-LSTM, NN-Observer), and attention-based (BAM, LAM, SEAM, SAM, TAM) models
+
+
+﹛
+﹛Fig. 9   Confusion matrices of the proposed CLFDNet for (a) fault magnitude and (b) motor fault classi?cation, showing near-perfect accuracy with minimal misclassi?cation and high robustness
+
+
+motor confusion. These results highlight the robustness and generalization strength of CLFDNet in identifying multiple fault types and severities under realistic UAV operating con- ditions.
+﹛﹛The discriminative capability of the proposed model is further validated through the ROC每AUC analysis illustrated in Fig. 10. As shown in Fig. 10(a), CLFDNet attains high separability  across  all  fault-magnitude  classes,  achieving AUC values between 0.85 and 0.93, which re?ect excel- lent classi?cation reliability across varying fault severities. The slight decline observed in certain adjacent classes is
+
+
+﹛attributed  to  overlapping  temporal每dynamic  responses  at close fault levels. In contrast, the motor fault localization results in Fig. 10(b) exhibit a perfect AUC of 1.00 for all motor categories, con?rming ?awless discrimination capa- bility. These ?ndings demonstrate that CLFDNet delivers outstanding sensitivity, speci?city, and consistency, ensuring reliable real-time fault detection and precise actuator-level localization in UAV systems.
+
+
+﹛﹛﹛﹛
+﹛Fig. 10   ROC每AUC curves of the proposed CLFDNet for (a) fault magnitude and (b) motor fault classi?cation, showing high separability with AUC values between 0.85每0.93 and perfect discrimination (AUC = 1.00) across all motor classes
+
+
+Ablation study
+﹛To comprehensively assess the contribution of each archi- tectural component in the proposed CLFDNet model, we conducted a systematic ablation study by selectively modify- ing or removing key modules while maintaining the integrity of the remaining structure. This empirical evaluation serves not only to validate the effectiveness of the complete model but also to elucidate how the spatial, temporal, and attention- driven components interact synergistically to enhance classi- ?cation performance. Speci?cally, we analyzed the model＊s behavior under ?ve different con?gurations: (i) removal of the ?nal two convolutional layers (CNN-5 and CNN-6), (ii) exclusion ofthe LSTM layer, (iii) replacement ofthe LSTM with a GRU layer, (iv) elimination of the attention mech- anism, and (v) retention of the full CLFDNet architecture as the baseline. Table 9provides a detailed summary of the results obtained from the ablation study.
+﹛﹛In the?rst experiment, we evaluated the effect ofremoving CNN-5 and CNN-6, the deeper convolutional layers respon- sible for capturing complex, abstract features. The resulting model exhibited a decline in accuracy, dropping to 93.22%, with  corresponding reductions in the F1-score  (93.27%). This con?rms the indispensable role of deeper CNN layers in learning intricate spatial hierarchies and ensuring discrim- inative power, particularly for tasks characterized by high intra-class variability. The elevated loss value (0.2531) fur- ther suggests that the shallow CNN variant suffers from lower con?dence in its predictions.
+﹛﹛Next,  we  examined  the  impact  of  the  LSTM  module through two approaches: complete removal and replacement
+
+
+﹛with a GRU layer. The performance signi?cantly deterio- rated when the LSTM was removed, transforming CLFDNet into a pure CNN-based model. The accuracy dropped to 90.35%, with a sharp increase in loss (0.3459), accompa- nied by declines across all metrics: F1-score(90.34%). These ?ndings highlight the critical role of temporal modeling in learning feature dependencies across spatial dimensions, par- ticularly for datasets where local context alone isinsuf?cient. In the GRU variant, the model achieved 93.38
+﹛﹛The  attention  mechanism  was  then  ablated  to  assess its  effect  on  contextual  re?nement.  Although  the  model achieved relatively high accuracy (93.92%) and an accept- able loss (0.1558), the performance lagged behind the com- plete CLFDNet model. The F1-score decreased to 93.96%, indicating that the attention module is critical for enhancing feature saliency by emphasizing semantically relevant pat- terns while suppressing noise. Its removal leads to suboptimal decision-making due to the absence of focused representa- tion learning, especially in complex visual scenes.
+﹛﹛The complete CLFDNet model consistently outperformed all ablated variants, achieving the highest accuracy (96.81%) and F1-score (96.82%). This corresponds to improvements ranging from 2.89% to 6.46% in accuracy compared to the respective modi?ed con?gurations. These ?ndings under- score the additive and complementary contributions of each architectural  component.  While  the  deeper  convolutional layers enhance spatial abstraction, the LSTM module cap- tures temporal dependencies, and the attention mechanism facilitates context-aware re?nement of features. The com- pounded bene?t observed in the complete architecture high- lights the critical interplay among these modules, af?rming
+
+
+Table 9   Ablation study of CLFDNet architecture
+
+Experiment	Acc (%)	Loss	F1-score (%)	Comments
+Without CNN 5 & CNN 6 layers	93.22	0.2531	93.27	Checks shallow CNN impact
+Without LSTM layer	90.35	0.3459	90.34	Pure CNN feature extraction
+Without attention mechanism	93.92	0.1558	93.96	Importance of attention
+Replace LSTM with GRU layer	93.38	0.2363	93.36	Importance of LSTM layer
+Complete CLFDNet model	96.81	0.0954	96.82	Baseline
+Bold represents the best results
+
+﹛﹛
+﹛Fig. 11   Ablation study comparison of the CLFDNet model across various con?gurations, showing each con?guration＊s classi?cation accuracy and loss. The plot highlights the performance improvements achieved by the complete model over its ablated variants
+
+
+﹛the necessity of their integration. Thus, the empirical evi- dence supports the robustness of CLFDNet＊s design and its suitability for tasks that demand rich spatiotemporal rep- resentation and high-precision classi?cation under complex visual conditions. Figure 11presents a comparative analysis of classi?cation accuracy and loss across the ablated con?g- urations, further emphasizing the superior performance and architectural coherence of the complete CLFDNet model.
+
+
+Discussion
+
+﹛This section presents a comprehensive discussion of the pro- posed fault detection framework, covering the comparative performance of baseline and proposed models, their compu- tational cost and inference ef?ciency, fault detection latency, and the broader limitations together with directions for future research.
+﹛﹛The proposed framework was validated using a dataset comprising both single and double motor faults with severi-
+
+
+﹛ties up to 40%, representing the most probable and recover- able fault conditions in quadrotor UAVs. Failures involving more than two motors typically result in total loss of con- trol and are therefore beyond the operational scope of the present fault detection framework. The inclusion of simul- taneous coupled motor faults enables the models to learn correlated  degradation  patterns  and  dynamic  interactions across actuators. The 40% fault limit was selected to pre- serve controllability under standard ?ight control laws, as higher  severities lead to actuator  saturation, although the algorithm itself remains capable of detecting more severe faults.  Future  work  will  aim  to  expand  the  dataset  and integrate the detection system with active fault-tolerant con- trol schemes to handle extreme scenarios. Both CLFDNet andAELMFNet demonstrate low computational complexity, with fewer than 20k parameters and inference times below 6 ms per step. These characteristics indicate strong poten- tial for real-time onboard implementation using IMU-based sensing on lightweight embedded hardware.
+
+
+
+﹛﹛The experimental analysis further substantiates that both CLFDNet  and  AELMFNet   satisfy  real-time  operational requirements. In particular, the observed inference latencies of below 6 ms per step on standard embedded processors cor- respond to effective sampling rates exceeding 150 Hz. This performance con?rms the capability of the proposed mod- els to perform continuous, onboard fault detection without introducing computational bottlenecks. Such real-time fea- sibility is crucial for UAV safety, as timely fault identi?cation directly supports fault-tolerant control strategies and ensures mission continuity under dynamically changing ?ight condi- tions.
+Comparative performance analysis
+﹛The experimental results in Table 8 highlight clear perfor- mance differences across classical machine learning algo- rithms, model-based estimators, unsupervised approaches, and deep sequence architectures. Traditional classi?ers such as NV(72.53%accuracy, F1=43.0%)showed limited capac- ity for this task due to the strong independence assumption between features, which is incompatible with the coupled dynamics of UAV  states. Although  KNN  (90.97%, F1 = 83.0%) and SVM (90.19%, F1 = 82.0%) captured nonlinear relationships somewhat, their performance plateaued as they lacked temporal modeling and remained sensitive to feature scaling and noise. Ensemble-based methods such as Ran- dom Forest (93.31%, F1 = 87.0%) and XGBoost (92.06%, F1 = 84.9%) performed better by leveraging nonlinearity and feature interactions, but they still relied on static feature vec- tors rather than exploiting temporal dependencies inherent in UAV fault evolution.
+﹛﹛Model-based estimators revealed further distinctions. The EKF residual每based classi?er achieved strong performance (93.5% accuracy, F1 =  88.6%) because residuals provide informative fault signatures when the system and noise mod- els are well-calibrated. In contrast, the Particle Filter (PF) baseline demonstrated limited effectiveness, achieving only 48.6%accuracy with anF1-score of19.1%. This result is con- sistent with known PF limitations: particle impoverishment, sensitivity to the accuracy of process/measurement models, and the high variance of likelihood estimates under limited observability. With only IMU and magnetometer channels, PF  struggled  to  maintain  a  discriminative  distribution  of fault hypotheses, and its computational demands further con- strained practical effectiveness.
+﹛﹛Unsupervised anomaly detection approaches also exhib- ited      weak      results.      The      Autoencoder      with
+thresholding achieved 54.6% accuracy and a macro-F1 of only  7.9%,  highlighting  that  reconstruction-error  thresh- olds are effective for binary anomaly detection (normal vs. abnormal) but inadequate for ?ne-grained multi-class fault categorization. This observation aligns with prior ?ndings in
+
+
+the literature, where unsupervised autoencoders are shown to excel at anomaly ?agging but fail to distinguish struc- tured fault categories. Similarly, theWrench+LSTMand NN Observer baselines performed near chance level (~54每55% accuracy with F1 < 1.0%). Their limited performance stems from  mismatches  between  their  underlying  assumptions and the available data: wrench estimation requires explicit force/torque  observability,  while  observer-based  methods depend on precise dynamic modeling. These methods can- not generalize to subtle and overlapping fault classes without additional sensing modalities or accurate plant models.
+﹛﹛Deep sequence models based on attention mechanisms offered better performance.  BAM,  SEAM,  and  LAM  all exceeded 92% accuracy, with LAM reaching 93.7% and F1 ＞ 88.0%. These models bene?ted from learning temporal dependencies and attending to informative time steps. How- ever, they still fell short ofthe proposed CLFDNet. This gap is partly due to their generic architectures, which lack a special- ized design for UAV-speci?c dynamics and multi-motor fault interactions. Moreover, their performance plateaued below 94%, suggesting a limited ability to disentangle overlapping fault signatures across severity levels fully.
+﹛﹛By contrast, the proposed CLFDNet demonstrated clear superiority,  achieving  96.81%  accuracy  and  macro-F1  = 94.0% for fault severity classi?cation, and reaching 100% across all metrics for motor-speci?c fault detection. CLFD- Net＊s hybrid design combines convolutional branches for spatial feature extraction, LSTM for temporal dependencies, and attention for adaptive feature weighting, which proved highly effective in capturing both short- and long-term fault dynamics. This demonstrates the importance of integrating domain-inspired architectural design and sequence modeling when tackling UAV fault diagnosis.
+﹛﹛These  comparative  ?ndings  suggest  that  the relatively limited effectiveness of several baselines arises from funda- mental limitations:(i)simpli?ed statistical assumptions(e.g., Na?ve Bayes), (ii) lack of temporal modeling (e.g., KNN, SVM, RF, XGB),  (iii)  sensitivity to modeling errors and observability constraints (e.g., PF, observer-based methods), and (iv) unsuitability of generic unsupervised techniques for multi-class classi?cation (e.g., AE thresholding). CLFDNet addresses  these  limitations by jointly  modeling  temporal dependencies,  nonlinear  dynamics,  and  inter-motor  fault interactions, achieving state-of-the-art UAV fault detection and diagnosis performance.
+Computational cost and inference efficiency
+﹛Beyond  classi?cation  accuracy,  fault  detection  models＊ computational  cost  and  inference  ef?ciency  are  critical for  deployment  on  resource-constrained  UAV  platforms. Table 10  compares  attention-based  architectures  (BAM, LAM, SE, SAE, and TAM) with the proposed CLFDNet
+
+
+
+Table 10   Computational cost comparison of attention-based architec- tures and the proposed CLFDNet. The table reports the number of parameters (NoP, in thousands), model size (in MB), and average CPU inference latency (ms) with standard deviation. CLFDNet achieves the lowest parameter count, smallest memory footprint, and fastest infer- ence among all models
+
+BAM	21.7	0.083	51.43 ㊣ 12.24
+LAM	20.6	0.079	49.43 ㊣ 7.77
+SE	21.3	0.081	80.82 ㊣ 12.42
+SAE	22.8	0.087	59.55 ㊣ 10.98
+TAM	21.4	0.082	48.20 ㊣ 9.34
+CLFDNet	19.6	0.075	42.67 ㊣ 8.71
+Bold represents the best results
+
+﹛across three metrics: number of parameters (NoP), memory size (MB), and average CPU inference latency with standard deviation.
+﹛﹛LAMand TAM demonstratedmoderateresource demands among the baselines, with parameter counts of 20.6K and 21.4K  and  latencies  around  48每49  ms.  By  contrast,  due to  their  increased  architectural  complexity,  SE  and  SAE incurred substantially higher inference times (80.82 ms and 59.55 ms, respectively). The proposed CLFDNet achieved the most favorable trade-off, requiring the fewest parameters (19.6K), the smallest memory footprint (0.075 MB), and the fastest inference latency(42.67㊣ 8.71ms). Such ef?ciency is particularly valuable in UAV applications, where processors operate under strict power, memory, and real-time respon- siveness constraints. The results demonstrate that CLFDNet achieves higher accuracy than alternative attention mecha- nisms, while minimizing parameters and latency, making it highly scalable and well-suited for real-time UAV fault detec- tion.
+Fault detection latency analysis
+﹛Timely  detection  of  faults  is  critical  for  ensuring  UAV safety, as delays in diagnosis may prevent effective fault- tolerant control. Table 11 reports the mean, median, 95th percentile (P95), and 99th percentile (P99) fault detection times (TTD) across all models. Lower values correspond to faster recognition of faults after their occurrence, enabling earlier corrective actions. The results indicate that TAM and CLFDNet achieve the fastest detection, with mean TTD val- ues of 11 ms and 10 ms, respectively. CLFDNet consistently outperforms all baselines, with a median TTD of 9 ms, P95 of  19 ms, and P99 of 20.3 ms. These results con?rm its ability to provide rapid detection under dynamic operating conditions. By contrast, BAM, LAM, SE, and SAE exhibit longer detection delays, with mean TTDs between 16.8每18.6 ms, which may limit responsiveness during rapidly evolving fault scenarios. The analysis shows that CLFDNet reduces
+
+
+Table 11   Time-To-Detection (TTD) performance of different models. Lower values indicate faster fault recognition after occurrence
+
+BAM	18.6	20	30	30
+LAM	18.4	20	30	30
+SE	17.1	10	30	30
+SAE	16.8	20	30	30
+TAM	11.0	10	20	22.2
+CLFDNet	10.0	9	19	20.3
+Bold represents the best results
+
+computational cost and minimizes detection latency, offering signi?cant advantages for real-time and safety-critical UAV fault detection and diagnosis.
+
+Limitations and future directions
+
+﹛Despite the strong performance and demonstrated superior- ity of the proposed CLFDNet over baseline models, several limitations warrant further  attention. First, the evaluation relied on datasets derived from simulated UAV dynamics and sensor measurements. While simulation ensures con- trolled  and  reproducible  benchmarking,  real-world  UAV operations involve environmental uncertainties, unmodeled dynamics,  and  sensor  imperfections  that  may  challenge the generalizability of results. Extending the evaluation to diverse experimental platforms and ?ight conditions, includ- ing outdoor tests with varying disturbances, represents an important next step. Second, although CLFDNet achieved state-of-the-art  accuracy  and computational ef?ciency, its behavior under extreme fault severities or compound fault scenarios has not been fully explored. Multi-fault interac- tions, actuator cross-coupling, and structural degradation can yield fault signatures that differ signi?cantly from those of single-motor or isolated degradations. Future work should investigate transferability to compound and progressive fault modes by  augmenting  training  with  synthetic  or  hybrid- fault data. Third, the framework assumes full availability of six standardized sensor channels (p, q, r , mx, my, mz ). In  practice,  UAVs  may  operate  with  partial  or  degraded sensing due to cost, weight, or mission constraints. Devel- oping robust sensor-fusion strategies or architectures in the presence of missing or unreliable inputs remains an open challenge. Similarly, adaptive thresholding and online recal- ibration mechanisms could improve resilience against sensor drift and cumulative noise.
+﹛﹛Additionally,  although the current framework employs an  LSTM  to  model  temporal  dependencies,  transformer- based architectures have recently demonstrated strong per- formance in sequential learning tasks due to their ability to  capture  long-range  dependencies  via  self-attention.  In our  application,  the  ?ight  sequences  are  relatively  short
+
+
+
+﹛and  dominated by  local  dynamic transitions, making the LSTM a suitable and computationally ef?cient choice for real-time onboard processing. Nevertheless, future research could explore compact transformer variants such as Time Transformer,  Informer,  or  ConvFormer  to  assess  poten- tial performance gains under similar resource constraints. Furthermore, while CLFDNet demonstrates relatively low computational cost compared with attention-based baselines, UAV platforms are inherently resource-constrained. Future research should focus on developing hardware-aware opti- mization, pruning, and quantization techniques to further reduce the memory footprint and latency. Moreover, integra- tion with fault-tolerant control strategies could close the loop between detection, diagnosis, and active recovery, advancing end-to-end resilient autonomy.
+﹛﹛Taken together, future research directions include: (i) val- idating the model on real-world ?ight data, (ii) extending to compound and progressive fault modes, (iii) enhancing robustness under partial sensing and dynamic environments, (iv) exploring lightweight transformer-based architectures for improved temporal representation under similar resource constraints, and (v) optimizing for ultra-lightweight deploy- ment and integration with control systems. Addressing these aspects will broaden the applicability of CLFDNet and fur- ther advance the state of the art in UAV fault detection and fault-tolerant operation.
+
+
+Conclusion
+﹛This work introduced two lightweight deep learning archi- tectures, CLFDNet and AELMFNet, for fault detection and severity  estimation  in  multirotor  UAVs  using  only  stan- dard IMU sensor data. A high-?delity graded fault dataset was  developed  for  realistic  evaluation,  covering  various degradation levels and ?ight conditions. CLFDNet, com- bining  multi-scale  CNN,  LSTM,  and  adaptive  attention, achieved  96.81%  accuracy  in  fault  severity  classi?cation and  100%  accuracy  in  motor  fault  localization,  consis- tently outperforming classical ML, model-based estimators, and advanced attention-based networks. Its compact design further ensured low computational cost and real-time feasi- bility. Complementarily, AELMFNet, a soft-attention LSTM autoencoder, demonstrated strong reconstruction capability, with Huber loss achieving the lowest error, and exhibited ef?- cient inference suitable for embedded UAV platforms. These results advance UAV fault detection by demonstrating that lightweight hybrid deep models can deliver accuracy, robust- ness, and ef?ciency simultaneously.
+﹛﹛Future work will extend validation to real-world ?ight experiments,            compound            fault            scenarios, and resource-constrained deployment,pavingthe waytoward
+
+
+resilient UAVs capable of autonomous self-diagnosis and fault-tolerant operation in complex environments.
+﹛Author Contributions  Md. Najmul Mowla: Conceptualization, Formal analysis, Methodology, Software, Validation, Visualization, Writing 每 original draft, and Writing 每 review & editing. Davood Asadi: Concep- tualization, Data Curation, Funding acquisition, Project administration, Resources, Supervision, Validation, Visualization, and Writing 每review & editing. Ferdous Sohel: Conceptualization, Validation, and Writing 每 review & editing.
+﹛Funding  This research is supported by the Scienti?c and Technological Research Council of Turkey (T邦BITAK) under the T邦BITAK 1001 program, with project number 223M312.
+﹛Data  and  Code  availability  The  dataset  used  in  this  study  is  pub- licly available at: https://dx.doi.org/10.21227/g80k-2466. The source code used for model development, training,  and evaluation is pub- licly accessible at:https://github.com/najmulmowla1/Multirotor-UAV- Multi-Fault-Detection-with-Single-and-Double-Fault-Magnitudes.
+Declarations
+
+Competing  Interests  The authors have no relevant ?nancial or non- ?nancial interests to disclose.
+Ethics approval  Not applicable.
+Consent to participate  Not applicable.
+Consent for publication  Not applicable.
+﹛Open  Access  This  article  is  licensed  under  a  Creative  Commons Attribution 4.0 International License, which permits use, sharing, adap- tation,  distribution  and  reproduction  in  any  medium  or  format,  as long as you give appropriate credit to the original author(s) and the source, provide  a link to the Creative Commons licence, and indi- cate if changes were made. The images or other third party material in this article are included in the article＊s Creative Commons licence, unless indicated otherwise in a credit line to the material. If material is not included in the article＊s Creative Commons licence and your intended use is not permitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from the copy- right holder. To view a copy of this licence, visit http://creativecomm ons.org/licenses/by/4.0/.
+
+
+References
+1.  Alqudsi Y, Makaraci M (2025) Uav swarms: research, challenges, and future directions. J Eng Appl Sci 72(1):12
+2.  Sa?e S, Khairil R (2025) Regulatory, technical, and safety con- siderations for uav-based inspection in chemical process plants: A systematic review of current practice and future directions. Trans- portation Research Interdisciplinary Perspectives 30:101343
+3.  Avar E, Mowla MN (2022) Wireless communication protocols in smart agriculture: A review on applications, challenges and future trends. Ad Hoc Netw 136:102982
+4.  Mowla MN, Asadi D, Tekeoglu KN, Masum S, Rabie K (2024) Uavs-ffdb:  A  high-resolution  dataset  for  advancing  forest  ?re detection and monitoring using unmanned aerial vehicles (uavs). Data Brief 55:110706
+
+
+
+5.  JobaerS,TangX-S,Zhang Y, LiG, AhmedF(2025)Anovelknowl- edge distillation framework for enhancing small object detection in blurry environments with unmanned aerial vehicle-assisted images. Complex & Intelligent Systems 11(1):1每27
+6.  Shuaibu AS, Mahmoud AS, Sheltami TR (2025) Last-mile deliv- ery optimization: Recent approaches and advances. Transportation Research Procedia 84:299每306
+7.  Hao  K,  Zhao C, Liu X (2024) A robot-assisted adaptive com- munication recovery method in disaster  scenarios. Complex  & Intelligent Systems 10(1):1531每1549
+8.  Goli S, Kurtulu DF, Waqar M, Imran IH, Alhems LM, Kouser T, Memon AM (2025) Arti?cial neural network for the evaluation of electric propulsion system in unmanned aerial vehicles. Neural Computing and Applications, 1每17
+9.  Memari  M,  Shakya P, Shekaramiz M, Seibi AC, Masoum MA
+﹛(2024) Review on the advancements in wind turbine blade inspec- tion: Integrating drone and deep learning technologies for enhanced defect detection. IEEE Access 12:33236
+10.  Liscou?t J, Pollet F, J谷z谷gou J, Budinger M, Delbecq S, Moschetta J-M (2022) A methodology to integrate reliability into the concep- tual design of safety-critical multirotor unmanned aerial vehicles. Aerosp Sci Technol 127:107681
+11.  De Vries R, Arnhem N, SinnigeT, VosR, VeldhuisLL(2021)Aero- dynamic interaction between propellers of a distributed-propulsion system in forward ?ight. Aerosp Sci Technol 118:107009
+12.  Dhulipalla A, Samad A, Hu H (2024) An experimental study on aerodynamic performance degradation of a drone propeller due to rainfall. In: AIAA AVIATION FORUM AND ASCEND 2024, p. 4342
+13.  Koruyucu E, Ekici  S, Karakoc TH  (2021) Performing thermo- dynamic analysis by simulating the general characteristics of the two-spool turbojet engine suitable for drone and uav propulsion. J Therm Anal Calorim 145(3):1303每1315
+14.  Saied M, Shraim H, Francis C (2023) A review on recent devel- opment  of multirotor  uav  fault-tolerant  control  systems.  IEEE Aerospace Elect Syst Magazine 39:146
+15.  Wanner D, Hashim HA, Srivastava S, Steinhauer A  (2024) Uav avionics safety, certi?cation, accidents, redundancy, integrity, and reliability: a comprehensive review and future trends. Drone Syst Appl 12:1每23
+16.  Liu L, Xu C, Zheng C, Cai S, Wang C, Guo J (2024) Vulnerabil- ity assessment of uav engine to laser based on improved shotline method. Defence Tech 33:588每600
+17.  Zolghadri A (2024) A review of fault management issues in air- craft systems: current status and future directions. Prog Aerosp Sci
+147:101008
+18.  Sar?kaya BS, Bahtiyar  (2024) A survey on security of uav and deep reinforcement learning. Ad Hoc Networks 164:103642
+19.  Sabry AH, Amirulddin UABU (2024) A review on fault detection and diagnosis of industrial robots and multi-axis machines. Result Eng 23:102397
+20.  Ceviz O, Sen S, Sadioglu P (2024) A survey of security in uavs and fanets: Issues, threats, analysis of attacks, and solutions. IEEE Commun Surv Tutor
+21.  Athira V, Sinha M (2024) A comprehensive review of sensor and actuator fault detection methods in aerospace systems. In: Congress on Control, Robotics, and Mechatronics, pp. 39每58. Springer
+22.  Hazeri M, Moradkhani M, Rashid Jafari J, Asadi D (2024) Innova- tive synergies in aircraft propulsion: the concept of hybrid power systems with contra-rotating propellers. In: Turbo Expo: Power for Land, Sea, and Air, vol. 87929, pp. 001每01008. American Society of Mechanical Engineers
+23.  Mohammadi A,  Ramezani A (2023) A robust model predictive control-based method for fault detection and fault tolerant control of quadrotor uav. Trans Inst Meas Control 45(1):37每48
+
+
+24.  Mazare M, Taghizadeh M, Ghaf-Ghanbari P, Davoodi E  (2024) Robust fault detection and adaptive?xed-time fault-tolerant control for quadrotor uavs. Robot Auton Syst 179:104747
+25.  Zabihi M, Mehrizi RV,  Kasaiezadeh A, Pirani M, Khajepour A
+﹛(2024)  A  hybrid  model-data  vehicle  sensor  and  actuator  fault detection and diagnosis  system. IEEE Trans Intell Transp Syst 25(7):8121每8133. https://doi.org/10.1109/TITS.2024.3370869
+26.  Zhu X, Li Y, Yin G, Patton RJ (2024) Interval observer-based fault detection and isolation for quadrotor uav with cable-suspended load. IEEE Trans Syst Man and Cybernetics Syst 54(10):5876每
+5888. https://doi.org/10.1109/TSMC.2024.3411315
+27.  HuaL, Zhang J, Li D, XiX (2021) Fault-tolerant active disturbance rejection control of plant protection of unmanned aerial vehicles based on aspatio-temporal rbfneural network. Appl Sci11(9):4084
+28.  Chen G, Li S, He Q, Zhou P, Zhang Q, Yang G, Lv D (2024) Fault diagnosis of drone motors driven by current signal data with few samples. Meas Sci Technol 35(8):086202
+29.  Al-Haddad LA, Giernacki W, Shandookh AA, Jaber AA, Puchal- ski R (2024) Vibration signal processing for multirotor uavs fault diagnosis:  Filtering  or  multiresolution  analysis.  Eksploatacja  i Niezawodno 26(1)
+30.  Jiang Z, Ma R, Lu F, Zhu H, Lan Y, Xue X, Zhang S, Wu C (2025) Damage identi?cation of multirotor uav propellers via unsteady coupling association. Measurement 243:116364
+31.  Freeman  P,  Pandita  R,  Srivastava  N,  Balas  GJ  (2013)  Model- based and data-driven fault detection performance for a small uav. IEEE/ASME Trans Mechatron 18(4):1300每1309. https://doi.org/ 10.1109/TMECH.2013.2258678
+32.  Dudukcu HV, Taskiran M, Kahraman N (2023) Uav sensor data applications with deep neural networks: a comprehensive survey. Eng Appl Artif Intell 123:106476
+33.  Cacace J, Scognamiglio V, Ruggiero F, Lippiello V (2024) Motor fault detection and isolation for multi-rotor uavs based on exter- nal wrench estimation and recurrent deep neural network. J Intel Robotic Syst 110(4):148
+34.  Scognamiglio V, Cacace J, Ruggiero F, Lippiello V (2024) Fault detection  and  isolation  for  a  standard  quadrotor  using  a  deep neural  network  trained  on  a  momentum-based  estimator.  In:
+2024 IEEE 20th International Conference on Automation Science and Engineering (CASE), pp. 730每735. https://doi.org/10.1109/ CASE59546.2024.10711689
+35.  Kumar A, Wang S, Shaikh AM, Bilal H, Lu B, Song S (2024) Building on prior lightweight cnn model combined with lstm-am framework to guide fault detection in ?xed-wing uavs. Int J Mach Learn Cybern 15(9):4175每4191
+36.  MaY, Mustapha F, Ishak MR, Abdul Rahim S, Mustapha M (2023) Machine learning methods for multi-rotor uav structural damage detection based on mems sensor. Int J Aeroacoustics 22(7每8):656每 674
+37.  Guo L, Ren Y, Li R, Jiang B  (2025) Effective fault diagnosis for a quadrotor helicopter: A lightweight transformer with selec- tive patches and channels modules method. IEEE Transactions on Cybernetics
+38.  Zhang M, Sun R, Ren Y, Chen X et al (2025) A uav fault diag- nosis model based on end-to-end causal inference and attention mechanism. Meas Sci Technol 36(5):056211
+39.  Li  J,  Chen  F,  He  Y  (2025)  Fault  detection  of  fw-uav  based on spatiotemporal feature networks. In: 2025 IEEE 3rd Interna- tional Conference on Image Processing and Computer Applications (ICIPCA), pp. 82每86. IEEE
+40.  Wang Z, Liang S, Sun Y, Yang Y, Wang Y, Zheng Y (2024) Fault diagnosis of quadrotor uav propeller with local-global attention- based graph neural networks. In: 2024 IEEE  13th Data Driven Control and Learning Systems Conference (DDCLS), pp. 1057每
+1062. IEEE
+
+
+
+41.  Zou Y, Xia H, Yang X, Li P, Yi Y (2025) Dynamics model of a multi-rotor uav propeller and its fault detection. Drones 9(3):176
+42.  He Y, Fang H, Yan J, Yang  C, Zhai Y (2025) Computationally ef?cient uav fault diagnosis with adaptive vibration denoising: A signal processing approach for rotorcraft systems. Mech Syst Sig- nal Process 240:113413
+43.  Ghazali  MHM,   Rahiman  W   (2024)  A  novel   fault  detection approach in uav with adaptation of fuzzy logic and sensor fusion. IEEE/ASME Trans Mechatron 30(1):381每391
+44.  Sadhu V, Anjum K, Pompili D (2023) On-board deep-learning- based unmanned aerial vehicle fault cause detection and classi?- cation via fpgas. IEEE Trans Robotics 39:3319
+45.  Zhang Y, Li S, Zhang A, An X (2024) Fw-uav fault diagnosis based on knowledge complementary network under small sample. Mech Syst Signal Process 215:111418
+46.  Chu X, Zhou X, Bu Q, Miao Q (2024) Sensor fault detection for uavs using improved self-attention lstm network with similarity space mapping. IEEE Transactions on Instrumentation and Mea- surement
+47.  Huang Q, Liang B, Dai X, Su S, Zhang E (2024) Unmanned aerial vehicle fault diagnosis based on ensemble deep learning model. Meas Sci Technol 35(4):046205
+48.  KhaneghaeiM, AsadiD, Mowla MN, DikenG(2025)Experimen- tal motor fault detection and identi?cation of a quadrotor uav using a hybrid deep learning approach. Int J Dyn Control 13(8):1每23
+49.  Wang Z, Zheng Y, Liang S, Zhang H, Yang W (2025) Graph neural network with directional information and global perception fusion for uav fault diagnosis. IEEE Sensors J
+50.  Wang Z, Li H, Chen Z, Han Q-L (2025) A fault diagnosis method for quadruped robot based on hybrid deep neural networks. IEEE Transactions on Industrial Informatics
+51.  Nabavi Y, Asadi D, Ahmadi K (2022) Automatic landing control of a multi-rotor uav using a monocular camera. J Intel Robotic Syst 105(3):64. https://doi.org/10.1007/s10846-022-01655-8
+52.  Khaneghaei M, Asadi D, Tutsoy ? (2023) Software in the loop (sil) simulation for an autonomous multirotor ?ight planning and landing with rosand gazebo. In:20237th International Symposium on Innovative Approaches in Smart Technologies(ISAS), pp. 1每10. IEEE
+53.  Asadi  D  (2022) Partial engine fault  detection and control of a quadrotor considering model uncertainty. Turkish Journal of Engi- neering 6(2):106每117
+54.  Bukhari   SMS,  Zafar  MH,  Abou  Houran  M,  Moosavi   SKR, Mansoor M, Muaaz M, San?lippo F (2024) Secure and privacy- preserving intrusion detection in wireless sensor networks: Feder- ated learning with scnn-bi-lstm for enhanced reliability. Ad Hoc Networks, 103407
+55.  Dai  W, Zhang M, Low KH  (2024) Data-ef?cient modeling for power  consumption  estimation  of  quadrotor  operations  using ensemble learning. Aerosp Sci Technol 144:108791
+
+
+56.  Al Radi M, AlMallahi MN, Al-Sumaiti AS, Semeraro C, Abdelka- reem MA, Olabi A-G (2024) Progress in arti?cial intelligence- based visual servoing of autonomous unmanned aerial vehicles (uavs). Int J Thermo?uids 21:100590
+57.  Kim B, Natarajan Y, Preethaa KS, Song S, An J, Mohan S (2024) Real-time assessment of surface cracks in concrete structures using integrated deep neural networks with autonomous unmanned aerial vehicle. Eng Appl Artif Intell 129:107537
+58.  Al-Haddad LA, Jaber AA, Al-Haddad SA, Al-Muslim YM (2024) Fault  diagnosis  of  actuator  damage  in  uavs  using  embedded recorded data and stacked machine learning models. J Supercom- put 80(3):3005每3024
+59.  Sonmezocak T (2025) Intelligent uav health monitoring: Detecting propeller and structural faults with mems-based vibration. Eng Sci Tech Int J 69:102130
+60.  Cinolu  B  (2024) Acoustic-based diagnostics for uav propeller damage using hnr and gaussian naive bayes. Aircr Eng Aerosp Technol 96(7):972每982
+61.  Baskaya E, Bronz M, Delahaye D (2017) Fault detection & diag- nosis for small uavs via machine learning. In: 2017 IEEE/AIAA 36th Digital Avionics Systems Conference (DASC), pp. 1每6. IEEE
+62.  Zheng K, Jia G, Yang L, Wang J (2021) A compound fault labeling and diagnosis method based on ?ight data and bit record of uav. Appl Sci 11(12):5410
+63.  Gao J, Zhang Q, Chen J (2020) Ekf-based actuator fault detection and diagnosis method for tilt-rotor unmanned aerial vehicles. Math Probl Eng 2020(1):8019017
+64.  D＊Amato E, Nardi VA, Notaro I, Scordamaglia V (2021) A parti- cle ?ltering approach for fault detection and isolation of uav imu sensors: Design, implementation and sensitivity analysis. Sensors 21(9):3066
+65.  Park KH, Park E, Kim HK (2021) Unsupervised fault detection on unmanned aerial vehicles: Encoding and thresholding approach. Sensors 21(6):2208
+66.  Debele Y, Shi H-Y, Wondosen A, Ku T-W, Kang B-S (2023) Deep learning-based robust actuator fault detection and isolation scheme for highly redundant multirotor uavs. Drones 7(7):437
+67.  Mokhtari S, Abbaspour A, Yen KK, Sargolzaei A (2021) Neural network-based active fault-tolerant control design for unmanned helicopter with additive faults. Remote Sensing 13(12):2396
+68.  Park  J,  Jung  Y,  Kim J-H  (2022) Multiclass classi?cation fault diagnosis of multirotor uavs utilizing a deep neural network. Int J Control Autom Syst 20(4):1316每1326
+
+﹛Publisher＊s Note  Springer Nature remains neutral with regard to juris- dictional claims in published maps and institutional af?liations.

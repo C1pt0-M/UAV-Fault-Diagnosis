@@ -1,0 +1,259 @@
+Available online at www.sciencedirect.com
+ScienceDirect
+IFAC PapersOnLine 51-24 (2018) 983每990
+
+Prognosis & Health Management for the prediction of UAV ?ight endurance *
+R. Schacht-Rodr∩1guez * ,**  J.-C. Ponsart **
+C. D. Garc∩1a-Beltr∩an *  C. M. Astorga-Zaragoza *
+*  Tecnol∩ogico Nacional de M∩exico,  TecNM.  Centro  Nacional  de
+Investigaci∩on y Desarrollo  Tecnol∩ogico,  CENIDET,  Internado  Palmira
+s/n  Col.  Palmira  CP  62490,  Cuernavaca,  Mor.  M∩exico.  (e-mail,
+rschacht@,  cgarcia@,  astorga@cenidet.edu.mx) .
+**  Universit∩e de Lorraine,  CRAN  CNRS,  UMR  7039,  Campus
+Sciences, B.P.  70239,  54506  Vandoeuvre-l`es-Nancy  Cedex France
+(e-mail: ricardo.schacht-rodriguez@,
+Jean-Christophe.Ponsart@univ-lorraine.fr)
+﹛Abstract: In this work, a Model-based Prognosis algorithm to predict the Flight Endurance (FE)  and  the  Remaining  Mission  Time  (RMT)  for  a  class  of multirotor  UAVs  powered  by Lithium Polymer (Li-Po) batteries is presented. A Safety  Voltage  Threshold (SVT) in the State of Charge (SoC) of the battery is established before reaching of End of Discharge (EoD), and the SVT is de?ned taking into account the existing relationship between the voltage and the SoC of the battery. The FE is predicted by forecasting when the SVT is reached and the RMT is computed as the di?erence between the FE and the actual time. The prediction is developed in three sequential steps: 1) estimation of the battery SoC, 2) propagation and prediction of the estimated SoC in the future to reach the SVT, and 3) updating the prediction. The Model-based Prognosis algorithm is based on the mathematical model of the UAV propulsion system, which is  made  up  by  a  set  of BrushLess  DC  motors  and  a  Li-Po  battery.  The  e?ectiveness  of the proposed algorithm was tested in simulation and the results obtained demonstrate the e?cacy of the proposed method to accurately predict the FE and RMT during the development of a mission.
+? 2018, IFAC (International Federation of Automatic Control) Hosting by Elsevier Ltd. All rights reserved.
+﹛Keywords: Prediction methods, Extended Kalman Filters, Mobile robots, Threshold voltage, Energy dependence
+
+
+1.  INTRODUCTION
+﹛Nowadays, the use of Lithium Polymer (Li-Po) battery as powertrain for multirotor UAVs with capabilities of verti- cal take-o? and landing (VTOL) has become a capable and economical power source, due to its high energy and power densities, discharge rate (C-rate), and zero emission of pol- lutants (Donateo et al. (2017)). By considering a new and fully charged battery, the ?ight endurance is between  10 to 30 minutes (Roberts et al. (2008); Morbidi et al. (2016); Chang et al. (2016)), where 85% of the energy is consumed by  the  propulsion  system.  The  remaining  consumption is  caused  by  the  sensors,  (such  as  GPS,  accelerometers, compass,  gyroscope  (Aleksandrov  and  Penkov  (2012))), the ?ight control computer, and for some payload (gimbal system, cameras, and other kind of sensors).
+﹛However, the  ?ight  endurance  is  gradually  reduced  over timer due to aging of the battery. The e?ect of aging is characterized by  a  capacity  loss  and  immediately power fade. The aging is caused by several factors such as high- rate cycling, overdischarge and overcharge, and drastically changes of operation temperature  (Watrin et al.  (2012)). To avoid damages and reduce the aging rate during the
+	
+*  This work was  supported  by  CONACYT  (Consejo  Nacional  de Ciencia y Tecnolog∩?a)
+
+
+
+﹛charge/discharge cycles of the battery, it is necessary to monitor the State of Charge (SoC) and to establish safety limits around the End of Discharge (EoD) (also called cut- o? voltage). At a given time, the SoC is the proportion of the available charge, compared to the total charge available when the battery is fully charged, it is analog to a car gas fuel gauge. On the other hand, the EoD indicates that the battery is fully discharged. In the literature of Electrical Cars, such concepts are the main criterion in the design of Battery Manage Systems  (BMS)  (Saha et al.  (2011)), where the main objective is to de?ne adequate operation regimes  to  extend  the  life  of the  battery  and  maximize the energy supplied. In the case of UAVs, the monitoring of SoC battery during the development of a mission will allow to establish a voltage safety limit before reaching the EoD to ensure the ful?llment of the mission, safeguard the integrity of the battery, and have an adequate use of the energy supplied to maximize the ?ight endurance.
+﹛Several  researches  have  addressed  the  problem  of ?ight endurance for di?erent types of UAV considering mainly three types of powertrains such as batteries, fuel cells, and solar cells (Meyer et al. (2007); Saha et al. (2011); Swider- Lyons et al.  (2011); Traub  (2011)). The main objectives of such researches were the development of methodologies and strategies to increase the ?ight endurance taking into
+
+﹛2405-8963 ? 2018, IFAC (International Federation of Automatic Control) Hosting by Elsevier Ltd. All rights reserved. Peer review under responsibility of International Federation of Automatic Control.
+10.1016/j.ifacol.2018.09.705
+
+984                                                                R. Schacht-Rodr赤guez  et al. / IFAC PapersOnLine 51-24 (2018) 983每990
+
+
+
+﹛account the geometry of the UAV, disturbance as the wind, the  type  of  trajectory,  the  maximum  altitude  and  the power requirement to perform  a  mission. In the  speci?c case of multirotor UAVs powered by Li-Po batteries, the e?orts have been focused to generate strategies to ensure the ful?llment of a mission and increase ?ight time, e.g. (De  Souza  C?andido  et  al.  (2014))  are  presented  an  in- tegrated  planning  and  control  approach  to  increase  the probability  of completion  of ?y-by  missions  by  battery- powered UAV quadrotor.  The  authors in  (Abdilla et  al. (2015a)) proposed a technique to extend the endurance of battery-powered  rotorcraft  by  sub-diving the  monolithic battery into multiple smaller capacity batteries which are sequentially  discharged  and  released.  Also,  in   (Abdilla et al.  (2015b)) the authors characterized the power con- sumption of multirotors and derived an endurance estima- tion model. (Morbidi et al. (2016)) presented two optimal control problems with respect to the angular accelerations of four electrical motors of an UAV quadrotor to improve its ?ight endurance. More recently (Dietrich et al. (2017)) are  presented  experimental  results  of an  analysis  of the energy consumption and derivation and validation of em- pirical formulas to estimate the power consumption and the  remaining  ?ight  time.  The  works  mentioned  above were mainly engaged in developing strategies to improve the  consumption of the energy  supply, which  allows the battery to extend the power consumption for UAV appli- cations, to extend the ?ight endurance and to ensure the ful?llment of a mission.
+﹛The main contribution of this work is to present a method- ology  to  predict  the  ?ight  endurance  in  the  context  of Prognosis & Health Management through a Model-based Prognosis algorithm based on the mathematical model of the propulsion system of an UAV multirotor. The predic- tion of ?ight  endurance  is  developed  in three  sequential steps:  1)  the  estimation  of the  battery  SoC  through  an Extended Kalman Filter, followed by 2) the propagation of the estimated SoC in the future until reaching a safety threshold value before the EoD, and the 3) update of the prediction.  The  proposed  methodology  is  applied  to  an UAV  hexarotor to  demonstrate:  i) the  ful?llment  of the UAV mission, ii)  avoiding overdischarges in the battery, and iii) to be able to take decisions over the mission dur- ing  the  ?ight  endurance  prediction.  Such  considerations must be taken into account to perform routines of mission planning or trajectory recon?guration. The remaining of the paper is organized as follows: The mathematical model of the propulsion system of an UAV multirotor is presented in the next section. The main concepts around Prognosis &  Health  Management  and  the  Model-based  Prognosis algorithm  to  predict  the  ?ight  endurance  are  explained in Section 3. The development of the ?ight endurance is detailed in Section 4. The simulation results and the dis- cussion are described in Section 5. Finally, the conclusion and perspectives of the future work are de?ned in the last Section.
+2.  MATHEMATICAL MODEL OF PROPULSION
+SYSTEM OF UAV MULTIROTOR
+﹛The propulsion system of a UAV multirotor is composed by a set of BrushLess DC Motors  (BLDCM) powered by a  Lithium  Polymer  battery  as  it  can  be  seen  in  Fig.  1, where  i denotes  the  i-th  ESC-BLDCM.  The  connection
+
+
+﹛﹛﹛﹛﹛
+Fig. 1. Propulsion system of UAV multirotor.
+﹛
+Fig. 2. Connexion of Li-Po battery - ESC - BLDCM.
+﹛between each motor and the battery is realized through an Electronic Speed Control (ESC). In Fig. 2 the connection between the Li-Po battery - ESC - BLDCM is detailed for one motor. The ESC adjusts the angular velocity of the BLDCM through a control signal which is a PWM signal. In this study the dynamic around the ESC is neglected and it is assumed that the voltage supply by the battery and the  generated  current  by  the  motors  are  averaged  with respect to the duty cycle value produced by the control signal.
+2.1  Lithium  Polymer  battery model
+﹛Lithium Polymer (Li-Po) Batteries are devices converting the energy released by spontaneous chemical reaction to electricity work.  Due to  its  rechargeable  capability they belong  to  the  Secondary  Lithium  batteries  family  and possess  properties  such  as  high  discharge  rate  (C-rate), high  energy  and  power  densities  (Julien  et  al.  (2016)). A  Li-Po  battery  is  made  up  of  several  individual  cells connected to each other in series  (to have a high voltage value)  or  parallel  (to  have  a  high  capacity  in  Ah).  The battery model describes the mathematical relationship and evolution  of  voltage  and  State  of  Charge  (SoC),  which is in a given time the proportion of the charge available compared  to  the  total  charge  available  when  it  is  fully charged. The range of the SoC is SoC ﹋ [0  1 ], where  1 corresponds to 100 % of the charge, i.e the battery is fully charged, and 0 indicates that the battery is fully discharge, i.e. the End of Discharge  (EoD) or cut-o? voltage value has been reached. The most used method to compute the SoC is the so called Ampere  Hour  Counting  or  Coulomb Counting  (Gholizadeh and Salmasi (2014)):
+
+where to  represents the initial time, CT  is the total capac- ity  of the  battery  expressed  in  (Ah).  The  mathematical model, describing the dynamic behavior of the voltage in a Li-Po battery or a single cell, is based on an Equivalent Circuit  Representation  (ECR)  according  to  Fig.  3.  The
+
+R. Schacht-Rodr赤guez  et al. / IFAC PapersOnLine 51-24 (2018) 983每990                                                                 985
+
+
+
+﹛﹛﹛﹛
+Fig. 3. Electrical equivalent circuit of a Lithium battery.
+﹛ECR was presented in (Chen and Rincon-Mora (2006)). In Fig. 3, (on the left-side of the circuit), the voltage VSoC (t) models the state of charge SoC(t) of the battery from the capacity CT . The voltage VOCV (VSoC ) is the Open Circuit Voltage (OCV), i.e. it is the e?ective voltage in the termi- nals of battery, and it is modeled as a function of the state of charge of the battery. The voltage VRint (t) characterizes the ohmic over-potential due to the internal resistance of the battery Rint. Vd (t) represents the transitory response of the voltage when a current is demanding to the battery. It is characterized by a ?rst order response and its time constant depends on the value of parameters Rd  and Cd. The mathematical model of the battery is given by:
+
+
+VBatt (t) = VOCV (VSoC (t)) ? Vd (t) ? Rint Ibatt (t),
+where, the VOCV (VSoC (t)) is de?ned experimentally as:
+
+﹛It  can  be  noted  that,  the  nonlinear  function  (3)  is  not unique and its de?nition depends on the evolution of the battery  dynamics  and  the  magnitude  of  the  discharge current. It is usually formulate using a polynomial func- tion  (Schacht-Rodriguez  et  al.  (2017)),  however  in  this work  a  logarithm  term  was  added  to  model  the  ?nal evolution of the battery voltage. To illustrate the voltage drop described previously, lets consider Fig. 4, where the demanded current and voltage of a new and fully charged Li-Po battery made up of four series-connected cells are shown.  The  battery  was  discharged  before  to  reach  the EoD  value  (established  at  12  V)  at  room  temperature. In  Fig.  5 when the  ?rst  current  pulse  is  applied  an  im- mediately voltage drop caused by VRint (t) occurs due to the  internal  resistance  Rint.  When  the  pulse  is  o?,  the voltage  recovers  by  itself with  a  dynamic  associated  to Vd (t) until reaching the open circuit voltage VOCV (VSoC ). As  mentioned  previously,  the  End  of Discharge  (EoD)
+﹛
+Fig. 4. Demanded Current and battery voltage at 25﹝C.
+
+
+﹛
+Fig. 5. Characteristics of the battery voltage.
+﹛is  the  cut-o?  voltage  and  it  indicates  that  the  battery is  fully  discharged.  If this  value  is  reached  and  the  dis- charge continues,  an irreversible damage is generated to the battery. One way to quantify the aging is to consider the State of Health (SoH). The SoH represents the actual conditions  of a  battery,  in  comparison  with  its  nominal conditions.  The  main  phenomena  that  characterizes  the battery SoH is the capacity loss or capacity fade, which is caused by the reduction of the capacity value CT  accord- ing to the  number of charge/discharge  cycles  (Cordoba- Arenas  et  al.  (2013)).  In  Fig.  6,  the  aging  e?ect  in  the voltage  of a  battery  cell  is  shown.  The  battery  cell was submitted to  150 charge/discharge cycles  (Ncycle )  (Saha and  Goebel  (2007)). The EoD was established at 2.6 V, and  as  it  can  be  observed,  the  time  to  reach  the  EoD is  reduced  according  to  the  number  of charge/discharge cycles denoted by (Ncycle ). The evolution of the numerical value  of  CT ,  is  plotted  in  Fig.  7.  It  can  be  noted  that this evolution depends on the number of charge/discharge cycles (Ncycle ), and the SoH can be de?ned as
+
+CT  = C0  ﹞ SoH(Ncycle ),
+where  SoH(Ncycle )  is  the  SoH  as  an  e?ect  of  capacity loss, Ca (Ncycle ) is the value of the capacity in a speci?c charge/discharge cycle, and C0  is the value of the capacity when the battery is new. Similar to SoC, the SoH is in a range of SoH ﹋ [0  1 ], i.e the SoH is 1 when the battery is new, and according to the use, damage, and other factors the SoH will be reduced.
+﹛
+Fig. 6. Variation of voltage of a battery cell subject to 160 charge/discharge cycles (Saha and Goebel (2007)).
+﹛It can be noted that the decrease of the capacity a?ects directly the SoC and consequently the battery voltage (as it can be seen in equation (3)). This relationship is plotted in Fig. 8, where the dependence between the SoC and the battery  voltage  is  shown.  In  that  sense,  the  time  when the  EoD  is  reached  can  be  determinate  when  the  SoC reaches 0. It should be mentioned that one characteristic in the dynamic associated to the battery voltage during a  discharge  is  the  exponential  fall  of the  voltage  before
+
+
+
+﹛
+Fig. 7. Capacity loss and battery SoH  (Saha and Goebel (2007)).
+﹛
+Fig. 8. Relationship between battery voltage and SoC.
+﹛reaching the EoD. The voltage fall can be seen in Fig. 8, which occurs after the SoC reach the 0.1 %.
+2.2  BrushLess  DC Motor
+The  mathematical  model  of  the  BrushLess  DC  Motor (BLDCM) is divided into the electrical and the mechanical sub-models described by the following equations (Moseler and Isermann (2000)):
+batt (t) = Rbatt (t)+ KE 肋(t),
+
+where R =  (汍=1 Ri ) is the equivalent electric resistance
+﹛of each coil,  KE   is the back electromotive force, 肋(t)  is the angular velocity, Tfric  is the motor friction torque, Df is the viscous damping coe?cient of the motor, d is the drag constant, associated to the geometry of the propeller, and JTP  is the inertia of the motor. The average voltage
+batt (t)  and current batt (t)  are the voltage  and current
+generated by the ESC and they are computed as follows:
+batt (t) = Vbatt (t) ﹞ Dcycle
+Ibatt (t) = batt (t) ﹞ Dcycle ,
+where Vbatt (t) is the battery voltage, Ibatt (t) is the current generated  by  the  motors,  and  Dcycle   is  the  duty  cycle of Pulse-Width Modulation  (PWM) signal, which corre- sponds to control signal of the motor speed. Dcycle  can be de?ned as a function of the square of the angular velocity of the motors and it is determined through experimental correlations, such as Dcycle  = f(肋(t)2 ).
+3.  PROGNOSIS & HEALTH MANAGEMENT
+﹛According  to  (Goebel  et  al.  (2017);  Kim  et  al.  (2017)) the  Prognosis  &  Health  Management  (PHM)  is  a  novel engineering approach which enables the health assessment of a system according to its actual operating conditions, as well as the prediction of its future condition based on up to date information. One of the main objectives ofthe PHM is to predict how the system will behave in the future in order
+
+
+to know if more stress or changes in the nominal operation on the system will likely cause an acceleration towards a certain undesirable event or failure condition, and the time when  such  event  will  occurs.  In  order  to  illustrate  how
+﹛﹛
+Fig. 9. Evolution of the system behavior.
+the  prognosis  is  performed,  let  us  consider  Fig.  9.  The solid  dark blue  line represents the past evolution of the system behavior until present time ta , and the brown area is the Safety Zone  (SZ) or the nominal operational limit. According  to  di?erent  factors  such  as  the  inputs  of the system, aging, or even external disturbances, the system behavior  could  be  progress  until  reach values  outside  of its  nominal  operation.  In  that  sense,  if such  factors  are known, the future trajectory of the system behavior can be predicted until reaching the SZ (segmented blue lines). In the prognosis literature, the End of Life  (EoL) is reached, when  the  system  behavior  reaches  or  exceed  the  upper limit of the SZ at some time tfi , and the Remaining  Useful Time  (RUL) until reach the EoL is computed as
+RULi  = tfi (EoLi ) ? ta.                       (7)
+﹛In  this  work,  the  system  under  study  is  the  propulsion system of an UAV multirotor. In that sense, several char- acteristics of the system behavior could be predicted, such as: i) the battery SoC in a given time. ii) the ful?llment of a mission before to reach the EoD, iii) the ?ight endurance of the UAV and the Remaining Mission Time. In this work the RUL is considered as the RMT of the UAV.
+3.1  Model-based Prognosis
+﹛Depending on the accuracy level of the prediction and the complexity  of the  system  behavior,  di?erent  approaches have been used to perform prognosis (Goebel et al. (2017); Coble (2010)). The Model-based Prognosis or Condition- based  Prediction  assess  the  behavior  of individual  com- ponents  of a  system  as  well  as  the  entire  system  based on  a mathematical model that describe the evolution of some system variables (i.e temperature, voltage, position, speed) over time. If such mathematical model exists, the future  behavior  of  the  system  can  be  determinate  by propagating the mathematical model in the future time. However,  to  determinate  a  mathematical  model  of  the interested system in order to perform a prediction of its future behavior is not a trivial task. First, it is necessary to de?ne which system variables are necessary to evaluate the  entire  system  behavior,  and  determine  if such  vari- ables are directly measured or not. If such variables are measured, a mathematical model can be de?ned and used to perform the prediction in the future time. Otherwise, if such variables are unmeasured, they must be estimated. In  that  sense,  this  work  presents  in  Fig.  10  a  Model- based Prognosis methodology based on an estimation of the battery SoC in order to predict the ?ight endurance of
+
+
+
+the UAV. The prediction is developed in three sequential steps:  1) estimation of unmeasured states of the system, 2) propagation and prediction of the estimated state, and
+3) update of the prediction.
+﹛﹛﹛﹛
+Fig. 10. Model-based Prognosis methodology.
+﹛State  Estimation.     In  several  dynamic  systems,  not all  state  variables  can  be  measured.  For  such  cases,  an observer  needs  to  be  designed  in  order  to  estimate  the unmeasured states considering the system model and the available input-output signals. In this work an Extended Kalman Filter (EKF) is used to estimate the battery SoC. The EKF has demonstrated to be an adequately tool to estimate the battery states as well as parameters in battery systems (Plett (2004); He et al. (2011)). In this work the EKF is developed considering a simpli?ed mathematical model where the unique nonlinear term is the Open Circuit Voltage. The EKF addressed the general problem of state estimation  of  a  nonlinear  system,  expressed  in  discrete time as:
+xk+1  = f(xk, uk )+ wk
+(8)
+yk  = g(xk, uk )+ vk ,
+where  f(xk, uk )  and  g(xk, uk )  are  the  nonlinear  state transition function and nonlinear measurement function, respectively, and they are assumed to be di?erentiable at each operating point. The random variables w(t) and v(t) are the process and measurement noise. They are assumed to  be  independent,  white,  and  with  normal  probability distributions:
+p(w) ~    N(0, Q)
+(9)
+p(v) ~   N(0, R).
+The  matrices  Q and  R are the  process  noise  covariance and measurement noise covariance, respectively. At each sample time, f(xk, uk ) and g(xk, uk ) are linearized through a ?rst-order Taylor-series developed as
+A  xk                                          (10)
+
+The  completed  equations  of  the  EKF  are  resumed  in Algorithm (1).
+
+
+
+Algorithm  1 Extended  Kalman  Filter  algorithm  Plett (2004).
+Initial values of ?1  and Pk?1
+To compute:
+
+
+State estimate update:
+ = f(k?1, uk?1),
+Error covariance matrix:
+P = Ak PkA + Q,
+Kalman gain:
+Kk  = PC(Ck PC + R)?1 ,
+State estimate measurement update:
+k  =  + Kk (yk  ? g(, uk )),
+Error covariance matrix update:
+Pk  = (I ? Kk Ck  .
+﹛Propagation  and  Prediction  of  estimated  states. As  mentioned  previously,  if a  mathematical  model  that describes the evolution of system behavior as a function of the time exists, the prediction of future behavior can be determined by propagating the model in the future time. However if the system involves unmeasured variables, they must be estimated ?rst, and the prediction of its future behavior  is  based  on  the  propagation  of  the  estimated variables  in  the  future.  In  order  to  illustrate  how  the propagation and prediction are performed, let us consider Fig.  9  where  the  trend  of the  past  evolution  of system behavior  at  time  ta   is  known.  It  is  possible  to  de?ne  a function that approximate the trend with the time, and propagate  the  function  in  the  future  until  reaches  the SZ.  This  function  is  called  prediction function,  and  the accuracy  of  the  prediction  will  depend  on  the  amount of past data measure. On the other hand, the prediction function can be updated by using new data of the system. Due  to  the  fact  that  there  are  no  abrupt  changes  or discontinuities  in  the  evolution  of  estimation  SoC,  the prediction function is de?ned as a polynomial function of the time, such as:
+m
+
+where 灰(t) represents the predicted variable, t is the time, 汐i  are identi?ed parameters associated to measured data trend and m is the order of the polynomial function. The method of  Weighted Least Squares  (WLS) is considered to estimate the parameters (汐i ) of (12). The WLS is de?ned as:
+H = [ 1 t ﹞﹞﹞  tm ] ,
+ = [HTR ?1H] ?1HTR ?1Y ,
+where  H  contains  the   information  of  the   relationship between the time and the polynomial order,  is the vector with the estimated parameters 汐i , R is the measurement covariance  matrix,  and Y  is the vector  of the  measured data  (variable  to  be  identi?ed).  The  approximation  is
+
+
+
+﹛evaluated according to the coe?cient of determination R2 , which  is  limited  as  R2   ﹋  [0.9  1 ]  in this  study,  and the polynomial  order  depends  on  the  accuracy  between  the data and the identi?ed function. The iterative sequence of propagation and prediction is given in the Algorithm 2.
+Algorithm 2 Propagation and prediction algorithm.
+(1)  Delay (tp )
+(2)  Recollect data until SC(ta )
+(3)  De?ne H and m for
+﹛﹛﹛﹛﹛﹛﹛﹛H = [ 1 t ﹞﹞﹞  tm ] and
+m
+
+(4)  Estimate  with Y = SC(t0  : ta )
+ = [HTR ?1H] ?1HTR ?1Y
+(5)  Verify R2  to Y = SC(t0  : ta ) with 灰 (t0  : ta , )
+(6)  Propagate 灰 (t0  : ta , ) until t(SVT) to determinate the Flight Endurance (FE)
+FE = t(SVT)
+(7)  Compute Remaining  mission  Time  (RMT) RMT = t(SVT) ? ta
+
+4.  PREDICTION OF FLIGHT ENDURANCE OF UAV
+MULTIROTOR
+﹛The methodology explained previously will be applied to predict the ?ight endurance of an UAV hexarotor. During the development of a mission of some UAV, the End of Discharge  (EoD)  must be taking  into  account to ensure the safety of the UAV, the ful?llment of the mission, and the maximization of ?ight endurance. In that sense, the total ?ight endurance is considered as the time between the beginning of the mission until reaches a Safety  Voltage ThTeshold before EoD value. Several factors are implied in the ?ight endurance of the UAV, such as the total current demanded by the number of the BLDCM  (Ibatt (t)), and C-Rate, the rate discharge (C), the initial charge SoC(t0 ), and the State of Health SoH. Then, assuming a new and fully charged battery, the EoD is directly associated with the battery voltage. The time when EoD is reached can be computed considering the demanded current (Ibatt (t)) through relation of C-Rate discharge. However according to  the  number  of  charge/discharge,  the  capacity  of the battery decreases and the discharge rate is modi?ed as the aging of the battery increases. In that sense, the computing of  EoD  time  should  consider  the  e?ect  of the  aging  to obtain the total ?ight endurance according to the battery SoH. As it can be observed from (2), the variation of CT a?ects  directly  the  SoC  and  consequently  the  OCV(3). Then,  considering  the  relationship  between  the  battery voltage  and  the  SoC  shown  in  Fig.  8,  the  EoD  can  be directly associated to the SoC. Taking into account that the total current demanded by the set of BLDCM is known or  measure,  the  SoC  of the  battery  during  the  mission can be computed using equation (1) or estimated through EKF,  and  its  future  trajectory  can  be  propagated  and
+
+
+﹛predicted  in  the  future  until  reaching  the  EoD,  leading to prediction of the ?ight endurance. The development of each  step  in  the  PHM  architecture  shown  in  Fig.  10  to predict the  ?ight  endurance  of the  UAV  is  explained  in the next section.
+4.1  SoC estimation
+﹛The  prediction  of  the  ?ight  endurance  is  based  on  the computation  or  estimation  the  battery  SoC  during  the UAV mission. In that sense, two cases are considered in this work: 1) the direct computation of the SoC using the Amper counting method, and 2) the estimation of the SoC using a EKF. In the ?rst case, the SoC is computed directly using  equation  (1).  However,  this  method  accumulates errors in measurements and may lead to large SoC errors in real-world applications  (Gholizadeh and Salmasi  (2014)). In that sense, the estimation of SoC is considered based on the design of an Extended Kalman Filter applied on system (2).
+﹛EKF  of  Li-Po  battery.     The  estimation  of  SoC  is developed  according  to  Algorithm  1.  System  (2)  is  dis- cretized through forward Euler method, and rewriting in state space:
+
+
+where the discrete state space vector is xk  = [VSoC  Vd ]T , the input uk  = Ibatt , the output yk  = Vbatt , and Ts  is the sampling time. The nonlinear term is the OCV shown in equation (1), which is in the matrix C. The variation in the measurement and process noise are established at ㊣0.1 V , and ㊣0.01 V and the process and measurement covariance matrices are de?ned using experimental data from a real battery (Schacht-Rodriguez et al. (2017)) as:
+
+R = [0.1 ] .
+﹛The propagation and prediction of the estimated SoC is developed according to Algorithm  (2). It is important to mention that the methodology shown in Fig. 10, considers two types of sampling time during its implementation, i.e. whiles the state estimation stage is subject to the sampling time of the system in order of milliseconds, the propagation and evaluation could be performed in a sampling time in the order of seconds, or even minutes.
+5.  RESULTS AND DISCUSSION
+﹛The methodology introduced in this paper to predict the ?ight endurance was tested in simulation considering the propulsion system of an UAV hexarotor. A Li-Po battery of four cells was considered as powertrain and the param- eters were obtained using experimental data considering the  methodology  presented  in  (Schacht-Rodriguez  et  al.
+﹛(2017)). Considering the relationship between the battery voltage  and  the  SoC,  the  SVT  is  de?ned  according  to Fig. 11. As it can be observed, before the voltage reaches the  EoD, there  is  an  abrupt  exponential  fall  of voltage.
+
+
+
+﹛Taking into account this phenomena, the SVT is de?ned before the voltage reaches the EoD.  The UAV was sub-
+﹛
+Fig. 11. Safety Voltage Threshold of the Li-Po battery.
+jected to  a mission which consisted in following circular trajectory with an area of 785400 m2  around x - y axis and  an  altitude  of 20  m  (Fig.  12).  Such  trajectory  was developed  considering  the  mathematical  model  of  UAV presented  in  (Arellano-Muro  et  al.  (2013)).  Considering that the battery is fully charged and new, the initial SoC and  SoH were established in  1 respectively. The current
+﹛
+Fig. 12. 3D Path of UAV hexarotor.
+﹛generated by the six motors is shown in Fig. 13-(a). The variations in the current are due to velocity changes of the motors  caused  by  the  UAV  movement.  The  comparison between the voltage battery and its estimation is observed in Fig. 13-(b). As it can be seen, the mission is ful?lled in 20 minutes before to reach the SVT,and this avoided an overdischarge in the battery. The comparison between the estimated SoC through the EKF and the computed SoC by Coulomb Counted is shown in Fig. 14. As it can be noted, the SoC estimation through the EKF relates the SoC with the  dynamic  of the  battery  discharge.  This  relationship allows to predict the ?ight endurance from the estimated SoC.
+﹛
+(a)                                                       (b)
+Fig. 13. (a) Demanded current Ibatt  and (b) comparison of
+Vbatt  and batt .
+﹛The propagation and prediction was developed over sam- pling time of 1 minute, and the SoC estimation each  10 milliseconds to collect enough data to estimate the param- eters of the prediction function (12). Two 1st and 2nd order polynomials were considered for the prediction function.
+
+
+﹛
+Fig. 14. Comparison between SoCCC  and SC.
+﹛The  predictions  of  the  total  ?ight  endurance  for  both prediction functions are plotted in Fig. 15. The blue marks correspond to the predicted ?ight endurance with the 1st order polynomial, and the red marks with the 2nd  order polynomial.  As  it  can  be  observed,  the  ?rst  predictions (1-4 min) with the 1st  order polynomial are closer to the real ?ight endurance, whilst an approximation of the real ?ight endurance is displayed from 6 minute onwards with the 2nd  order polynomial. However the closest prediction of real ?ight endurance is obtained at time 8 min with the 2nd  order polynomial. In Fig. 16 and Fig. 17 the results of
+﹛
+Fig. 15. Flight Endurance prediction.
+the prediction for the 1st and 2nd order polynomial at time 1, 6 and 8 min, and their comparison with the estimated SoC are shown. A Decision  Threshold (DT) at the 0.6% (at time 10 min of the total ?ight endurance) of estimated SoC was de?ned to determinate an operation range where the predictions will be useful to take decisions on the progress of the  mission.  The  computation  of Remaining  Mission Time (RMS) was made from the ?rst prediction, and the results are shown in Fig. 18. As it can be seen, it is possible to predict the total ?ight endurance and the RMS from the beginning of the mission considering the de?ned DT.
+﹛
+Fig. 16. Prediction of FE with 1st  order polynomial.
+
+6.  CONCLUSION AND FUTURE WORKS
+In  this  paper,  a  methodology  based  on  a  Model-based Prognosis  was  employed  to  predict  the  ?ight  endurance and remaining mission time of a class of multirotor UAVs. Through an Extended Kalman Filter the battery SoC was estimated, and using a polynomial function, the estimated
+
+
+
+﹛
+Fig. 17. Prediction of FE with 2st  order polynomial.
+﹛
+Fig. 18. Evolution of Remaining Mission Time.
+﹛SoC was propagate in the future time before reaching the EoD. The propagation and prediction algorithm presented can  be  applied  on  other  type   of  electrically  powered UAV. On the other hand, the prognosis methodology also enabled to de?ne safe operating limits in the battery to avoid damages and guarantee the ful?llment of the UAV mission. The simulation results exhibited that it is possible to  predict  the  total  ?ight  endurance  and  the  remaining mission time before the end of the mission considering a Decision Threshold between the beginning of the mission and the time when the prediction is closest with the real value.  The  Decision  Threshold  is  necessary  in  order  to de?ne a scheme of Decision Making for mission planning or trajectory planning. In that sense, the prediction of the ?ight endurance will be the core of a path planning and re-planning strategy to take actions over the evolution of a mission as future work.
+REFERENCES
+Abdilla,  A.,  Richards,  A.,  and  Burrow,  S.  (2015a).     Endurance Optimisation  of  Battery-Powered  Rotorcraft.     In   Conference Towards Autonomous Robotic Systems, 1每12. Springer.
+Abdilla,  A.,  Richards,  A.,  and  Burrow,  S.  (2015b).    Power  and endurance modelling of battery-powered rotorcraft. In Intelligent Robots and Systems (IROS), 2015 IEEE/RSJ International Con- ference on, 675每680. IEEE.
+Aleksandrov, D. and Penkov, I. (2012). Energy consumption of mini UAV helicopters with di?erent number of rotors.  In  11th Inter- national Symposium§ Topical Problems in the Field of Electrical and Power Engineering, 259每262.
+Arellano-Muro,  C.A.,  Luque-Vega,  L.F.,  Castillo-Toledo,  B.,  and Loukianov, A.G. (2013).  Backstepping control with sliding mode estimation for a hexacopter. In Electrical Engineering, Computing Science and Automatic Control (CCE), 2013 10th International Conference on, 31每36. IEEE.
+Chang, K., Rammos, P., Wilkerson,  S., Bundy, M., and  Gadsden, S.A.  (2016).    LiPo  battery  energy  studies  for  improved  ?ight performance  of  unmanned  aerial  systems.    In  SPIE Defense+ Security, 98370W每98370W. International Society for Optics and Photonics.
+Chen, M. and Rincon-Mora, G.A. (2006). Accurate electrical battery model capable of predicting runtime and IV performance.  IEEE transactions on energy conversion, 21(2), 504每511.
+
+
+Coble, J.B. (2010). Mergin data sources to predict remaining useful
+life - an automated method to identify prognostic parameters.
+Cordoba-Arenas,  A.,  Onori,  S.,  Rizzoni,  G.,  and  Fan,  G.  (2013). Aging  Propagation  in  Advanced  Battery  Systems:  Preliminary Results.  IFAC Proceedings Volumes, 46(21), 313每318.
+De Souza C?andido, A., Galv?ao, R.K.H., and Yoneyama, T. (2014). Control  and  energy  management  for  quadrotor.     In   Control (CONTROL), 2014 UKACC International Conference on, 343每 348. IEEE.
+Dietrich, T., Krug, S., and Zimmermann, A.  (2017).  An empirical study  on  generic  multicopter  energy  consumption  pro?les.    In Systems Conference (SysCon), 2017 Annual IEEE International, 1每6. IEEE.
+Donateo, T., Ficarella, A.,  Spedicato, L., Arista, A., and Ferraro, M. (2017).  A new approach to calculating endurance in electric ?ight and comparing fuel cells and batteries. Applied Energy, 187, 807每819.
+Gholizadeh,  M.  and  Salmasi,  F.R.  (2014).   Estimation  of state of charge, unknown nonlinearities, and state of health of a lithium- ion battery based on a comprehensive unobservable model. IEEE Transactions on Industrial Electronics, 61(3), 1335每1344.
+Goebel, K., Dagle, M., Saxena, A., Sankararama, S., Roychoudhury, I.,  and  Celaya,  J.R.  (2017).    PROGNOSTICS  The Science  of Prediction.
+He, H., Xiong, R., Zhang, X., Sun, F., and Fan, J.  (2011).   State- of-Charge estimation of the lithium-ion battery using an adaptive extended Kalman ?lter based on an improved Thevenin model. IEEE Transactions on Vehicular Technology, 60(4), 1461每1469.
+Julien, C., Mauger, A., Vijh, A., and Zaghib, K.  (2016).   Lithium batteries. In Lithium Batteries, 29每68. Springer.
+Kim, N.H., An, D., and Choi, J.H. (2017).  Prognostics and Health Management of Engineering Systems.  Springer.
+Meyer, J., Du Plessis, J., Ellis, P., and  Clark, W.  (2007).   Design considerations  for  a  low  altitude  long  endurance  solar  powered unmanned aerial vehicle. In AFRICON 2007, 1每7. IEEE.
+Morbidi,  F.,  Cano,  R.,  and  Lara,  D.  (2016).    Minimum-Energy Path Generation for a Quadrotor UAV.   In  IEEE International Conference on Robotics and Automation.
+Moseler, O. and Isermann, R.  (2000).  Application of model-based fault detection to a brushless DC motor.  IEEE Transactions on industrial electronics, 47(5), 1015每1020.
+Plett, G.L. (2004).  Extended Kalman ?ltering for battery manage- ment systems of LiPB-based HEV battery packs: Part 3. State and parameter estimation. Journal of Power sources, 134(2), 277每292.
+Roberts,  J.F.,  Zu?erey,  J.C.,  and  Floreano,  D.   (2008).    Energy management for indoor hovering robots.  In 2008 IEEE/RSJ In- ternational Conference on Intelligent Robots and Systems, 1242每 1247. IEEE.
+Saha, B. and Goebel, K.  (2007).  Battery data set.   NASA AMES prognostics data repository.
+Saha, B., Koshimoto, E.,  Quach,  C.C., Hogge, E.F.,  Strom, T.H., Hill, B.L., Vazquez, S.L., and Goebel, K. (2011).  Battery health management system for electric UAVs. In Aerospace Conference, 2011 IEEE, 1每9. IEEE.
+Schacht-Rodriguez,    R.,    Ortiz-Torres,    G.,    Garc∩?a-Beltr∩an,    C., Astorga-Zaragoza, C., Ponsart, J., and Theilliol, D. (2017).  SoC estimation using an Extended Kalman ?lter for UAV applications. In   Unmanned  Aircraft  Systems  (ICUAS),  2017 International Conference on, 179每187. IEEE.
+Swider-Lyons,  K.E.,  MacKrell,  J.A.,  Rodgers,  J.A.,  Page,  G.S., Schuette,  M.,  and  Stroman,  R.O.  (2011).     Hydrogen  fuel  cell propulsion for long endurance small uavs. In The AIAA centennial of naval aviation forum, volume 100.
+Traub, L.W.  (2011).   Range and endurance estimates for battery- powered aircraft.  Journal of Aircraft, 48(2), 703每707.
+Watrin, N., Blunier, B., and Miraoui, A. (2012). Review of adaptive systems for lithium batteries State-of-Charge and State-of-Health estimation. In 2012 IEEE Transportation Electri?cation Confer- ence and Expo (ITEC), 1每6. IEEE.
