@@ -18,7 +18,7 @@ def health_check():
     """
     return jsonify({
         'status': 'healthy',
-        'service': 'drone-fault-management-backend',
+        'service': 'data-driven-uav-fault-diagnosis-backend',
         'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         'uptime': time.time()
     })
@@ -45,7 +45,7 @@ def detailed_health_check():
         
         return jsonify({
             'status': overall_status,
-            'service': 'drone-fault-management-backend',
+            'service': 'data-driven-uav-fault-diagnosis-backend',
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'response_time_ms': response_time,
             'database': {

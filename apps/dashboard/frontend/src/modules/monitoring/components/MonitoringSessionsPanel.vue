@@ -22,7 +22,7 @@
           <span>操作</span>
         </div>
         <div
-          v-for="row in sessions"
+          v-for="row in pagedSessions"
           :key="row.id"
           class="session-table__row"
         >
@@ -43,6 +43,16 @@
             </el-button>
           </span>
         </div>
+        <div v-if="totalSessions > pageSize" class="table-pagination">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :current-page="currentPage"
+            :page-size="pageSize"
+            :total="totalSessions"
+            @current-change="currentPage = $event"
+          />
+        </div>
       </div>
       <el-empty v-else :description="monitoringCopy.sessionsEmpty" :image-size="60" />
     </div>
@@ -50,17 +60,32 @@
 </template>
 
 <script setup>
+import { computed, ref, watch } from 'vue'
 import { Refresh } from '@element-plus/icons-vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import ElIcon from 'element-plus/es/components/icon/index.mjs'
 import ElEmpty from 'element-plus/es/components/empty/index.mjs'
+import ElPagination from 'element-plus/es/components/pagination/index.mjs'
 import { monitoringCopy } from '@/modules/monitoring/monitoringView'
 
-defineProps({
+const props = defineProps({
   sessions: { type: Array, default: () => [] }
 })
 
 defineEmits(['refresh', 'open-detail', 'continue-diagnosis'])
+
+const pageSize = 5
+const currentPage = ref(1)
+const totalSessions = computed(() => props.sessions.length)
+const pagedSessions = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  return props.sessions.slice(start, start + pageSize)
+})
+
+watch(totalSessions, () => {
+  const maxPage = Math.max(1, Math.ceil(totalSessions.value / pageSize))
+  if (currentPage.value > maxPage) currentPage.value = maxPage
+})
 
 function formatDuration(seconds) {
   const parsed = Number(seconds || 0)
@@ -144,5 +169,11 @@ function sessionStatusClass(status) {
   align-items: center;
   gap: 8px;
   overflow: visible !important;
+}
+
+.table-pagination {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12px;
 }
 </style>

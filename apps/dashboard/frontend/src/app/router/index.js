@@ -1,19 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import Layout from '@/components/Layout.vue'
-import { authApi, setupApi } from '@/shared/services'
+import { authApi } from '@/shared/services'
 import { clearStoredSession, parseStoredUser, storeSession } from '@/shared/utils/user'
-
-const RegisterRedirect = { name: 'RegisterRedirect', template: '<div />' }
-
-async function redirectRegisterRoute(_to, _from, next) {
-  try {
-    const response = await setupApi.status()
-    next(response.data?.needs_setup ? '/setup' : '/login')
-  } catch {
-    next('/login')
-  }
-}
 
 const routes = [
   {
@@ -31,8 +20,7 @@ const routes = [
   {
     path: '/register',
     name: 'Register',
-    component: RegisterRedirect,
-    beforeEnter: redirectRegisterRoute,
+    component: () => import('@/modules/auth/LoginPage.vue'),
     meta: { requiresAuth: false }
   },
   {

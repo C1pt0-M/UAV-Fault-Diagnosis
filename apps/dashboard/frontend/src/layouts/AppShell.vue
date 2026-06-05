@@ -8,13 +8,13 @@
         <div class="sidebar-account__main">
           <!-- Logo 始终显示 -->
           <div class="sidebar-account__logo-wrap">
-            <img class="sidebar-account__logo" :src="brandLogo" alt="智诊天眸" />
+            <img class="sidebar-account__logo" :src="brandLogo" :alt="APP_NAME" />
           </div>
 
           <!-- 展开时显示的文字信息 -->
           <div class="sidebar-account__info">
             <div class="sidebar-account__name-row">
-              <span class="sidebar-account__name">智诊天眸</span>
+              <span class="sidebar-account__name">{{ APP_NAME }}</span>
               <el-icon class="sidebar-account__dropdown-icon"><ArrowDown /></el-icon>
             </div>
             <span class="sidebar-account__meta">{{ roleLabel }} · {{ displayName }}</span>
@@ -102,6 +102,7 @@ import ElIcon from 'element-plus/es/components/icon/index.mjs'
 import { ArrowLeft, ArrowRight, SwitchButton, Sunny, Moon, ArrowDown } from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authApi } from '@/shared/services'
+import { APP_NAME } from '@/shared/constants/brand'
 import { navigationItems, resolvePageMeta } from '@/shared/constants/navigation'
 import {
   clearStoredSession,
@@ -110,7 +111,7 @@ import {
   parseStoredUser
 } from '@/shared/utils/user'
 
-const brandLogo = new URL('../../智诊天眸_logo.png', import.meta.url).href
+const brandLogo = new URL('../../uav_fault_diagnosis_logo.png', import.meta.url).href
 
 const route = useRoute()
 const router = useRouter()
@@ -229,10 +230,10 @@ async function logout() {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 14px 12px;
+  padding: 12px;
   border-bottom: 1px solid var(--line-soft);
   flex-shrink: 0;
-  min-height: 60px;
+  min-height: 74px;
 }
 
 .sidebar-account__main {
@@ -274,7 +275,6 @@ async function logout() {
   opacity: 1;
   width: auto;
   transition: opacity 0.15s, width 0.22s;
-  white-space: nowrap;
 }
 
 .is-collapsed .sidebar-account__info {
@@ -284,12 +284,15 @@ async function logout() {
 }
 
 .sidebar-account__name {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: 0.2px;
+  letter-spacing: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.25;
 }
 
 .sidebar-account__meta {

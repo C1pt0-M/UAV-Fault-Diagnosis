@@ -3,8 +3,10 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const routerPush = vi.hoisted(() => vi.fn())
+const routeMock = vi.hoisted(() => ({ path: '/login' }))
 const authApiMock = vi.hoisted(() => ({
-  login: vi.fn()
+  login: vi.fn(),
+  register: vi.fn()
 }))
 const messageMock = vi.hoisted(() => ({
   success: vi.fn(),
@@ -12,7 +14,8 @@ const messageMock = vi.hoisted(() => ({
 }))
 
 vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: routerPush })
+  useRouter: () => ({ push: routerPush }),
+  useRoute: () => routeMock
 }))
 
 vi.mock('element-plus', () => ({
@@ -74,28 +77,29 @@ function mountLoginPage() {
 
 describe('LoginPage', () => {
   beforeEach(() => {
+    routeMock.path = '/login'
     routerPush.mockReset()
     authApiMock.login.mockReset()
+    authApiMock.register.mockReset()
     messageMock.success.mockReset()
     messageMock.error.mockReset()
     localStorage.clear()
   })
 
-  it('renders only the administrator login entry and setup link', async () => {
+  it('renders the login form and register entry', async () => {
     const wrapper = mountLoginPage()
 
-    expect(wrapper.text()).toContain('智诊天眸')
-    expect(wrapper.text()).toContain('无人机故障诊断研究平台')
+    expect(wrapper.text()).toContain('基于数据驱动的无人机故障智能诊断系统')
+    expect(wrapper.text()).toContain('无人机飞行日志、在线监测与故障诊断一体化平台')
     expect(wrapper.text()).toContain('登录系统')
-    expect(wrapper.text()).toContain('首次使用？')
-    expect(wrapper.text()).toContain('进入系统初始化')
-    expect(wrapper.text()).not.toContain('立即注册')
-    expect(wrapper.text()).not.toContain('创建研究账号')
+    expect(wrapper.text()).toContain('还没有账号？')
+    expect(wrapper.text()).toContain('立即注册')
     expect(wrapper.find('[data-prop="email"]').exists()).toBe(false)
+    expect(wrapper.find('[data-prop="confirmPassword"]').exists()).toBe(false)
 
-    await wrapper.findAll('button').find((button) => button.text().includes('系统初始化')).trigger('click')
+    await wrapper.findAll('button').find((button) => button.text().includes('立即注册')).trigger('click')
 
-    expect(routerPush).toHaveBeenCalledWith('/setup')
+    expect(routerPush).toHaveBeenCalledWith('/register')
   })
 
   it('logs in and stores the authenticated session', async () => {
@@ -120,5 +124,31 @@ describe('LoginPage', () => {
     expect(JSON.parse(localStorage.getItem('user'))).toEqual({ username: 'admin', role: 'admin' })
     expect(routerPush).toHaveBeenCalledWith('/')
     expect(messageMock.success).toHaveBeenCalledWith('登录成功')
+  })
+
+  it('registers with username and password then returns to login', async () => {
+    routeMock.path = '/register'
+    authApiMock.register.mockResolvedValue({
+      data: { username: 'newuser', role: 'user' }
+    })
+    const wrapper = mountLoginPage()
+
+    expect(wrapper.text()).toContain('注册账号')
+    expect(wrapper.text()).toContain('已有账号？')
+    expect(wrapper.text()).toContain('返回登录')
+    expect(wrapper.find('[data-prop="confirmPassword"]').exists()).toBe(true)
+
+    wrapper.vm.form.username = 'newuser'
+    wrapper.vm.form.password = 'newuser123'
+    wrapper.vm.form.confirmPassword = 'newuser123'
+    await wrapper.findAll('button').find((button) => button.text().includes('注册账号')).trigger('click')
+    await flushPromises()
+
+    expect(authApiMock.register).toHaveBeenCalledWith({
+      username: 'newuser',
+      password: 'newuser123'
+    })
+    expect(messageMock.success).toHaveBeenCalledWith('注册成功，请登录')
+    expect(routerPush).toHaveBeenCalledWith('/login')
   })
 })

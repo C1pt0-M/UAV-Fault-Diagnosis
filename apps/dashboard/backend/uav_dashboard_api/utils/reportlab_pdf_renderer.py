@@ -155,7 +155,7 @@ def main(argv: list[str]) -> int:
         topMargin=18 * mm,
         bottomMargin=16 * mm,
         title='UAV Diagnosis Report',
-        author='UAV Fault Diagnosis System',
+        author='基于数据驱动的无人机故障智能诊断系统',
     )
     doc.build(build_story(lines, styles))
     return 0

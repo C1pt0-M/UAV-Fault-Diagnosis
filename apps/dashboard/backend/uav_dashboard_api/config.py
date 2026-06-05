@@ -209,7 +209,7 @@ class Config:
     BOOTSTRAP_ADMIN_EMAIL = _get_env('BOOTSTRAP_ADMIN_EMAIL', '')
     BOOTSTRAP_ADMIN_DEPARTMENT = _get_env('BOOTSTRAP_ADMIN_DEPARTMENT', '平台组')
     ENABLE_SETUP_API = _get_env_bool('ENABLE_SETUP_API', True)
-    ENABLE_PUBLIC_REGISTER = _get_env_bool('ENABLE_PUBLIC_REGISTER', False)
+    ENABLE_PUBLIC_REGISTER = _get_env_bool('ENABLE_PUBLIC_REGISTER', True)
     ENABLE_TELEMETRY = _get_env_bool('ENABLE_TELEMETRY', True)
     ENABLE_BLIND_TEST = _get_env_bool('ENABLE_BLIND_TEST', False)
     TELEMETRY_ALLOWED_BACKENDS = _get_env_list('TELEMETRY_ALLOWED_BACKENDS', 'replay')
@@ -326,7 +326,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     ALLOW_AUTO_BOOTSTRAP_ADMIN = False
     ENABLE_SETUP_API = True
-    ENABLE_PUBLIC_REGISTER = False
+    ENABLE_PUBLIC_REGISTER = True
     ENABLE_BLIND_TEST = True
     TELEMETRY_ALLOWED_BACKENDS = ('replay', 'rfly')
 
@@ -337,7 +337,7 @@ class ProductionConfig(Config):
     SQLALCHEMY_ECHO = False
     ALLOW_AUTO_BOOTSTRAP_ADMIN = False
     ENABLE_SETUP_API = True
-    ENABLE_PUBLIC_REGISTER = False
+    ENABLE_PUBLIC_REGISTER = True
     ENABLE_BLIND_TEST = False
     TELEMETRY_ALLOWED_BACKENDS = ('replay',)
 

@@ -100,14 +100,14 @@ def create_app(config_class=Config):
     def health_check():
         return jsonify({
             'status': 'healthy',
-            'service': 'uav-fault-dashboard-backend',
+            'service': 'data-driven-uav-fault-diagnosis-backend',
             'timestamp': __import__('time').strftime('%Y-%m-%d %H:%M:%S'),
         })
 
     @app.route('/')
     def index():
         payload = {
-            'message': '无人机故障诊断系统后端API',
+            'message': '基于数据驱动的无人机故障智能诊断系统后端API',
             'version': '2.0.0',
             'status': 'running',
             'api_prefix': api_prefix,

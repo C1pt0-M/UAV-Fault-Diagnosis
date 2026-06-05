@@ -120,11 +120,6 @@ export function useMonitoringDashboard() {
     const reason = inputContractStatus.value?.reason || 'waiting'
     return `动力字段：${actuatorSource} / ${reason}`
   })
-  const sessionBridgeText = computed(() => {
-    return Number(runStatus.fault_events_count || 0) > 0
-      ? monitoringCopy.heroBridgeReady
-      : monitoringCopy.heroBridgeIdle
-  })
   const stateTone = computed(() => {
     if (currentState.value === 'DETECTING') return 'ok'
     if (currentState.value === 'COLLECTING') return 'active'
@@ -244,9 +239,9 @@ export function useMonitoringDashboard() {
       icon: 'Monitor'
     },
     {
-      label: '故障概率峰值',
-      value: faultPeakText.value,
-      meta: `风险评分 ${riskScore.value}`,
+      label: '风险评分',
+      value: riskScore.value,
+      meta: `故障概率峰值 ${faultPeakText.value}`,
       tone: riskTone.value,
       icon: 'Warning'
     },
@@ -277,67 +272,6 @@ export function useMonitoringDashboard() {
       meta: '基于实时 times 间隔计算',
       tone: estimatedSampleRate.value === monitoringCopy.noValue ? 'offline' : 'ok',
       icon: 'Timer'
-    }
-  ])
-
-  const statusOverviewItems = computed(() => [
-    {
-      label: '连接状态',
-      value: currentState.value === 'IDLE' ? '等待连接' : '已连接',
-      status: currentState.value === 'IDLE' ? 'offline' : 'ok'
-    },
-    {
-      label: '采集状态',
-      value: runStatus.is_collecting ? '采集中' : '未采集',
-      status: runStatus.is_collecting ? 'active' : 'offline'
-    },
-    {
-      label: '检测状态',
-      value: runStatus.is_detecting ? '运行中' : '未运行',
-      status: runStatus.is_detecting ? 'ok' : 'offline'
-    },
-    {
-      label: '输入 Schema',
-      value: inputContractLabel.value,
-      status: contractTone.value
-    },
-    {
-      label: '实时样本数',
-      value: formatCount(realtimeCount.value),
-      status: realtimeCount.value > 0 ? 'ok' : 'offline'
-    },
-    {
-      label: '估算采样率',
-      value: estimatedSampleRate.value,
-      status: estimatedSampleRate.value === monitoringCopy.noValue ? 'offline' : 'ok'
-    }
-  ])
-
-  const pipelineItems = computed(() => [
-    {
-      label: '遥测采集',
-      value: runStatus.is_collecting ? '进行中' : '等待启动',
-      status: runStatus.is_collecting ? 'active' : 'offline'
-    },
-    {
-      label: '在线检测模型',
-      value: activeModelLabel.value,
-      status: selectedModel.value ? 'ok' : 'offline'
-    },
-    {
-      label: '故障事件',
-      value: `${formatCount(runStatus.fault_events_count)} 个`,
-      status: Number(runStatus.fault_events_count || 0) > 0 ? 'warn' : 'ok'
-    },
-    {
-      label: '字段合同',
-      value: inputContractLabel.value,
-      status: contractTone.value
-    },
-    {
-      label: '会话承接',
-      value: sessionBridgeText.value,
-      status: Number(runStatus.fault_events_count || 0) > 0 ? 'active' : 'offline'
     }
   ])
 
@@ -624,7 +558,6 @@ export function useMonitoringDashboard() {
     estimatedSampleRate,
     faultHandoffDialogVisible,
     faultHandoffPayload,
-    faultPeakText,
     inputContractLabel,
     inputContractMeta,
     loadSessions,
@@ -632,7 +565,6 @@ export function useMonitoringDashboard() {
     onlineModels,
     openFaultHandoffDialog,
     openSessionDetail,
-    pipelineItems,
     replayAssets,
     realtimeChartTimes,
     realtimeFaultProb,
@@ -643,20 +575,19 @@ export function useMonitoringDashboard() {
     rflyDiagnosticsLoading,
     rflyPx4mavctrlPath,
     rflyReady,
+    riskScore,
     sampleSummaryItems,
     selectedBackend,
     selectedBackendLabel,
     selectedDuration,
     selectedModel,
     selectedReplayAssetId,
-    sessionBridgeText,
     sessionDetail,
     sessions,
     startBlindTest,
     startCollection,
     startDetection,
     stateLabel,
-    statusOverviewItems,
     confirmFaultHandoff,
     dismissFaultHandoff,
     stopCollection,

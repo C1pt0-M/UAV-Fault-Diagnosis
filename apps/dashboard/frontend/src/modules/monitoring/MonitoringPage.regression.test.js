@@ -27,20 +27,16 @@ const dashboardState = vi.hoisted(() => ({
     session_id: 'TS-262735',
     fault_events_count: 2
   },
-  faultPeakText: '0.83',
+  riskScore: '0.14',
   inputContractLabel: '字段正常',
   inputContractMeta: '动力字段：motor / healthy',
   loadSessions: vi.fn(),
   metrics: [
     { label: '当前状态', value: '检测中', meta: '会话 TS-262735', tone: 'active', icon: 'Monitor' },
-    { label: '故障概率峰值', value: '0.83', meta: '风险评分 0.14', tone: 'danger', icon: 'Warning' }
+    { label: '风险评分', value: '0.14', meta: '故障概率峰值 0.83', tone: 'ok', icon: 'Warning' }
   ],
   onlineModels: [],
   openSessionDetail: vi.fn(),
-  pipelineItems: [
-    { label: '遥测采集', value: '采集中', status: 'active' },
-    { label: '在线检测模型', value: 'KG-MSTCA 在线检测模型', status: 'ok' }
-  ],
   replayAssets: [],
   realtimeChartTimes: [],
   realtimeFaultProb: [],
@@ -59,7 +55,6 @@ const dashboardState = vi.hoisted(() => ({
   selectedDuration: 60,
   selectedModel: 'online_detector_kg_mstca_rfly',
   selectedReplayAssetId: null,
-  sessionBridgeText: '支持承接到离线诊断',
   sessionDetail: null,
   sessions: [
     {
@@ -75,10 +70,6 @@ const dashboardState = vi.hoisted(() => ({
   startCollection: vi.fn(),
   startDetection: vi.fn(),
   stateLabel: '检测中',
-  statusOverviewItems: [
-    { label: '连接状态', value: '已连接', status: 'ok' },
-    { label: '估算采样率', value: '25.0 Hz', status: 'ok' }
-  ],
   stopCollection: vi.fn(),
   stopDetection: vi.fn(),
   testRflyDiagnostics: vi.fn()
@@ -105,7 +96,7 @@ function mountPage() {
         MonitoringControlPanel: { template: '<section>监测控制台</section>' },
         MonitoringMetrics: { template: '<section>故障概率峰值</section>' },
         MonitoringRealtimeChartPanel: { template: '<section>故障概率趋势</section>' },
-        MonitoringInsightsPanel: { template: '<section>实时状态概览 检测链路状态 最近告警事件</section>' },
+        MonitoringInsightsPanel: { template: '<section>最近告警事件 实时样本摘要</section>' },
         MonitoringSessionsPanel: { template: '<section>监测会话记录</section>' },
         MonitoringSessionDialog: { template: '<div />' }
       }
@@ -125,9 +116,8 @@ describe('MonitoringPage telemetry cockpit', () => {
     expect(text).toContain('在线模型')
     expect(text).toContain('字段合同')
     expect(text).toContain('KG-MSTCA 在线检测模型')
-    expect(text).toContain('实时状态概览')
-    expect(text).toContain('检测链路状态')
     expect(text).toContain('最近告警事件')
+    expect(text).toContain('实时样本摘要')
     expect(text).toContain('监测会话记录')
     expect(text).not.toContain('电池电压')
     expect(text).not.toContain('电机温度')

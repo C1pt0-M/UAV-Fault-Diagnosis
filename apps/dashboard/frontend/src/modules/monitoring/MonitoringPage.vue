@@ -39,8 +39,8 @@
       </div>
       <div class="monitoring-statusbar__divider"></div>
       <div class="monitoring-statusbar__item">
-        <span class="monitoring-statusbar__label">故障概率峰值</span>
-        <span class="monitoring-statusbar__value monitoring-statusbar__value--mono">{{ faultPeakText }}</span>
+        <span class="monitoring-statusbar__label">风险评分</span>
+        <span class="monitoring-statusbar__value monitoring-statusbar__value--mono">{{ riskScore }}</span>
       </div>
       <div class="monitoring-statusbar__divider"></div>
       <div class="monitoring-statusbar__item" :title="inputContractMeta">
@@ -83,23 +83,19 @@
           :position-series="realtimePositionSeries"
         />
 
-        <MonitoringSessionsPanel
-          :sessions="sessions"
-          @refresh="loadSessions"
-          @open-detail="openSessionDetail"
-          @continue-diagnosis="continueDiagnosis"
-        />
-      </main>
-
-      <aside class="monitoring-workbench__side">
         <MonitoringInsightsPanel
           :alerts="alerts"
           :sample-summary-items="sampleSummaryItems"
-          :status-overview-items="statusOverviewItems"
-          :pipeline-items="pipelineItems"
         />
-      </aside>
+      </main>
     </div>
+
+    <MonitoringSessionsPanel
+      :sessions="sessions"
+      @refresh="loadSessions"
+      @open-detail="openSessionDetail"
+      @continue-diagnosis="continueDiagnosis"
+    />
 
     <MonitoringSessionDialog
       v-model:visible="detailVisible"
@@ -174,7 +170,6 @@ const {
   currentState,
   detailVisible,
   dismissFaultHandoff,
-  faultPeakText,
   faultHandoffDialogVisible,
   faultHandoffPayload,
   inputContractLabel,
@@ -183,7 +178,6 @@ const {
   metrics,
   onlineModels,
   openSessionDetail,
-  pipelineItems,
   replayAssets,
   realtimeChartTimes,
   realtimeFaultProb,
@@ -193,6 +187,7 @@ const {
   rflyDiagnostics,
   rflyDiagnosticsLoading,
   rflyPx4mavctrlPath,
+  riskScore,
   sampleSummaryItems,
   selectedBackend,
   selectedBackendLabel,
@@ -205,7 +200,6 @@ const {
   startCollection,
   startDetection,
   stateLabel,
-  statusOverviewItems,
   confirmFaultHandoff,
   stopCollection,
   stopDetection,
@@ -322,14 +316,10 @@ const statusDotClass = computed(() => {
 }
 
 .monitoring-workbench {
-  display: grid;
-  grid-template-columns: minmax(0, 8fr) minmax(340px, 4fr);
-  gap: var(--space-lg);
-  align-items: start;
+  min-width: 0;
 }
 
-.monitoring-workbench__main,
-.monitoring-workbench__side {
+.monitoring-workbench__main {
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -410,12 +400,6 @@ const statusDotClass = computed(() => {
 :deep(.fault-handoff-dialog .el-dialog) {
   border: 1px solid var(--line-soft);
   border-radius: var(--radius-md);
-}
-
-@media (max-width: 1480px) {
-  .monitoring-workbench {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 960px) {

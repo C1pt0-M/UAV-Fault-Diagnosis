@@ -55,7 +55,7 @@ describe('Layout shell', () => {
     })
     expect(wrapper.find('img.sidebar-account__logo').exists()).toBe(true)
     expect(wrapper.find('.sidebar-account').exists()).toBe(true)
-    expect(text).toContain('智诊天眸')
+    expect(text).toContain('基于数据驱动的无人机故障智能诊断系统')
     expect(text).toContain('演示账号 · 演示用户')
     expect(text).toContain(resolvePageMeta('/reports').title)
   })

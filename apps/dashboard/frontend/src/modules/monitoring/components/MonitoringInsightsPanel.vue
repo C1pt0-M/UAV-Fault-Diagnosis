@@ -3,54 +3,6 @@
     <section class="section-card">
       <div class="section-card__header">
         <div>
-          <div class="section-card__title">{{ monitoringCopy.statusOverviewTitle }}</div>
-          <div class="section-card__desc">{{ monitoringCopy.statusOverviewDescription }}</div>
-        </div>
-      </div>
-      <div class="section-card__body monitoring-insights__body">
-        <div class="status-overview-list">
-          <div
-            v-for="item in statusOverviewItems"
-            :key="item.label"
-            class="status-overview-row"
-          >
-            <span class="status-overview-row__label">{{ item.label }}</span>
-            <span class="status-badge" :class="`status-badge--${item.status || 'offline'}`">
-              <span class="status-dot" :class="`status-dot--${item.status || 'offline'}`"></span>
-              {{ item.value }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-card">
-      <div class="section-card__header">
-        <div>
-          <div class="section-card__title">{{ monitoringCopy.pipelineTitle }}</div>
-          <div class="section-card__desc">{{ monitoringCopy.pipelineDescription }}</div>
-        </div>
-      </div>
-      <div class="section-card__body monitoring-insights__body">
-        <div class="pipeline-list">
-          <div
-            v-for="item in pipelineItems"
-            :key="item.label"
-            class="pipeline-row"
-          >
-            <span class="pipeline-row__rail" :class="`pipeline-row__rail--${item.status || 'offline'}`"></span>
-            <div>
-              <strong>{{ item.label }}</strong>
-              <small :title="item.value">{{ item.value }}</small>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-card">
-      <div class="section-card__header">
-        <div>
           <div class="section-card__title">{{ monitoringCopy.alertsTitle }}</div>
           <div class="section-card__desc">{{ monitoringCopy.alertsDescription }}</div>
         </div>
@@ -117,9 +69,7 @@ import { monitoringCopy } from '@/modules/monitoring/monitoringView'
 
 defineProps({
   alerts: { type: Array, default: () => [] },
-  sampleSummaryItems: { type: Array, default: () => [] },
-  statusOverviewItems: { type: Array, default: () => [] },
-  pipelineItems: { type: Array, default: () => [] }
+  sampleSummaryItems: { type: Array, default: () => [] }
 })
 
 function resolveAlertTone(item) {
@@ -160,8 +110,6 @@ function severityLabel(item) {
   --el-empty-padding: 10px 0;
 }
 
-.status-overview-list,
-.pipeline-list,
 .sample-list {
   margin: 0;
   display: flex;
@@ -169,7 +117,6 @@ function severityLabel(item) {
   gap: 10px;
 }
 
-.status-overview-row,
 .sample-list__row {
   display: flex;
   align-items: center;
@@ -178,7 +125,6 @@ function severityLabel(item) {
   min-width: 0;
 }
 
-.status-overview-row__label,
 .sample-list__row dt {
   color: var(--text-secondary);
   font-size: 12px;
@@ -191,55 +137,6 @@ function severityLabel(item) {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 800;
-}
-
-.pipeline-row {
-  display: grid;
-  grid-template-columns: 4px minmax(0, 1fr);
-  gap: 10px;
-  min-width: 0;
-}
-
-.pipeline-row__rail {
-  border-radius: 999px;
-  background: var(--status-offline);
-}
-
-.pipeline-row__rail--ok {
-  background: var(--status-ok);
-}
-
-.pipeline-row__rail--active {
-  background: var(--status-active);
-}
-
-.pipeline-row__rail--warn {
-  background: var(--status-warn);
-}
-
-.pipeline-row__rail--danger {
-  background: var(--status-danger);
-}
-
-.pipeline-row__rail--pending {
-  background: var(--status-pending);
-}
-
-.pipeline-row strong {
-  display: block;
-  font-size: 12px;
-  color: var(--text-primary);
-}
-
-.pipeline-row small {
-  display: block;
-  margin-top: 3px;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--text-tertiary);
-  font-size: 11px;
 }
 
 .alert-table {

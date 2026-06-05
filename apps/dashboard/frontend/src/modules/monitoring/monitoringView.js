@@ -24,9 +24,6 @@ export const monitoringCopy = {
   heroStatusLabel: '当前状态',
   heroBackendLabel: '数据源',
   heroModelLabel: '在线模型',
-  heroBridgeLabel: '会话承接',
-  heroBridgeReady: '支持承接到离线诊断',
-  heroBridgeIdle: '等待形成可承接会话',
 
   controlTitle: '监测控制台',
   controlDescription: '在同一处完成数据源选择、在线模型切换与采集 / 检测控制。',
@@ -45,10 +42,6 @@ export const monitoringCopy = {
   rflyDiagnosticsReady: 'RflySim 链路配置可用',
   rflyDiagnosticsEmpty: '请选择 RflySim 后点击检测配置。',
 
-  statusOverviewTitle: '实时状态概览',
-  statusOverviewDescription: '只展示当前接口可追溯的运行状态。',
-  pipelineTitle: '检测链路状态',
-  pipelineDescription: '采集、模型、字段合同与会话承接是否就绪。',
   alertsTitle: '最近告警事件',
   alertsDescription: '来自 telemetry fault events 的实时告警。',
   alertsEmpty: '当前没有故障告警',

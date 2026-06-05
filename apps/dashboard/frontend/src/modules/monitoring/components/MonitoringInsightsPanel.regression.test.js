@@ -8,8 +8,6 @@ describe('MonitoringInsightsPanel alert polish', () => {
     const wrapper = mount(MonitoringInsightsPanel, {
       props: {
         alerts: [],
-        statusOverviewItems: [{ label: '连接状态', value: '已连接', status: 'ok' }],
-        pipelineItems: [{ label: '在线检测模型', value: 'KG-MSTCA', status: 'ok' }],
         sampleSummaryItems: [{ label: '采样点数量', value: 203 }]
       },
       global: {
@@ -38,8 +36,6 @@ describe('MonitoringInsightsPanel alert polish', () => {
             diagnosis: { label: '电机电流异常', severity: 'high' }
           }
         ],
-        statusOverviewItems: [],
-        pipelineItems: [],
         sampleSummaryItems: []
       }
     })

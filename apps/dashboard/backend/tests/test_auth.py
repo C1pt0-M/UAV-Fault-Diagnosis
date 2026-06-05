@@ -13,7 +13,7 @@ from uav_dashboard_api.models.user import User
 @pytest.fixture
 def app():
     class LocalTestingConfig(TestingConfig):
-        ENABLE_PUBLIC_REGISTER = False
+        ENABLE_PUBLIC_REGISTER = True
         ENABLE_SETUP_API = True
         ALLOW_AUTO_BOOTSTRAP_ADMIN = False
 
@@ -31,9 +31,9 @@ def client(app):
 
 
 @pytest.fixture
-def public_register_client():
+def disabled_register_client():
     class LocalTestingConfig(TestingConfig):
-        ENABLE_PUBLIC_REGISTER = True
+        ENABLE_PUBLIC_REGISTER = False
         ENABLE_SETUP_API = True
         ALLOW_AUTO_BOOTSTRAP_ADMIN = False
 
@@ -72,14 +72,27 @@ def _login_token(client) -> str:
 
 
 class TestAuth:
-    def test_public_register_disabled_by_default(self, client):
+    def test_register_success_by_default(self, client):
         response = client.post(
             "/api/auth/register",
             json={
                 "username": "newuser",
                 "password": "password123",
-                "real_name": "New User",
-                "email": "new@example.com",
+            },
+        )
+
+        assert response.status_code == 201
+        data = json.loads(response.data)
+        assert data["success"] is True
+        assert data["data"]["username"] == "newuser"
+        assert data["data"]["role"] == "user"
+
+    def test_register_can_be_disabled_by_config(self, disabled_register_client):
+        response = disabled_register_client.post(
+            "/api/auth/register",
+            json={
+                "username": "newuser",
+                "password": "password123",
             },
         )
 
@@ -88,31 +101,15 @@ class TestAuth:
         assert data["success"] is False
         assert data["message"] == "public_registration_disabled"
 
-    def test_register_success_when_enabled(self, public_register_client):
-        response = public_register_client.post(
-            "/api/auth/register",
-            json={
-                "username": "newuser",
-                "password": "password123",
-                "real_name": "New User",
-                "email": "new@example.com",
-            },
-        )
-
-        assert response.status_code == 201
-        data = json.loads(response.data)
-        assert data["success"] is True
-        assert data["data"]["username"] == "newuser"
-
-    def test_register_missing_fields_when_enabled(self, public_register_client):
-        response = public_register_client.post("/api/auth/register", json={"username": "newuser"})
+    def test_register_missing_fields(self, client):
+        response = client.post("/api/auth/register", json={"username": "newuser"})
 
         assert response.status_code == 400
         data = json.loads(response.data)
         assert data["success"] is False
 
-    def test_register_duplicate_username_when_enabled(self, public_register_client):
-        public_register_client.post(
+    def test_register_duplicate_username(self, client):
+        client.post(
             "/api/auth/register",
             json={
                 "username": "testuser",
@@ -122,7 +119,7 @@ class TestAuth:
             },
         )
 
-        response = public_register_client.post(
+        response = client.post(
             "/api/auth/register",
             json={
                 "username": "testuser",

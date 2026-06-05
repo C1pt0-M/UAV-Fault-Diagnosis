@@ -13,7 +13,7 @@ def main() -> None:
     debug = os.getenv("FLASK_DEBUG", "True") == "True"
 
     print("=" * 50)
-    print("无人机故障诊断系统 - Dashboard Backend")
+    print("基于数据驱动的无人机故障智能诊断系统 - Dashboard Backend")
     print("=" * 50)
     print(f"启动时间: {time.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"服务地址: http://{host}:{port}")

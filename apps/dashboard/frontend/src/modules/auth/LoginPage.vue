@@ -7,9 +7,9 @@
     <div class="login-card-container">
       <section class="login-card">
         <div class="login-header">
-          <span class="login-header__eyebrow">Research Platform</span>
-          <h1>智诊天眸</h1>
-          <p>无人机故障诊断研究平台</p>
+          <span class="login-header__eyebrow">{{ APP_EYEBROW }}</span>
+          <h1>{{ APP_NAME }}</h1>
+          <p>无人机飞行日志、在线监测与故障诊断一体化平台</p>
         </div>
 
         <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
@@ -27,14 +27,26 @@
             />
           </el-form-item>
 
+          <el-form-item v-if="isRegisterMode" label="确认密码" prop="confirmPassword">
+            <el-input
+              v-model="form.confirmPassword"
+              type="password"
+              show-password
+              placeholder="请再次输入密码"
+              @keyup.enter="submit"
+            />
+          </el-form-item>
+
           <el-button type="primary" class="login-button" :loading="submitting" @click="submit">
-            登录系统
+            {{ submitText }}
           </el-button>
         </el-form>
 
         <div class="login-footer">
-          <span>首次使用？</span>
-          <el-button link type="primary" @click="router.push('/setup')">进入系统初始化</el-button>
+          <span>{{ footerText }}</span>
+          <el-button link type="primary" @click="switchMode(nextMode)">
+            {{ footerActionText }}
+          </el-button>
         </div>
       </section>
     </div>
@@ -42,32 +54,75 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import { ElForm, ElFormItem } from 'element-plus/es/components/form/index.mjs'
 import ElInput from 'element-plus/es/components/input/index.mjs'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { authApi } from '@/shared/services'
+import { APP_EYEBROW, APP_NAME } from '@/shared/constants/brand'
 import { storeSession } from '@/shared/utils/user'
 import loginBgImage from '@/assets/login-bg-industrial.png'
 
 const router = useRouter()
+const route = useRoute()
 const formRef = ref(null)
 const submitting = ref(false)
+const mode = ref(route.path === '/register' ? 'register' : 'login')
 
 const form = reactive({
   username: '',
-  password: ''
+  password: '',
+  confirmPassword: ''
 })
 
-const rules = {
+const isRegisterMode = computed(() => mode.value === 'register')
+const submitText = computed(() => (isRegisterMode.value ? '注册账号' : '登录系统'))
+const footerText = computed(() => (isRegisterMode.value ? '已有账号？' : '还没有账号？'))
+const footerActionText = computed(() => (isRegisterMode.value ? '返回登录' : '立即注册'))
+const nextMode = computed(() => (isRegisterMode.value ? 'login' : 'register'))
+
+function validateConfirmPassword(_rule, value, callback) {
+  if (!value) {
+    callback(new Error('请再次输入密码'))
+    return
+  }
+  if (value !== form.password) {
+    callback(new Error('两次输入的密码不一致'))
+    return
+  }
+  callback()
+}
+
+const rules = computed(() => ({
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     { min: 6, max: 20, message: '密码长度需为 6-20 位', trigger: 'blur' }
-  ]
+  ],
+  ...(isRegisterMode.value
+    ? { confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }] }
+    : {})
+}))
+
+function switchMode(targetMode) {
+  mode.value = targetMode
+  form.password = ''
+  form.confirmPassword = ''
+  router.push(targetMode === 'register' ? '/register' : '/login')
 }
+
+watch(
+  () => route.path,
+  (path) => {
+    if (path === '/register') {
+      mode.value = 'register'
+    } else if (path === '/login') {
+      mode.value = 'login'
+    }
+  }
+)
 
 async function submit() {
   if (!formRef.value) return
@@ -77,6 +132,16 @@ async function submit() {
 
     submitting.value = true
     try {
+      if (isRegisterMode.value) {
+        await authApi.register({
+          username: form.username,
+          password: form.password
+        })
+        ElMessage.success('注册成功，请登录')
+        switchMode('login')
+        return
+      }
+
       const response = await authApi.login({
         username: form.username,
         password: form.password
@@ -86,7 +151,7 @@ async function submit() {
       ElMessage.success('登录成功')
       router.push('/')
     } catch (error) {
-      ElMessage.error(error.message || '登录失败，请检查账号和密码')
+      ElMessage.error(error.message || (isRegisterMode.value ? '注册失败，请稍后重试' : '登录失败，请检查账号和密码'))
     } finally {
       submitting.value = false
     }
@@ -126,14 +191,14 @@ async function submit() {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 410px;
+  max-width: 690px;
   display: flex;
   justify-content: center;
 }
 
 .login-card {
   width: 100%;
-  padding: 36px 32px 32px;
+  padding: 38px 44px 34px;
   border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: 18px;
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.28), rgba(241, 247, 255, 0.14));
@@ -162,10 +227,11 @@ async function submit() {
 .login-header h1 {
   margin: 0 0 8px;
   color: #f8fbff;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.28;
   letter-spacing: 0;
+  white-space: nowrap;
   text-shadow: 0 1px 18px rgba(15, 23, 42, 0.24);
 }
 
@@ -239,11 +305,16 @@ async function submit() {
 
 @media (max-width: 900px) {
   .login-card-container {
-    max-width: 390px;
+    max-width: 430px;
   }
 
   .login-card {
     padding: 32px 24px 28px;
+  }
+
+  .login-header h1 {
+    font-size: 24px;
+    white-space: normal;
   }
 }
 </style>
