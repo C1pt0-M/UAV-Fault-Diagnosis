@@ -28,7 +28,10 @@ SCENE_LABELS = {
 }
 
 SCENE_DEFAULT_QUESTIONS = {
-    "report_analysis": "请先给出直接结论，再解释主要原因，最后说明风险与处理建议。",
+    "report_analysis": (
+        "请围绕当前报告解释：结论、证据、风险、建议动作、不确定性与限制、是否需要人工确认。"
+        "只能依据报告字段作答，不要重新生成独立诊断。"
+    ),
 }
 
 FALLBACK_LABEL_TEXT_MAP = {
@@ -74,18 +77,23 @@ FALLBACK_METRIC_TEXT_MAP = {
     "unalloc_thrust_z_p95": "未分配推力异常",
 }
 
-SYSTEM_PROMPT = """你是无人机故障诊断系统中的 AI 专家助手。
+SYSTEM_PROMPT = """你是无人机故障诊断系统中的 AI 专家助手，在报告分析场景中充当“报告解释器”。
 回答要求：
 1. 优先依据给定的系统上下文、诊断报告、任务记录和补充背景资料回答，但要把这些信息自然融入判断，不要逐条复述。
 2. 不要编造项目内不存在的事实；无法确认时直接说明“无法从当前资料确认”。
 3. 输出使用中文，技术术语保留英文。
-4. 默认使用三段式自然回答：
-第一段以“直接结论：”开头，先给最终判断；
-第二段以“原因解释：”开头，解释主要依据和原因；
-第三段以“风险与建议：”开头，说明风险等级、下一步动作或处理建议。
-5. 除非用户明确要求，否则不要使用 Markdown 标题或粗体，也不要复述内部字段名或项目内部标签。
-6. 不要在正文中直接写“参考资料”“知识片段 1/2”等内部标签；如需说明依据，用自然语言概括即可。
-7. 如果上下文里有概率、严重度、推荐动作，可以自然引用并解释，但不要把原始 JSON 或整段检索文本原样搬进回答。"""
+4. 报告分析场景默认使用六段式自然回答：
+第一段以“结论：”开头，概括报告诊断结论；
+第二段以“证据：”开头，说明模型判断、规则证据和关键指标；
+第三段以“风险：”开头，说明严重度、报告可信度与数据质量对风险的影响；
+第四段以“建议动作：”开头，说明报告中的处置建议；
+第五段以“不确定性与限制：”开头，说明模型限制、数据缺口或不足以支持强结论的情况；
+第六段以“需要人工确认：”开头，说明复核状态与建议的人工确认事项。
+5. 非报告分析场景可继续使用“直接结论 / 原因解释 / 风险与建议”三段式。
+6. 除非用户明确要求，否则不要使用 Markdown 标题或粗体，也不要复述内部字段名或项目内部标签。
+7. 不要在正文中直接写“参考资料”“知识片段 1/2”等内部标签；如需说明依据，用自然语言概括即可。
+8. 如果上下文里有概率、严重度、数据质量、追溯信息、推荐动作，可以自然引用并解释，但不要把原始 JSON 或整段检索文本原样搬进回答。
+9. 当数据质量较差或关键字段缺失时，要明确提示“不足以支持强结论”，不要编造传感器、工况、模型指标或维修结果。"""
 
 
 def _fallback_label_text(label: str | None) -> str:
@@ -217,6 +225,13 @@ class AIAssistantService:
         )
         severity = summary.get("severity") if isinstance(summary, dict) else None
         recommendations = summary.get("recommendations") if isinstance(summary, dict) else None
+        data_quality = summary.get("data_quality") if isinstance(summary, dict) else None
+        traceability = summary.get("traceability") if isinstance(summary, dict) else None
+        model_card = summary.get("model_card") if isinstance(summary, dict) else None
+        report_confidence = (
+            summary.get("report_confidence") if isinstance(summary, dict) else None
+        )
+        review = summary.get("review") if isinstance(summary, dict) else None
 
         blocks = [
             "【诊断报告】",
@@ -244,6 +259,50 @@ class AIAssistantService:
                 ]
                 if metrics:
                     blocks.append(f"关键证据: {', '.join(metrics)}")
+
+        if isinstance(data_quality, dict):
+            blocks.append(
+                "数据质量: "
+                f"level={data_quality.get('level') or 'unknown'}"
+                f" / sample_count={data_quality.get('sample_count') if data_quality.get('sample_count') is not None else '-'}"
+                f" / feature_count={data_quality.get('feature_count') if data_quality.get('feature_count') is not None else '-'}"
+            )
+            warnings = data_quality.get("warnings")
+            if isinstance(warnings, list) and warnings:
+                blocks.append(f"数据质量提示: {'；'.join(str(item) for item in warnings[:2])}")
+
+        if isinstance(report_confidence, dict):
+            blocks.append(
+                "报告可信度: "
+                f"level={report_confidence.get('level') or 'unknown'}"
+                f" / score={report_confidence.get('score') if report_confidence.get('score') is not None else '-'}"
+            )
+            reasons = report_confidence.get("reasons")
+            if isinstance(reasons, list) and reasons:
+                blocks.append(f"可信度说明: {'；'.join(str(item) for item in reasons[:2])}")
+
+        if isinstance(traceability, dict):
+            blocks.append(
+                "追溯信息: "
+                f"run_id={traceability.get('run_id') or '-'}"
+                f" / input_csv={traceability.get('input_csv') or '-'}"
+                f" / rules_version={traceability.get('rules_version') or '-'}"
+            )
+
+        if isinstance(model_card, dict):
+            class_set = model_card.get("class_set")
+            if isinstance(class_set, list) and class_set:
+                blocks.append(f"模型类别集: {', '.join(str(item) for item in class_set)}")
+            limitations = model_card.get("limitations")
+            if isinstance(limitations, list) and limitations:
+                blocks.append(f"模型限制: {'；'.join(str(item) for item in limitations[:2])}")
+
+        review_info = review if isinstance(review, dict) else {}
+        blocks.append(
+            "人工复核: "
+            f"status={review_info.get('status') or 'pending'}"
+            f" / conclusion={review_info.get('conclusion') or '待补充'}"
+        )
 
         if isinstance(recommendations, list) and recommendations:
             recommendation_titles = [
@@ -409,6 +468,9 @@ class AIAssistantService:
                     terms.append(str(item.get('reason') or '').strip())
 
         recommendations = summary.get('recommendations') if isinstance(summary, dict) else None
+        data_quality = summary.get('data_quality') if isinstance(summary, dict) else None
+        report_confidence = summary.get('report_confidence') if isinstance(summary, dict) else None
+        review = summary.get('review') if isinstance(summary, dict) else None
         if isinstance(recommendations, list):
             for item in recommendations[:4]:
                 if not isinstance(item, dict):
@@ -433,6 +495,18 @@ class AIAssistantService:
                     if not isinstance(item, dict):
                         continue
                     terms.append(str(item.get('metric') or '').strip())
+
+        if isinstance(data_quality, dict):
+            terms.append(str(data_quality.get('level') or '').strip())
+            for warning in data_quality.get('warnings') or []:
+                terms.append(str(warning or '').strip())
+        if isinstance(report_confidence, dict):
+            terms.append(str(report_confidence.get('level') or '').strip())
+            for reason in report_confidence.get('reasons') or []:
+                terms.append(str(reason or '').strip())
+        if isinstance(review, dict):
+            terms.append(str(review.get('status') or '').strip())
+            terms.append(str(review.get('conclusion') or '').strip())
 
         seen = set()
         deduped = []
@@ -644,9 +718,11 @@ class AIAssistantService:
     ) -> str:
         if scene_context.scene == "report_analysis":
             return (
-                "当前场景为报告分析。\n"
+                "当前场景为报告分析，你是报告解释器，不要重新生成独立诊断。\n"
+                "请围绕报告字段解释，并按“结论 / 证据 / 风险 / 建议动作 / 不确定性与限制 / 需要人工确认”组织回答。\n"
                 "如果用户继续追问“如何修复、如何排查、下一步怎么做”这类问题，"
                 "请优先给出可执行的检查与修复建议，并尽量按步骤组织答案。\n"
+                "当数据质量较差或关键字段缺失时，要明确提示不足以支持强结论。\n"
                 "当现有报告无法唯一确定故障根因时，也应先给出基于当前证据的分步骤排查路径，"
                 "再说明哪些步骤需要人工复核，而不是直接拒绝回答。"
             )
@@ -749,6 +825,20 @@ class AIAssistantService:
                 summary.get("recommendations") if isinstance(summary, dict) else []
             )
             decision = summary.get("decision") if isinstance(summary, dict) else None
+            data_quality = summary.get("data_quality") if isinstance(summary, dict) else {}
+            if not isinstance(data_quality, dict):
+                data_quality = {}
+            report_confidence = (
+                summary.get("report_confidence") if isinstance(summary, dict) else {}
+            )
+            if not isinstance(report_confidence, dict):
+                report_confidence = {}
+            review = summary.get("review") if isinstance(summary, dict) else {}
+            if not isinstance(review, dict):
+                review = {}
+            model_card = summary.get("model_card") if isinstance(summary, dict) else {}
+            if not isinstance(model_card, dict):
+                model_card = {}
             label_text = _fallback_label_text(scene_context.report.prediction_label)
             severity_text = _fallback_severity_text(severity.get("level"))
             confidence_text = _fallback_percent(scene_context.report.confidence)
@@ -759,6 +849,18 @@ class AIAssistantService:
                 if isinstance(decision, dict)
                 else ""
             )
+            quality_level = str(data_quality.get("level") or "unknown").strip() or "unknown"
+            quality_warnings = data_quality.get("warnings")
+            if not isinstance(quality_warnings, list):
+                quality_warnings = []
+            confidence_level = str(report_confidence.get("level") or "unknown").strip() or "unknown"
+            confidence_reasons = report_confidence.get("reasons")
+            if not isinstance(confidence_reasons, list):
+                confidence_reasons = []
+            review_status = str(review.get("status") or "pending").strip() or "pending"
+            limitations = model_card.get("limitations")
+            if not isinstance(limitations, list):
+                limitations = []
 
             conclusion = (
                 f"当前报告判断为 {label_text}，主分类置信度约为 {confidence_text}，"
@@ -782,6 +884,45 @@ class AIAssistantService:
             else:
                 advice = (
                     "建议优先复核与该故障类别相关的关键部件，并结合原始遥测、维护记录和飞行工况确认根因。"
+                )
+
+            if scene_context.scene == "report_analysis":
+                risk_text = (
+                    f"综合风险等级为 {severity_text}，报告可信度为 {confidence_level}。"
+                )
+                if quality_level in {"poor", "warning"}:
+                    risk_text += f" 当前数据质量为 {quality_level}，结论支撑度有限。"
+                uncertainty_parts = []
+                if quality_level == "poor":
+                    uncertainty_parts.append("输入数据质量较差，不足以支持强结论。")
+                elif quality_level == "warning":
+                    uncertainty_parts.append("输入数据质量信息不完整，建议结合原始日志复核。")
+                if confidence_level == "low":
+                    uncertainty_parts.append("报告可信度偏低，不宜单独作为最终处置依据。")
+                if limitations:
+                    uncertainty_parts.append("；".join(str(item) for item in limitations[:2]))
+                if confidence_reasons:
+                    uncertainty_parts.append("；".join(str(item) for item in confidence_reasons[:2]))
+                if not uncertainty_parts:
+                    uncertainty_parts.append("当前报告字段较完整，但仍需结合现场检查确认。")
+
+                review_text = (
+                    f"当前复核状态为 {review_status}。"
+                    if review_status != "pending"
+                    else "当前复核状态为待复核，建议维护人员结合原始日志、现场检查和维修记录完成确认。"
+                )
+                if quality_warnings:
+                    review_text += f" 数据质量提示：{'；'.join(str(item) for item in quality_warnings[:2])}。"
+
+                return "\n\n".join(
+                    [
+                        f"结论：{conclusion}",
+                        f"证据：{reason}",
+                        f"风险：{risk_text}",
+                        f"建议动作：{advice}",
+                        f"不确定性与限制：{' '.join(uncertainty_parts)}",
+                        f"需要人工确认：{review_text}",
+                    ]
                 )
         elif scene_context.run is not None:
             conclusion = (

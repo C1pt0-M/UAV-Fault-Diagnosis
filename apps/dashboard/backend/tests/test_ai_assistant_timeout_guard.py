@@ -48,4 +48,5 @@ def test_call_model_falls_back_when_chat_exceeds_hard_timeout(
         assert fallback_used is True
         assert provider_name == "offline_fallback"
         assert model_name == "context_only"
-        assert "直接结论：" in answer
+        assert "结论：" in answer
+        assert "需要人工确认：" in answer

@@ -47,6 +47,8 @@ def test_report_analysis_prompt_supports_actionable_follow_up(app, seeded_record
         merged = "\n".join(system_messages)
         assert "分步骤排查" in merged
         assert "优先给出可执行的检查与修复建议" in merged
+        assert "报告解释器" in merged
+        assert "不足以支持强结论" in merged
 
         AIConversation.query.filter_by(id=conversation.id).delete()
 

@@ -10,34 +10,17 @@ from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
-DEFAULT_FONT_CANDIDATES = [
-    '/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf',
-    '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
-    '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.otf',
-    '/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc',
-]
+BACKEND_ROOT = Path(__file__).resolve().parents[2]
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
+
+from uav_dashboard_api.utils.pdf_fonts import resolve_pdf_font_name
 
 
 def resolve_font_name(font_candidates: list[str] | None) -> str:
-    candidates = list(font_candidates or []) + DEFAULT_FONT_CANDIDATES
-    seen = set()
-    for raw in candidates:
-        if not raw or raw in seen:
-            continue
-        seen.add(raw)
-        path = Path(raw)
-        if not path.exists():
-            continue
-        try:
-            pdfmetrics.registerFont(TTFont('UAVReportFont', str(path)))
-            return 'UAVReportFont'
-        except Exception:
-            continue
-    return 'Helvetica'
+    return resolve_pdf_font_name(font_candidates)
 
 
 def build_styles(font_name: str):
@@ -133,13 +116,15 @@ def build_story(lines: list[str], styles: dict):
         if index == 1:
             story.append(paragraph(line, styles['subtitle']))
             continue
-        if line.startswith(('一、', '二、', '三、', '四、', '五、')):
+        if line.startswith(
+            ('一、', '二、', '三、', '四、', '五、', '六、', '七、', '八、')
+        ):
             story.append(paragraph(line, styles['heading']))
             continue
         if line.startswith(('生成时间：', '任务 ID：', '资产文件：', '诊断模型：')):
             story.append(paragraph(line, styles['meta']))
             continue
-        if line.startswith(('风险等级：', '模型置信度：')):
+        if line.startswith(('风险等级：', '模型置信度：', '报告可信度：', '数据质量等级：')):
             story.append(paragraph(line, styles['emphasis']))
             continue
         if line.startswith('- ') or line.startswith('  '):

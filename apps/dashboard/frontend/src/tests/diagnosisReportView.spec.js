@@ -106,4 +106,97 @@ describe('buildDiagnosisReportView', () => {
     expect(view.actionItems[0].title).toContain('例行检查')
     expect(view.whyItems[0].title).toContain('模型判断')
   })
+
+  it('展示新增的数据质量、追溯、可信度与复核字段', () => {
+    const view = buildDiagnosisReportView({
+      id: 21,
+      prediction_label: 'sensor',
+      confidence: 0.88,
+      model_name: 'cnn_lstm',
+      summary: {
+        severity: { level: 'medium', evidence: [] },
+        data_quality: {
+          level: 'warning',
+          sample_count: 0,
+          window_count: 0,
+          feature_count: 0,
+          missing_value_ratio: null,
+          invalid_value_ratio: null,
+          warnings: ['未记录样本数量，无法完整评估输入覆盖度。']
+        },
+        traceability: {
+          run_id: 9,
+          asset_id: 4,
+          asset_filename: 'sensor_case.csv',
+          input_csv: '/tmp/sensor_case.csv',
+          model_name: 'cnn_lstm',
+          rules_version: 'rule_v1'
+        },
+        model_card: {
+          task: 'offline_multiclass',
+          class_set: ['normal', 'motor', 'sensor'],
+          intended_use: 'RflySim/RflyMAD 离线日志故障诊断辅助分析',
+          limitations: []
+        },
+        report_confidence: {
+          level: 'medium',
+          score: 0.72,
+          reasons: ['输入数据质量信息不完整，建议结合原始日志复核。']
+        },
+        review: {
+          status: 'pending',
+          reviewer: '',
+          reviewed_at: '',
+          conclusion: '',
+          maintenance_notes: ''
+        }
+      }
+    })
+
+    expect(view.dataQuality.levelText).toBe('需关注')
+    expect(view.traceability.inputCsv).toBe('/tmp/sensor_case.csv')
+    expect(view.reportConfidence.levelText).toBe('中')
+    expect(view.review.statusText).toBe('待复核')
+  })
+
+  it('旧报告缺少新增字段时仍能稳定展示默认值', () => {
+    const view = buildDiagnosisReportView({
+      id: 8,
+      prediction_label: 'motor',
+      confidence: 0.7,
+      summary: {
+        severity: { level: 'light', evidence: [] },
+        recommendations: []
+      }
+    })
+
+    expect(view.dataQuality.levelText).toBe('未知')
+    expect(view.traceability.rulesVersion).toBe('rule_v1')
+    expect(view.reportConfidence.levelText).toBe('未知')
+    expect(view.review.statusText).toBe('待复核')
+    expect(view.evidenceChain).toEqual([])
+  })
+
+  it('序列化后的 summary 不出现 Unicode 转义', () => {
+    const summary = buildDiagnosisReportView({
+      prediction_label: 'sensor',
+      confidence: 0.88,
+      summary: {
+        severity: { level: 'medium', evidence: [] },
+        data_quality: {
+          level: 'warning',
+          warnings: ['未记录样本数量，无法完整评估输入覆盖度。']
+        },
+        review: { status: 'pending' }
+      }
+    })
+
+    const serialized = JSON.stringify({
+      dataQuality: summary.dataQuality,
+      review: summary.review
+    })
+
+    expect(serialized).toContain('未记录样本数量')
+    expect(serialized).not.toMatch(/\\u[0-9a-f]{4}/i)
+  })
 })

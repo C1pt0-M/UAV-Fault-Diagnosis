@@ -56,11 +56,38 @@ const PRIORITY_META = {
   P3: '持续观察'
 }
 
+const DATA_QUALITY_META = {
+  good: { text: '良好', tone: 'ok' },
+  warning: { text: '需关注', tone: 'warn' },
+  poor: { text: '较差', tone: 'danger' },
+  unknown: { text: '未知', tone: 'muted' }
+}
+
+const REPORT_CONFIDENCE_META = {
+  high: { text: '高', tone: 'ok' },
+  medium: { text: '中', tone: 'warn' },
+  low: { text: '低', tone: 'danger' },
+  unknown: { text: '未知', tone: 'muted' }
+}
+
+const REVIEW_STATUS_META = {
+  pending: { text: '待复核', tone: 'warn' },
+  confirmed: { text: '已确认', tone: 'ok' },
+  false_alarm: { text: '误报', tone: 'muted' },
+  ignored: { text: '已忽略', tone: 'muted' }
+}
+
 const METRIC_LABELS = {
   motor_imbalance_ratio: '电机输出均衡性',
   esc_rpm_imbalance_ratio: 'ESC 转速一致性',
   battery_remaining_min: '最低剩余电量',
   prediction_confidence: '模型判断置信度'
+}
+
+const STATUS_LABELS = {
+  used: '已采用',
+  missing: '缺失',
+  unknown: '未知'
 }
 
 export const faultLabelOptions = [
@@ -90,6 +117,16 @@ function formatPercent(value, digits = 0) {
   const numeric = toNumber(value)
   if (numeric === null) return '-'
   return `${(numeric * 100).toFixed(digits)}%`
+}
+
+function formatMetricValue(value) {
+  const numeric = toNumber(value)
+  if (numeric === null) {
+    return value === 0 ? '0' : '-'
+  }
+  if (Math.abs(numeric) >= 100) return numeric.toFixed(1)
+  if (Math.abs(numeric) >= 1) return numeric.toFixed(3)
+  return numeric.toFixed(4)
 }
 
 function normalizeRecommendations(report, abnormal) {
@@ -128,17 +165,23 @@ function normalizeRecommendations(report, abnormal) {
   }]
 }
 
-function buildWhyItems(report, confidenceText) {
+function buildEvidenceChain(report) {
   const evidence = Array.isArray(report?.summary?.severity?.evidence) ? report.summary.severity.evidence : []
-  const whyItems = []
+  return evidence.slice(0, 5).map((item) => ({
+    metric: item.metric,
+    metricText: METRIC_LABELS[item.metric] || String(item.metric || '关键指标'),
+    value: formatMetricValue(item.value),
+    status: item.status,
+    statusText: STATUS_LABELS[String(item.status || '').trim()] || String(item.status || '未知'),
+    score: item.score != null ? formatMetricValue(item.score) : '-'
+  }))
+}
 
-  evidence.slice(0, 3).forEach((item) => {
-    const metricLabel = METRIC_LABELS[item.metric] || String(item.metric || '关键指标')
-    whyItems.push({
-      title: metricLabel,
-      description: `${metricLabel} 出现异常，当前观测值为 ${item.value}。`
-    })
-  })
+function buildWhyItems(report, confidenceText, evidenceChain) {
+  const whyItems = evidenceChain.slice(0, 3).map((item) => ({
+    title: item.metricText,
+    description: `${item.metricText} 出现异常，当前观测值为 ${item.value}，规则贡献分 ${item.score}。`
+  }))
 
   if (whyItems.length === 0) {
     whyItems.push({
@@ -169,12 +212,130 @@ function buildProbabilityRows(report) {
   }))
 }
 
+function buildDataQualityView(report) {
+  const raw = report?.summary?.data_quality
+  const dataQuality = raw && typeof raw === 'object' ? raw : {}
+  const level = String(dataQuality.level || 'unknown').trim() || 'unknown'
+  const meta = DATA_QUALITY_META[level] || DATA_QUALITY_META.unknown
+
+  const metrics = [
+    { label: '样本数量', value: dataQuality.sample_count ? String(dataQuality.sample_count) : '待补充' },
+    { label: '窗口数量', value: dataQuality.window_count ? String(dataQuality.window_count) : '待补充' },
+    { label: '特征数量', value: dataQuality.feature_count ? String(dataQuality.feature_count) : '待补充' },
+    {
+      label: '缺失值占比',
+      value: dataQuality.missing_value_ratio != null ? formatPercent(dataQuality.missing_value_ratio, 1) : '待补充'
+    },
+    {
+      label: '异常值占比',
+      value: dataQuality.invalid_value_ratio != null ? formatPercent(dataQuality.invalid_value_ratio, 1) : '待补充'
+    }
+  ]
+
+  const timeRange = dataQuality.time_range && typeof dataQuality.time_range === 'object'
+    ? dataQuality.time_range
+    : {}
+  if (timeRange.start || timeRange.end) {
+    metrics.push({
+      label: '时间范围',
+      value: `${timeRange.start || '待补充'} ~ ${timeRange.end || '待补充'}`
+    })
+  }
+
+  const warnings = Array.isArray(dataQuality.missing_columns) && dataQuality.missing_columns.length
+    ? [`存在缺失列：${dataQuality.missing_columns.slice(0, 5).join('、')}`]
+    : []
+  if (Array.isArray(dataQuality.warnings)) {
+    warnings.push(...dataQuality.warnings)
+  }
+  if (!warnings.length) {
+    warnings.push('无额外数据质量告警。')
+  }
+
+  return {
+    level,
+    levelText: meta.text,
+    tone: meta.tone,
+    metrics,
+    warnings
+  }
+}
+
+function buildTraceabilityView(report) {
+  const raw = report?.summary?.traceability
+  const traceability = raw && typeof raw === 'object' ? raw : {}
+  const modelCard = report?.summary?.model_card && typeof report.summary.model_card === 'object'
+    ? report.summary.model_card
+    : {}
+
+  const classSet = Array.isArray(modelCard.class_set) && modelCard.class_set.length
+    ? modelCard.class_set
+    : ['normal', 'motor', 'sensor']
+
+  return {
+    runId: traceability.run_id ?? report?.run_id ?? '-',
+    assetId: traceability.asset_id ?? report?.asset_id ?? '-',
+    assetFilename: traceability.asset_filename || report?.summary?.basic?.asset_filename || '-',
+    inputCsv: traceability.input_csv || '待补充',
+    modelName: traceability.model_name || report?.model_name || '-',
+    modelVersion: traceability.model_version || '待补充',
+    modelHash: traceability.model_hash || '待补充',
+    rulesVersion: traceability.rules_version || 'rule_v1',
+    generatedAt: traceability.generated_at || report?.created_at || '-',
+    task: modelCard.task || 'offline_multiclass',
+    classSet,
+    classSetText: classSet.join(' / '),
+    intendedUse: modelCard.intended_use || 'RflySim/RflyMAD 离线日志故障诊断辅助分析',
+    limitations: Array.isArray(modelCard.limitations) ? modelCard.limitations : []
+  }
+}
+
+function buildReportConfidenceView(report) {
+  const raw = report?.summary?.report_confidence
+  const reportConfidence = raw && typeof raw === 'object' ? raw : {}
+  const level = String(reportConfidence.level || 'unknown').trim() || 'unknown'
+  const meta = REPORT_CONFIDENCE_META[level] || REPORT_CONFIDENCE_META.unknown
+  const reasons = Array.isArray(reportConfidence.reasons) && reportConfidence.reasons.length
+    ? reportConfidence.reasons
+    : ['报告可信度信息待补充，建议结合原始数据人工复核。']
+
+  return {
+    level,
+    levelText: meta.text,
+    tone: meta.tone,
+    score: reportConfidence.score != null ? formatMetricValue(reportConfidence.score) : '-',
+    reasons
+  }
+}
+
+function buildReviewView(report) {
+  const raw = report?.summary?.review
+  const review = raw && typeof raw === 'object' ? raw : {}
+  const status = String(review.status || 'pending').trim() || 'pending'
+  const meta = REVIEW_STATUS_META[status] || REVIEW_STATUS_META.pending
+
+  return {
+    status,
+    statusText: meta.text,
+    tone: meta.tone,
+    reviewer: review.reviewer || '待补充',
+    reviewedAt: review.reviewed_at || '待补充',
+    conclusion: review.conclusion || '待补充',
+    maintenanceNotes: review.maintenance_notes || '待补充'
+  }
+}
+
 export function buildDiagnosisReportView(report = {}) {
   const labelMeta = getLabelMeta(report.prediction_label)
   const severityMeta = getSeverityMeta(report?.summary?.severity?.level)
   const confidenceText = formatPercent(report.confidence, 0)
   const actionItems = normalizeRecommendations(report, labelMeta.abnormal)
   const probabilityRows = buildProbabilityRows(report)
+  const dataQuality = buildDataQualityView(report)
+  const traceability = buildTraceabilityView(report)
+  const reportConfidence = buildReportConfidenceView(report)
+  const review = buildReviewView(report)
+  const evidenceChain = buildEvidenceChain(report)
 
   const headline = labelMeta.abnormal
     ? `本次离线诊断识别为${labelMeta.text}，当前属于${severityMeta.badge}。`
@@ -189,8 +350,16 @@ export function buildDiagnosisReportView(report = {}) {
     headline,
     riskText,
     actionSummary: actionItems.map((item) => item.title).join('；'),
-    whyItems: buildWhyItems(report, confidenceText),
+    whyItems: buildWhyItems(report, confidenceText, evidenceChain),
     actionItems,
-    probabilityRows
+    probabilityRows,
+    dataQuality,
+    traceability,
+    reportConfidence,
+    review,
+    evidenceChain,
+    severityBadge: severityMeta.badge,
+    severityText: severityMeta.text,
+    confidenceText
   }
 }

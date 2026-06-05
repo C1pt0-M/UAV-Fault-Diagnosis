@@ -14,6 +14,10 @@ describe('reports workspace copy regression', () => {
     expect(reportsCopy.description).toContain('诊断结论')
     expect(reportsCopy.description).toContain('处置建议')
     expect(reportsCopy.emptyText).toBe('暂无诊断报告')
+    expect(reportsCopy.dataQualitySection).toBe('数据质量')
+    expect(reportsCopy.traceabilitySection).toBe('模型与规则追溯')
+    expect(reportsCopy.reportConfidenceSection).toBe('报告可信度')
+    expect(reportsCopy.reviewSection).toBe('人工复核')
   })
 
   it('maps report model and diagnosis labels into display text', () => {

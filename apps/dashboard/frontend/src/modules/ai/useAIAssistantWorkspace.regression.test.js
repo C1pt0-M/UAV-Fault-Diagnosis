@@ -140,4 +140,15 @@ describe('useAIAssistantWorkspace regression', () => {
 
     expect(apiMocks.analyzeReport).toHaveBeenCalledTimes(1)
   })
+
+  it('keeps report analysis scene when routed from report center', async () => {
+    routeState.query.scene = 'report_analysis'
+    routeState.query.report_id = '42'
+
+    const wrapper = mount(Harness)
+    await flushPromises()
+
+    expect(wrapper.vm.scene).toBe('report_analysis')
+    expect(wrapper.vm.reportIdInput).toBe('42')
+  })
 })

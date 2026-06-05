@@ -1,0 +1,195 @@
+{
+  "csv_path": "D:\\gitcopy\\UAV-Fault-Diagnosis\\normal_s3313__normal_seed3313.csv",
+  "asset_id": 1,
+  "run_id": 1,
+  "report_id": 1,
+  "prediction_label": "normal",
+  "confidence": 0.6275535821914673,
+  "probs": {
+    "normal": 0.6275535821914673,
+    "motor": 0.004690540488809347,
+    "sensor": 0.3677558898925781
+  },
+  "summary": {
+    "basic": {
+      "run_id": 1,
+      "asset_id": 1,
+      "asset_filename": "normal_s3313__normal_seed3313.csv",
+      "model_name": "transfer3_cnnlstm_normalproto",
+      "run_created_at": "2026-06-05 19:41:33",
+      "report_generated_at": "2026-06-05 19:41:33"
+    },
+    "conclusion": {
+      "label": "normal",
+      "confidence": 0.6275535821914673
+    },
+    "severity": {
+      "level": "none",
+      "score": 0.0,
+      "method": "rule_v1",
+      "evidence": []
+    },
+    "topk": [
+      {
+        "label": "normal",
+        "prob": 0.6275535821914673
+      },
+      {
+        "label": "sensor",
+        "prob": 0.3677558898925781
+      },
+      {
+        "label": "motor",
+        "prob": 0.004690540488809347
+      }
+    ],
+    "key_params": {
+      "asset_kind": "csv",
+      "input_csv": "runtime://uploads/normal_s3313__normal_seed3313.csv",
+      "model": "transfer3_cnnlstm_normalproto",
+      "label_count": 3,
+      "labels": [
+        "normal",
+        "motor",
+        "sensor"
+      ],
+      "topk": [
+        {
+          "index": 0,
+          "label": "normal",
+          "prob": 0.6275535821914673
+        },
+        {
+          "index": 2,
+          "label": "sensor",
+          "prob": 0.3677558898925781
+        },
+        {
+          "index": 1,
+          "label": "motor",
+          "prob": 0.004690540488809347
+        }
+      ],
+      "feature_dim": 31,
+      "sample_count": 15727,
+      "severity_level": "none",
+      "severity_score": 0.0,
+      "severity_method": "rule_v1",
+      "recommendation_strategy": "rule_v1",
+      "recommendation_fallback_used": false
+    },
+    "recommendations": [
+      {
+        "title": "保持例行巡检与校准",
+        "priority": "P3",
+        "reason_codes": [
+          "normal_detected"
+        ]
+      },
+      {
+        "title": "继续监控电池与振动趋势",
+        "priority": "P3",
+        "reason_codes": [
+          "preventive_check"
+        ]
+      }
+    ],
+    "recommendation_meta": {
+      "strategy": "rule_v1",
+      "fallback_used": false,
+      "severity_level": "none",
+      "candidate_count": 2
+    },
+    "data_quality": {
+      "level": "good",
+      "sample_count": 15727,
+      "window_count": 0,
+      "feature_count": 31,
+      "missing_columns": [],
+      "missing_value_ratio": null,
+      "invalid_value_ratio": null,
+      "time_range": {
+        "start": null,
+        "end": null
+      },
+      "warnings": []
+    },
+    "traceability": {
+      "run_id": 1,
+      "asset_id": 1,
+      "asset_filename": "normal_s3313__normal_seed3313.csv",
+      "input_csv": "runtime://uploads/normal_s3313__normal_seed3313.csv",
+      "model_name": "transfer3_cnnlstm_normalproto",
+      "model_version": "",
+      "model_hash": "",
+      "rules_version": "rule_v1",
+      "generated_at": "2026-06-05 19:41:33"
+    },
+    "model_card": {
+      "task": "offline_multiclass",
+      "class_set": [
+        "normal",
+        "motor",
+        "sensor"
+      ],
+      "intended_use": "RflySim/RflyMAD 离线日志故障诊断辅助分析",
+      "limitations": [],
+      "metrics": {},
+      "model_name": "transfer3_cnnlstm_normalproto"
+    },
+    "report_confidence": {
+      "level": "unknown",
+      "score": 0.589,
+      "reasons": [
+        "输入数据质量记录完整，可支撑当前结论。",
+        "模型主分类置信度偏低（62.8%）。",
+        "规则证据链较少，建议人工复核关键参数。"
+      ]
+    },
+    "review": {
+      "status": "pending",
+      "reviewer": "",
+      "reviewed_at": "",
+      "conclusion": "",
+      "maintenance_notes": ""
+    },
+    "decision": {
+      "episode_id": "ep_6b2ee7043e57",
+      "state": "DECIDED",
+      "warning_stage": "normal",
+      "risk_score": 0.0,
+      "risk_trend": "stable",
+      "warning_reason": "当前未发现风险演化信号",
+      "lead_time_s": null,
+      "fault_label": "normal",
+      "severity": "none",
+      "evidence_summary": {
+        "source": "offline",
+        "fault_label": "normal",
+        "severity": {
+          "level": "none",
+          "score": 0.0,
+          "method": "rule_v1"
+        },
+        "top_evidence": []
+      },
+      "recommendations": [
+        {
+          "title": "保持例行巡检与校准",
+          "priority": "P3",
+          "reason_codes": [
+            "normal_detected"
+          ]
+        },
+        {
+          "title": "继续监控电池与振动趋势",
+          "priority": "P3",
+          "reason_codes": [
+            "preventive_check"
+          ]
+        }
+      ]
+    }
+  },
+  "pdf_path": "D:\\gitcopy\\UAV-Fault-Diagnosis\\runtime\\report_test_normal_s3313\\reports\\diagnosis_run_1_20260605194133.pdf"
+}

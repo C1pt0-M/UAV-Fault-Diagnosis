@@ -17,8 +17,29 @@ from uav_dashboard_api.models.asset import Asset
 from uav_dashboard_api.models.diagnosis_report import DiagnosisReport
 from uav_dashboard_api.models.run_record import RunRecord
 from uav_dashboard_api.utils.path_store import serialize_local_path
+from uav_dashboard_api.utils.pdf_fonts import build_pdf_font_candidates
 
 OFFLINE_MULTICLASS_TASK = "offline_multiclass"
+OFFLINE_CLASS_SET = ["normal", "motor", "sensor"]
+RULES_VERSION_DEFAULT = "rule_v1"
+DATA_QUALITY_LEVEL_TEXT = {
+    "good": "良好",
+    "warning": "需关注",
+    "poor": "较差",
+    "unknown": "未知",
+}
+REPORT_CONFIDENCE_LEVEL_TEXT = {
+    "high": "高",
+    "medium": "中",
+    "low": "低",
+    "unknown": "未知",
+}
+REVIEW_STATUS_TEXT = {
+    "pending": "待复核",
+    "confirmed": "已确认",
+    "false_alarm": "误报",
+    "ignored": "已忽略",
+}
 
 
 LEGACY_RECOMMENDATIONS = {
@@ -101,12 +122,7 @@ METRIC_TEXT_MAP = {
     "vz_down_p95": "下降速度异常偏高",
 }
 
-REPORTLAB_FONT_CANDIDATES = [
-    '/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf',
-    '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
-    '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.otf',
-    '/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc',
-]
+REPORTLAB_FONT_CANDIDATES = build_pdf_font_candidates()
 
 _REPORTLAB_PYTHON_CACHE = {"checked": False, "python": None}
 
@@ -331,6 +347,210 @@ def _write_pdf(path: Path, lines: list[str]):
     _write_pdf_fallback(path, lines)
 
 
+def _safe_int(value) -> int | None:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _safe_float(value) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _resolve_input_csv(result: dict, debug: dict, asset: Asset | None) -> str:
+    for candidate in (
+        result.get("input_csv"),
+        debug.get("csv_path"),
+        (asset.get_meta() or {}).get("prepared_csv_path") if asset else None,
+    ):
+        text = str(candidate or "").strip()
+        if text:
+            return text
+    return ""
+
+
+def _build_data_quality(result: dict, asset: Asset | None) -> dict:
+    debug = result.get("debug") if isinstance(result.get("debug"), dict) else {}
+    warnings: list[str] = []
+
+    sample_count = _safe_int(debug.get("sample_count"))
+    if sample_count is None:
+        sample_count = _safe_int(debug.get("seq_len"))
+
+    window_count = _safe_int(debug.get("window_count"))
+    feature_count = _safe_int(debug.get("feature_dim"))
+    if feature_count is None:
+        feature_count = _safe_int(debug.get("in_channels"))
+
+    missing_columns = debug.get("missing_columns")
+    if not isinstance(missing_columns, list):
+        missing_columns = []
+
+    missing_value_ratio = _safe_float(debug.get("missing_value_ratio"))
+    invalid_value_ratio = _safe_float(debug.get("invalid_value_ratio"))
+
+    time_range = debug.get("time_range")
+    if not isinstance(time_range, dict):
+        time_range = {"start": None, "end": None}
+
+    input_csv = _resolve_input_csv(result, debug, asset)
+    if not input_csv:
+        warnings.append("未记录输入 CSV 路径，数据追溯能力受限。")
+    if sample_count is None:
+        warnings.append("未记录样本数量，无法完整评估输入覆盖度。")
+    if feature_count is None:
+        warnings.append("未记录特征维度，部分质量指标待补充。")
+    if missing_columns:
+        warnings.append(f"存在缺失列：{', '.join(str(item) for item in missing_columns[:5])}。")
+    if missing_value_ratio is not None and missing_value_ratio > 0.1:
+        warnings.append(f"缺失值占比较高（约 {_format_percent(missing_value_ratio)}）。")
+    if invalid_value_ratio is not None and invalid_value_ratio > 0.05:
+        warnings.append(f"异常值占比较高（约 {_format_percent(invalid_value_ratio)}）。")
+
+    if missing_columns or (
+        missing_value_ratio is not None and missing_value_ratio > 0.1
+    ) or (invalid_value_ratio is not None and invalid_value_ratio > 0.05):
+        level = "poor"
+    elif not input_csv or sample_count is None or feature_count is None:
+        level = "warning"
+    elif input_csv and sample_count is not None:
+        level = "good"
+    else:
+        level = "unknown"
+
+    return {
+        "level": level,
+        "sample_count": sample_count if sample_count is not None else 0,
+        "window_count": window_count if window_count is not None else 0,
+        "feature_count": feature_count if feature_count is not None else 0,
+        "missing_columns": missing_columns,
+        "missing_value_ratio": missing_value_ratio,
+        "invalid_value_ratio": invalid_value_ratio,
+        "time_range": {
+            "start": time_range.get("start"),
+            "end": time_range.get("end"),
+        },
+        "warnings": warnings,
+    }
+
+
+def _build_traceability(
+    *,
+    run: RunRecord,
+    asset: Asset | None,
+    model_name: str,
+    result: dict,
+    severity: dict,
+    generated_at: str,
+) -> dict:
+    debug = result.get("debug") if isinstance(result.get("debug"), dict) else {}
+    rules_version = str(severity.get("method") or RULES_VERSION_DEFAULT).strip() or RULES_VERSION_DEFAULT
+    return {
+        "run_id": run.id,
+        "asset_id": run.asset_id,
+        "asset_filename": asset.filename if asset else "",
+        "input_csv": _resolve_input_csv(result, debug, asset),
+        "model_name": model_name,
+        "model_version": str(debug.get("model_version") or "").strip(),
+        "model_hash": str(debug.get("model_hash") or "").strip(),
+        "rules_version": rules_version,
+        "generated_at": generated_at,
+    }
+
+
+def _build_model_card(result: dict, model_name: str) -> dict:
+    labels = result.get("labels")
+    class_set = []
+    if isinstance(labels, list):
+        class_set = [str(item).strip() for item in labels if str(item).strip()]
+    if not class_set:
+        class_set = list(OFFLINE_CLASS_SET)
+
+    debug = result.get("debug") if isinstance(result.get("debug"), dict) else {}
+    metrics = {}
+    for key in ("best_val_f1", "best_val_acc", "test_f1", "test_acc"):
+        value = _safe_float(debug.get(key))
+        if value is not None:
+            metrics[key] = value
+
+    limitations = []
+    if not debug.get("model_dir"):
+        limitations.append("未记录模型目录，无法核对模型文件版本。")
+    if debug.get("norm_source") == "sample_zscore":
+        limitations.append("本次推理使用样本内归一化，跨工况对比时需谨慎。")
+
+    return {
+        "task": OFFLINE_MULTICLASS_TASK,
+        "class_set": class_set,
+        "intended_use": "RflySim/RflyMAD 离线日志故障诊断辅助分析",
+        "limitations": limitations,
+        "metrics": metrics,
+        "model_name": model_name,
+    }
+
+
+def _build_report_confidence(
+    *,
+    confidence: float,
+    severity: dict,
+    data_quality: dict,
+) -> dict:
+    reasons: list[str] = []
+    quality_level = str(data_quality.get("level") or "unknown").strip() or "unknown"
+    evidence = severity.get("evidence")
+    evidence_count = len(evidence) if isinstance(evidence, list) else 0
+
+    if quality_level == "poor":
+        reasons.append("输入数据质量较差，结论支撑度不足。")
+    elif quality_level == "warning":
+        reasons.append("输入数据质量信息不完整，建议结合原始日志复核。")
+    elif quality_level == "good":
+        reasons.append("输入数据质量记录完整，可支撑当前结论。")
+
+    if confidence >= 0.85:
+        reasons.append(f"模型主分类置信度较高（{_format_percent(confidence)}）。")
+    elif confidence >= 0.65:
+        reasons.append(f"模型主分类置信度中等（{_format_percent(confidence)}）。")
+    else:
+        reasons.append(f"模型主分类置信度偏低（{_format_percent(confidence)}）。")
+
+    if evidence_count > 0:
+        reasons.append(f"规则证据链包含 {evidence_count} 条指标支撑。")
+    else:
+        reasons.append("规则证据链较少，建议人工复核关键参数。")
+
+    if quality_level == "poor" or confidence < 0.55:
+        level = "low"
+    elif quality_level == "good" and confidence >= 0.8 and evidence_count > 0:
+        level = "high"
+    elif quality_level in {"good", "warning"} and confidence >= 0.65:
+        level = "medium"
+    else:
+        level = "unknown"
+
+    score = round(min(1.0, max(0.0, confidence * 0.7 + (0.2 if evidence_count else 0.05) + (0.1 if quality_level == "good" else 0.0))), 3)
+
+    return {
+        "level": level,
+        "score": score,
+        "reasons": reasons,
+    }
+
+
+def _build_review_defaults() -> dict:
+    return {
+        "status": "pending",
+        "reviewer": "",
+        "reviewed_at": "",
+        "conclusion": "",
+        "maintenance_notes": "",
+    }
+
+
 def _build_summary(
     run: RunRecord,
     asset: Asset | None,
@@ -342,7 +562,25 @@ def _build_summary(
     severity: dict,
     recommendations: list[dict],
     recommendation_meta: dict,
+    result: dict | None = None,
 ) -> dict:
+    generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    result = result if isinstance(result, dict) else {}
+    data_quality = _build_data_quality(result, asset)
+    traceability = _build_traceability(
+        run=run,
+        asset=asset,
+        model_name=model_name,
+        result=result,
+        severity=severity,
+        generated_at=generated_at,
+    )
+    model_card = _build_model_card(result, model_name)
+    report_confidence = _build_report_confidence(
+        confidence=confidence,
+        severity=severity,
+        data_quality=data_quality,
+    )
     return {
         "basic": {
             "run_id": run.id,
@@ -352,7 +590,7 @@ def _build_summary(
             "run_created_at": run.created_at.strftime("%Y-%m-%d %H:%M:%S")
             if run.created_at
             else "",
-            "report_generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "report_generated_at": generated_at,
         },
         "conclusion": {
             "label": prediction_label,
@@ -363,6 +601,11 @@ def _build_summary(
         "key_params": key_params,
         "recommendations": recommendations,
         "recommendation_meta": recommendation_meta,
+        "data_quality": data_quality,
+        "traceability": traceability,
+        "model_card": model_card,
+        "report_confidence": report_confidence,
+        "review": _build_review_defaults(),
     }
 
 
@@ -438,6 +681,75 @@ def _recommendation_reason_text(reason_codes) -> str:
     return f"关注点：{'、'.join(labels)}" if labels else "建议结合飞行日志、维护记录和关键参数进行人工复核。"
 
 
+def _pdf_text(value, fallback: str = "-") -> str:
+    text = str(value or "").strip()
+    return text if text else fallback
+
+
+def _pdf_data_quality_lines(data_quality: dict) -> list[str]:
+    if not isinstance(data_quality, dict):
+        data_quality = {}
+    level = str(data_quality.get("level") or "unknown").strip() or "unknown"
+    level_text = DATA_QUALITY_LEVEL_TEXT.get(level, "未知")
+    lines = [
+        f"- 数据质量等级：{level_text}",
+        f"- 样本数量：{data_quality.get('sample_count') if data_quality.get('sample_count') else '待补充'}",
+        f"- 窗口数量：{data_quality.get('window_count') if data_quality.get('window_count') else '待补充'}",
+        f"- 特征数量：{data_quality.get('feature_count') if data_quality.get('feature_count') else '待补充'}",
+    ]
+    missing_ratio = data_quality.get("missing_value_ratio")
+    invalid_ratio = data_quality.get("invalid_value_ratio")
+    lines.append(
+        f"- 缺失值占比：{_format_percent(missing_ratio) if missing_ratio is not None else '待补充'}"
+    )
+    lines.append(
+        f"- 异常值占比：{_format_percent(invalid_ratio) if invalid_ratio is not None else '待补充'}"
+    )
+    time_range = data_quality.get("time_range")
+    if isinstance(time_range, dict):
+        start = _pdf_text(time_range.get("start"), "待补充")
+        end = _pdf_text(time_range.get("end"), "待补充")
+        lines.append(f"- 时间范围：{start} ~ {end}")
+    warnings = data_quality.get("warnings")
+    if isinstance(warnings, list) and warnings:
+        for warning in warnings[:3]:
+            lines.append(f"- 提示：{warning}")
+    else:
+        lines.append("- 提示：无额外数据质量告警。")
+    return lines
+
+
+def _pdf_traceability_lines(traceability: dict) -> list[str]:
+    if not isinstance(traceability, dict):
+        traceability = {}
+    return [
+        f"- 任务 ID：{_pdf_text(traceability.get('run_id'))}",
+        f"- 资产 ID：{_pdf_text(traceability.get('asset_id'))}",
+        f"- 资产文件：{_pdf_text(traceability.get('asset_filename'), '未知')}",
+        f"- 输入文件：{_pdf_text(traceability.get('input_csv'), '待补充')}",
+        f"- 模型名称：{_pdf_text(traceability.get('model_name'), '未知')}",
+        f"- 模型版本：{_pdf_text(traceability.get('model_version'), '待补充')}",
+        f"- 模型哈希：{_pdf_text(traceability.get('model_hash'), '待补充')}",
+        f"- 规则版本：{_pdf_text(traceability.get('rules_version'), RULES_VERSION_DEFAULT)}",
+        f"- 报告生成时间：{_pdf_text(traceability.get('generated_at'), '待补充')}",
+    ]
+
+
+def _pdf_review_lines(review: dict) -> list[str]:
+    if not isinstance(review, dict):
+        review = {}
+    status = str(review.get("status") or "pending").strip() or "pending"
+    status_text = REVIEW_STATUS_TEXT.get(status, "待复核")
+    lines = [
+        f"- 复核状态：{status_text}",
+        f"- 复核人：{_pdf_text(review.get('reviewer'), '待补充')}",
+        f"- 复核时间：{_pdf_text(review.get('reviewed_at'), '待补充')}",
+        f"- 复核结论：{_pdf_text(review.get('conclusion'), '待补充')}",
+        f"- 维修备注：{_pdf_text(review.get('maintenance_notes'), '待补充')}",
+    ]
+    return lines
+
+
 def _build_pdf_lines(summary: dict, probs: dict[str, float]) -> list[str]:
     basic = summary.get("basic", {})
     conclusion = summary.get("conclusion", {})
@@ -452,6 +764,27 @@ def _build_pdf_lines(summary: dict, probs: dict[str, float]) -> list[str]:
         if isinstance(summary.get("recommendation_meta"), dict)
         else {}
     )
+    data_quality = (
+        summary.get("data_quality", {})
+        if isinstance(summary.get("data_quality"), dict)
+        else {}
+    )
+    traceability = (
+        summary.get("traceability", {})
+        if isinstance(summary.get("traceability"), dict)
+        else {}
+    )
+    model_card = (
+        summary.get("model_card", {})
+        if isinstance(summary.get("model_card"), dict)
+        else {}
+    )
+    report_confidence = (
+        summary.get("report_confidence", {})
+        if isinstance(summary.get("report_confidence"), dict)
+        else {}
+    )
+    review = summary.get("review", {}) if isinstance(summary.get("review"), dict) else {}
 
     probability_rows = [
         {"label": item.get("label", ""), "prob": item.get("prob", 0.0)}
@@ -488,6 +821,20 @@ def _build_pdf_lines(summary: dict, probs: dict[str, float]) -> list[str]:
         headline = f"本次离线诊断提示{label_text}，但风险等级仍需人工确认。"
         risk_text = f"当前报告提示{label_text}，但风险分级暂不稳定，建议人工复核关键参数。"
 
+    confidence_level = str(report_confidence.get("level") or "unknown").strip() or "unknown"
+    confidence_level_text = REPORT_CONFIDENCE_LEVEL_TEXT.get(confidence_level, "未知")
+    confidence_score_text = (
+        _format_metric_value(report_confidence.get("score"))
+        if report_confidence.get("score") is not None
+        else "待补充"
+    )
+    class_set = model_card.get("class_set")
+    class_set_text = (
+        " / ".join(str(item) for item in class_set)
+        if isinstance(class_set, list) and class_set
+        else " / ".join(OFFLINE_CLASS_SET)
+    )
+
     lines = [
         "基于数据驱动的无人机故障检测系统",
         "离线诊断报告",
@@ -498,11 +845,12 @@ def _build_pdf_lines(summary: dict, probs: dict[str, float]) -> list[str]:
         "",
         "一、诊断结论",
         headline,
-        f"风险等级：{severity_risk}（{severity_badge}）",
-        f"模型置信度：{confidence_text}",
         risk_text,
         "",
-        "二、主要判断依据",
+        "二、数据质量",
+        *_pdf_data_quality_lines(data_quality),
+        "",
+        "三、主要判断依据",
         f"- 模型判断：{_probability_summary(probability_rows)}",
     ]
 
@@ -522,7 +870,24 @@ def _build_pdf_lines(summary: dict, probs: dict[str, float]) -> list[str]:
         for key, value in list(key_params.items())[:3]:
             lines.append(f"- {_metric_text(key)}：摘要值 {_format_key_param_value(value)}。")
 
-    lines.extend(["", "三、建议动作"])
+    lines.extend(
+        [
+            "",
+            "四、风险等级与可信度",
+            f"- 风险等级：{severity_risk}（{severity_badge}）",
+            f"- 严重度分数：{severity_score_text}",
+            f"- 模型置信度：{confidence_text}",
+            f"- 报告可信度：{confidence_level_text}（综合分 {confidence_score_text}）",
+        ]
+    )
+    confidence_reasons = report_confidence.get("reasons")
+    if isinstance(confidence_reasons, list) and confidence_reasons:
+        for reason in confidence_reasons[:4]:
+            lines.append(f"- 可信度说明：{reason}")
+    else:
+        lines.append("- 可信度说明：待补充")
+
+    lines.extend(["", "五、建议动作"])
     if recommendations:
         for item in recommendations:
             if isinstance(item, dict):
@@ -538,7 +903,21 @@ def _build_pdf_lines(summary: dict, probs: dict[str, float]) -> list[str]:
     else:
         lines.append("- [安排检查] 继续按既定巡检周期执行例行检查")
 
-    lines.extend(["", "四、技术摘要"])
+    lines.extend(
+        [
+            "",
+            "六、模型与规则追溯",
+            *_pdf_traceability_lines(traceability),
+            f"- 任务类型：{_pdf_text(model_card.get('task'), OFFLINE_MULTICLASS_TASK)}",
+            f"- 类别集合：{class_set_text}",
+            f"- 适用场景：{_pdf_text(model_card.get('intended_use'), '待补充')}",
+            "",
+            "七、人工复核记录",
+            *_pdf_review_lines(review),
+            "",
+            "八、技术摘要",
+        ]
+    )
     lines.append(f"- 原始标签：{label}")
     lines.append(f"- 强度分数：{severity_score_text}")
     lines.append(f"- 评估方法：{severity.get('method', 'rule_v1')}")
@@ -667,6 +1046,7 @@ def create_or_get_diagnosis_report(
         severity=severity,
         recommendations=recommendations,
         recommendation_meta=recommendation_meta,
+        result=result,
     )
     if unified_decision:
         summary["decision"] = unified_decision

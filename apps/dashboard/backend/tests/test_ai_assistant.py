@@ -359,9 +359,12 @@ def test_fallback_answer_uses_natural_language_without_reference_sections(
             ],
         )
 
-        assert "直接结论：" in answer
-        assert "原因解释：" in answer
-        assert "风险与建议：" in answer
+        assert "结论：" in answer
+        assert "证据：" in answer
+        assert "风险：" in answer
+        assert "建议动作：" in answer
+        assert "不确定性与限制：" in answer
+        assert "需要人工确认：" in answer
         assert "知识片段" not in answer
         assert "参考资料" not in answer
         assert "电池故障" in answer

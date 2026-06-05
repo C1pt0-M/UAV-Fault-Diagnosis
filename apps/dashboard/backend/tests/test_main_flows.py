@@ -286,6 +286,20 @@ def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypa
     assert report_detail["diagnosis"]["model"]["task"] == "offline_multiclass"
     assert report_detail["summary"]["decision"]["state"] == "DECIDED"
     assert report_detail["summary"]["decision"]["episode_id"] == "ep_test_001"
+    assert report_detail["summary"]["data_quality"]["level"] in {
+        "good",
+        "warning",
+        "poor",
+        "unknown",
+    }
+    assert report_detail["summary"]["traceability"]["run_id"] == run_id
+    assert report_detail["summary"]["report_confidence"]["level"] in {
+        "high",
+        "medium",
+        "low",
+        "unknown",
+    }
+    assert report_detail["summary"]["review"]["status"] == "pending"
 
     run_detail = client.get(f"/api/runs/{run_id}", headers=auth_header).get_json()[
         "data"

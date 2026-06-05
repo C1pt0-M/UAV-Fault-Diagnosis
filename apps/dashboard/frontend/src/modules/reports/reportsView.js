@@ -31,6 +31,11 @@ export const reportsCopy = {
   modelLabel: '模型',
   assetLabel: '资产',
   confidenceLabel: '置信度',
+  dataQualitySection: '数据质量',
+  traceabilitySection: '模型与规则追溯',
+  reportConfidenceSection: '报告可信度',
+  reviewSection: '人工复核',
+  evidenceChainSection: '证据链',
   noReportDetail: '暂无报告详情',
   paginationTotal(total) {
     return `共 ${total || 0} 份报告`
