@@ -121,11 +121,85 @@ def _load_csv(csv_path: str) -> pd.DataFrame:
         'esc_rpm_1', 'esc_rpm_2', 'esc_rpm_3', 'esc_rpm_4',
         'gyro_vibration_metric', 'accel_vibration_metric', 'imbalanced_prop_metric',
         'thrust_z', 'unalloc_thrust_z', 'vz', 'fault_intensity', 'fault_severity',
+        '_sensor_combined_0_gyro_rad[0]', '_sensor_combined_0_gyro_rad[1]',
+        '_sensor_combined_0_gyro_rad[2]',
+        '_sensor_combined_0_accelerometer_m_s2[0]',
+        '_sensor_combined_0_accelerometer_m_s2[1]',
+        '_sensor_combined_0_accelerometer_m_s2[2]',
+        'TrueState_data_motorRPMs[1]', 'TrueState_data_motorRPMs[2]',
+        'TrueState_data_motorRPMs[3]', 'TrueState_data_motorRPMs[4]',
+        '_actuator_outputs_0_output[0]', '_actuator_outputs_0_output[1]',
+        '_actuator_outputs_0_output[2]', '_actuator_outputs_0_output[3]',
     }
     try:
-        return pd.read_csv(csv_path, usecols=lambda c: c in target_cols)
+        df = pd.read_csv(csv_path, usecols=lambda c: c in target_cols)
     except Exception:
-        return pd.read_csv(csv_path)
+        df = pd.read_csv(csv_path)
+    return _derive_standard_columns(df)
+
+
+def _derive_vector_norm(df: pd.DataFrame, columns: list[str]) -> pd.Series | None:
+    if not all(column in df.columns for column in columns):
+        return None
+    values = df[columns].apply(pd.to_numeric, errors='coerce')
+    if values.dropna(how='all').empty:
+        return None
+    return np.sqrt((values ** 2).sum(axis=1))
+
+
+def _derive_standard_columns(df: pd.DataFrame) -> pd.DataFrame:
+    output = df.copy()
+
+    if 'gyro_vibration_metric' not in output.columns:
+        gyro_norm = _derive_vector_norm(
+            output,
+            [
+                '_sensor_combined_0_gyro_rad[0]',
+                '_sensor_combined_0_gyro_rad[1]',
+                '_sensor_combined_0_gyro_rad[2]',
+            ],
+        )
+        if gyro_norm is not None:
+            output['gyro_vibration_metric'] = gyro_norm
+
+    if 'accel_vibration_metric' not in output.columns:
+        accel_norm = _derive_vector_norm(
+            output,
+            [
+                '_sensor_combined_0_accelerometer_m_s2[0]',
+                '_sensor_combined_0_accelerometer_m_s2[1]',
+                '_sensor_combined_0_accelerometer_m_s2[2]',
+            ],
+        )
+        if accel_norm is not None:
+            baseline = accel_norm.median(skipna=True)
+            output['accel_vibration_metric'] = (accel_norm - baseline).abs()
+
+    motor_sources = [
+        [
+            'TrueState_data_motorRPMs[1]',
+            'TrueState_data_motorRPMs[2]',
+            'TrueState_data_motorRPMs[3]',
+            'TrueState_data_motorRPMs[4]',
+        ],
+        [
+            '_actuator_outputs_0_output[0]',
+            '_actuator_outputs_0_output[1]',
+            '_actuator_outputs_0_output[2]',
+            '_actuator_outputs_0_output[3]',
+        ],
+    ]
+    if not all(f'motor{index}' in output.columns for index in range(1, 5)):
+        for source_columns in motor_sources:
+            if all(column in output.columns for column in source_columns):
+                for index, source_column in enumerate(source_columns, start=1):
+                    output[f'motor{index}'] = pd.to_numeric(
+                        output[source_column],
+                        errors='coerce',
+                    )
+                break
+
+    return output
 
 
 def _extract_metrics(df: pd.DataFrame, confidence: float | None) -> dict[str, float]:
@@ -228,6 +302,21 @@ def _score_to_level(score: float, levels_cfg: dict[str, Any]) -> str:
     if score < medium_max:
         return 'medium'
     return 'heavy'
+
+
+def _confidence_fallback_level(confidence: float | None) -> str | None:
+    value = _as_float(confidence)
+    if value is None:
+        return None
+    if value >= 0.90:
+        return 'heavy'
+    if value >= 0.75:
+        return 'medium'
+    return 'light'
+
+
+def _evidence_source(metric_key: str) -> str:
+    return 'model' if metric_key == 'prediction_confidence' else 'rule'
 
 
 def _normalize_recommendations(items: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
@@ -335,6 +424,7 @@ def evaluate_severity_and_recommendations(
                 'evidence': [{
                     'metric': metric_key,
                     'status': 'used',
+                    'source': 'rule',
                     'value': float(metric_value),
                     'rule': {
                         'direction': str(primary_metric_cfg.get('direction', 'high')),
@@ -364,7 +454,7 @@ def evaluate_severity_and_recommendations(
     evidence: list[dict[str, Any]] = []
     weighted_sum = 0.0
     weight_sum = 0.0
-    required_available = 0
+    rule_metrics_available = 0
 
     for metric in metric_rules:
         raw_value = metrics.get(metric.key)
@@ -372,8 +462,10 @@ def evaluate_severity_and_recommendations(
             evidence.append({
                 'metric': metric.key,
                 'status': 'missing',
+                'source': _evidence_source(metric.key),
                 'required': metric.required_for_decision,
                 'reason': 'missing_or_non_numeric',
+                'reason_text': '未从当前 CSV 中提取到对应规则指标。',
             })
             continue
 
@@ -381,11 +473,12 @@ def evaluate_severity_and_recommendations(
         weight = max(0.0, metric.weight)
         weighted_sum += score * weight
         weight_sum += weight
-        if metric.required_for_decision:
-            required_available += 1
+        if metric.key != 'prediction_confidence':
+            rule_metrics_available += 1
         evidence.append({
             'metric': metric.key,
             'status': 'used',
+            'source': _evidence_source(metric.key),
             'value': float(raw_value),
             'score': round(float(score), 4),
             'weight': weight,
@@ -394,7 +487,7 @@ def evaluate_severity_and_recommendations(
 
     min_required = int(fault_cfg.get('min_required_metrics', 1))
     fallback_used = False
-    if required_available < min_required or weight_sum <= 1e-9:
+    if rule_metrics_available < min_required or weight_sum <= 1e-9:
         severity_level = 'unknown'
         severity_score = None
         fallback_used = True
@@ -404,11 +497,23 @@ def evaluate_severity_and_recommendations(
 
     recs, rec_fallback = _choose_recommendations(rec_map, severity_level)
     fallback_used = bool(fallback_used or rec_fallback)
+    fallback_level = _confidence_fallback_level(confidence)
+    fallback_by_confidence = False
+    if severity_level == 'unknown' and fault_label != 'normal' and fallback_level:
+        severity_level = fallback_level
+        severity_score = _as_float(confidence)
+        recs, rec_fallback = _choose_recommendations(rec_map, severity_level)
+        fallback_used = True
+        fallback_by_confidence = True
+        for item in evidence:
+            if item.get('metric') == 'prediction_confidence':
+                item['reason_text'] = '规则指标不足，临时按模型主分类置信度给出风险等级。'
+                break
 
     severity = {
         'level': severity_level,
         'score': None if severity_score is None else round(severity_score, 4),
-        'method': strategy,
+        'method': 'model_confidence_fallback' if fallback_by_confidence else strategy,
         'evidence': evidence,
     }
     return {
@@ -419,9 +524,10 @@ def evaluate_severity_and_recommendations(
             'fallback_used': fallback_used,
             'severity_level': severity_level,
             'candidate_count': len(recs),
+            'mode': 'model_confidence_fallback' if severity.get('method') == 'model_confidence_fallback' else 'rule_metrics',
             'required_metrics': {
                 'need': min_required,
-                'available': required_available,
+                'available': rule_metrics_available,
             },
         },
     }

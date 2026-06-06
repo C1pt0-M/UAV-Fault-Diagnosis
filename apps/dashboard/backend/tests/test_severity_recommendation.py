@@ -125,7 +125,7 @@ def test_thrust_loss_should_reach_heavy(tmp_path):
     assert data['recommendations']
 
 
-def test_missing_required_metrics_should_return_unknown(tmp_path):
+def test_missing_required_metrics_should_use_model_confidence_fallback(tmp_path):
     csv_path = _write_csv(tmp_path, 'unknown.csv', {'time_s': [0, 1, 2, 3]})
     data = evaluate_severity_and_recommendations(
         csv_path=csv_path,
@@ -134,9 +134,29 @@ def test_missing_required_metrics_should_return_unknown(tmp_path):
         config_path=str(RULE_PATH),
     )
 
-    assert data['severity']['level'] == 'unknown'
+    assert data['severity']['level'] == 'medium'
+    assert data['severity']['method'] == 'model_confidence_fallback'
+    assert data['recommendation_meta']['mode'] == 'model_confidence_fallback'
     assert data['recommendation_meta']['fallback_used'] is True
     assert any(item.get('status') == 'missing' for item in data['severity']['evidence'])
+    assert any(
+        item.get('source') == 'model' and item.get('metric') == 'prediction_confidence'
+        for item in data['severity']['evidence']
+    )
+
+
+def test_low_confidence_missing_required_metrics_still_falls_back_to_light(tmp_path):
+    csv_path = _write_csv(tmp_path, 'unknown_low.csv', {'time_s': [0, 1, 2, 3]})
+    data = evaluate_severity_and_recommendations(
+        csv_path=csv_path,
+        fault_label='motor_failure',
+        confidence=0.62,
+        config_path=str(RULE_PATH),
+    )
+
+    assert data['severity']['level'] == 'light'
+    assert data['severity']['method'] == 'model_confidence_fallback'
+    assert data['recommendation_meta']['required_metrics']['available'] == 0
 
 
 def test_primary_metric_threshold_for_motor_failure(tmp_path):
@@ -180,3 +200,38 @@ def test_primary_metric_threshold_for_thrust_loss_should_return_medium(tmp_path)
 
     assert data['severity']['level'] == 'medium'
     assert data['recommendation_meta']['mode'] == 'primary_metric'
+
+
+def test_rfly_px4_columns_are_derived_for_rule_evidence(tmp_path):
+    csv_path = _write_csv(
+        tmp_path,
+        'rfly_raw.csv',
+        {
+            '_sensor_combined_0_gyro_rad[0]': [1.8, 1.9, 2.0, 1.7, 1.8],
+            '_sensor_combined_0_gyro_rad[1]': [0.1, 0.2, 0.1, 0.2, 0.1],
+            '_sensor_combined_0_gyro_rad[2]': [0.1, 0.1, 0.2, 0.1, 0.2],
+            '_sensor_combined_0_accelerometer_m_s2[0]': [9.8, 13.8, 14.2, 13.6, 14.0],
+            '_sensor_combined_0_accelerometer_m_s2[1]': [0.0, 0.2, 0.1, 0.3, 0.2],
+            '_sensor_combined_0_accelerometer_m_s2[2]': [0.0, 0.1, 0.2, 0.1, 0.2],
+            'TrueState_data_motorRPMs[1]': [8000, 8100, 8050, 7950, 8000],
+            'TrueState_data_motorRPMs[2]': [4200, 4300, 4100, 4250, 4150],
+            'TrueState_data_motorRPMs[3]': [7800, 7900, 7850, 7750, 7800],
+            'TrueState_data_motorRPMs[4]': [4000, 4050, 4100, 3950, 4000],
+        },
+    )
+    data = evaluate_severity_and_recommendations(
+        csv_path=csv_path,
+        fault_label='motor',
+        confidence=0.91,
+        config_path=str(RULE_PATH),
+    )
+
+    used_metrics = {
+        item.get('metric')
+        for item in data['severity']['evidence']
+        if item.get('status') == 'used'
+    }
+    assert 'gyro_vibration_p95' in used_metrics
+    assert 'accel_vibration_p95' in used_metrics
+    assert 'motor_imbalance_ratio' in used_metrics
+    assert data['severity']['method'] != 'model_confidence_fallback'

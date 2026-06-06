@@ -280,7 +280,7 @@ def test_overview_endpoint_exposes_industrial_dashboard_aggregates(app, client, 
             model_name="lstm",
             prediction_label="motor",
             confidence=0.86,
-            pdf_path="runtime/reports/report.pdf",
+            pdf_path="",
         )
         report.set_summary({
             "severity": {"level": "high"},

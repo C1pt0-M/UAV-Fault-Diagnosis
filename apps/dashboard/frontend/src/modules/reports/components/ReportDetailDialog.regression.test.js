@@ -18,11 +18,34 @@ const enhancedReport = {
         {
           metric: 'gyro_vibration_p95',
           status: 'used',
+          source: 'rule',
           value: 0.42,
           score: 0.8
+        },
+        {
+          metric: 'accel_vibration_p95',
+          status: 'missing',
+          source: 'rule',
+          reason_text: '未从当前 CSV 中提取到对应规则指标。'
         }
       ]
     },
+    readable: {
+      conclusion: '本次离线诊断识别为传感器故障，主分类置信度为 88.0%。',
+      risk: '风险等级为中度风险，建议尽快结合原始日志和维护记录复核。',
+      evidence: [
+        '模型当前主要判断为传感器故障（88.0%），次高可能为状态正常（9.0%）。',
+        '规则指标：陀螺振动偏高为 0.4200，贡献分 0.8000。',
+        '规则指标缺失：加速度振动偏高，未从当前 CSV 中提取到对应规则指标。'
+      ],
+      recommendations: ['[优先处理] 检查 IMU 安装与校准'],
+      cautions: ['规则指标不足时需要结合原始日志复核。']
+    },
+    topk: [
+      { label: 'sensor', prob: 0.88 },
+      { label: 'normal', prob: 0.09 },
+      { label: 'motor', prob: 0.03 }
+    ],
     recommendations: [{ title: '检查 IMU 安装与校准', priority: 'P1' }],
     data_quality: {
       level: 'warning',
@@ -91,20 +114,28 @@ function mountDialog(props = {}) {
 }
 
 describe('ReportDetailDialog regression', () => {
-  it('renders enhanced report sections for data quality, traceability, confidence and review', () => {
+  it('renders enhanced report first screen as readable conclusion, evidence and actions', () => {
     const wrapper = mountDialog()
-    const text = wrapper.text()
+    const technicalText = wrapper.find('.technical-details').text()
+    const firstScreenText = wrapper.find('.report-stack').text().replace(technicalText, '')
 
-    expect(text).toContain('数据质量')
-    expect(text).toContain('模型与规则追溯')
-    expect(text).toContain('报告可信度')
-    expect(text).toContain('人工复核')
-    expect(text).toContain('证据链')
-    expect(text).toContain('需关注')
-    expect(text).toContain('待复核')
-    expect(text).toContain('/tmp/sensor_case.csv')
-    expect(text).toContain('normal / motor / sensor')
-    expect(text).toContain('技术详情')
+    expect(firstScreenText).toContain('本次离线诊断识别为传感器故障')
+    expect(firstScreenText).toContain('中度风险')
+    expect(firstScreenText).toContain('概率分布')
+    expect(firstScreenText).toContain('处置建议')
+    expect(firstScreenText).toContain('关键依据')
+    expect(firstScreenText).toContain('数据质量')
+    expect(firstScreenText).toContain('未从当前 CSV 中提取到对应规则指标')
+    expect(firstScreenText).not.toContain('模型与规则追溯')
+    expect(firstScreenText).not.toContain('报告可信度')
+    expect(firstScreenText).not.toContain('人工复核')
+
+    expect(technicalText).toContain('模型与规则追溯')
+    expect(technicalText).toContain('报告可信度')
+    expect(technicalText).toContain('人工复核')
+    expect(technicalText).toContain('证据链')
+    expect(technicalText).toContain('/tmp/sensor_case.csv')
+    expect(technicalText).toContain('normal / motor / sensor')
   })
 
   it('renders legacy report with safe defaults and keeps json in technical details only', () => {
@@ -113,11 +144,14 @@ describe('ReportDetailDialog regression', () => {
       report: legacyReport,
       detailJson
     })
-    const visibleText = wrapper.find('.report-stack').text().split('技术详情')[0]
+    const technicalText = wrapper.find('.technical-details').text()
+    const visibleText = wrapper.find('.report-stack').text().replace(technicalText, '')
 
     expect(visibleText).toContain('数据质量')
-    expect(visibleText).toContain('未知')
-    expect(visibleText).toContain('待复核')
+    expect(visibleText).toContain('未记录')
+    expect(visibleText).toContain('历史报告未记录数据质量字段')
+    expect(visibleText).not.toContain('待补充')
+    expect(visibleText).not.toContain('待复核')
     expect(visibleText).not.toContain('"severity"')
     expect(wrapper.find('pre.report-json').text()).toContain('"severity"')
     expect(detailJson).not.toMatch(/\\u[0-9a-f]{4}/i)

@@ -1,13 +1,10 @@
-from pathlib import Path
-
-from flask import Blueprint, jsonify, request, send_file
+from flask import Blueprint, jsonify, request
 
 from uav_dashboard_api import db
 from uav_dashboard_api.models.diagnosis_report import DiagnosisReport
 from uav_dashboard_api.models.run_record import RunRecord
 from uav_dashboard_api.services.diagnosis_report import create_or_get_diagnosis_report
 from uav_dashboard_api.utils.jwt_utils import token_required
-from uav_dashboard_api.utils.path_store import resolve_local_path
 
 bp = Blueprint('diagnosis_reports', __name__)
 
@@ -91,18 +88,6 @@ def get_diagnosis_report(current_user, report_id: int):
     return jsonify({'success': True, 'data': report.to_dict()})
 
 
-@bp.route('/<int:report_id>/pdf', methods=['GET'])
-@token_required
-def download_diagnosis_report_pdf(current_user, report_id: int):
-    report = db.session.get(DiagnosisReport, report_id)
-    if report is None:
-        return jsonify({'success': False, 'message': '报告不存在'}), 404
-    path = Path(resolve_local_path(report.pdf_path))
-    if not path.exists():
-        return jsonify({'success': False, 'message': '报告文件不存在'}), 404
-    return send_file(path, as_attachment=True, download_name=path.name)
-
-
 @bp.route('/<int:report_id>', methods=['DELETE'])
 @token_required
 def delete_diagnosis_report(current_user, report_id: int):
@@ -110,14 +95,7 @@ def delete_diagnosis_report(current_user, report_id: int):
     if report is None:
         return jsonify({'success': False, 'message': '报告不存在'}), 404
 
-    path = Path(resolve_local_path(report.pdf_path))
     db.session.delete(report)
     db.session.commit()
-
-    if path.exists():
-        try:
-            path.unlink()
-        except Exception:
-            pass
 
     return jsonify({'success': True, 'message': '报告已删除'})

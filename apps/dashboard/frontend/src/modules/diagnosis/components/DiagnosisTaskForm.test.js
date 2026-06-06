@@ -28,7 +28,7 @@ function mountTaskForm(overrides = {}) {
         { label: '模型族', value: 'CNN-LSTM' },
         { label: '模型原始 ID', value: 'transfer3_cnnlstm_normalproto' },
         { label: '输入特征', value: 256 },
-        { label: 'Avg Confidence', value: '0.86' }
+        { label: 'Macro F1', value: '86.00%' }
       ],
       flowSteps: [
         { label: '数据加载', time: '10:22:14', status: 'ok' },
@@ -68,7 +68,7 @@ describe('DiagnosisTaskForm industrial task launcher', () => {
         { label: '模型族', value: '尚未选择模型' },
         { label: '模型原始 ID', value: '待选择' },
         { label: '输入特征', value: '暂无' },
-        { label: 'Avg Confidence', value: '暂无' }
+        { label: 'Macro F1', value: '暂无' }
       ]
     })
 

@@ -79,7 +79,7 @@ export const pageMeta = {
   },
   '/reports': {
     title: '诊断报告',
-    description: '查看、筛选与下载离线诊断报告，串联报告与资产上下文。'
+    description: '查看、筛选与管理离线诊断报告，串联报告与资产上下文。'
   },
   '/ai': {
     title: 'AI 助手',

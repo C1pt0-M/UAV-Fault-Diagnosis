@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import csv
 import hashlib
 import uuid
 from pathlib import Path
@@ -29,6 +30,7 @@ ALLOWED_EXTS = {
 
 OFFLINE_MULTICLASS_TASK = "offline_multiclass"
 FAULT_PROB_CURVE_CACHE_VERSION = "v2"
+CSV_QUALITY_SAMPLE_ROWS = 2000
 
 
 def _is_offline_multiclass_task(task: str | None) -> bool:
@@ -69,6 +71,84 @@ def _resolved_csv_path(asset: Asset, *, strict_prepare: bool = True) -> str:
     return ""
 
 
+def _format_percent(value: float) -> str:
+    rounded = round(value, 1)
+    if rounded.is_integer():
+        return f"{int(rounded)}%"
+    return f"{rounded}%"
+
+
+def _build_csv_quality_meta(csv_path: str | Path | None) -> dict:
+    if not csv_path:
+        return {}
+    path = Path(csv_path)
+    if not path.exists() or not path.is_file():
+        return {}
+
+    try:
+        with path.open("r", encoding="utf-8-sig", newline="") as fp:
+            reader = csv.reader(fp)
+            header = next(reader, None)
+            if not header:
+                return {}
+
+            column_count = len(header)
+            missing_cells = 0
+            total_cells = 0
+            sampled_rows = 0
+            empty_markers = {"", "nan", "none", "null"}
+
+            for row in reader:
+                sampled_rows += 1
+                values = list(row[:column_count])
+                if len(values) < column_count:
+                    values.extend([""] * (column_count - len(values)))
+                total_cells += column_count
+                missing_cells += sum(
+                    1 for value in values if str(value).strip().lower() in empty_markers
+                )
+                if sampled_rows >= CSV_QUALITY_SAMPLE_ROWS:
+                    break
+    except Exception:
+        return {}
+
+    if column_count <= 0 or total_cells <= 0:
+        return {
+            "field_completeness": "暂无",
+            "field_completeness_detail": {
+                "column_count": column_count,
+                "sampled_rows": sampled_rows,
+                "missing_cells": missing_cells,
+            },
+        }
+
+    completeness = max(0.0, min(100.0, (1 - missing_cells / total_cells) * 100))
+    return {
+        "field_completeness": _format_percent(completeness),
+        "field_completeness_detail": {
+            "column_count": column_count,
+            "sampled_rows": sampled_rows,
+            "missing_cells": missing_cells,
+            "sample_limit": CSV_QUALITY_SAMPLE_ROWS,
+        },
+    }
+
+
+def _asset_payload_with_quality(asset: Asset) -> dict:
+    payload = asset.to_dict()
+    meta = dict(payload.get("meta") or {})
+    if asset.kind == "csv" and not meta.get("field_completeness"):
+        try:
+            csv_path = _resolved_csv_path(asset, strict_prepare=False)
+        except Exception:
+            csv_path = ""
+        quality_meta = _build_csv_quality_meta(csv_path)
+        if quality_meta:
+            meta.update(quality_meta)
+            payload["meta"] = meta
+    return payload
+
+
 class SessionCsvUnavailableError(RuntimeError):
     """遥测会话未提供可分析CSV。"""
 
@@ -94,11 +174,13 @@ def _get_or_create_session_asset(session, created_by: int | None):
         sha256=_sha256_file(csv_file),
         created_by=created_by,
     )
-    asset.set_meta({
+    meta = {
         "prepared_csv_path": str(csv_file),
         "source_type": "telemetry_session",
         "session_id": session.id,
-    })
+    }
+    meta.update(_build_csv_quality_meta(csv_file))
+    asset.set_meta(meta)
     db.session.add(asset)
     db.session.flush()
     return asset
@@ -125,6 +207,7 @@ def _prepare_ulg_worker(run_id: int, asset_id: int):
     meta = asset.get_meta()
     meta["prepared_csv_path"] = str(output_csv)
     meta["prepared_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    meta.update(_build_csv_quality_meta(output_csv))
     asset.set_meta(meta)
     db.session.commit()
 
@@ -750,7 +833,7 @@ def upload_asset(current_user):
             {
                 "success": False,
                 "message": "文件已存在(文件指纹雷同)，跳过上传",
-                "data": existing_asset.to_dict(),
+                "data": _asset_payload_with_quality(existing_asset),
             }
         ), 409
 
@@ -765,6 +848,7 @@ def upload_asset(current_user):
     meta = {}
     if kind == "csv":
         meta["prepared_csv_path"] = str(stored_path)
+        meta.update(_build_csv_quality_meta(stored_path))
     asset.set_meta(meta)
     db.session.add(asset)
     db.session.commit()
@@ -786,7 +870,7 @@ def list_assets(current_user):
     if kind in ("ulg", "csv"):
         query = query.filter_by(kind=kind)
     assets = query.order_by(Asset.created_at.desc()).all()
-    return jsonify({"success": True, "data": [item.to_dict() for item in assets]})
+    return jsonify({"success": True, "data": [_asset_payload_with_quality(item) for item in assets]})
 
 
 @bp.route("/assets/<int:asset_id>", methods=["GET"])
@@ -795,7 +879,7 @@ def get_asset(current_user, asset_id: int):
     asset, error = _get_asset_or_404(asset_id)
     if error:
         return error
-    return jsonify({"success": True, "data": asset.to_dict()})
+    return jsonify({"success": True, "data": _asset_payload_with_quality(asset)})
 
 
 @bp.route("/assets/<int:asset_id>/download", methods=["GET"])

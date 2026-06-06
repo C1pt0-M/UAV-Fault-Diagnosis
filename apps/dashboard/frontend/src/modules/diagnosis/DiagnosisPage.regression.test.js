@@ -22,7 +22,6 @@ const workspaceState = vi.hoisted(() => ({
   loadMeta: vi.fn(),
   modelSummaryItems: [{ label: '模型族', value: 'KG-MSTCA' }],
   models: [],
-  nextActionItems: ['生成诊断报告', '进入 AI 解读'],
   openReportAssistant: vi.fn(),
   openReportsCenter: vi.fn(),
   openRunResult: vi.fn(),
@@ -71,8 +70,8 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
           DiagnosisSessionBanner: { template: '<div>会话承接</div>' },
           DiagnosisCommandHero: { template: '<section>顶部状态条报告状态最近更新</section>' },
           DiagnosisTaskForm: { template: '<section>任务发起 / 输入配置日志概览模型概览</section>' },
-          DiagnosisResultPanel: { template: '<section>诊断结果Top-K 概率分布风险等级下一步操作</section>' },
-          DiagnosisEvidencePanel: { template: '<aside>规则解释 / 诊断摘要可追溯证据 TOP5历史参考报告AI 解读入口</aside>' },
+          DiagnosisResultPanel: { template: '<section>诊断结果Top-K 概率分布风险等级</section>' },
+          DiagnosisEvidencePanel: { template: '<aside>规则解释 / 诊断摘要可追溯证据 TOP5历史参考报告</aside>' },
           DiagnosisRecentRunsPanel: { template: '<section>最近诊断任务 / 报告出口</section>' }
         }
       }
@@ -95,7 +94,6 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
       props: {
         confidenceText: '0.00%',
         latestReportId: null,
-        nextActionItems: ['选择日志资产与诊断模型', '启动离线诊断任务'],
         probabilityRows: [],
         reportCreating: false,
         resultData: null,
@@ -111,8 +109,7 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
     expect(text).toContain('待启动任务')
     expect(text).toContain('报告待生成')
     expect(text).toContain('AI 解读待解锁')
-    expect(text).toContain('选择日志资产与诊断模型')
-    expect(text).toContain('启动离线诊断任务')
+    expect(text).not.toContain('下一步操作')
     expect(text).not.toContain('Top-K 概率分布')
     expect(text).not.toContain('风险等级')
   })
@@ -122,7 +119,6 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
       props: {
         confidenceText: '0.00%',
         latestReportId: null,
-        nextActionItems: ['查看任务错误原因', '重新启动离线诊断任务'],
         probabilityRows: [],
         reportCreating: false,
         resultData: null,
@@ -137,7 +133,7 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
     expect(text).toContain('诊断失败')
     expect(text).toContain('离线诊断任务执行失败')
     expect(text).toContain("No module named 'build_sequence_cache'")
-    expect(text).toContain('重新启动离线诊断任务')
+    expect(text).not.toContain('下一步操作')
     expect(text).not.toContain('诊断准备状态')
   })
 
@@ -146,9 +142,7 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
       props: {
         evidenceRows: [],
         explanationSummary: '暂无可追溯证据；完成诊断后将根据结果摘要生成规则解释。',
-        latestReportId: null,
         recentReports: [],
-        recommendationItems: ['选择日志资产与诊断模型', '启动离线诊断任务'],
         resultData: null,
         riskLevel: { label: '待确认', tone: 'pending' },
         ruleRows: []

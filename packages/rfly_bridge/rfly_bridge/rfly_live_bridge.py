@@ -478,7 +478,7 @@ class RflyMavProvider:
     def _load_ctrl_module(self):
         module_path = self.sdk_root / "ctrl" / "PX4MavCtrlV4.py"
         if not module_path.exists():
-            raise FileNotFoundError(f"??? RflySim SDK ????: {module_path}")
+            raise FileNotFoundError(f"未找到 RflySim SDK 控制脚本: {module_path}")
         ctrl_dir = str(module_path.parent)
         sdk_dir = str(self.sdk_root)
         for path in (ctrl_dir, sdk_dir):
@@ -487,7 +487,7 @@ class RflyMavProvider:
         module_name = f"_rfly_px4_mav_ctrl_{abs(hash(str(module_path.resolve())))}"
         spec = importlib.util.spec_from_file_location(module_name, module_path)
         if spec is None or spec.loader is None:
-            raise ImportError(f"???? RflySim SDK ????: {module_path}")
+            raise ImportError(f"无法加载 RflySim SDK 控制脚本: {module_path}")
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         return module
@@ -569,9 +569,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--copter-id", type=int, default=1)
     parser.add_argument("--udp-mode", type=int, default=2)
     parser.add_argument("--no-true-data", action="store_true")
-    parser.add_argument("--pymav", action="store_true", help="?? MAVLink ??????")
+    parser.add_argument("--pymav", action="store_true", help="启用 MAVLink 状态补充")
     parser.add_argument("--pymav-address", default="udpin:0.0.0.0:14030")
-    parser.add_argument("--duration", type=float, default=0.0, help="?????0 ??????")
+    parser.add_argument("--duration", type=float, default=0.0, help="运行时长，0 表示持续运行")
     return parser.parse_args()
 
 

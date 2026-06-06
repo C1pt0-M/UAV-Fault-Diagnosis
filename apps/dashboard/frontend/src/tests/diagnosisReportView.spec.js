@@ -172,11 +172,60 @@ describe('buildDiagnosisReportView', () => {
       }
     })
 
-    expect(view.dataQuality.levelText).toBe('未知')
+    expect(view.dataQuality.levelText).toBe('未记录')
+    expect(view.dataQuality.warnings[0]).toContain('历史报告未记录数据质量字段')
     expect(view.traceability.rulesVersion).toBe('rule_v1')
     expect(view.reportConfidence.levelText).toBe('未知')
     expect(view.review.statusText).toBe('待复核')
     expect(view.evidenceChain).toEqual([])
+  })
+
+  it('优先使用新报告 readable 字段并区分缺失规则指标', () => {
+    const view = buildDiagnosisReportView({
+      prediction_label: 'sensor',
+      confidence: 0.92,
+      summary: {
+        readable: {
+          conclusion: '本次离线诊断识别为传感器故障，主分类置信度为 92.0%。',
+          risk: '风险等级为高风险，建议优先复核相关传感器。',
+          evidence: [
+            '模型当前主要判断为传感器故障（92.0%）。',
+            '规则指标缺失：陀螺振动偏高，未从当前 CSV 中提取到对应规则指标。'
+          ],
+          recommendations: ['[优先处理] 检查 IMU 安装与校准']
+        },
+        severity: {
+          level: 'heavy',
+          method: 'model_confidence_fallback',
+          evidence: [
+            {
+              metric: 'gyro_vibration_p95',
+              status: 'missing',
+              source: 'rule',
+              reason_text: '未从当前 CSV 中提取到对应规则指标。'
+            },
+            {
+              metric: 'prediction_confidence',
+              status: 'used',
+              source: 'model',
+              value: 0.92,
+              score: 1
+            }
+          ]
+        },
+        topk: [{ label: 'sensor', prob: 0.92 }],
+        recommendations: [{ title: '检查 IMU 安装与校准', priority: 'P1' }]
+      }
+    })
+
+    expect(view.headline).toContain('主分类置信度为 92.0%')
+    expect(view.riskText).toContain('高风险')
+    expect(view.whyItems[1].description).toContain('未从当前 CSV 中提取到对应规则指标')
+    expect(view.evidenceChain[0]).toMatchObject({
+      sourceText: '规则证据',
+      statusText: '缺失'
+    })
+    expect(view.evidenceChain[1].sourceText).toBe('模型证据')
   })
 
   it('序列化后的 summary 不出现 Unicode 转义', () => {

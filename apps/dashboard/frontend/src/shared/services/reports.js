@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import { downloadBlob } from '@/shared/services/download'
 
 export const diagnosisReportApi = {
   create(runId) {
@@ -13,9 +12,5 @@ export const diagnosisReportApi = {
   },
   remove(reportId) {
     return request.delete(`/reports/diagnosis/${reportId}`)
-  },
-  async download(reportId, filename) {
-    const blob = await request.getBlob(`/reports/diagnosis/${reportId}/pdf`)
-    await downloadBlob(blob, filename || `diagnosis_report_${reportId}.pdf`)
   }
 }

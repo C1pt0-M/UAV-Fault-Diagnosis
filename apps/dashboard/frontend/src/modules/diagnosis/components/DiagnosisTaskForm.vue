@@ -38,16 +38,6 @@
             />
           </el-select>
         </el-form-item>
-
-        <el-form-item :label="diagnosisCopy.taskTypeLabel">
-          <el-select model-value="offline_multiclass" disabled>
-            <el-option :label="diagnosisCopy.taskTypeValue" value="offline_multiclass" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item :label="diagnosisCopy.windowLabel">
-          <el-input :model-value="diagnosisCopy.windowPlaceholder" disabled />
-        </el-form-item>
       </el-form>
 
       <section class="diagnosis-summary-block">
@@ -106,7 +96,6 @@
 <script setup>
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import { ElForm, ElFormItem } from 'element-plus/es/components/form/index.mjs'
-import ElInput from 'element-plus/es/components/input/index.mjs'
 import { ElOption, ElSelect } from 'element-plus/es/components/select/index.mjs'
 import { diagnosisCopy } from '@/modules/diagnosis/diagnosisView'
 
@@ -159,7 +148,7 @@ const selectedModel = defineModel('selectedModel', {
 }
 
 .diagnosis-launch__body {
-  padding: 16px var(--space-lg);
+  padding: var(--space-lg);
 }
 
 .diagnosis-launch__badge {

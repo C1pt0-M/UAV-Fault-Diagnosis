@@ -24,9 +24,6 @@ vi.mock('@element-plus/icons-vue', () => ({
   Bell: { name: 'Bell', template: '<i data-icon="bell" />' },
   Box: { name: 'Box', template: '<i data-icon="box" />' },
   CircleCheck: { name: 'CircleCheck', template: '<i data-icon="circle-check" />' },
-  Connection: { name: 'Connection', template: '<i data-icon="connection" />' },
-  Cpu: { name: 'Cpu', template: '<i data-icon="cpu" />' },
-  DataAnalysis: { name: 'DataAnalysis', template: '<i data-icon="data-analysis" />' },
   Document: { name: 'Document', template: '<i data-icon="document" />' },
   Finished: { name: 'Finished', template: '<i data-icon="finished" />' },
   RefreshRight: { name: 'RefreshRight', template: '<i data-icon="refresh-right" />' },
@@ -170,9 +167,14 @@ describe('OverviewPage industrial research dashboard', () => {
     expect(text).toContain('故障分类概览')
     expect(text).toContain('平均诊断置信度')
     expect(text).toContain('近 24h 诊断风险趋势')
-    expect(text).toContain('字段合同状态')
-    expect(text).toContain('默认在线模型')
-    expect(text).toContain('诊断可解释性')
+    expect(text).not.toContain('字段合同状态')
+    expect(text).not.toContain('模型注册状态')
+    expect(text).not.toContain('schema version')
+    expect(text).not.toContain('诊断流程与任务状态')
+    expect(text).not.toContain('离线分析流程')
+    expect(text).toContain('当前检测模型')
+    expect(text).not.toContain('默认在线模型')
+    expect(text).not.toContain('诊断可解释性')
     expect(text).toContain('相似历史报告')
     expect(text).toContain('近 24h 无诊断报告或告警事件')
     expect(text).toContain('生成新诊断报告或启动实时检测后自动形成趋势')
@@ -185,11 +187,11 @@ describe('OverviewPage industrial research dashboard', () => {
     expect(text).toContain('KG-MSTCA 在线检测模型')
     expect(text).toContain('online_detector_kg_mstca_rfly')
     expect(text).toContain('故障概率异常')
-    expect(text).toContain('告警阶段')
-    expect(text).toContain('预测提前量')
-    expect(text).toContain('异常信号')
-    expect(text).toContain('风险/告警')
-    expect(text).toContain('时间窗口')
+    expect(text).not.toContain('告警阶段')
+    expect(text).not.toContain('预测提前量')
+    expect(text).not.toContain('异常信号')
+    expect(text).not.toContain('风险/告警')
+    expect(text).not.toContain('时间窗口')
     expect(text).toContain('实时检测')
     expect(text).toContain('故障概率曲线')
     expect(text).toContain('资产 #178')

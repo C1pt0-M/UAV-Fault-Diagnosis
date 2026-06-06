@@ -120,14 +120,6 @@ export function useReportsWorkspace() {
     })
   }
 
-  async function downloadReport(row) {
-    try {
-      await diagnosisReportApi.download(row.id, `diagnosis_report_${row.id}.pdf`)
-    } catch (error) {
-      ElMessage.error(`下载报告失败：${error.message || '未知错误'}`)
-    }
-  }
-
   async function removeReport(row) {
     try {
       await ElMessageBox.confirm(
@@ -169,7 +161,6 @@ export function useReportsWorkspace() {
     detailTarget,
     detailJson,
     detailVisible,
-    downloadReport,
     filters,
     handleReset,
     handleFilterRefresh,

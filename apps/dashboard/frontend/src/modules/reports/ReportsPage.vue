@@ -29,7 +29,6 @@
       @reset="handleReset"
       @show-detail="showDetail"
       @open-ai="openInAssistant"
-      @download="downloadReport"
       @remove="removeReport"
       @page-change="handlePageChange"
       @page-size-change="handlePageSizeChange"
@@ -55,7 +54,6 @@ const {
   detailTarget,
   detailJson,
   detailVisible,
-  downloadReport,
   filters,
   handleFilterRefresh,
   handlePageChange,

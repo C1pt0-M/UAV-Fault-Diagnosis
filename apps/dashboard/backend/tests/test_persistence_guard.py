@@ -23,13 +23,10 @@ def test_create_app_startup_creates_db_backup_and_logs_runtime_gaps(tmp_path: Pa
     _seed_sqlite_file(db_path)
 
     runs_dir = runtime_dir / "runs"
-    reports_dir = runtime_dir / "reports"
     (runs_dir / "run_84").mkdir(parents=True, exist_ok=True)
     (runs_dir / "run_84" / "result.json").write_text("{}", encoding="utf-8")
     (runs_dir / "run_85").mkdir(parents=True, exist_ok=True)
     (runs_dir / "run_85" / "result.json").write_text("{}", encoding="utf-8")
-    reports_dir.mkdir(parents=True, exist_ok=True)
-    (reports_dir / "diagnosis_run_84_20260319163447.pdf").write_bytes(b"%PDF-1.4\n")
 
     class LocalTestingConfig(TestingConfig):
         SQLALCHEMY_DATABASE_URI = f"sqlite:///{db_path}"
@@ -37,7 +34,7 @@ def test_create_app_startup_creates_db_backup_and_logs_runtime_gaps(tmp_path: Pa
         UPLOAD_DIR = runtime_dir / "uploads"
         DERIVED_DIR = runtime_dir / "derived"
         RUNS_DIR = runs_dir
-        REPORTS_DIR = reports_dir
+        REPORTS_DIR = runtime_dir / "reports"
         AI_RUNTIME_DIR = runtime_dir / "ai"
         AI_KNOWLEDGE_DIR = runtime_dir / "ai" / "knowledge"
         AI_ENABLE_KNOWLEDGE_BASE = False
@@ -52,7 +49,6 @@ def test_create_app_startup_creates_db_backup_and_logs_runtime_gaps(tmp_path: Pa
     assert backups[0].read_bytes()[:16] == db_path.read_bytes()[:16]
     normalized_log = caplog.text.replace("\\", "/")
     assert "runtime/runs" in normalized_log
-    assert "runtime/reports" in normalized_log
 
     # 防止 app 生命周期里的扩展引用影响后续测试。
     assert app.config["RUNTIME_DIR"] == runtime_dir

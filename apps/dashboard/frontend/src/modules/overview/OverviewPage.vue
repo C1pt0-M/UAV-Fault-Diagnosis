@@ -57,11 +57,6 @@
             <h2>近 24h 诊断风险趋势</h2>
             <p>基于最近诊断任务、告警事件与故障概率记录聚合</p>
           </div>
-          <div class="range-tabs" aria-label="时间范围">
-            <button type="button">1H</button>
-            <button type="button" class="is-active">24H</button>
-            <button type="button">7D</button>
-          </div>
         </header>
         <div v-if="riskPoints.length" ref="riskChartEl" class="risk-chart"></div>
         <div v-else class="empty-state empty-state--trend">
@@ -72,91 +67,13 @@
         </div>
       </article>
 
-      <div class="overview-side-stack">
-        <article class="panel-card">
-          <header class="panel-card__header panel-card__header--compact">
-            <h2>字段合同状态</h2>
-            <span class="status-badge" :class="fieldContractBadgeClass">{{ fieldContractStatusText }}</span>
-          </header>
-          <div class="field-contract">
-            <div class="kv-row">
-              <span>schema version</span>
-              <strong>{{ fieldContract.schema_version || '-' }}</strong>
-            </div>
-            <div class="kv-row">
-              <span>输入完整性</span>
-              <strong>{{ percentOrDash(fieldContract.input_integrity) }}</strong>
-            </div>
-            <div class="kv-row">
-              <span>缺失字段</span>
-              <strong>{{ valueOrDash(fieldContract.missing_fields) }}</strong>
-            </div>
-            <div class="kv-row">
-              <span>特征覆盖率</span>
-              <strong>{{ percentOrDash(fieldContract.feature_coverage) }}</strong>
-            </div>
-            <p class="panel-note">
-              <strong>{{ fieldContractMessage }}</strong>
-              <span>{{ fieldContract.source || '等待输入' }}</span>
-            </p>
-          </div>
-        </article>
+    </section>
 
-        <article class="panel-card">
-          <header class="panel-card__header panel-card__header--compact">
-            <h2>模型注册状态</h2>
-            <span class="status-badge" :class="modelBadgeClass">{{ modelStatusText }}</span>
-          </header>
-          <div class="model-meta">
-            <div class="kv-row">
-              <span>任务类型</span>
-              <strong>{{ normalizeTask(modelSummary.task) }}</strong>
-            </div>
-            <div class="kv-row">
-              <span>architecture</span>
-              <strong>{{ modelSummary.architecture || '-' }}</strong>
-            </div>
-            <div class="kv-row">
-              <span>macro F1</span>
-              <strong>{{ metricNumber(modelSummary.metrics?.macro_f1) }}</strong>
-            </div>
-            <div class="kv-row">
-              <span>weighted F1</span>
-              <strong>{{ metricNumber(modelSummary.metrics?.weighted_f1) }}</strong>
-            </div>
-            <div class="kv-row">
-              <span>accuracy</span>
-              <strong>{{ metricNumber(modelSummary.metrics?.accuracy) }}</strong>
-            </div>
-          </div>
-        </article>
-      </div>
-
+    <section class="overview-secondary-grid">
       <article class="panel-card">
         <header class="panel-card__header panel-card__header--compact">
-          <div>
-            <h2>最近告警</h2>
-            <span>基于告警日志记录</span>
-          </div>
-          <a class="panel-action" href="/monitoring" @click.prevent="goTo('/monitoring')">查看监测</a>
-        </header>
-        <div v-if="recentWarnings.length" class="warning-list">
-          <div v-for="item in recentWarnings" :key="item.id" class="warning-row">
-            <span class="mono">{{ item.time || '-' }}</span>
-            <span>{{ item.asset || '-' }}</span>
-            <strong>{{ evidenceLabelText(item.message || '故障告警') }}</strong>
-            <span class="status-badge" :class="severityBadgeClass(item.severity)">
-              {{ severityText(item.severity) }}
-            </span>
-          </div>
-        </div>
-        <div v-else class="empty-state empty-state--small">暂无确认告警</div>
-      </article>
-
-      <article class="panel-card">
-        <header class="panel-card__header panel-card__header--compact">
-          <h2>默认在线模型</h2>
-          <span>注册信息与模型指标口径</span>
+          <h2>当前检测模型</h2>
+          <span>用于实时检测与故障概率曲线</span>
         </header>
         <div class="model-detail">
           <div class="model-detail__top">
@@ -205,25 +122,27 @@
           </div>
         </div>
       </article>
-    </section>
 
-    <section class="pipeline-panel">
-      <header>
-        <h2>诊断流程与任务状态</h2>
-        <span>离线分析流程</span>
-      </header>
-      <div class="pipeline-steps">
-        <article v-for="step in flowSteps" :key="step.key" class="pipeline-step">
-          <div class="pipeline-step__icon">
-            <component :is="step.icon" />
-          </div>
+      <article class="panel-card">
+        <header class="panel-card__header panel-card__header--compact">
           <div>
-            <strong>{{ step.title }}</strong>
-            <span class="status-badge" :class="step.badgeClass">{{ step.status }}</span>
+            <h2>最近告警</h2>
+            <span>基于告警日志记录</span>
           </div>
-          <p>{{ step.description }}</p>
-        </article>
-      </div>
+          <a class="panel-action" href="/monitoring" @click.prevent="goTo('/monitoring')">查看监测</a>
+        </header>
+        <div v-if="recentWarnings.length" class="warning-list">
+          <div v-for="item in recentWarnings" :key="item.id" class="warning-row">
+            <span class="mono">{{ item.time || '-' }}</span>
+            <span>{{ item.asset || '-' }}</span>
+            <strong>{{ evidenceLabelText(item.message || '故障告警') }}</strong>
+            <span class="status-badge" :class="severityBadgeClass(item.severity)">
+              {{ severityText(item.severity) }}
+            </span>
+          </div>
+        </div>
+        <div v-else class="empty-state empty-state--small">暂无确认告警</div>
+      </article>
     </section>
 
     <section class="overview-bottom-grid">
@@ -256,34 +175,6 @@
           </div>
         </div>
         <div v-else class="empty-state empty-state--small">暂无任务记录</div>
-      </article>
-
-      <article class="panel-card">
-        <header class="panel-card__header panel-card__header--compact">
-          <h2>诊断可解释性</h2>
-          <span>{{ evidenceSubtitle }}</span>
-        </header>
-        <div v-if="evidenceGroups.length" class="evidence-groups">
-          <section
-            v-for="group in evidenceGroups"
-            :key="group.key"
-            class="evidence-group"
-          >
-            <h3>{{ group.title }}</h3>
-            <div class="evidence-list">
-              <div
-                v-for="(item, index) in group.items"
-                :key="`${group.key}-${item.name}-${index}`"
-                class="evidence-row"
-              >
-                <span class="evidence-row__index">{{ index + 1 }}</span>
-                <span>{{ evidenceLabelText(item.name) }}</span>
-                <strong>{{ valueOrDash(item.value) }}</strong>
-              </div>
-            </div>
-          </section>
-        </div>
-        <div v-else class="empty-state empty-state--small">暂无诊断证据摘要</div>
       </article>
 
       <article class="panel-card">
@@ -327,9 +218,6 @@ import {
   Bell,
   Box,
   CircleCheck,
-  Connection,
-  Cpu,
-  DataAnalysis,
   Document,
   Finished,
   RefreshRight,
@@ -368,26 +256,11 @@ const faultSummary = computed(() => overview.value.fault_summary || {
   report_count: 0
 })
 const modelSummary = computed(() => overview.value.model_summary || { metrics: {}, capabilities: {} })
-const fieldContract = computed(() => overview.value.field_contract || { status: 'waiting', source: '等待输入' })
 const telemetrySummary = computed(() => overview.value.telemetry_summary || {})
 const riskPoints = computed(() => overview.value.risk_trend?.points || [])
 const recentWarnings = computed(() => warningSummary.value.recent || [])
 const recentTasks = computed(() => taskSummary.value.recent || overview.value.recent_runs || [])
-const recentEvidence = computed(() => overview.value.recent_evidence || [])
 const similarReports = computed(() => overview.value.similar_reports || [])
-const evidenceGroups = computed(() => {
-  const grouped = [
-    { key: 'signal', title: '异常信号', items: [] },
-    { key: 'risk', title: '风险/告警', items: [] },
-    { key: 'time', title: '时间窗口', items: [] },
-    { key: 'other', title: '其它证据', items: [] }
-  ]
-  const byKey = Object.fromEntries(grouped.map((group) => [group.key, group]))
-  recentEvidence.value.slice(0, 5).forEach((item) => {
-    byKey[evidenceGroupKey(item)].items.push(item)
-  })
-  return grouped.filter((group) => group.items.length)
-})
 
 const modelRawName = computed(() => modelSummary.value.name || '暂无注册模型')
 const modelDisplayName = computed(() => modelSummary.value.display_name || friendlyModelName(modelSummary.value))
@@ -466,28 +339,6 @@ const kpiCards = computed(() => [
   }
 ])
 
-const fieldContractBadgeClass = computed(() => {
-  if (fieldContract.value.status === 'passed') return 'status-badge--ok'
-  if (fieldContract.value.status === 'degraded') return 'status-badge--warn'
-  return 'status-badge--offline'
-})
-const fieldContractStatusText = computed(() => {
-  if (fieldContract.value.status === 'passed') return '达标'
-  if (fieldContract.value.status === 'degraded') return '降级'
-  if (fieldContract.value.schema_version && fieldContract.value.schema_version !== '-') return '等待覆盖'
-  return '等待输入'
-})
-const fieldContractMessage = computed(() => {
-  if (fieldContract.value.message) return fieldContract.value.message
-  if (fieldContract.value.status === 'waiting' && fieldContract.value.schema_version && fieldContract.value.schema_version !== '-') {
-    return '等待特征覆盖数据'
-  }
-  return fieldContractStatusText.value
-})
-const hasRegisteredModel = computed(() => modelSummary.value.status === 'registered' || Boolean(modelSummary.value.name))
-const modelBadgeClass = computed(() => hasRegisteredModel.value ? 'status-badge--ok' : 'status-badge--offline')
-const modelStatusText = computed(() => hasRegisteredModel.value ? '已注册' : '未注册')
-
 const capabilityLabels = computed(() => {
   const caps = modelSummary.value.capabilities || {}
   const labels = []
@@ -497,56 +348,6 @@ const capabilityLabels = computed(() => {
   return labels.length ? labels : ['等待模型能力信息']
 })
 
-const flowSteps = computed(() => [
-  {
-    key: 'collect',
-    index: '1',
-    icon: Connection,
-    title: '数据采集与任务登记',
-    status: telemetrySummary.value.current_session_id ? '进行中' : '当前空闲',
-    badgeClass: telemetrySummary.value.current_session_id ? 'status-badge--active' : 'status-badge--offline',
-    description: 'Replay / Rfly 遥测数据进入统一日志资产链路'
-  },
-  {
-    key: 'feature',
-    index: '2',
-    icon: DataAnalysis,
-    title: '数据校验与特征构建',
-    status: fieldContract.value.status === 'passed' ? '已完成' : fieldContractStatusText.value,
-    badgeClass: fieldContractBadgeClass.value,
-    description: '检查 schema、输入完整性与特征覆盖率'
-  },
-  {
-    key: 'model',
-    index: '3',
-    icon: Cpu,
-    title: '模型推理与置信评估',
-    status: modelStatusText.value,
-    badgeClass: modelBadgeClass.value,
-    description: '使用注册模型输出诊断类别与 confidence'
-  },
-  {
-    key: 'evidence',
-    index: '4',
-    icon: TrendCharts,
-    title: '结果分析与证据定位',
-    status: recentEvidence.value.length ? '进行中' : '等待证据',
-    badgeClass: recentEvidence.value.length ? 'status-badge--pending' : 'status-badge--offline',
-    description: '提取关键异常信号与诊断证据摘要'
-  },
-  {
-    key: 'report',
-    index: '5',
-    icon: Document,
-    title: '报告生成与归档',
-    status: similarReports.value.length ? '已归档' : '待生成',
-    badgeClass: similarReports.value.length ? 'status-badge--ok' : 'status-badge--offline',
-    description: '沉淀可复盘的历史诊断报告'
-  }
-])
-
-const evidenceSubtitle = computed(() => recentEvidence.value.length ? '关键异常信号' : '等待诊断结果')
-
 function valueOrDash(value) {
   return value === null || value === undefined || value === '' ? '-' : value
 }
@@ -555,11 +356,6 @@ function metricNumber(value) {
   if (value === null || value === undefined || value === '') return '-'
   const number = Number(value)
   return Number.isFinite(number) ? number.toFixed(2) : value
-}
-
-function percentOrDash(value) {
-  if (value === null || value === undefined || value === '') return '-'
-  return `${Math.round(Number(value) || 0)}%`
 }
 
 function percentDecimal(value) {
@@ -604,21 +400,6 @@ function evidenceLabelText(name) {
   return map[raw.toLowerCase()] || raw || '故障告警'
 }
 
-function evidenceGroupKey(item) {
-  const raw = String(item?.raw_name || item?.name || '').trim().toLowerCase()
-  const label = evidenceLabelText(item?.name)
-  if (raw.includes('lead_time') || raw.includes('duration') || raw.includes('time') || label.includes('提前量') || label.includes('时间')) {
-    return 'time'
-  }
-  if (raw.includes('warning') || raw.includes('risk') || raw.includes('fault_prob') || label.includes('告警') || label.includes('风险') || label.includes('故障概率')) {
-    return 'risk'
-  }
-  if (raw.includes('current') || raw.includes('voltage') || raw.includes('temperature') || raw.includes('imu') || raw.includes('gyro') || raw.includes('barometer') || label.includes('异常') || label.includes('升高') || label.includes('漂移')) {
-    return 'signal'
-  }
-  return 'other'
-}
-
 function assetDisplayName(value) {
   const raw = String(value || '').trim()
   if (!raw || raw === '-') return '-'
@@ -630,13 +411,6 @@ function goTo(route) {
   if (router?.push) {
     router.push(route)
   }
-}
-
-function normalizeTask(task) {
-  if (task === 'offline_multiclass' || task === 'offline_5class') return '离线诊断'
-  if (task === 'online_binary') return '在线检测'
-  if (task === 'convert_ulg') return '预处理'
-  return task || '-'
 }
 
 function normalizeStatusText(status) {
@@ -739,12 +513,17 @@ function renderRiskChart() {
         markLine: {
           symbol: 'none',
           lineStyle: { color: '#dc2626', type: 'dashed' },
-          label: { formatter: '风险阈值 0.70', color: '#dc2626' },
+          label: {
+            formatter: '风险',
+            color: '#dc2626',
+            position: 'insideEndTop',
+            distance: 6
+          },
           data: [{ yAxis: threshold }]
         },
         markPoint: {
           symbol: 'pin',
-          symbolSize: 38,
+          symbolSize: 30,
           itemStyle: { color: '#f97316' },
           data: riskPoints.value
             .map((item, index) => item.marker ? { coord: [index, item.risk], name: '告警事件' } : null)
@@ -947,19 +726,19 @@ onBeforeUnmount(() => {
 
 .overview-main-grid {
   display: grid;
-  grid-template-columns: minmax(520px, 1.45fr) minmax(220px, 0.55fr) minmax(360px, 0.9fr);
+  grid-template-columns: 1fr;
   gap: 10px;
   align-items: stretch;
 }
 
-.overview-side-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.overview-secondary-grid {
+  display: grid;
+  grid-template-columns: minmax(420px, 0.9fr) minmax(420px, 1.1fr);
+  gap: 10px;
+  align-items: stretch;
 }
 
-.panel-card,
-.pipeline-panel {
+.panel-card {
   border: 1px solid var(--line-soft);
   border-radius: var(--radius-lg);
   background: var(--bg-panel);
@@ -967,8 +746,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.panel-card__header,
-.pipeline-panel > header {
+.panel-card__header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -982,8 +760,7 @@ onBeforeUnmount(() => {
   align-items: center;
 }
 
-.panel-card__header h2,
-.pipeline-panel h2 {
+.panel-card__header h2 {
   margin: 0;
   color: var(--text-primary);
   font-size: 14px;
@@ -991,8 +768,7 @@ onBeforeUnmount(() => {
 }
 
 .panel-card__header p,
-.panel-card__header span,
-.pipeline-panel header span {
+.panel-card__header span {
   margin: 2px 0 0;
   color: var(--text-tertiary);
   font-size: 12px;
@@ -1019,28 +795,6 @@ onBeforeUnmount(() => {
 
 .panel-card--trend {
   min-height: 334px;
-}
-
-.range-tabs {
-  display: flex;
-  gap: 4px;
-}
-
-.range-tabs button {
-  height: 26px;
-  padding: 0 10px;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius-md);
-  background: var(--bg-panel);
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.range-tabs .is-active {
-  color: var(--brand);
-  border-color: var(--brand);
-  background: var(--brand-soft);
 }
 
 .risk-chart {
@@ -1085,43 +839,8 @@ onBeforeUnmount(() => {
   min-height: 248px;
 }
 
-.field-contract,
-.model-meta,
 .model-detail {
   padding: 12px 14px;
-}
-
-.kv-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 6px 0;
-  color: var(--text-secondary);
-  font-size: 12px;
-}
-
-.kv-row strong {
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 12px;
-}
-
-.panel-note {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin: 8px 0 0;
-  padding-top: 8px;
-  border-top: 1px solid var(--line-faint);
-  color: var(--text-tertiary);
-  font-size: 12px;
-}
-
-.panel-note strong {
-  color: var(--text-secondary);
-  font-weight: 600;
 }
 
 .warning-list {
@@ -1234,62 +953,9 @@ onBeforeUnmount(() => {
   font-weight: 600;
 }
 
-.pipeline-panel {
-  padding-bottom: 12px;
-}
-
-.pipeline-steps {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
-  padding: 14px;
-}
-
-.pipeline-step {
-  position: relative;
-  display: grid;
-  grid-template-columns: 36px minmax(0, 1fr);
-  gap: 10px;
-  padding: 10px;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius-lg);
-  background: var(--bg-panel);
-}
-
-.pipeline-step__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-md);
-  background: var(--brand-soft);
-  color: var(--brand);
-}
-
-.pipeline-step__icon svg {
-  width: 18px;
-  height: 18px;
-}
-
-.pipeline-step strong {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--text-primary);
-  font-size: 13px;
-}
-
-.pipeline-step p {
-  grid-column: 1 / -1;
-  margin: 2px 0 0;
-  color: var(--text-tertiary);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
 .overview-bottom-grid {
   display: grid;
-  grid-template-columns: minmax(500px, 1.2fr) minmax(320px, 0.8fr) minmax(320px, 0.8fr);
+  grid-template-columns: minmax(500px, 1.2fr) minmax(360px, 0.8fr);
   gap: 12px;
 }
 
@@ -1335,43 +1001,6 @@ onBeforeUnmount(() => {
   border-bottom: none;
 }
 
-.evidence-groups {
-  padding: 10px 12px 12px;
-}
-
-.evidence-group + .evidence-group {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line-faint);
-}
-
-.evidence-group h3 {
-  margin: 0 0 4px;
-  color: var(--text-secondary);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.evidence-list {
-  display: grid;
-  gap: 0;
-}
-
-.evidence-row {
-  display: grid;
-  grid-template-columns: 26px minmax(0, 1fr) 64px;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--line-faint);
-  color: var(--text-secondary);
-  font-size: 12px;
-}
-
-.evidence-row:last-child {
-  border-bottom: none;
-}
-
 .overview-provenance {
   margin: -2px 2px 0;
   color: var(--text-tertiary);
@@ -1379,36 +1008,7 @@ onBeforeUnmount(() => {
   line-height: 1.6;
 }
 
-.evidence-row__index {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--brand-soft);
-  color: var(--brand);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.evidence-row strong {
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  text-align: right;
-}
-
 @media (max-width: 1500px) {
-  .overview-main-grid {
-    grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.85fr);
-  }
-
-  .overview-side-stack {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .overview-bottom-grid {
     grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
   }
@@ -1421,24 +1021,20 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 1180px) {
-  .overview-main-grid,
+  .overview-secondary-grid,
   .overview-bottom-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 920px) {
-  .overview-kpis,
-  .overview-side-stack,
-  .pipeline-steps {
+  .overview-kpis {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 640px) {
-  .overview-kpis,
-  .overview-side-stack,
-  .pipeline-steps {
+  .overview-kpis {
     grid-template-columns: 1fr;
   }
 

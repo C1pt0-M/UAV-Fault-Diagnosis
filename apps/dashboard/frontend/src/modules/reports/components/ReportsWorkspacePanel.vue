@@ -157,7 +157,6 @@ const emit = defineEmits([
   'reset',
   'show-detail',
   'open-ai',
-  'download',
   'remove',
   'page-change',
   'page-size-change'
@@ -173,7 +172,6 @@ function emitReportAction(actionKey, row) {
   const eventMap = {
     detail: 'show-detail',
     ai: 'open-ai',
-    download: 'download',
     remove: 'remove'
   }
   emit(eventMap[actionKey], row)
@@ -234,6 +232,10 @@ function emitReportAction(actionKey, row) {
 
 .reports-summary-strip__item--ok {
   border-left-color: var(--status-ok);
+}
+
+.reports-summary-strip__item--warning {
+  border-left-color: var(--status-warn);
 }
 
 .reports-summary-strip__item--ai {

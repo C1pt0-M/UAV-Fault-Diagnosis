@@ -30,7 +30,6 @@
       <DiagnosisResultPanel
         :confidence-text="confidenceText"
         :latest-report-id="latestReportId"
-        :next-action-items="nextActionItems"
         :probability-rows="probabilityRows"
         :report-creating="reportCreating"
         :result-data="resultData"
@@ -46,13 +45,10 @@
       <DiagnosisEvidencePanel
         :evidence-rows="evidenceRows"
         :explanation-summary="explanationSummary"
-        :latest-report-id="latestReportId"
         :recent-reports="recentReports"
-        :recommendation-items="nextActionItems"
         :result-data="resultData"
         :risk-level="riskLevel"
         :rule-rows="ruleRows"
-        @open-ai-assistant="openReportAssistant"
         @open-reports-center="openReportsCenter"
       />
     </section>
@@ -91,7 +87,6 @@ const {
   loadMeta,
   modelSummaryItems,
   models,
-  nextActionItems,
   openReportAssistant,
   openReportsCenter,
   openRunResult,

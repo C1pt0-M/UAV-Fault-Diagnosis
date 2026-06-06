@@ -27,16 +27,21 @@ from uav_dashboard_api.models.run_record import RunRecord
 from uav_dashboard_api.models.user import User
 from uav_dashboard_api.services.bridge import run_offline_5class
 from uav_dashboard_api.services.diagnosis_contract import build_diagnosis_payload
-from uav_dashboard_api.services.diagnosis_report import (
-    _build_pdf_lines,
-    create_or_get_diagnosis_report,
-)
+from uav_dashboard_api.services.diagnosis_report import create_or_get_diagnosis_report
 from uav_dashboard_api.services.model_registry import resolve_registered_model
 from uav_dashboard_api.services.severity_recommendation import (
     evaluate_severity_and_recommendations,
 )
-from uav_dashboard_api.utils.path_store import resolve_local_path
 from uav_fault.online.decision_engine import TemporalDecisionEngine
+
+
+REPORT_SUMMARY_SECTIONS = (
+    "data_quality",
+    "traceability",
+    "model_card",
+    "report_confidence",
+    "review",
+)
 
 
 def parse_args():
@@ -62,6 +67,14 @@ def parse_args():
 def _count_csv_rows(csv_path: Path) -> int:
     with csv_path.open("r", encoding="utf-8") as fp:
         return max(0, sum(1 for _ in fp) - 1)
+
+
+def _missing_report_summary_sections(summary: dict) -> list[str]:
+    return [
+        key
+        for key in REPORT_SUMMARY_SECTIONS
+        if not isinstance(summary.get(key), dict)
+    ]
 
 
 def main() -> int:
@@ -236,30 +249,25 @@ def main() -> int:
 
         report, created = create_or_get_diagnosis_report(run, created_by=user.id)
         summary = report.get_summary()
-        pdf_path = Path(resolve_local_path(report.pdf_path, app.config))
+        missing_sections = _missing_report_summary_sections(summary)
+        if missing_sections:
+            print(
+                f"[ERROR] 诊断报告缺少增强字段: {', '.join(missing_sections)}",
+                file=sys.stderr,
+            )
+            return 1
 
         print("\n=== 诊断报告 ===")
         print(f"report_id: {report.id}")
         print(f"新建报告: {created}")
         print(f"结论标签: {report.prediction_label}")
         print(f"置信度: {report.confidence:.4f}")
-        print(f"PDF 路径: {pdf_path}")
-        print(f"PDF 已生成: {pdf_path.exists()}")
+        print(f"增强字段检查: 已包含 {', '.join(REPORT_SUMMARY_SECTIONS)}")
 
         print("\n=== 增强字段 ===")
-        for key in (
-            "data_quality",
-            "traceability",
-            "model_card",
-            "report_confidence",
-            "review",
-        ):
+        for key in REPORT_SUMMARY_SECTIONS:
             print(f"--- {key} ---")
             print(json.dumps(summary.get(key, {}), ensure_ascii=False, indent=2))
-
-        print("\n=== PDF 内容预览（前 45 行）===")
-        for line in _build_pdf_lines(summary, report.get_probs())[:45]:
-            print(line)
 
         result_path = runtime / "latest_report_result.json"
         result_path.write_text(
@@ -273,7 +281,7 @@ def main() -> int:
                     "confidence": report.confidence,
                     "probs": report.get_probs(),
                     "summary": summary,
-                    "pdf_path": str(pdf_path),
+                    "summary_sections": list(REPORT_SUMMARY_SECTIONS),
                 },
                 ensure_ascii=False,
                 indent=2,

@@ -61,23 +61,17 @@ def collect_runtime_persistence_snapshot(
     diagnosis_report_count: int,
 ) -> dict[str, Any]:
     runs_dir = runtime_dir / 'runs'
-    reports_dir = runtime_dir / 'reports'
     run_result_files = len(list(runs_dir.glob('run_*/result.json')))
-    diagnosis_report_pdfs = len(list(reports_dir.glob('diagnosis_run_*.pdf')))
 
     warnings: list[str] = []
     if run_result_files > run_record_count:
         warnings.append(
             f'检测到 {runs_dir} 中有 {run_result_files} 个运行结果文件，但 runs 表只有 {run_record_count} 条记录；这通常说明 SQLite 数据库曾被替换、重建或回滚到较新的空状态。'
         )
-    if diagnosis_report_pdfs > diagnosis_report_count:
-        warnings.append(
-            f'检测到 {reports_dir} 中有 {diagnosis_report_pdfs} 个诊断报告 PDF，但 diagnosis_reports 表只有 {diagnosis_report_count} 条记录；这通常说明报告文件仍在，但数据库索引已经丢失。'
-        )
 
     return {
         'run_result_files': run_result_files,
-        'diagnosis_report_pdfs': diagnosis_report_pdfs,
+        'diagnosis_report_count': diagnosis_report_count,
         'warnings': warnings,
     }
 

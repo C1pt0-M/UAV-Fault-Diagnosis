@@ -4,6 +4,37 @@ import os
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
 
+
+def _resolve_log_dir(app):
+    configured = app.config.get('LOG_DIR')
+    if configured:
+        return os.fspath(configured)
+    if app.config.get('TESTING') and app.config.get('RUNTIME_DIR'):
+        return os.path.join(os.fspath(app.config['RUNTIME_DIR']), 'logs')
+    return os.path.join(os.path.dirname(__file__), '../../logs')
+
+
+def _close_managed_handlers(logger):
+    for handler in list(logger.handlers):
+        if not getattr(handler, '_uav_dashboard_managed', False):
+            continue
+        logger.removeHandler(handler)
+        handler.close()
+
+
+def _build_file_handler(path, level, formatter, max_bytes, backup_count):
+    handler = RotatingFileHandler(
+        path,
+        maxBytes=max_bytes,
+        backupCount=backup_count,
+        encoding='utf-8'
+    )
+    handler.setLevel(level)
+    handler.setFormatter(formatter)
+    handler._uav_dashboard_managed = True
+    return handler
+
+
 def setup_logger(app):
     """
     配置应用日志系统
@@ -11,44 +42,45 @@ def setup_logger(app):
     Args:
         app: Flask应用实例
     """
-    # 创建日志目录
-    log_dir = os.path.join(os.path.dirname(__file__), '../../logs')
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
+    # 创建日志目录。测试环境使用各自 runtime，避免 Windows 下共享 app.log 文件锁。
+    log_dir = _resolve_log_dir(app)
+    os.makedirs(log_dir, exist_ok=True)
+    _close_managed_handlers(app.logger)
 
     # 日志格式
     log_format = '[%(asctime)s] %(levelname)s in %(module)s [%(pathname)s:%(lineno)d]: %(message)s'
     date_format = '%Y-%m-%d %H:%M:%S'
+    log_level = getattr(logging, str(app.config.get('LOG_LEVEL', 'INFO')).upper(), logging.INFO)
+    max_bytes = int(app.config.get('LOG_MAX_BYTES', 10 * 1024 * 1024))
+    backup_count = int(app.config.get('LOG_BACKUP_COUNT', 10))
+    formatter = logging.Formatter(log_format, date_format)
 
     # 配置应用日志
-    app_handler = RotatingFileHandler(
+    app_handler = _build_file_handler(
         os.path.join(log_dir, 'app.log'),
-        maxBytes=10*1024*1024,  # 10MB
-        backupCount=10,
-        encoding='utf-8'
+        log_level,
+        formatter,
+        max_bytes,
+        backup_count,
     )
-    app_handler.setLevel(logging.INFO)
-    app_handler.setFormatter(logging.Formatter(log_format, date_format))
 
     # 配置错误日志
-    error_handler = RotatingFileHandler(
+    error_handler = _build_file_handler(
         os.path.join(log_dir, 'error.log'),
-        maxBytes=10*1024*1024,  # 10MB
-        backupCount=10,
-        encoding='utf-8'
+        logging.ERROR,
+        formatter,
+        max_bytes,
+        backup_count,
     )
-    error_handler.setLevel(logging.ERROR)
-    error_handler.setFormatter(logging.Formatter(log_format, date_format))
 
     # 配置访问日志
-    access_handler = RotatingFileHandler(
+    access_handler = _build_file_handler(
         os.path.join(log_dir, 'access.log'),
-        maxBytes=10*1024*1024,  # 10MB
-        backupCount=10,
-        encoding='utf-8'
+        log_level,
+        formatter,
+        max_bytes,
+        backup_count,
     )
-    access_handler.setLevel(logging.INFO)
-    access_handler.setFormatter(logging.Formatter(log_format, date_format))
 
     # 添加处理器
     app.logger.addHandler(app_handler)
@@ -56,12 +88,13 @@ def setup_logger(app):
 
     # 如果不是开发环境，不输出到控制台
     if not app.debug:
-        app.logger.setLevel(logging.INFO)
+        app.logger.setLevel(log_level)
     else:
         # 开发环境同时输出到控制台
         stream_handler = logging.StreamHandler()
-        stream_handler.setLevel(logging.INFO)
-        stream_handler.setFormatter(logging.Formatter(log_format, date_format))
+        stream_handler.setLevel(log_level)
+        stream_handler.setFormatter(formatter)
+        stream_handler._uav_dashboard_managed = True
         app.logger.addHandler(stream_handler)
 
     app.logger.info('应用启动')

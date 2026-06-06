@@ -55,8 +55,8 @@ DEFAULT_OFFLINE_MODEL=transfer3_cnnlstm_normalproto
 DEFAULT_ONLINE_MODEL=online_detector_cnn1d_rfly
 
 ALLOW_AUTO_BOOTSTRAP_ADMIN=False
-ENABLE_SETUP_API=False
-ENABLE_PUBLIC_REGISTER=False
+ENABLE_SETUP_API=True
+ENABLE_PUBLIC_REGISTER=True
 ENABLE_TELEMETRY=True
 ENABLE_BLIND_TEST=False
 TELEMETRY_ALLOWED_BACKENDS=replay
@@ -95,4 +95,6 @@ Use the provided site config in `deploy/nginx/uav-dashboard.conf`.
 
 - If AI is enabled later, the server must have outbound access to the configured provider.
 - If telemetry replay is enabled, uploaded CSV files and generated session CSVs must be stored on persistent disk.
+- For software-copyright screenshots or demo deployment, keep setup and public registration enabled so the initialization, registration, and login flow matches the UI.
+- For a long-running public service, disable `ENABLE_PUBLIC_REGISTER` after the required accounts are created.
 - Do not enable multi-worker Gunicorn until task execution and telemetry state are moved out of process memory.

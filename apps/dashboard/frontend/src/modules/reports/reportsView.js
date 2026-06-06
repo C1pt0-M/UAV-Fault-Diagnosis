@@ -15,7 +15,6 @@ export const reportsCopy = {
   detailTitle: '诊断报告',
   detailAction: '详情',
   aiAction: 'AI 解读',
-  downloadAction: '下载',
   removeAction: '删除',
   removeSuccess: '报告删除成功',
   removeConfirmMessage(row) {
@@ -31,6 +30,7 @@ export const reportsCopy = {
   modelLabel: '模型',
   assetLabel: '资产',
   confidenceLabel: '置信度',
+  riskLabel: '风险等级',
   dataQualitySection: '数据质量',
   traceabilitySection: '模型与规则追溯',
   reportConfidenceSection: '报告可信度',
@@ -91,17 +91,12 @@ export function getReportModelDisplayName(modelName) {
 export function createReportSummaryItems(reports = [], pagination = {}) {
   const reportCount = Number(pagination.total ?? reports.length)
   const pageReportCount = reports.length
-  const confidenceValues = reports
-    .map((item) => Number(item.confidence))
-    .filter((value) => Number.isFinite(value))
-  const avgConfidence = confidenceValues.length
-    ? confidenceValues.reduce((sum, value) => sum + value, 0) / confidenceValues.length
-    : null
+  const abnormalCount = reports.filter((item) => item.prediction_label && item.prediction_label !== 'normal').length
 
   return [
     { label: '报告总数', value: reportCount, tone: 'primary' },
     { label: '当前页报告', value: pageReportCount, tone: 'primary' },
-    { label: '平均置信度', value: avgConfidence == null ? '暂无' : formatReportConfidence(avgConfidence), tone: 'ok' },
+    { label: '异常报告', value: abnormalCount, tone: abnormalCount ? 'warning' : 'ok' },
     { label: '可 AI 解读', value: pageReportCount, tone: 'ai' }
   ]
 }
@@ -110,7 +105,6 @@ export function createReportActionItems() {
   return [
     { key: 'detail', label: reportsCopy.detailAction, type: 'primary' },
     { key: 'ai', label: reportsCopy.aiAction, type: 'warning' },
-    { key: 'download', label: reportsCopy.downloadAction, type: 'success' },
     { key: 'remove', label: reportsCopy.removeAction, type: 'danger' }
   ]
 }

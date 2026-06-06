@@ -112,12 +112,6 @@
           </section>
         </div>
 
-        <section class="diagnosis-subpanel diagnosis-subpanel--actions">
-          <div class="diagnosis-subpanel__title">{{ diagnosisCopy.resultActionTitle }}</div>
-          <ul>
-            <li v-for="item in nextActionItems" :key="item">{{ item }}</li>
-          </ul>
-        </section>
       </template>
 
       <section v-else-if="stage.key === 'error'" class="diagnosis-ready diagnosis-ready--error">
@@ -134,12 +128,6 @@
           <strong>{{ runErrorText || '暂无错误详情' }}</strong>
         </div>
 
-        <section class="diagnosis-subpanel diagnosis-subpanel--actions diagnosis-ready__actions">
-          <div class="diagnosis-subpanel__title">{{ diagnosisCopy.resultActionTitle }}</div>
-          <ol>
-            <li v-for="item in nextActionItems" :key="item">{{ item }}</li>
-          </ol>
-        </section>
       </section>
 
       <section v-else class="diagnosis-ready">
@@ -165,12 +153,6 @@
           </article>
         </div>
 
-        <section class="diagnosis-subpanel diagnosis-subpanel--actions diagnosis-ready__actions">
-          <div class="diagnosis-subpanel__title">{{ diagnosisCopy.resultActionTitle }}</div>
-          <ol>
-            <li v-for="item in nextActionItems" :key="item">{{ item }}</li>
-          </ol>
-        </section>
       </section>
     </div>
   </section>
@@ -185,7 +167,6 @@ import { diagnosisCopy, getDiagnosisLabelMeta } from '@/modules/diagnosis/diagno
 const props = defineProps({
   confidenceText: { type: String, required: true },
   latestReportId: { type: [Number, String], default: null },
-  nextActionItems: { type: Array, default: () => [] },
   probabilityRows: { type: Array, default: () => [] },
   reportCreating: { type: Boolean, default: false },
   resultData: { type: Object, default: null },
@@ -375,10 +356,6 @@ const riskBadgeClass = computed(() => {
   font-size: 12px;
 }
 
-.diagnosis-ready__actions {
-  margin-top: 0;
-}
-
 .diagnosis-ready--error .diagnosis-ready__header {
   border-color: rgba(239, 68, 68, 0.24);
   background: var(--status-danger-soft);
@@ -566,24 +543,6 @@ const riskBadgeClass = computed(() => {
   color: var(--text-secondary);
   line-height: 1.7;
   font-size: 12px;
-}
-
-.diagnosis-subpanel--actions {
-  margin-top: var(--space-md);
-}
-
-.diagnosis-subpanel--actions ul {
-  margin: 0;
-  padding-left: 18px;
-  color: var(--text-secondary);
-  line-height: 1.8;
-}
-
-.diagnosis-subpanel--actions ol {
-  margin: 0;
-  padding-left: 18px;
-  color: var(--text-secondary);
-  line-height: 1.8;
 }
 
 @media (max-width: 760px) {

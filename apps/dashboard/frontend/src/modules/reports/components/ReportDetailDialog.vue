@@ -11,12 +11,12 @@
 
           <div class="report-hero__metrics">
             <div class="report-hero__metric">
-              <span>{{ reportsCopy.confidenceLabel }}</span>
-              <strong>{{ topProbabilityText }}</strong>
+              <span>{{ reportsCopy.riskLabel }}</span>
+              <strong>{{ view.severityText }}</strong>
             </div>
             <div class="report-hero__metric">
-              <span>{{ reportsCopy.modelLabel }}</span>
-              <strong>{{ report.model_name || '-' }}</strong>
+              <span>{{ reportsCopy.confidenceLabel }}</span>
+              <strong>{{ view.confidenceText }}</strong>
             </div>
             <div class="report-hero__metric">
               <span>{{ reportsCopy.generatedAtLabel }}</span>
@@ -42,6 +42,29 @@
         <section class="two-column">
           <article class="section-card">
             <div class="section-card__header">
+              <div class="section-card__title">{{ reportsCopy.probabilitySection }}</div>
+            </div>
+            <div class="section-card__body">
+              <div class="probability-list">
+                <div
+                  v-for="row in view.probabilityRows"
+                  :key="row.label"
+                  class="probability-row"
+                >
+                  <div class="probability-row__head">
+                    <span>{{ row.labelText }}</span>
+                    <strong>{{ row.probText }}</strong>
+                  </div>
+                  <div class="probability-row__track">
+                    <div class="probability-row__fill" :style="{ width: `${Math.max(6, row.prob * 100)}%` }" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="section-card">
+            <div class="section-card__header">
               <div class="section-card__title">{{ reportsCopy.recommendationSection }}</div>
             </div>
             <div class="section-card__body">
@@ -57,166 +80,21 @@
               </div>
             </div>
           </article>
-
-          <article class="section-card">
-            <div class="section-card__header">
-              <div class="section-card__title">{{ reportsCopy.evidenceSection }}</div>
-            </div>
-            <div class="section-card__body">
-              <div class="report-list">
-                <div
-                  v-for="item in view.whyItems"
-                  :key="item.title"
-                  class="report-list__item"
-                >
-                  <strong>{{ item.title }}</strong>
-                  <div>{{ item.description }}</div>
-                </div>
-              </div>
-            </div>
-          </article>
         </section>
 
-        <section class="two-column">
-          <article class="section-card">
-            <div class="section-card__header">
-              <div class="section-card__title">{{ reportsCopy.dataQualitySection }}</div>
-            </div>
-            <div class="section-card__body">
-              <div class="status-pill" :class="`status-pill--${view.dataQuality.tone}`">
-                {{ view.dataQuality.levelText }}
-              </div>
-              <div class="metric-grid">
-                <div
-                  v-for="item in view.dataQuality.metrics"
-                  :key="item.label"
-                  class="metric-grid__item"
-                >
-                  <span>{{ item.label }}</span>
-                  <strong>{{ item.value }}</strong>
-                </div>
-              </div>
-              <div v-if="view.dataQuality.warnings.length" class="report-list">
-                <div
-                  v-for="warning in view.dataQuality.warnings"
-                  :key="warning"
-                  class="report-list__item"
-                >
-                  {{ warning }}
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="section-card">
-            <div class="section-card__header">
-              <div class="section-card__title">{{ reportsCopy.reportConfidenceSection }}</div>
-            </div>
-            <div class="section-card__body">
-              <div class="status-pill" :class="`status-pill--${view.reportConfidence.tone}`">
-                {{ view.reportConfidence.levelText }}
-              </div>
-              <p class="report-text">综合分：{{ view.reportConfidence.score }}</p>
-              <div class="report-list">
-                <div
-                  v-for="reason in view.reportConfidence.reasons"
-                  :key="reason"
-                  class="report-list__item"
-                >
-                  {{ reason }}
-                </div>
-              </div>
-            </div>
-          </article>
-        </section>
-
-        <section class="two-column">
-          <article class="section-card">
-            <div class="section-card__header">
-              <div class="section-card__title">{{ reportsCopy.traceabilitySection }}</div>
-            </div>
-            <div class="section-card__body">
-              <div class="metric-grid">
-                <div class="metric-grid__item">
-                  <span>任务 ID</span>
-                  <strong>{{ view.traceability.runId }}</strong>
-                </div>
-                <div class="metric-grid__item">
-                  <span>资产文件</span>
-                  <strong>{{ view.traceability.assetFilename }}</strong>
-                </div>
-                <div class="metric-grid__item">
-                  <span>输入文件</span>
-                  <strong>{{ view.traceability.inputCsv }}</strong>
-                </div>
-                <div class="metric-grid__item">
-                  <span>模型名称</span>
-                  <strong>{{ view.traceability.modelName }}</strong>
-                </div>
-                <div class="metric-grid__item">
-                  <span>规则版本</span>
-                  <strong>{{ view.traceability.rulesVersion }}</strong>
-                </div>
-                <div class="metric-grid__item">
-                  <span>类别集合</span>
-                  <strong>{{ view.traceability.classSetText }}</strong>
-                </div>
-              </div>
-              <p class="report-text">{{ view.traceability.intendedUse }}</p>
-            </div>
-          </article>
-
-          <article class="section-card">
-            <div class="section-card__header">
-              <div class="section-card__title">{{ reportsCopy.reviewSection }}</div>
-            </div>
-            <div class="section-card__body">
-              <div class="status-pill" :class="`status-pill--${view.review.tone}`">
-                {{ view.review.statusText }}
-              </div>
-              <div class="metric-grid">
-                <div class="metric-grid__item">
-                  <span>复核人</span>
-                  <strong>{{ view.review.reviewer }}</strong>
-                </div>
-                <div class="metric-grid__item">
-                  <span>复核时间</span>
-                  <strong>{{ view.review.reviewedAt }}</strong>
-                </div>
-                <div class="metric-grid__item metric-grid__item--wide">
-                  <span>复核结论</span>
-                  <strong>{{ view.review.conclusion }}</strong>
-                </div>
-                <div class="metric-grid__item metric-grid__item--wide">
-                  <span>维修备注</span>
-                  <strong>{{ view.review.maintenanceNotes }}</strong>
-                </div>
-              </div>
-            </div>
-          </article>
-        </section>
-
-        <section v-if="view.evidenceChain.length" class="section-card">
+        <section class="section-card">
           <div class="section-card__header">
-            <div class="section-card__title">{{ reportsCopy.evidenceChainSection }}</div>
+            <div class="section-card__title">{{ reportsCopy.evidenceSection }}</div>
           </div>
           <div class="section-card__body">
-            <div class="evidence-table">
-              <div class="evidence-table__head">
-                <span>指标</span>
-                <span>当前值</span>
-                <span>状态</span>
-                <span>贡献分</span>
-              </div>
+            <div class="report-list">
               <div
-                v-for="item in view.evidenceChain"
-                :key="`${item.metric}-${item.value}`"
-                class="evidence-table__row"
+                v-for="item in view.whyItems"
+                :key="`${item.title}-${item.description}`"
+                class="report-list__item"
               >
-                <span>{{ item.metricText }}</span>
-                <span>{{ item.value }}</span>
-                <span>{{ item.statusText }}</span>
-                <span>{{ item.score }}</span>
+                <strong>{{ item.title }}</strong>
+                <div>{{ item.description }}</div>
               </div>
             </div>
           </div>
@@ -224,22 +102,29 @@
 
         <section class="section-card">
           <div class="section-card__header">
-            <div class="section-card__title">{{ reportsCopy.probabilitySection }}</div>
+            <div class="section-card__title">{{ reportsCopy.dataQualitySection }}</div>
           </div>
           <div class="section-card__body">
-            <div class="probability-list">
+            <div class="status-pill" :class="`status-pill--${view.dataQuality.tone}`">
+              {{ view.dataQuality.levelText }}
+            </div>
+            <div v-if="view.dataQuality.metrics.length" class="metric-grid">
               <div
-                v-for="row in view.probabilityRows"
-                :key="row.label"
-                class="probability-row"
+                v-for="item in view.dataQuality.metrics"
+                :key="item.label"
+                class="metric-grid__item"
               >
-                <div class="probability-row__head">
-                  <span>{{ row.labelText }}</span>
-                  <strong>{{ row.probText }}</strong>
-                </div>
-                <div class="probability-row__track">
-                  <div class="probability-row__fill" :style="{ width: `${Math.max(6, row.prob * 100)}%` }" />
-                </div>
+                <span>{{ item.label }}</span>
+                <strong>{{ item.value }}</strong>
+              </div>
+            </div>
+            <div v-if="view.dataQuality.warnings.length" class="report-list report-list--compact">
+              <div
+                v-for="warning in view.dataQuality.warnings"
+                :key="warning"
+                class="report-list__item"
+              >
+                {{ warning }}
               </div>
             </div>
           </div>
@@ -247,7 +132,132 @@
 
         <details class="technical-details">
           <summary>{{ reportsCopy.technicalSection }}</summary>
-          <pre class="report-json">{{ detailJson }}</pre>
+
+          <div class="technical-details__body">
+            <section class="two-column">
+              <article class="section-card">
+                <div class="section-card__header">
+                  <div class="section-card__title">{{ reportsCopy.traceabilitySection }}</div>
+                </div>
+                <div class="section-card__body">
+                  <div class="metric-grid">
+                    <div class="metric-grid__item">
+                      <span>任务 ID</span>
+                      <strong>{{ view.traceability.runId }}</strong>
+                    </div>
+                    <div class="metric-grid__item">
+                      <span>资产文件</span>
+                      <strong>{{ view.traceability.assetFilename }}</strong>
+                    </div>
+                    <div class="metric-grid__item">
+                      <span>输入文件</span>
+                      <strong>{{ view.traceability.inputCsv }}</strong>
+                    </div>
+                    <div class="metric-grid__item">
+                      <span>模型名称</span>
+                      <strong>{{ view.traceability.modelName }}</strong>
+                    </div>
+                    <div class="metric-grid__item">
+                      <span>规则版本</span>
+                      <strong>{{ view.traceability.rulesVersion }}</strong>
+                    </div>
+                    <div class="metric-grid__item">
+                      <span>类别集合</span>
+                      <strong>{{ view.traceability.classSetText }}</strong>
+                    </div>
+                  </div>
+                  <p class="report-text">{{ view.traceability.intendedUse }}</p>
+                </div>
+              </article>
+
+              <article class="section-card">
+                <div class="section-card__header">
+                  <div class="section-card__title">{{ reportsCopy.reportConfidenceSection }}</div>
+                </div>
+                <div class="section-card__body">
+                  <div class="status-pill" :class="`status-pill--${view.reportConfidence.tone}`">
+                    {{ view.reportConfidence.levelText }}
+                  </div>
+                  <p class="report-text">综合分：{{ view.reportConfidence.score }}</p>
+                  <div class="report-list">
+                    <div
+                      v-for="reason in view.reportConfidence.reasons"
+                      :key="reason"
+                      class="report-list__item"
+                    >
+                      {{ reason }}
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </section>
+
+            <section class="two-column">
+              <article class="section-card">
+                <div class="section-card__header">
+                  <div class="section-card__title">{{ reportsCopy.reviewSection }}</div>
+                </div>
+                <div class="section-card__body">
+                  <div class="status-pill" :class="`status-pill--${view.review.tone}`">
+                    {{ view.review.statusText }}
+                  </div>
+                  <div class="metric-grid">
+                    <div class="metric-grid__item">
+                      <span>复核人</span>
+                      <strong>{{ view.review.reviewer }}</strong>
+                    </div>
+                    <div class="metric-grid__item">
+                      <span>复核时间</span>
+                      <strong>{{ view.review.reviewedAt }}</strong>
+                    </div>
+                    <div class="metric-grid__item metric-grid__item--wide">
+                      <span>复核结论</span>
+                      <strong>{{ view.review.conclusion }}</strong>
+                    </div>
+                    <div class="metric-grid__item metric-grid__item--wide">
+                      <span>维修备注</span>
+                      <strong>{{ view.review.maintenanceNotes }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article v-if="view.evidenceChain.length" class="section-card">
+                <div class="section-card__header">
+                  <div class="section-card__title">{{ reportsCopy.evidenceChainSection }}</div>
+                </div>
+                <div class="section-card__body">
+                  <div class="evidence-table">
+                    <div class="evidence-table__head">
+                      <span>指标</span>
+                      <span>来源</span>
+                      <span>当前值</span>
+                      <span>状态</span>
+                    </div>
+                    <div
+                      v-for="item in view.evidenceChain"
+                      :key="`${item.metric}-${item.status}`"
+                      class="evidence-table__row"
+                    >
+                      <span>{{ item.metricText }}</span>
+                      <span>{{ item.sourceText }}</span>
+                      <span>{{ item.status === 'missing' ? item.reasonText : item.value }}</span>
+                      <span>{{ item.statusText }}</span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </section>
+
+            <section class="section-card">
+              <div class="section-card__header">
+                <div class="section-card__title">原始 JSON</div>
+              </div>
+              <div class="section-card__body">
+                <pre class="report-json">{{ detailJson }}</pre>
+              </div>
+            </section>
+          </div>
         </details>
       </div>
     </template>
@@ -276,7 +286,6 @@ const dialogVisible = computed({
 })
 
 const view = computed(() => buildDiagnosisReportView(props.report || {}))
-const topProbabilityText = computed(() => view.value?.probabilityRows?.[0]?.probText || '-')
 </script>
 
 <style scoped>
@@ -415,8 +424,15 @@ const topProbabilityText = computed(() => view.value?.probabilityRows?.[0]?.prob
   padding-top: 12px;
 }
 
+.technical-details__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 12px;
+}
+
 .report-json {
-  margin: 12px 0 0;
+  margin: 0;
   max-height: 420px;
   overflow: auto;
   padding: 16px;
@@ -436,6 +452,10 @@ const topProbabilityText = computed(() => view.value?.probabilityRows?.[0]?.prob
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.report-list--compact {
+  margin-top: 12px;
 }
 
 .section-card {
@@ -531,7 +551,7 @@ const topProbabilityText = computed(() => view.value?.probabilityRows?.[0]?.prob
 .evidence-table__head,
 .evidence-table__row {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(72px, 0.8fr) minmax(72px, 0.8fr) minmax(72px, 0.8fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(72px, 0.6fr) minmax(0, 1.2fr) minmax(72px, 0.6fr);
   gap: 8px;
   align-items: center;
 }

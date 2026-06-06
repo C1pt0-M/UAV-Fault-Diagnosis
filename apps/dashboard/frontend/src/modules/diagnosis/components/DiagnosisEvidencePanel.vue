@@ -40,16 +40,6 @@
         </article>
       </div>
 
-      <section class="diagnosis-explain-card diagnosis-ai-entry diagnosis-ai-entry--compact">
-        <div>
-          <div class="diagnosis-explain-card__title">
-            <el-icon><MagicStick /></el-icon>
-            AI 解读待解锁
-          </div>
-          <p>生成诊断报告后开放 AI 解读入口。</p>
-        </div>
-        <el-button type="warning" plain disabled>进入 AI 解读</el-button>
-      </section>
     </div>
 
     <div v-else class="section-card__body diagnosis-evidence__body">
@@ -130,39 +120,12 @@
           <el-empty v-else :description="diagnosisCopy.emptyReports" :image-size="48" />
         </section>
       </div>
-
-      <div class="diagnosis-evidence__grid diagnosis-evidence__grid--bottom">
-        <section class="diagnosis-explain-card">
-          <div class="diagnosis-explain-card__title">{{ diagnosisCopy.recommendationTitle }}</div>
-          <ul class="recommendation-list">
-            <li v-for="item in recommendationItems" :key="item">{{ item }}</li>
-          </ul>
-        </section>
-
-        <section class="diagnosis-explain-card diagnosis-ai-entry">
-          <div>
-            <div class="diagnosis-explain-card__title">
-              <el-icon><MagicStick /></el-icon>
-              AI 解读入口
-            </div>
-            <p>生成报告后，可进入 AI 助手对本次诊断结论进行专业解读与建议整理。</p>
-          </div>
-          <el-button
-            type="warning"
-            plain
-            :disabled="!latestReportId"
-            @click="$emit('open-ai-assistant')"
-          >
-            进入 AI 解读
-          </el-button>
-        </section>
-      </div>
     </div>
   </aside>
 </template>
 
 <script setup>
-import { CircleCheck, Connection, Document, MagicStick } from '@element-plus/icons-vue'
+import { CircleCheck, Connection, Document } from '@element-plus/icons-vue'
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import ElEmpty from 'element-plus/es/components/empty/index.mjs'
 import ElIcon from 'element-plus/es/components/icon/index.mjs'
@@ -171,15 +134,13 @@ import { diagnosisCopy, formatPercentage } from '@/modules/diagnosis/diagnosisVi
 defineProps({
   evidenceRows: { type: Array, default: () => [] },
   explanationSummary: { type: String, default: '' },
-  latestReportId: { type: [Number, String], default: null },
   recentReports: { type: Array, default: () => [] },
-  recommendationItems: { type: Array, default: () => [] },
   resultData: { type: Object, default: null },
   riskLevel: { type: Object, default: () => ({}) },
   ruleRows: { type: Array, default: () => [] }
 })
 
-defineEmits(['open-ai-assistant', 'open-reports-center'])
+defineEmits(['open-reports-center'])
 
 function statusTone(status) {
   if (status === 'warn') return 'warn'
@@ -391,32 +352,10 @@ function formatReportConfidence(report) {
   font-family: var(--font-mono);
 }
 
-.recommendation-list {
-  margin: 10px 0 0;
-  padding-left: 18px;
-  color: var(--text-secondary);
-  line-height: 1.8;
-  font-size: 13px;
-}
-
-.diagnosis-ai-entry {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.diagnosis-ai-entry--compact p {
-  margin-top: 6px;
-}
-
 @media (max-width: 760px) {
   .diagnosis-evidence__grid,
-  .diagnosis-evidence-empty__grid,
-  .diagnosis-ai-entry {
+  .diagnosis-evidence-empty__grid {
     grid-template-columns: 1fr;
-    flex-direction: column;
-    align-items: stretch;
   }
 }
 </style>

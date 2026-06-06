@@ -101,11 +101,12 @@ export function useDiagnosisWorkspace() {
   })
   const modelSummaryItems = computed(() => {
     const model = selectedModelMeta.value
+    const qualityMetric = resolveModelQualityMetric(model)
     return [
       { label: '模型族', value: formatDiagnosisModelName(model?.display_name || model?.name || selectedModel.value) },
       { label: '模型原始 ID', value: model?.name || selectedModel.value || '待选择' },
       { label: '输入特征', value: model?.feature_count || model?.metadata?.feature_count || '暂无' },
-      { label: 'Avg Confidence', value: model?.avg_confidence || model?.metrics?.avg_confidence || '暂无' }
+      { label: qualityMetric.label, value: qualityMetric.value }
     ]
   })
   const flowSteps = computed(() => [
@@ -130,13 +131,6 @@ export function useDiagnosisWorkspace() {
     if (!resultData.value) return diagnosisCopy.emptyEvidence
     return `${labelMeta.value.summary} 规则解释基于诊断结果摘要、概率分布与规则匹配，不代表真实特征贡献算法。`
   })
-  const nextActionItems = computed(() => {
-    if (stage.value.key === 'error') return ['查看任务错误原因', '确认资产与模型可用', '重新启动离线诊断任务']
-    if (!resultData.value) return ['选择日志资产与诊断模型', '启动离线诊断任务']
-    return latestReportId.value
-      ? ['查看报告中心', '进入 AI 解读']
-      : ['生成诊断报告', '复核可追溯证据', '进入 AI 解读']
-  })
   const runErrorText = computed(() => {
     return currentRun.value?.error || currentRun.value?.error_detail || ''
   })
@@ -152,6 +146,28 @@ export function useDiagnosisWorkspace() {
     if (!Number.isFinite(bytes) || bytes <= 0) return '暂无'
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
     return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+  }
+
+  function formatMetricPercent(value) {
+    const numberValue = Number(value)
+    if (!Number.isFinite(numberValue)) return '暂无'
+    const percent = Math.abs(numberValue) <= 1 ? numberValue * 100 : numberValue
+    return `${percent.toFixed(2)}%`
+  }
+
+  function resolveModelQualityMetric(model) {
+    const metrics = model?.metrics || {}
+    const externalMetrics = model?.metrics_external || {}
+    const candidates = [
+      ['Macro F1', metrics.macro_f1],
+      ['Accuracy', metrics.accuracy],
+      ['Weighted F1', metrics.weighted_f1],
+      ['Macro F1', externalMetrics.macro_f1],
+      ['Accuracy', externalMetrics.accuracy]
+    ]
+    const matched = candidates.find(([, value]) => Number.isFinite(Number(value)))
+    if (!matched) return { label: 'Macro F1', value: '暂无' }
+    return { label: matched[0], value: formatMetricPercent(matched[1]) }
   }
 
   function stopPolling() {
@@ -370,7 +386,6 @@ export function useDiagnosisWorkspace() {
     loadMeta,
     models,
     modelSummaryItems,
-    nextActionItems,
     openRunResult,
     openReportAssistant,
     openReportsCenter,

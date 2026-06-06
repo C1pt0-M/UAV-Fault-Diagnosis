@@ -51,7 +51,7 @@ describe('ReportsWorkspacePanel regression', () => {
 
     expect(text).toContain('报告总数')
     expect(text).toContain('当前页报告')
-    expect(text).toContain('平均置信度')
+    expect(text).toContain('异常报告')
     expect(text).toContain('可 AI 解读')
     expect(text).toContain('共 42 份报告')
     expect(text).toContain('重置')
@@ -61,7 +61,7 @@ describe('ReportsWorkspacePanel regression', () => {
   it('renders compact report operation entries with danger delete semantics', () => {
     const actionItems = createReportActionItems()
 
-    expect(actionItems.map((item) => item.label)).toEqual(['详情', 'AI 解读', '下载', '删除'])
+    expect(actionItems.map((item) => item.label)).toEqual(['详情', 'AI 解读', '删除'])
     expect(actionItems.find((item) => item.key === 'remove')).toMatchObject({ type: 'danger' })
   })
 })
