@@ -141,10 +141,7 @@
                 class="styled-input"
                 :placeholder="aiKeyStatus.set ? '已配置，留空不修改' : 'sk-...'"
               />
-              <p v-if="aiKeyStatus.set" class="form-hint">
-                当前后端已配置密钥：{{ aiKeyStatus.preview }}。留空表示不修改；输入新 key 会替换后端配置。
-              </p>
-              <p v-else class="form-hint">保存后写入后端 runtime 配置，不再保存到浏览器 localStorage。</p>
+              <p v-if="!aiKeyStatus.set" class="form-hint">保存后写入后端 runtime 配置，不再保存到浏览器 localStorage。</p>
             </div>
 
             <div class="form-actions form-actions--footer">
