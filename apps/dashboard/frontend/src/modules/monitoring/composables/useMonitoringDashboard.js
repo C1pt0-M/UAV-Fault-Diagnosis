@@ -411,6 +411,9 @@ export function useMonitoringDashboard() {
           replay_path: selectedBackend.value === 'replay'
             ? replayAsset?.meta?.prepared_csv_path || replayAsset?.stored_path
             : undefined,
+          replay_asset_id: selectedBackend.value === 'replay'
+            ? replayAsset?.id
+            : undefined,
           rfly_px4mavctrl_path: selectedBackend.value === 'rfly' && rflyPath
             ? rflyPath
             : undefined

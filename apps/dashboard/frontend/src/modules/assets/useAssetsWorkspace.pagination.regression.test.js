@@ -38,6 +38,8 @@ vi.mock('element-plus', () => ({
   }
 }))
 
+const { ElMessageBox } = await import('element-plus')
+
 vi.mock('@/shared/services', () => ({
   assetApi: assetApiMocks,
   analysisApi: analysisApiMocks,
@@ -128,5 +130,53 @@ describe('useAssetsWorkspace pagination regression', () => {
     await nextTick()
 
     expect(wrapper.vm.currentPage).toBe(1)
+  })
+
+  it('keeps the current page after deleting an item when the page still has data', async () => {
+    const beforeDelete = makeAssets(21)
+    const afterDelete = beforeDelete.filter((item) => item.id !== 11)
+    assetApiMocks.list
+      .mockResolvedValueOnce({ data: beforeDelete })
+      .mockResolvedValueOnce({ data: afterDelete })
+    assetApiMocks.remove.mockResolvedValue({})
+    ElMessageBox.confirm.mockResolvedValue()
+
+    const wrapper = mount(Harness)
+    await flushPromises()
+
+    wrapper.vm.setCurrentPage(2)
+    await nextTick()
+    expect(wrapper.vm.currentPage).toBe(2)
+
+    await wrapper.vm.removeAsset(beforeDelete[10])
+    await flushPromises()
+
+    expect(assetApiMocks.remove).toHaveBeenCalledWith(11)
+    expect(wrapper.vm.currentPage).toBe(2)
+    expect(wrapper.vm.paginatedAssets[0].id).toBe(12)
+  })
+
+  it('moves back one page after deleting the only item on the last page', async () => {
+    const beforeDelete = makeAssets(21)
+    const afterDelete = beforeDelete.filter((item) => item.id !== 21)
+    assetApiMocks.list
+      .mockResolvedValueOnce({ data: beforeDelete })
+      .mockResolvedValueOnce({ data: afterDelete })
+    assetApiMocks.remove.mockResolvedValue({})
+    ElMessageBox.confirm.mockResolvedValue()
+
+    const wrapper = mount(Harness)
+    await flushPromises()
+
+    wrapper.vm.setCurrentPage(3)
+    await nextTick()
+    expect(wrapper.vm.currentPage).toBe(3)
+
+    await wrapper.vm.removeAsset(beforeDelete[20])
+    await flushPromises()
+
+    expect(assetApiMocks.remove).toHaveBeenCalledWith(21)
+    expect(wrapper.vm.currentPage).toBe(2)
+    expect(wrapper.vm.paginatedAssets).toHaveLength(10)
   })
 })

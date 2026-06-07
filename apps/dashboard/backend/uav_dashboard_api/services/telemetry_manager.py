@@ -5,6 +5,7 @@
 """
 
 import copy
+import json
 import os
 import random
 import shutil
@@ -165,13 +166,21 @@ class TelemetryPersistence:
             print(f"[telemetry_manager] 删除会话记录失败: {e}")
 
     def finalize_session(
-        self, *, session_id, duration, frame_count, fault_count, replay_metrics=None
+        self,
+        *,
+        session_id,
+        duration,
+        frame_count,
+        fault_count,
+        replay_metrics=None,
+        fault_prob_curve=None,
     ) -> None:
         if not self.manager.app:
             return
         try:
             with self.manager.app.app_context():
                 from uav_dashboard_api import db
+                from uav_dashboard_api.models.asset import Asset
                 from uav_dashboard_api.models.telemetry_session import TelemetrySession
 
                 session = db.session.get(TelemetrySession, session_id)
@@ -179,12 +188,56 @@ class TelemetryPersistence:
                     meta = session.get_meta()
                     if replay_metrics:
                         meta["replay_metrics"] = replay_metrics
+                    if fault_prob_curve:
+                        curve_dir = Path(self.manager.app.config["RUNTIME_DIR"]) / "telemetry_fault_prob"
+                        curve_dir.mkdir(parents=True, exist_ok=True)
+                        curve_path = curve_dir / f"{session_id}.json"
+                        curve_path.write_text(
+                            json.dumps(fault_prob_curve, ensure_ascii=False),
+                            encoding="utf-8",
+                        )
+                        meta["fault_prob_curve_path"] = serialize_local_path(
+                            curve_path, self.manager.app.config
+                        )
+                        meta["fault_prob_curve_points"] = len(fault_prob_curve)
+                    if replay_metrics or fault_prob_curve:
                         session.set_meta(meta)
                     session.end_time = datetime.now()
                     session.duration_seconds = round(duration, 1)
                     session.frame_count = frame_count
                     session.fault_events_count = fault_count
                     session.status = "completed"
+                    resolved_csv = resolve_local_path(session.csv_path, self.manager.app.config)
+                    if (
+                        session.scenario_backend != "replay"
+                        and resolved_csv
+                        and Path(resolved_csv).exists()
+                    ):
+                        serialized_csv = serialize_local_path(
+                            resolved_csv,
+                            self.manager.app.config,
+                        )
+                        asset = Asset.query.filter_by(stored_path=serialized_csv).first()
+                        if asset is None:
+                            asset = Asset(
+                                filename=Path(resolved_csv).name,
+                                kind="csv",
+                                stored_path=serialized_csv,
+                                size_bytes=Path(resolved_csv).stat().st_size,
+                                sha256=f"telemetry-session-{session_id}",
+                            )
+                            db.session.add(asset)
+                        else:
+                            asset.size_bytes = Path(resolved_csv).stat().st_size
+                        asset_meta = asset.get_meta()
+                        asset_meta.update(
+                            {
+                                "prepared_csv_path": serialized_csv,
+                                "source_type": "telemetry_session",
+                                "session_id": session.id,
+                            }
+                        )
+                        asset.set_meta(asset_meta)
                     db.session.commit()
         except Exception as e:
             print(f"[telemetry_manager] 更新会话记录失败: {e}")
@@ -298,6 +351,7 @@ class TelemetryProcessManager:
         self._blind_test_ground_truth: dict | None = None
         # 实时数据缓冲
         self._realtime_buffer: deque = deque(maxlen=500)
+        self._fault_prob_curve: list[dict] = []
         # 路径
         self._active_model: dict | None = None
         self._telemetry_python_bin: str | None = None
@@ -393,6 +447,7 @@ class TelemetryProcessManager:
         self._planned_duration_s = None
         self._frame_count = 0
         self._fault_events = []
+        self._fault_prob_curve = []
         self._preview_alert = None
         self._detecting = False
         self._active_model = None
@@ -433,6 +488,7 @@ class TelemetryProcessManager:
         self._planned_duration_s = sim_time
         self._frame_count = 0
         self._fault_events = []
+        self._fault_prob_curve = []
         self._preview_alert = None
         self._detecting = False
         self._active_model = None
@@ -1013,6 +1069,7 @@ class TelemetryProcessManager:
         sim_time: float = 120.0,
         backend: str = "px4",
         replay_path: str | None = None,
+        replay_asset_id: int | None = None,
         rfly_options: dict | None = None,
     ) -> dict:
         if self.is_collecting:
@@ -1076,7 +1133,10 @@ class TelemetryProcessManager:
             csv_path,
             backend_name,
             source_path=replay_path_resolved,
-            meta={"backend": backend_name},
+            meta={
+                "backend": backend_name,
+                "source_asset_id": replay_asset_id,
+            },
         )
         self._write_log(drone_id, "telemetry", f"开始遥测数据采集，会话 {session_id}")
         self._realtime_buffer.clear()
@@ -1309,8 +1369,16 @@ class TelemetryProcessManager:
         if result is None:
             return
         fault_prob = float(result.get("fault_prob", 0.0))
+        frame_time_s = float(canonical.get("time_s") or self._frame_count / 50.0)
         if self._realtime_buffer:
             self._realtime_buffer[-1]["fault_prob"] = fault_prob
+        with self._lock:
+            self._fault_prob_curve.append(
+                {
+                    "time_s": round(frame_time_s, 4),
+                    "fault_prob": round(fault_prob, 6),
+                }
+            )
         onset_th = float(
             getattr(getattr(self._detector, "aggregator", None), "onset_th", 0.6)
         )
@@ -1361,7 +1429,7 @@ class TelemetryProcessManager:
             has_confirmed=bool(new_events),
         )
         decision_signal = DecisionSignal(
-            ts=float(canonical.get("time_s") or self._frame_count / 50.0),
+            ts=frame_time_s,
             frame_idx=int(self._frame_count),
             fault_prob=fault_prob,
             label=str(result.get("label") or "fault"),
@@ -1624,6 +1692,7 @@ class TelemetryProcessManager:
             frame_count=frame_count,
             fault_count=fault_count,
             replay_metrics=replay_metrics,
+            fault_prob_curve=list(self._fault_prob_curve),
         )
 
     def _update_session_detection(self, session_id, has_detection):

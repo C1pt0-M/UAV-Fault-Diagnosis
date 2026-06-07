@@ -11,7 +11,7 @@
       :preparing-map="preparingMap"
       :deleting-map="deletingMap"
       @update:current-page="setCurrentPage"
-      @refresh="loadAssets"
+      @refresh="refreshAssets"
       @upload="handleUpload"
       @download="downloadAsset"
       @open-reports-center="openReportsCenter"
@@ -86,6 +86,7 @@ const {
   prepareAsset,
   preparingMap,
   removeAsset,
+  refreshAssets,
   setCurrentPage,
   showDetail,
   totalAssets,

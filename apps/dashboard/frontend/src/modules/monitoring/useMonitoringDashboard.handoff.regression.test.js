@@ -8,6 +8,7 @@ const telemetryApiMock = vi.hoisted(() => ({
   realtimeData: vi.fn(),
   rflyDiagnostics: vi.fn(),
   sessions: vi.fn(),
+  startCollection: vi.fn(),
   status: vi.fn(),
   stopCollection: vi.fn()
 }))
@@ -61,6 +62,12 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
     telemetryApiMock.sessions.mockResolvedValue({ data: { items: [] } })
     telemetryApiMock.realtimeData.mockResolvedValue({ data: { times: [] } })
     telemetryApiMock.rflyDiagnostics.mockResolvedValue({ data: null })
+    telemetryApiMock.startCollection.mockResolvedValue({
+      data: {
+        session_id: 'TS-REPLAY-001',
+        scenario_backend: 'replay'
+      }
+    })
     telemetryApiMock.stopCollection.mockResolvedValue({
       message: '采集已停止',
       data: {
@@ -123,6 +130,35 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
     await flushMountedWork()
 
     expect(wrapper.vm.faultHandoffDialogVisible).toBe(false)
+  })
+
+  it('passes replay asset id when starting replay collection', async () => {
+    assetApiMock.list.mockResolvedValueOnce({
+      data: [
+        {
+          id: 265,
+          filename: 'flight.csv',
+          kind: 'csv',
+          meta: { prepared_csv_path: 'runtime://uploads/csv/flight.csv' }
+        }
+      ]
+    })
+
+    const wrapper = mount(Harness)
+    await flushMountedWork()
+
+    wrapper.vm.selectedReplayAssetId = 265
+    await nextTick()
+    await wrapper.vm.startCollection()
+    await flushMountedWork()
+
+    expect(telemetryApiMock.startCollection).toHaveBeenCalledWith(
+      expect.objectContaining({
+        backend: 'replay',
+        replay_path: 'runtime://uploads/csv/flight.csv',
+        replay_asset_id: 265
+      })
+    )
   })
 
   it('keeps visible monitoring copy free of common mojibake fragments', () => {

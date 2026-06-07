@@ -924,15 +924,14 @@ def test_run_api_supports_session_id_for_offline_detection_contract():
     assert "asset_id: payload.assetId" in content
 
 
-def test_analysis_fault_prob_curve_creates_missing_derived_asset_dir(
-    app, client, auth_header, tmp_path: Path, monkeypatch
+def test_analysis_fault_prob_curve_ignores_plain_csv_asset(
+    app, client, auth_header, tmp_path: Path
 ):
     csv_path = tmp_path / "fault_prob_curve_case.csv"
     csv_path.write_text(
-        "time_s,roll,pitch,yaw\n"
-        "0.0,0.1,0.0,0.0\n"
-        "0.1,0.2,0.0,0.0\n"
-        "0.2,0.3,0.0,0.0\n",
+        "time_s,roll,pitch,yaw,fault_prob\n"
+        "0.0,0.1,0.0,0.0,0.2\n"
+        "0.1,0.2,0.0,0.0,0.8\n",
         encoding="utf-8",
     )
 
@@ -950,25 +949,59 @@ def test_analysis_fault_prob_curve_creates_missing_derived_asset_dir(
         db.session.commit()
         asset_id = asset.id
 
-    class _Completed:
-        returncode = 0
-        stdout = '{"time_s": 0.1, "fault_prob": 0.25}\n{"time_s": 0.2, "fault_prob": 0.8}\n'
-        stderr = ""
+    resp = client.get(
+        f"/api/analysis/fault_prob_curve?asset_id={asset_id}",
+        headers=auth_header,
+    )
 
-    monkeypatch.setattr(
-        "uav_dashboard_api.routes.dashboard.resolve_registered_model",
-        lambda *args, **kwargs: {
-            "name": "online_detector_cnn1d_rfly",
-            "path": str(tmp_path / "fake_model"),
-            "task": "online_binary",
-            "architecture": "cnn1d",
-            "label_names": ["normal", "fault"],
-        },
+    assert resp.status_code == 200
+    payload = resp.get_json()
+    assert payload["success"] is True
+    assert payload["data"] == []
+    assert payload["meta"]["available"] is False
+    assert payload["meta"]["reason"] == "asset_has_no_monitoring_session"
+
+
+def test_analysis_fault_prob_curve_reads_online_monitoring_session_asset(
+    app, client, auth_header, tmp_path: Path
+):
+    csv_path = tmp_path / "telemetry_with_fault_prob.csv"
+    csv_path.write_text(
+        "time_s,roll,pitch,fault_prob\n"
+        "0.0,0.1,0.0,0.25\n"
+        "0.1,0.2,0.0,0.8\n",
+        encoding="utf-8",
     )
-    monkeypatch.setattr(
-        "subprocess.run",
-        lambda *args, **kwargs: _Completed(),
-    )
+
+    with app.app_context():
+        user = User.query.filter_by(username="flow_user").first()
+        session = TelemetrySession(
+            id="TS-CURVE-001",
+            session_type="simulation",
+            scenario_backend="replay",
+            csv_path=str(csv_path),
+            has_detection=True,
+            status="completed",
+        )
+        asset = Asset(
+            filename=csv_path.name,
+            kind="csv",
+            stored_path=str(csv_path),
+            size_bytes=csv_path.stat().st_size,
+            sha256="test-sha256-telemetry-fault-prob-curve",
+            created_by=user.id,
+        )
+        asset.set_meta(
+            {
+                "prepared_csv_path": str(csv_path),
+                "source_type": "telemetry_session",
+                "session_id": session.id,
+            }
+        )
+        db.session.add(session)
+        db.session.add(asset)
+        db.session.commit()
+        asset_id = asset.id
 
     resp = client.get(
         f"/api/analysis/fault_prob_curve?asset_id={asset_id}",
@@ -979,17 +1012,92 @@ def test_analysis_fault_prob_curve_creates_missing_derived_asset_dir(
     payload = resp.get_json()
     assert payload["success"] is True
     assert payload["data"] == [
-        {"time_s": 0.1, "fault_prob": 0.25},
-        {"time_s": 0.2, "fault_prob": 0.8},
+        {"time_s": 0.0, "fault_prob": 0.25},
+        {"time_s": 0.1, "fault_prob": 0.8},
     ]
+    assert payload["meta"]["available"] is True
+    assert payload["meta"]["session_id"] == "TS-CURVE-001"
 
-    cache_path = (
-        Path(app.config["DERIVED_DIR"])
-        / f"asset_{asset_id}"
-        / "fault_prob_curve_online_detector_cnn1d_rfly_v2.json"
+
+def test_analysis_fault_prob_curve_reads_source_asset_monitoring_session(
+    app, client, auth_header, tmp_path: Path
+):
+    source_csv = tmp_path / "source_asset.csv"
+    source_csv.write_text(
+        "time_s,roll,pitch\n"
+        "0.0,0.1,0.0\n"
+        "0.1,0.2,0.0\n",
+        encoding="utf-8",
     )
-    assert cache_path.exists()
-    assert json.loads(cache_path.read_text(encoding="utf-8")) == payload["data"]
+    session_csv = tmp_path / "telemetry_session.csv"
+    session_csv.write_text(
+        "time_s,roll,pitch\n"
+        "0.0,0.1,0.0\n"
+        "0.1,0.2,0.0\n",
+        encoding="utf-8",
+    )
+    curve_path = tmp_path / "curve.json"
+    curve_path.write_text(
+        json.dumps(
+            [
+                {"time_s": 0.0, "fault_prob": 0.31},
+                {"time_s": 0.1, "fault_prob": 0.86},
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    with app.app_context():
+        user = User.query.filter_by(username="flow_user").first()
+        asset = Asset(
+            filename=source_csv.name,
+            kind="csv",
+            stored_path=str(source_csv),
+            size_bytes=source_csv.stat().st_size,
+            sha256="test-sha256-source-asset-curve",
+            created_by=user.id,
+        )
+        asset.set_meta({"prepared_csv_path": str(source_csv)})
+        db.session.add(asset)
+        db.session.flush()
+
+        session = TelemetrySession(
+            id="TS-SOURCE-ASSET-001",
+            session_type="simulation",
+            scenario_backend="replay",
+            source_path=str(source_csv),
+            csv_path=str(session_csv),
+            has_detection=True,
+            status="completed",
+        )
+        session.set_meta(
+            {
+                "backend": "replay",
+                "source_asset_id": asset.id,
+                "fault_prob_curve_path": str(curve_path),
+                "fault_prob_curve_points": 2,
+            }
+        )
+        db.session.add(session)
+        db.session.commit()
+        asset_id = asset.id
+
+    resp = client.get(
+        f"/api/analysis/fault_prob_curve?asset_id={asset_id}",
+        headers=auth_header,
+    )
+
+    assert resp.status_code == 200
+    payload = resp.get_json()
+    assert payload["success"] is True
+    assert payload["data"] == [
+        {"time_s": 0.0, "fault_prob": 0.31},
+        {"time_s": 0.1, "fault_prob": 0.86},
+    ]
+    assert payload["meta"]["available"] is True
+    assert payload["meta"]["session_id"] == "TS-SOURCE-ASSET-001"
+    assert payload["meta"]["source"] == "fault_prob_curve_file"
 
 
 def test_analysis_fields_accepts_legacy_linux_runtime_csv_path(
@@ -1286,6 +1394,7 @@ def test_telemetry_start_collection_replay_success(
             "sim_time": 45.0,
             "backend": "replay",
             "replay_path": str(replay_path),
+            "replay_asset_id": None,
             "rfly_options": {"px4mavctrl_path": None},
         }
     ]
@@ -2189,20 +2298,34 @@ def test_telemetry_finalize_session_delegates_persistence_writes(app, monkeypatc
 
     captured = {}
     replay_metrics = {"pred_event_count": 1, "hit": 1}
+    original_fault_prob_curve = telemetry_manager._fault_prob_curve
+    telemetry_manager._fault_prob_curve = [
+        {"time_s": 0.1, "fault_prob": 0.8},
+    ]
 
     def fake_finalize_session(
-        *, session_id, duration, frame_count, fault_count, replay_metrics
+        *,
+        session_id,
+        duration,
+        frame_count,
+        fault_count,
+        replay_metrics,
+        fault_prob_curve,
     ):
         captured["session_id"] = session_id
         captured["duration"] = duration
         captured["frame_count"] = frame_count
         captured["fault_count"] = fault_count
         captured["replay_metrics"] = replay_metrics
+        captured["fault_prob_curve"] = fault_prob_curve
 
     monkeypatch.setattr(
         telemetry_manager._persistence, "finalize_session", fake_finalize_session
     )
-    telemetry_manager._finalize_session("TS-PERSIST-002", 12.3, 45, 2, replay_metrics)
+    try:
+        telemetry_manager._finalize_session("TS-PERSIST-002", 12.3, 45, 2, replay_metrics)
+    finally:
+        telemetry_manager._fault_prob_curve = original_fault_prob_curve
 
     assert captured == {
         "session_id": "TS-PERSIST-002",
@@ -2210,7 +2333,79 @@ def test_telemetry_finalize_session_delegates_persistence_writes(app, monkeypatc
         "frame_count": 45,
         "fault_count": 2,
         "replay_metrics": replay_metrics,
+        "fault_prob_curve": [{"time_s": 0.1, "fault_prob": 0.8}],
     }
+
+
+def test_telemetry_finalize_session_skips_replay_asset_registration(app, tmp_path: Path):
+    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+
+    csv_path = tmp_path / "session_asset.csv"
+    csv_path.write_text("time_s,motor1,fault_prob\n0.0,1000,0.2\n", encoding="utf-8")
+
+    with app.app_context():
+        session = TelemetrySession(
+            id="TS-ASSET-001",
+            session_type="simulation",
+            scenario_backend="replay",
+            csv_path=str(csv_path),
+            has_detection=True,
+            status="running",
+        )
+        db.session.add(session)
+        db.session.commit()
+
+    telemetry_manager._persistence.finalize_session(
+        session_id="TS-ASSET-001",
+        duration=1.2,
+        frame_count=1,
+        fault_count=0,
+        fault_prob_curve=[{"time_s": 0.0, "fault_prob": 0.2}],
+    )
+
+    with app.app_context():
+        asset = Asset.query.filter_by(sha256="telemetry-session-TS-ASSET-001").first()
+        assert asset is None
+        session = db.session.get(TelemetrySession, "TS-ASSET-001")
+        assert session.get_meta()["fault_prob_curve_points"] == 1
+
+
+def test_telemetry_finalize_session_registers_non_replay_session_asset(
+    app, tmp_path: Path
+):
+    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+
+    csv_path = tmp_path / "px4_session_asset.csv"
+    csv_path.write_text("time_s,motor1,fault_prob\n0.0,1000,0.2\n", encoding="utf-8")
+
+    with app.app_context():
+        session = TelemetrySession(
+            id="TS-ASSET-PX4-001",
+            session_type="simulation",
+            scenario_backend="px4",
+            csv_path=str(csv_path),
+            has_detection=True,
+            status="running",
+        )
+        db.session.add(session)
+        db.session.commit()
+
+    telemetry_manager._persistence.finalize_session(
+        session_id="TS-ASSET-PX4-001",
+        duration=1.2,
+        frame_count=1,
+        fault_count=0,
+        fault_prob_curve=[{"time_s": 0.0, "fault_prob": 0.2}],
+    )
+
+    with app.app_context():
+        asset = Asset.query.filter_by(sha256="telemetry-session-TS-ASSET-PX4-001").first()
+        assert asset is not None
+        assert asset.filename == "px4_session_asset.csv"
+        assert asset.get_meta()["source_type"] == "telemetry_session"
+        assert asset.get_meta()["session_id"] == "TS-ASSET-PX4-001"
+        session = db.session.get(TelemetrySession, "TS-ASSET-PX4-001")
+        assert session.get_meta()["fault_prob_curve_points"] == 1
 
 
 def test_telemetry_create_session_record_delegates_persistence_writes(app, monkeypatch):

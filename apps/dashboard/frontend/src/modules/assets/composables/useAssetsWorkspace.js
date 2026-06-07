@@ -113,13 +113,25 @@ export function useAssetsWorkspace() {
     return options.slice(0, 4).map((item) => item.value)
   }
 
-  async function loadAssets() {
+  function clampCurrentPage(total = totalAssets.value) {
+    const maxPage = Math.max(1, Math.ceil(Number(total || 0) / pageSize))
+    if (currentPage.value > maxPage) {
+      currentPage.value = maxPage
+    }
+  }
+
+  async function loadAssets(options = {}) {
+    const { resetPage = false } = options
     loading.value = true
 
     try {
       const response = await assetApi.list(activeKind.value)
       assets.value = response.data || []
-      currentPage.value = 1
+      if (resetPage) {
+        currentPage.value = 1
+      } else {
+        clampCurrentPage()
+      }
       if (
         analysisAssetId.value === null ||
         !analyzableAssets.value.some((item) => item.id === analysisAssetId.value)
@@ -131,6 +143,10 @@ export function useAssetsWorkspace() {
     } finally {
       loading.value = false
     }
+  }
+
+  async function refreshAssets() {
+    await loadAssets({ resetPage: true })
   }
 
   async function loadAnalysisFaultProbCurve() {
@@ -248,7 +264,7 @@ export function useAssetsWorkspace() {
 
       if (activeUploads === 0) {
         uploading.value = false
-        await loadAssets()
+        await loadAssets({ resetPage: true })
       }
     }
   }
@@ -358,6 +374,8 @@ export function useAssetsWorkspace() {
     try {
       await assetApi.remove(row.id)
       ElMessage.success(assetsCopy.removeSuccess)
+      const remaining = Math.max(0, totalAssets.value - 1)
+      clampCurrentPage(remaining)
       await loadAssets()
     } catch (error) {
       ElMessage.error(`删除失败：${error.message || '未知错误'}`)
@@ -379,7 +397,7 @@ export function useAssetsWorkspace() {
     await loadAnalysisFields()
   })
 
-  onMounted(loadAssets)
+  onMounted(() => loadAssets({ resetPage: true }))
 
   onUnmounted(() => {
     pollTimers.forEach((timer) => clearInterval(timer))
@@ -418,6 +436,7 @@ export function useAssetsWorkspace() {
     pageSize,
     prepareAsset,
     preparingMap,
+    refreshAssets,
     removeAsset,
     setCurrentPage,
     showDetail,

@@ -558,7 +558,7 @@ def _evidence_sentence(item: dict) -> str:
         score = _format_metric_value(item.get("score")) if item.get("score") is not None else "-"
         if item.get("source") == "model":
             value = _format_percent(item.get("value"))
-        return f"{source}：{metric}为 {value}，贡献分 {score}。"
+        return f"{source}：{metric}为 {value}，规则得分 {score}。"
     reason = str(item.get("reason_text") or "").strip()
     if not reason:
         reason = "模型未提供可用置信度。" if item.get("source") == "model" else "未从当前 CSV 中提取到对应规则指标。"
@@ -713,7 +713,7 @@ def _metric_text(metric: str) -> str:
 
 def _format_percent(value: float | None) -> str:
     try:
-        return f"{float(value) * 100:.1f}%"
+        return f"{float(value) * 100:.3f}%"
     except (TypeError, ValueError):
         return "-"
 

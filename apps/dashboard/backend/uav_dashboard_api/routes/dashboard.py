@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import csv
 import hashlib
+import json
 import uuid
 from pathlib import Path
 
@@ -29,7 +30,6 @@ ALLOWED_EXTS = {
 }
 
 OFFLINE_MULTICLASS_TASK = "offline_multiclass"
-FAULT_PROB_CURVE_CACHE_VERSION = "v2"
 CSV_QUALITY_SAMPLE_ROWS = 2000
 
 
@@ -134,10 +134,155 @@ def _build_csv_quality_meta(csv_path: str | Path | None) -> dict:
     }
 
 
-def _asset_payload_with_quality(asset: Asset) -> dict:
+def _coerce_float(value) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _downsample_curve(curve: list[dict], max_points: int = 1000) -> list[dict]:
+    if len(curve) <= max_points:
+        return curve
+    step = max(1, len(curve) // max_points)
+    return curve[::step]
+
+
+def _read_fault_prob_curve_json(path_value: str | Path | None) -> list[dict]:
+    resolved = resolve_local_path(path_value, current_app.config)
+    if not resolved:
+        return []
+    path = Path(resolved)
+    if not path.exists() or not path.is_file():
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    if not isinstance(data, list):
+        return []
+    curve = []
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+        time_s = _coerce_float(item.get("time_s"))
+        fault_prob = _coerce_float(item.get("fault_prob"))
+        if time_s is None or fault_prob is None:
+            continue
+        curve.append({"time_s": time_s, "fault_prob": fault_prob})
+    return _downsample_curve(curve)
+
+
+def _read_fault_prob_curve_csv(path_value: str | Path | None) -> list[dict]:
+    resolved = resolve_local_path(path_value, current_app.config)
+    if not resolved:
+        return []
+    path = Path(resolved)
+    if not path.exists() or not path.is_file():
+        return []
+    curve = []
+    try:
+        with path.open("r", encoding="utf-8-sig", newline="") as fp:
+            reader = csv.DictReader(fp)
+            if not reader.fieldnames or "fault_prob" not in reader.fieldnames:
+                return []
+            time_field = next(
+                (
+                    name
+                    for name in ("time_s", "trueTime", "timestamp", "Timestamp")
+                    if name in reader.fieldnames
+                ),
+                None,
+            )
+            for idx, row in enumerate(reader):
+                fault_prob = _coerce_float(row.get("fault_prob"))
+                if fault_prob is None:
+                    continue
+                time_s = _coerce_float(row.get(time_field)) if time_field else None
+                if time_s is None:
+                    time_s = float(idx)
+                curve.append({"time_s": time_s, "fault_prob": fault_prob})
+    except Exception:
+        return []
+    return _downsample_curve(curve)
+
+
+def _resolve_asset_telemetry_session(asset: Asset):
+    meta = asset.get_meta()
+    session_id = str(meta.get("session_id") or "").strip()
+    if session_id:
+        session = db.session.get(TelemetrySession, session_id)
+        if session is not None:
+            return session
+
+    sessions = (
+        TelemetrySession.query.filter(TelemetrySession.has_detection.is_(True))
+        .order_by(TelemetrySession.created_at.desc())
+        .all()
+    )
+    for session in sessions:
+        source_asset_id = session.get_meta().get("source_asset_id")
+        if source_asset_id is not None and str(source_asset_id) == str(asset.id):
+            return session
+
+    candidates = [
+        asset.stored_path,
+        meta.get("prepared_csv_path"),
+    ]
+    for candidate in candidates:
+        if not candidate:
+            continue
+        session = (
+            TelemetrySession.query.filter(
+                TelemetrySession.has_detection.is_(True),
+                TelemetrySession.source_path == candidate,
+            )
+            .order_by(TelemetrySession.created_at.desc())
+            .first()
+        )
+        if session is not None:
+            return session
+        session = (
+            TelemetrySession.query.filter(
+                TelemetrySession.has_detection.is_(True),
+                TelemetrySession.csv_path == candidate,
+            )
+            .order_by(TelemetrySession.created_at.desc())
+            .first()
+        )
+        if session is not None:
+            return session
+
+    resolved_candidates = set()
+    for candidate in candidates:
+        resolved = resolve_local_path(candidate, current_app.config)
+        if resolved:
+            try:
+                resolved_candidates.add(str(Path(resolved).resolve()))
+            except Exception:
+                resolved_candidates.add(str(Path(resolved)))
+    if not resolved_candidates:
+        return None
+
+    for session in sessions:
+        session_candidates = [session.source_path, session.csv_path]
+        for session_candidate in session_candidates:
+            resolved = resolve_local_path(session_candidate, current_app.config)
+            if not resolved:
+                continue
+            try:
+                session_path = str(Path(resolved).resolve())
+            except Exception:
+                session_path = str(Path(resolved))
+            if session_path in resolved_candidates:
+                return session
+    return None
+
+
+def _asset_payload_with_quality(asset: Asset, *, fill_missing_quality: bool = True) -> dict:
     payload = asset.to_dict()
     meta = dict(payload.get("meta") or {})
-    if asset.kind == "csv" and not meta.get("field_completeness"):
+    if fill_missing_quality and asset.kind == "csv" and not meta.get("field_completeness"):
         try:
             csv_path = _resolved_csv_path(asset, strict_prepare=False)
         except Exception:
@@ -870,7 +1015,15 @@ def list_assets(current_user):
     if kind in ("ulg", "csv"):
         query = query.filter_by(kind=kind)
     assets = query.order_by(Asset.created_at.desc()).all()
-    return jsonify({"success": True, "data": [_asset_payload_with_quality(item) for item in assets]})
+    return jsonify(
+        {
+            "success": True,
+            "data": [
+                _asset_payload_with_quality(item, fill_missing_quality=False)
+                for item in assets
+            ],
+        }
+    )
 
 
 @bp.route("/assets/<int:asset_id>", methods=["GET"])
@@ -1211,96 +1364,43 @@ def get_analysis_timeseries(current_user):
 @bp.route("/analysis/fault_prob_curve", methods=["GET"])
 @token_required
 def get_fault_prob_curve(current_user):
-    import json
-    import subprocess
-
     asset_id = request.args.get("asset_id", type=int)
-    requested_model = request.args.get("model", default="", type=str).strip()
     if not asset_id:
         return jsonify({"success": False, "message": "asset_id 为必填"}), 400
     asset = db.session.get(Asset, asset_id)
     if asset is None:
         return jsonify({"success": False, "message": "资产不存在"}), 404
 
-    try:
-        csv_path = _resolved_csv_path(asset, strict_prepare=True)
-    except AssetNotPreparedError:
+    session = _resolve_asset_telemetry_session(asset)
+    if session is None:
         return jsonify(
             {
-                "success": False,
-                "message": "asset_not_prepared",
-                "prepare_endpoint": f"/api/assets/{asset.id}/prepare",
+                "success": True,
+                "data": [],
+                "meta": {
+                    "source": "telemetry_session",
+                    "available": False,
+                    "reason": "asset_has_no_monitoring_session",
+                },
             }
-        ), 409
+        )
 
-    model_meta = resolve_registered_model(
-        current_app.config,
-        requested_name=requested_model or None,
-        task="online_binary",
-        capability="fault_prob_curve",
+    meta = session.get_meta()
+    curve = _read_fault_prob_curve_json(meta.get("fault_prob_curve_path"))
+    source = "fault_prob_curve_file"
+    if not curve:
+        curve = _read_fault_prob_curve_csv(session.csv_path)
+        source = "session_csv"
+
+    return jsonify(
+        {
+            "success": True,
+            "data": curve,
+            "meta": {
+                "source": source,
+                "available": bool(curve),
+                "reason": None if curve else "session_has_no_fault_prob_series",
+                "session_id": session.id,
+            },
+        }
     )
-    if model_meta is None:
-        return jsonify(
-            {
-                "success": False,
-                "message": "未找到可用在线模型，请先配置 DEFAULT_ONLINE_MODEL 或补齐模型目录",
-            }
-        ), 404
-
-    cache_name = secure_filename(model_meta["name"]) or "online_model"
-    output_json = (
-        Path(current_app.config["DERIVED_DIR"])
-        / f"asset_{asset.id}"
-        / f"fault_prob_curve_{cache_name}_{FAULT_PROB_CURVE_CACHE_VERSION}.json"
-    )
-    if output_json.exists():
-        with open(output_json, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return jsonify({"success": True, "data": data, "meta": {"model": model_meta}})
-
-    cfg = current_app.config
-    python_bin = cfg.get("ML_PYTHON_BIN", "python")
-    script = Path(cfg["REPO_ROOT"]) / "src" / "online" / "run_detector.py"
-    model_dir = Path(model_meta["path"])
-
-    cmd = [
-        python_bin,
-        str(script),
-        "--mode",
-        "csv",
-        "--csv",
-        str(csv_path),
-        "--model-dir",
-        str(model_dir),
-        "--every",
-        "10",
-    ]
-
-    completed = subprocess.run(
-        cmd, capture_output=True, text=True, cwd=cfg["REPO_ROOT"]
-    )
-    if completed.returncode != 0:
-        current_app.logger.error(f"Online detector failed: {completed.stderr}")
-        return jsonify({"success": False, "message": "在线检测推理失败"}), 500
-
-    curve = []
-    for line in completed.stderr.splitlines() + completed.stdout.splitlines():
-        line = line.strip()
-        if line.startswith("{"):
-            try:
-                row = json.loads(line)
-                if "time_s" in row and "fault_prob" in row:
-                    curve.append(
-                        {
-                            "time_s": float(row["time_s"]),
-                            "fault_prob": float(row["fault_prob"]),
-                        }
-                    )
-            except Exception:
-                pass
-
-    output_json.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_json, "w", encoding="utf-8") as f:
-        json.dump(curve, f)
-
-    return jsonify({"success": True, "data": curve, "meta": {"model": model_meta}})

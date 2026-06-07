@@ -3,7 +3,9 @@
 from flask import Blueprint, current_app, jsonify, request
 
 from uav_dashboard_api import db
+from uav_dashboard_api.models.asset import Asset
 from uav_dashboard_api.services.rfly_diagnostics import build_rfly_diagnostics
+from uav_dashboard_api.utils.path_store import resolve_local_path
 from uav_dashboard_api.utils.jwt_utils import token_required
 
 bp = Blueprint('telemetry', __name__)
@@ -51,6 +53,7 @@ def start_collection(current_user):
     default_backend = allowed_backend_list[0] if allowed_backend_list else 'replay'
     backend = str(data.get('backend', default_backend) or default_backend).strip().lower()
     replay_path = data.get('replay_path')
+    replay_asset_id = data.get('replay_asset_id')
     rfly_options = {
         'px4mavctrl_path': data.get('rfly_px4mavctrl_path'),
     }
@@ -74,6 +77,31 @@ def start_collection(current_user):
         return _error('backend_not_allowed')
     if backend == 'replay' and not str(replay_path or '').strip():
         return _error('replay backend 需要 replay_path')
+    replay_asset = None
+    if backend == 'replay' and replay_asset_id is not None:
+        try:
+            replay_asset_id = int(replay_asset_id)
+        except (TypeError, ValueError):
+            return _error('replay_asset_id 必须为整数')
+        replay_asset = db.session.get(Asset, replay_asset_id)
+        if replay_asset is None:
+            return _error('回放资产不存在', 404)
+        replay_asset_paths = [
+            replay_asset.stored_path,
+            replay_asset.get_meta().get('prepared_csv_path'),
+        ]
+        resolved_replay_path = resolve_local_path(replay_path, current_app.config)
+        resolved_asset_paths = {
+            resolve_local_path(path, current_app.config)
+            for path in replay_asset_paths
+            if path
+        }
+        if (
+            resolved_replay_path
+            and resolved_asset_paths
+            and resolved_replay_path not in resolved_asset_paths
+        ):
+            return _error('replay_path 与 replay_asset_id 不匹配')
 
     mgr = _get_manager()
     try:
@@ -83,6 +111,7 @@ def start_collection(current_user):
             sim_time=sim_time,
             backend=backend,
             replay_path=replay_path,
+            replay_asset_id=replay_asset.id if replay_asset is not None else None,
             rfly_options=rfly_options,
         )
         return _ok(result, '数据采集已启动')

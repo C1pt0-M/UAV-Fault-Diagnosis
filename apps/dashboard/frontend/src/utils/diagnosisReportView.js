@@ -203,11 +203,29 @@ function buildEvidenceChain(report) {
   }))
 }
 
-function buildWhyItems(report, confidenceText, evidenceChain, readableEvidence) {
+function buildModelProbabilityText(probabilityRows) {
+  const rows = Array.isArray(probabilityRows) ? probabilityRows : []
+  if (!rows.length) return ''
+  const top1 = rows[0]
+  if (rows.length === 1) {
+    return `模型当前主要判断为${top1.labelText}（${top1.probText}）。`
+  }
+  const top2 = rows[1]
+  return `模型当前主要判断为${top1.labelText}（${top1.probText}），次高可能为${top2.labelText}（${top2.probText}）。`
+}
+
+function normalizeReadableEvidenceText(text) {
+  return String(text || '').replaceAll('贡献分', '规则得分')
+}
+
+function buildWhyItems(report, confidenceText, evidenceChain, readableEvidence, probabilityRows) {
+  const modelProbabilityText = buildModelProbabilityText(probabilityRows)
   if (Array.isArray(readableEvidence) && readableEvidence.length) {
     return readableEvidence.slice(0, 5).map((text, index) => ({
       title: index === 0 ? '模型概率' : '关键依据',
-      description: String(text)
+      description: index === 0 && modelProbabilityText
+        ? modelProbabilityText
+        : normalizeReadableEvidenceText(text)
     }))
   }
 
@@ -228,7 +246,7 @@ function buildWhyItems(report, confidenceText, evidenceChain, readableEvidence) 
 
     return {
       title: item.metricText,
-      description: `${item.metricText} 当前观测值为 ${item.value}，规则贡献分 ${item.score}。`
+      description: `${item.metricText} 当前观测值为 ${item.value}，规则得分 ${item.score}。`
     }
   })
 
@@ -257,7 +275,7 @@ function buildProbabilityRows(report) {
     label: item.label,
     labelText: getLabelMeta(item.label).text,
     prob: Number(item.prob || 0),
-    probText: formatPercent(item.prob, 0)
+    probText: formatPercent(item.prob, 3)
   }))
 }
 
@@ -393,7 +411,7 @@ export function buildDiagnosisReportView(report = {}) {
   const labelMeta = getLabelMeta(predictionLabel)
   const severityMeta = getSeverityMeta(report?.summary?.severity?.level)
   const confidenceValue = report.confidence ?? report?.summary?.conclusion?.confidence
-  const confidenceText = formatPercent(confidenceValue, 0)
+  const confidenceText = formatPercent(confidenceValue, 3)
   const actionItems = normalizeRecommendations(report, labelMeta.abnormal)
   const probabilityRows = buildProbabilityRows(report)
   const dataQuality = buildDataQualityView(report)
@@ -431,7 +449,7 @@ export function buildDiagnosisReportView(report = {}) {
     headline: readable.conclusion || fallbackHeadline,
     riskText: readable.risk || fallbackRiskText,
     actionSummary,
-    whyItems: buildWhyItems(report, confidenceText, evidenceChain, readableEvidence),
+    whyItems: buildWhyItems(report, confidenceText, evidenceChain, readableEvidence, probabilityRows),
     actionItems,
     probabilityRows,
     dataQuality,
