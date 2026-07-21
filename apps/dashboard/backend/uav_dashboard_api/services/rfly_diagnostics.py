@@ -4,6 +4,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from uav_dashboard_api.services.telemetry_backends import RFLY_NETWORK_PROFILES
+
 
 DEFAULT_RFLY_PX4MAVCTRL_PATH = Path(
     r"D:\PX4PSP\RflySimAPIs\RflySimSDK\ctrl\PX4MavCtrlV4.py"
@@ -44,6 +46,10 @@ def _check(ok: bool, *, code: str, label: str, message: str, **extra) -> dict:
 def build_rfly_diagnostics(config: dict, override_px4mavctrl_path: str | None = None) -> dict:
     allowed_backends = list(config.get("TELEMETRY_ALLOWED_BACKENDS") or ())
     repo_root = Path(str(config.get("REPO_ROOT") or Path(__file__).resolve().parents[4]))
+    bridge_mode = str(config.get("RFLY_BRIDGE_MODE") or "attach").strip().lower()
+    if bridge_mode not in {"attach", "buaa"}:
+        bridge_mode = "attach"
+    sim_map = str(config.get("RFLY_SIM_MAP") or "LowGPU").strip() or "LowGPU"
 
     px4mavctrl_path = _resolve_path(
         override_px4mavctrl_path or config.get("RFLY_PX4MAVCTRL_PATH"),
@@ -53,10 +59,37 @@ def build_rfly_diagnostics(config: dict, override_px4mavctrl_path: str | None = 
         px4mavctrl_path = DEFAULT_RFLY_PX4MAVCTRL_PATH
     bridge_script = _resolve_path(config.get("RFLY_BRIDGE_SCRIPT"), base_dir=repo_root)
     if bridge_script is None:
-        bridge_script = repo_root / "packages" / "rfly_bridge" / "rfly_bridge" / "run_rfly_live_bridge.py"
+        script_name = "run_buaa_realtime_bridge.py" if bridge_mode == "buaa" else "run_rfly_live_bridge.py"
+        bridge_script = repo_root / "packages" / "rfly_bridge" / "rfly_bridge" / script_name
+    buaa_autotest_dir = _resolve_path(
+        config.get("RFLY_BUAA_AUTOTEST_DIR"),
+        base_dir=repo_root,
+    )
+    network_profile = str(config.get("RFLY_NETWORK_PROFILE") or "enhanced_5g").strip().lower()
+    network_enabled = network_profile != "direct"
+    network_script = _resolve_path(config.get("RFLY_5G_LINK_SCRIPT"), base_dir=repo_root)
+    if network_script is None:
+        network_script = (
+            repo_root
+            / "packages"
+            / "rfly_bridge"
+            / "rfly_bridge"
+            / "network_emulator.py"
+        )
+    network_config_csv = _resolve_path(config.get("RFLY_5G_LINK_CONFIG_CSV"), base_dir=repo_root)
+    if network_config_csv is None:
+        network_config_csv = (
+            repo_root
+            / "packages"
+            / "rfly_bridge"
+            / "rfly_bridge"
+            / "configs"
+            / "network_profiles.csv"
+        )
 
     python_bin = str(
-        config.get("TELEMETRY_PYTHON_BIN")
+        config.get("RFLY_PYTHON_BIN")
+        or config.get("TELEMETRY_PYTHON_BIN")
         or config.get("ML_PYTHON_BIN")
         or sys.executable
     ).strip()
@@ -82,15 +115,40 @@ def build_rfly_diagnostics(config: dict, override_px4mavctrl_path: str | None = 
             message="RflySim 后端已开放" if "rfly" in allowed_backends else "当前环境未开放 RflySim 后端",
             allowed_backends=allowed_backends,
         ),
+        "bridge_mode": _check(
+            bridge_mode in {"attach", "buaa"},
+            code="bridge_mode_valid",
+            label="Bridge mode",
+            message=f"RflySim bridge mode: {bridge_mode}",
+            mode=bridge_mode,
+        ),
+        "sim_map": _check(
+            bool(sim_map),
+            code="sim_map_configured",
+            label="RflySim 3D map",
+            message=f"RflySim 3D map: {sim_map}",
+            map=sim_map,
+        ),
         "px4mavctrl": _check(
-            px4mavctrl_path is not None and px4mavctrl_path.exists(),
+            bridge_mode == "buaa" or (px4mavctrl_path is not None and px4mavctrl_path.exists()),
             code="px4mavctrl_exists",
             label="PX4MavCtrlV4.py",
-            message="PX4MavCtrlV4.py 可用"
+            message="Buaa mode 使用 AutoTestAPI 内置 PX4MavCtrlV4.py"
+            if bridge_mode == "buaa"
+            else "PX4MavCtrlV4.py 可用"
             if px4mavctrl_path is not None and px4mavctrl_path.exists()
             else "缺少 PX4MavCtrlV4.py，请在后端 .env 配置或在本次启动时填写",
             configured=px4mavctrl_path is not None,
             name=_safe_name(px4mavctrl_path),
+        ),
+        "buaa_autotest": _check(
+            bridge_mode != "buaa" or (buaa_autotest_dir is not None and buaa_autotest_dir.exists()),
+            code="buaa_autotest_exists",
+            label="BuaaAutoTest AutoTestAPI",
+            message="BuaaAutoTest AutoTestAPI 可用"
+            if bridge_mode != "buaa" or (buaa_autotest_dir is not None and buaa_autotest_dir.exists())
+            else "Buaa mode 需要配置 RFLY_BUAA_AUTOTEST_DIR",
+            name=_safe_name(buaa_autotest_dir),
         ),
         "bridge_script": _check(
             bridge_script.exists(),
@@ -104,8 +162,8 @@ def build_rfly_diagnostics(config: dict, override_px4mavctrl_path: str | None = 
         "python_bin": _check(
             bool(python_bin) and (python_path.exists() if python_path is not None and python_path.is_absolute() else True),
             code="python_bin_exists",
-            label="Telemetry Python",
-            message="Telemetry Python 已配置" if python_bin else "Telemetry Python 未配置",
+            label="Rfly Bridge Python",
+            message="Rfly Bridge Python 已配置" if python_bin else "Rfly Bridge Python 未配置",
             name=_safe_name(python_path) or python_bin,
         ),
         "forward_port": _check(
@@ -116,6 +174,34 @@ def build_rfly_diagnostics(config: dict, override_px4mavctrl_path: str | None = 
             host=str(config.get("RFLY_FORWARD_HOST", "127.0.0.1")),
             port=forward_port,
         ),
+        "network_profile": _check(
+            network_profile in RFLY_NETWORK_PROFILES,
+            code="network_profile_valid",
+            label="5G 链路场景",
+            message=f"5G 链路场景: {network_profile}"
+            if network_profile in RFLY_NETWORK_PROFILES
+            else "RFLY_NETWORK_PROFILE 仅支持 direct、baseline、enhanced_5g 或 degraded",
+            profile=network_profile,
+            enabled=network_enabled,
+        ),
+        "network_script": _check(
+            (not network_enabled) or network_script.exists(),
+            code="network_script_exists",
+            label="5G link emulator",
+            message="5G link emulator 可用"
+            if (not network_enabled) or network_script.exists()
+            else "5G link emulator 脚本不存在",
+            name=_safe_name(network_script),
+        ),
+        "network_config": _check(
+            (not network_enabled) or network_config_csv.exists(),
+            code="network_config_exists",
+            label="5G profile 配置",
+            message="5G profile 配置可用"
+            if (not network_enabled) or network_config_csv.exists()
+            else "5G profile 配置不存在",
+            name=_safe_name(network_config_csv),
+        ),
         "pymav": _check(
             True,
             code="pymav_configured",
@@ -124,10 +210,21 @@ def build_rfly_diagnostics(config: dict, override_px4mavctrl_path: str | None = 
             if _as_bool(config.get("RFLY_ENABLE_PYMAV"), True)
             else "PymavLink 增强数据未启用，将使用 RflySim 基础状态",
             enabled=_as_bool(config.get("RFLY_ENABLE_PYMAV"), True),
-            address=str(config.get("RFLY_PYMAV_ADDRESS", "udpin:0.0.0.0:14030")),
+            address=str(config.get("RFLY_PYMAV_ADDRESS", "udpin:0.0.0.0:14031")),
         ),
     }
-    blocking_keys = {"backend", "px4mavctrl", "bridge_script", "python_bin", "forward_port"}
+    blocking_keys = {
+        "backend",
+        "bridge_mode",
+        "px4mavctrl",
+        "buaa_autotest",
+        "bridge_script",
+        "python_bin",
+        "forward_port",
+        "network_profile",
+        "network_script",
+        "network_config",
+    }
     issues = [
         {
             "code": "backend_not_allowed" if key == "backend" else f"{key}_missing",

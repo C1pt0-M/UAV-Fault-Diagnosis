@@ -25,6 +25,9 @@ export const telemetryApi = {
   realtimeData() {
     return request.get('/telemetry/realtime-data')
   },
+  networkComparison() {
+    return request.get('/telemetry/network-comparison')
+  },
   sessions(params = {}) {
     return request.get('/telemetry/sessions', { params })
   },

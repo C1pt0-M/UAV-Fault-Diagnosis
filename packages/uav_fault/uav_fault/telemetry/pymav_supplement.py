@@ -1,6 +1,8 @@
 """pymavlink 补充线程，获取 MAVSDK 无法精确提供的字段。
 
 监听 PX4 GCS 端口，提取：
+- ATTITUDE                 → roll/pitch/yaw, rollspeed/pitchspeed/yawspeed
+- LOCAL_POSITION_NED       → vx/vy/vz, pos_z
 - HIGHRES_IMU.pressure_alt   → baro_alt_meter
 - BATTERY_STATUS.charge_state → battery_warning  (0=正常,1=低,2=严重,3=紧急)
 - SYS_STATUS.onboard_control_sensors_health → sys_status_health (位掩码)
@@ -28,8 +30,17 @@ _CHARGE_STATE_TO_WARNING = {
     7: 0,  # CHARGING
 }
 
+
+def _pressure_to_pa(value) -> float:
+    pressure = float(value or 0.0)
+    if pressure <= 0.0:
+        return 0.0
+    return pressure * 100.0 if pressure < 2000.0 else pressure
+
 # 需要接收的 MAVLink 消息类型
 _MSG_TYPES = [
+    "ATTITUDE",
+    "LOCAL_POSITION_NED",
     "HIGHRES_IMU",
     "BATTERY_STATUS",
     "SYS_STATUS",
@@ -82,6 +93,12 @@ def run_pymav_listener(
         return
 
     # 请求额外消息流：提升 ATTITUDE_TARGET / ACTUATOR_CONTROL_TARGET / VIBRATION / ESC_STATUS 的发送速率
+    # ATTITUDE (msg_id=30): 实际姿态/角速度，50Hz (20000us)
+    _request_stream(conn, 30, 20_000)
+    # LOCAL_POSITION_NED (msg_id=32): 实际本地位置/速度，50Hz (20000us)
+    _request_stream(conn, 32, 20_000)
+    # HIGHRES_IMU (msg_id=105): 气压/磁力计/IMU 补充，50Hz (20000us)
+    _request_stream(conn, 105, 20_000)
     # ATTITUDE_TARGET (msg_id=83): 默认 2Hz → 提升到 50Hz (20000us)
     _request_stream(conn, 83, 20_000)
     # ACTUATOR_CONTROL_TARGET (msg_id=140): 提升到 50Hz (20000us)
@@ -91,7 +108,7 @@ def run_pymav_listener(
     # ESC_STATUS (msg_id=291): 默认 1Hz → 提升到 10Hz (100000us)
     _request_stream(conn, 291, 100_000)
     print(
-        "[pymavlink] 已请求 ATTITUDE_TARGET(50Hz), ACTUATOR_CONTROL_TARGET(50Hz), VIBRATION(10Hz), ESC_STATUS(10Hz)"
+        "[pymavlink] 已请求 ATTITUDE/LOCAL_POSITION_NED/HIGHRES_IMU/ATTITUDE_TARGET/ACTUATOR_CONTROL_TARGET"
     )
 
     while not stop_event.is_set():
@@ -105,14 +122,46 @@ def run_pymav_listener(
 
         msg_type = msg.get_type()
 
-        if msg_type == "HIGHRES_IMU":
+        if msg_type == "ATTITUDE":
             state.update(
-                baro_alt_meter=msg.pressure_alt,
-                baro_pressure_pa=float(msg.abs_pressure) * 100.0,
-                baro_temp=msg.temperature,
-                mag_x=msg.xmag,
-                mag_y=msg.ymag,
-                mag_z=msg.zmag,
+                roll=getattr(msg, "roll", 0.0),
+                pitch=getattr(msg, "pitch", 0.0),
+                yaw=getattr(msg, "yaw", 0.0),
+                rollspeed=getattr(msg, "rollspeed", 0.0),
+                pitchspeed=getattr(msg, "pitchspeed", 0.0),
+                yawspeed=getattr(msg, "yawspeed", 0.0),
+                pymav_attitude_seen=1.0,
+            )
+
+        elif msg_type == "LOCAL_POSITION_NED":
+            pos_z = float(getattr(msg, "z", 0.0))
+            state.update(
+                vx=getattr(msg, "vx", 0.0),
+                vy=getattr(msg, "vy", 0.0),
+                vz=getattr(msg, "vz", 0.0),
+                vel_x=getattr(msg, "vx", 0.0),
+                vel_y=getattr(msg, "vy", 0.0),
+                vel_z=getattr(msg, "vz", 0.0),
+                pos_z=pos_z,
+                baro_alt=-pos_z,
+                pymav_local_position_seen=1.0,
+            )
+
+        elif msg_type == "HIGHRES_IMU":
+            state.update(
+                accel_x=getattr(msg, "xacc", 0.0),
+                accel_y=getattr(msg, "yacc", 0.0),
+                accel_z=getattr(msg, "zacc", 0.0),
+                gyro_x=getattr(msg, "xgyro", 0.0),
+                gyro_y=getattr(msg, "ygyro", 0.0),
+                gyro_z=getattr(msg, "zgyro", 0.0),
+                baro_alt_meter=getattr(msg, "pressure_alt", 0.0),
+                baro_alt=getattr(msg, "pressure_alt", 0.0),
+                baro_pressure_pa=_pressure_to_pa(getattr(msg, "abs_pressure", 0.0)),
+                baro_temp=getattr(msg, "temperature", 0.0),
+                mag_x=getattr(msg, "xmag", 0.0),
+                mag_y=getattr(msg, "ymag", 0.0),
+                mag_z=getattr(msg, "zmag", 0.0),
                 pymav_highres_imu_seen=1.0,
             )
 
@@ -127,7 +176,17 @@ def run_pymav_listener(
         elif msg_type == "HEARTBEAT":
             # 过滤 GCS 的心跳，只取飞控的 (component_id=1 即 autopilot)
             if msg.get_srcComponent() == 1:
-                state.update(system_status=msg.system_status)
+                base_mode = int(getattr(msg, "base_mode", 0))
+                armed_flag = getattr(
+                    mavutil.mavlink, "MAV_MODE_FLAG_SAFETY_ARMED", 128
+                )
+                state.update(
+                    system_status=msg.system_status,
+                    armed=float(
+                        bool(base_mode & armed_flag)
+                    ),
+                    pymav_heartbeat_seen=1.0,
+                )
 
         elif msg_type == "ATTITUDE_TARGET":
             state.update(

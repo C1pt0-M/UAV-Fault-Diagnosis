@@ -32,7 +32,7 @@ UAV-Fault-Diagnosis/
 └─ tests/                  # 核心库和迁移约束测试
 ```
 
-根目录保留 `uav_dashboard_api/`、`uav_fault/`、`rfly_bridge/` shim 包，用于从仓库根目录直接 import 和 `python -m ...`。
+Python package 只保留 `apps/` 与 `packages/` 下的 canonical 实现；开发环境通过 editable install 暴露这些 package。
 
 ## 快速启动
 
@@ -41,7 +41,7 @@ UAV-Fault-Diagnosis/
 ```powershell
 cd D:\UAV-Fault-Diagnosis
 python -m venv .\apps\dashboard\backend\.venv
-.\apps\dashboard\backend\.venv\Scripts\python.exe -m pip install -r .\apps\dashboard\backend\requirements.txt
+.\apps\dashboard\backend\.venv\Scripts\python.exe -m pip install -e ".[dashboard,test]"
 Copy-Item .\apps\dashboard\backend\.env.example .\apps\dashboard\backend\.env -Force
 .\apps\dashboard\backend\.venv\Scripts\python.exe -m uav_dashboard_api
 ```
@@ -107,21 +107,19 @@ python -m rfly_bridge --px4mavctrl D:\PX4PSP\RflySimAPIs\RflySimSDK\ctrl\PX4MavC
 - `scripts/start_dashboard_backend.ps1`
 - `scripts/start_dashboard_frontend.ps1`
 
-其他 Python 脚本已按用途分层到 `scripts/data/`、`scripts/dev/`、`scripts/eval/`、`scripts/plots/`。旧顶层 Python 脚本暂时保留 shim，会提示新路径并转发执行。
+其他 Python 脚本按用途从 `scripts/data/`、`scripts/dev/`、`scripts/eval/`、`scripts/plots/` 的 canonical 路径运行。
 
 ## 验证命令
 
+`pyproject.toml` 是 Python packaging、依赖分组和 pytest discovery 的唯一事实来源。AutoDL bundle 单独保留 `requirements-autodl-train.txt`，用于选择不重复安装 PyTorch 的依赖分组。
+
 ```powershell
 cd D:\UAV-Fault-Diagnosis
-python -m compileall -q uav_dashboard_api uav_fault rfly_bridge apps\dashboard\backend\uav_dashboard_api packages\uav_fault\uav_fault packages\rfly_bridge\rfly_bridge scripts tests
-python -m pytest tests\test_monorepo_layout.py tests\test_decision_engine.py -q
-.\apps\dashboard\backend\.venv\Scripts\python.exe -m pytest apps\dashboard\backend\tests\test_rfly_backend.py -q
+.\apps\dashboard\backend\.venv\Scripts\python.exe .\scripts\verify.py
 ```
 
-前端：
+仅验证 Python：
 
 ```powershell
-cd D:\UAV-Fault-Diagnosis\apps\dashboard\frontend
-npm run test
-npm run build
+.\apps\dashboard\backend\.venv\Scripts\python.exe .\scripts\verify.py --skip-frontend
 ```

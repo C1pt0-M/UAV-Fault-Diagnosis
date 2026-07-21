@@ -58,8 +58,52 @@ def test_build_frame_uses_sim_time_when_available() -> None:
     assert frame["recv_time_s"] == 1.0
 
 
-def test_build_frame_derives_rates_accel_and_motor_fallbacks() -> None:
+def test_build_frame_prefers_pymav_actual_state_over_zero_rfly_state() -> None:
     bridge = RflyLiveBridge(forward_host="127.0.0.1", forward_port=19997)
+    try:
+        frame = bridge.build_frame(
+            mav_state={
+                "trueTimeStmp": 999999.0,
+                "uavTimeStmp": 888888.0,
+                "recv_time_s": 10.0,
+                "uavAngEular": [0.0, 0.0, 0.0],
+                "uavAngRate": [0.0, 0.0, 0.0],
+                "uavVelNED": [0.0, 0.0, 0.0],
+                "uavPosNED": [0.0, 0.0, 0.0],
+                "trueAccB": [0.0, 0.0, 0.0],
+                "trueMotorRPMS": [1100.0, 1200.0, 1300.0, 1400.0],
+            },
+            pymav_frame={
+                "time_s": 3.5,
+                "roll": 0.12,
+                "pitch": -0.08,
+                "yaw": 1.25,
+                "rollspeed": 0.01,
+                "pitchspeed": -0.02,
+                "yawspeed": 0.03,
+                "vx": 1.2,
+                "vy": -0.4,
+                "vz": 0.7,
+                "pos_z": -3.5,
+            },
+        )
+    finally:
+        bridge.close()
+
+    assert frame["time_s"] == 3.5
+    assert frame["roll"] == 0.12
+    assert frame["pitch"] == -0.08
+    assert frame["yaw"] == 1.25
+    assert frame["rollspeed"] == 0.01
+    assert frame["gyro_x"] == 0.01
+    assert frame["vx"] == 1.2
+    assert frame["vel_x"] == 1.2
+    assert frame["pos_z"] == -3.5
+    assert frame["baro_alt"] == 3.5
+
+
+def test_build_frame_derives_rates_accel_and_motor_fallbacks() -> None:
+    bridge = RflyLiveBridge(forward_host="127.0.0.1", forward_port=19996)
     try:
         first = bridge.build_frame(
             mav_state={
@@ -104,7 +148,7 @@ def test_build_frame_derives_rates_accel_and_motor_fallbacks() -> None:
 
 
 def test_build_frame_populates_kg_mstca_canonical_fields() -> None:
-    bridge = RflyLiveBridge(forward_host="127.0.0.1", forward_port=19996)
+    bridge = RflyLiveBridge(forward_host="127.0.0.1", forward_port=19995)
     try:
         frame = bridge.build_frame(
             mav_state={
@@ -151,7 +195,7 @@ def test_build_frame_populates_kg_mstca_canonical_fields() -> None:
 
 
 def test_build_frame_marks_actuator_source_for_true_and_proxy_outputs() -> None:
-    bridge = RflyLiveBridge(forward_host="127.0.0.1", forward_port=19995)
+    bridge = RflyLiveBridge(forward_host="127.0.0.1", forward_port=19994)
     try:
         true_frame = bridge.build_frame(
             mav_state={

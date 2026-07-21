@@ -13,8 +13,14 @@ from collections import deque
 from pathlib import Path
 
 from uav_fault.telemetry.receiver import TelemetryReceiver
-from uav_fault.online.fault_detector import FaultDetector
-from uav_fault.online.event_aggregator import FaultEventAggregator
+from uav_fault.telemetry.schema_adapter import (
+    assess_canonical_input_contract,
+    canonicalize_rfly_frame,
+)
+from uav_fault.online.monitoring_session import (
+    OnlineDetectionRunner,
+    OnlineMonitoringSession,
+)
 
 
 class RealtimeDetectionService:
@@ -28,11 +34,20 @@ class RealtimeDetectionService:
         window_size: int = 150,
         device: str = "cpu",
     ):
-        self.detector = FaultDetector(model_dir=model_dir, device=device, window_size=window_size)
-        self.aggregator = FaultEventAggregator(
-            onset_th=0.6, clear_th=0.4, k_on=3, k_off=3,
-            min_event_s=0.5, merge_gap_s=0.5,
+        self.runner = OnlineDetectionRunner(
+            model_dir,
+            device=device,
+            window_size=window_size,
         )
+        self.detector = self.runner.detector
+        self.aggregator = self.runner.aggregator
+        self.monitoring_session = OnlineMonitoringSession()
+        self.monitoring_session.start_detection(
+            self.runner,
+            model_summary={"path": str(model_dir)},
+        )
+        self.canonical_window: deque[dict] = deque(maxlen=self.detector.window_size)
+        self.input_contract_status: dict | None = None
 
         if csv_path is None:
             import time
@@ -62,21 +77,34 @@ class RealtimeDetectionService:
     def _on_frame(self, frame: dict, window: deque) -> None:
         """每帧回调：当窗口满时运行检测。"""
         self.frame_count += 1
+        canonical, coverage = canonicalize_rfly_frame(frame)
+        self.canonical_window.append(canonical)
 
-        if len(window) < self.detector.window_size:
+        if len(self.canonical_window) < self.detector.window_size:
             return
 
-        # 运行检测
-        result = self.detector.predict(list(window))
-        if result is None:
+        self.input_contract_status = assess_canonical_input_contract(
+            list(self.canonical_window),
+            coverage=coverage,
+            actuator_source=canonical.get("actuator_source")
+            or frame.get("actuator_source"),
+            window_size=self.detector.window_size,
+        )
+        if self.input_contract_status.get("detection_blocked"):
             return
 
+        update = self.monitoring_session.ingest(
+            frame=canonical,
+            window=list(self.canonical_window),
+            frame_idx=self.frame_count,
+            generation=self.monitoring_session.generation,
+        )
+        result = update.result
+        if result is None or update.stale:
+            return
         self.detection_count += 1
-        t = frame.get("time_s", self.frame_count / 50.0)
         fault_prob = result["fault_prob"]
-
-        # 聚合故障事件
-        new_events = self.aggregator.update(t=t, fault_prob=fault_prob, frame_idx=self.frame_count)
+        new_events = update.new_events
 
         # 打印新检出的故障事件
         for event in new_events:
@@ -97,8 +125,7 @@ class RealtimeDetectionService:
         try:
             self.receiver.start()
         finally:
-            # 接收结束后，flush 聚合器
-            final_events = self.aggregator.flush()
+            final_events = self.monitoring_session.stop_detection().new_events
             for event in final_events:
                 self.fault_events.append(event)
                 print(f"\n[realtime] ⚠️  故障事件检出 (flush):")

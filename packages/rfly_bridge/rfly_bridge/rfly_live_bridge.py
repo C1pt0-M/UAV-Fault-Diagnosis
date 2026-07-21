@@ -11,12 +11,6 @@ from pathlib import Path
 from typing import Any
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SRC_ROOT = PROJECT_ROOT / "src"
-if str(SRC_ROOT) not in sys.path:
-    sys.path.insert(0, str(SRC_ROOT))
-
-
 from uav_fault.telemetry.forwarder import UDPForwarder
 from uav_fault.telemetry.state import TelemetryState
 
@@ -58,6 +52,30 @@ def _quat_from_euler(roll: float, pitch: float, yaw: float) -> tuple[float, floa
         cr * sp * cy + sr * cp * sy,
         cr * cp * sy - sr * sp * cy,
     )
+
+
+PYMAV_ACTUAL_FIELDS = (
+    "roll",
+    "pitch",
+    "yaw",
+    "rollspeed",
+    "pitchspeed",
+    "yawspeed",
+    "gyro_x",
+    "gyro_y",
+    "gyro_z",
+    "accel_x",
+    "accel_y",
+    "accel_z",
+    "vx",
+    "vy",
+    "vz",
+    "vel_x",
+    "vel_y",
+    "vel_z",
+    "pos_z",
+    "baro_alt",
+)
 
 
 class RflyLiveBridge:
@@ -115,6 +133,8 @@ class RflyLiveBridge:
         "battery_warning",
         "sys_status_health",
         "system_status",
+        "armed",
+        "pymav_heartbeat_seen",
         "pymav_highres_imu_seen",
         "pymav_attitude_target_seen",
         "pymav_actuator_control_seen",
@@ -203,9 +223,6 @@ class RflyLiveBridge:
         for idx in range(1, 5):
             motor_key = f"motor{idx}"
             if abs(frame.get(motor_key, 0.0)) > 1e-9:
-                out_key = f"actuator_out_{idx}"
-                if abs(frame.get(out_key, 0.0)) <= 1e-9:
-                    frame[out_key] = frame[motor_key] * self.rpm_scale
                 continue
             esc_key = f"esc_rpm_{idx}"
             esc_rpm = _safe_float(pymav_frame.get(esc_key), default=0.0)
@@ -223,6 +240,23 @@ class RflyLiveBridge:
                 frame[motor_key] = self._ctrl_to_motor(ctrl_val)
                 if actuator_source == "none":
                     actuator_source = "px4_controls"
+
+        controls_seen = _safe_float(
+            frame.get("pymav_actuator_control_seen"), default=0.0
+        ) > 0.5
+        if controls_seen:
+            proxy_outputs = self._proxy_actuator_outputs(frame)
+            for idx, value in enumerate(proxy_outputs, start=1):
+                frame[f"actuator_out_{idx}"] = value
+            actuator_source = "proxy"
+        elif all(
+            abs(frame.get(f"actuator_out_{idx}", 0.0)) <= 1e-9
+            for idx in range(1, 5)
+        ) and any(abs(frame.get(f"motor{idx}", 0.0)) > 1e-9 for idx in range(1, 5)):
+            for idx in range(1, 5):
+                normalized_rpm = _clamp(frame.get(f"motor{idx}", 0.0), 0.0, 1.0)
+                frame[f"actuator_out_{idx}"] = 1000.0 + 600.0 * normalized_rpm
+            actuator_source = "true_motor_rpm"
 
         if all(abs(frame.get(f"actuator_out_{idx}", 0.0)) <= 1e-9 for idx in range(1, 5)):
             proxy_outputs = self._proxy_actuator_outputs(frame)
@@ -296,10 +330,6 @@ class RflyLiveBridge:
         pymav_frame: dict[str, Any] | None = None,
     ) -> dict[str, float]:
         pymav_frame = dict(pymav_frame or {})
-        has_true_motor = any(
-            abs(_get_vector_component(mav_state, "trueMotorRPMS", idx)) > 1e-9
-            for idx in range(4)
-        )
         frame: dict[str, float] = {
             "seq": float(self._forwarder._seq),
             "time_s": self._time_s_from_state(mav_state),
@@ -308,11 +338,11 @@ class RflyLiveBridge:
             "motor2": self._normalize_motor_rpm(_get_vector_component(mav_state, "trueMotorRPMS", 1)),
             "motor3": self._normalize_motor_rpm(_get_vector_component(mav_state, "trueMotorRPMS", 2)),
             "motor4": self._normalize_motor_rpm(_get_vector_component(mav_state, "trueMotorRPMS", 3)),
-            "actuator_out_1": _get_vector_component(mav_state, "trueMotorRPMS", 0),
-            "actuator_out_2": _get_vector_component(mav_state, "trueMotorRPMS", 1),
-            "actuator_out_3": _get_vector_component(mav_state, "trueMotorRPMS", 2),
-            "actuator_out_4": _get_vector_component(mav_state, "trueMotorRPMS", 3),
-            "actuator_source": "true_motor_rpm" if has_true_motor else "none",
+            "actuator_out_1": 0.0,
+            "actuator_out_2": 0.0,
+            "actuator_out_3": 0.0,
+            "actuator_out_4": 0.0,
+            "actuator_source": "none",
             "roll": _get_vector_component(mav_state, "uavAngEular", 0),
             "pitch": _get_vector_component(mav_state, "uavAngEular", 1),
             "yaw": _get_vector_component(mav_state, "uavAngEular", 2),
@@ -360,10 +390,33 @@ class RflyLiveBridge:
             "battery_warning": 0.0,
             "sys_status_health": 0.0,
             "system_status": 0.0,
+            "armed": 0.0,
+            "pymav_heartbeat_seen": 0.0,
             "pymav_highres_imu_seen": 0.0,
             "pymav_attitude_target_seen": 0.0,
             "pymav_actuator_control_seen": 0.0,
         }
+        px4_controls = list(mav_state.get("px4_controls", []) or [])
+        for idx in range(min(4, len(px4_controls))):
+            frame[f"actuator_ctrl_{idx + 1}"] = _safe_float(px4_controls[idx], default=0.0)
+        if "time_s" in pymav_frame:
+            frame["time_s"] = _safe_float(pymav_frame.get("time_s"), default=frame["time_s"])
+        for key in PYMAV_ACTUAL_FIELDS:
+            if key in pymav_frame:
+                frame[key] = _safe_float(pymav_frame.get(key), default=frame.get(key, 0.0))
+        for key in self.ENHANCED_FIELDS:
+            if key in pymav_frame:
+                frame[key] = _safe_float(pymav_frame.get(key))
+        frame["vel_x"] = frame.get("vx", 0.0)
+        frame["vel_y"] = frame.get("vy", 0.0)
+        frame["vel_z"] = frame.get("vz", 0.0)
+        if "baro_alt_meter" in pymav_frame:
+            frame["baro_alt"] = _safe_float(
+                pymav_frame.get("baro_alt_meter"),
+                default=frame.get("baro_alt", 0.0),
+            )
+        elif "pos_z" in pymav_frame:
+            frame["baro_alt"] = -frame.get("pos_z", 0.0)
         q_w, q_x, q_y, q_z = _quat_from_euler(
             frame["roll"],
             frame["pitch"],
@@ -373,13 +426,20 @@ class RflyLiveBridge:
         frame["att_q_x"] = q_x
         frame["att_q_y"] = q_y
         frame["att_q_z"] = q_z
-        px4_controls = list(mav_state.get("px4_controls", []) or [])
-        for idx in range(min(4, len(px4_controls))):
-            frame[f"actuator_ctrl_{idx + 1}"] = _safe_float(px4_controls[idx], default=0.0)
-        for key in self.ENHANCED_FIELDS:
-            if key in pymav_frame:
-                frame[key] = _safe_float(pymav_frame.get(key))
         self._apply_fallbacks(frame, pymav_frame)
+        has_pymav_accel = all(
+            key in pymav_frame for key in ("accel_x", "accel_y", "accel_z")
+        )
+        if (
+            not has_pymav_accel
+            and _safe_float(frame.get("pymav_highres_imu_seen"), default=0.0) <= 0.5
+        ):
+            gravity = 9.80665
+            roll = frame.get("roll", 0.0)
+            pitch = frame.get("pitch", 0.0)
+            frame["accel_x"] += gravity * math.sin(pitch)
+            frame["accel_y"] -= gravity * math.sin(roll) * math.cos(pitch)
+            frame["accel_z"] -= gravity * math.cos(roll) * math.cos(pitch)
         return frame
 
     def emit_frame(
@@ -452,9 +512,15 @@ class RflyLiveEmitter:
 
     def run(self, stop_event: threading.Event) -> None:
         interval = 1.0 / max(self.bridge.emit_rate_hz, 1)
+        next_emit = time.monotonic()
         while not stop_event.is_set():
             self.emit_once()
-            if stop_event.wait(interval):
+            next_emit += interval
+            sleep_s = next_emit - time.monotonic()
+            if sleep_s <= 0.0:
+                next_emit = time.monotonic()
+                continue
+            if stop_event.wait(sleep_s):
                 break
 
 

@@ -9,6 +9,18 @@ export const monitoringDurationOptions = [
   { label: '120 秒', value: 120 }
 ]
 
+export const rflyNetworkProfileOptions = [
+  { label: '5G增强链路 enhanced_5g', value: 'enhanced_5g' },
+  { label: '本地基线 baseline', value: 'baseline' },
+  { label: '弱网链路 degraded', value: 'degraded' },
+  { label: '直连 direct', value: 'direct' }
+]
+
+export const rflyInferenceLocationOptions = [
+  { label: 'MEC 边缘推理', value: 'mec' },
+  { label: '中心平台推理', value: 'center' }
+]
+
 export const monitoringStateLabels = {
   IDLE: '空闲',
   COLLECTING: '采集中',
@@ -30,6 +42,8 @@ export const monitoringCopy = {
   modelPlaceholder: '选择在线检测模型',
   replayAssetPlaceholder: '选择回放资产',
   rflyPx4MavCtrlPlaceholder: 'PX4MavCtrlV4.py 路径（可选，默认读取后端配置）',
+  rflyNetworkProfileLabel: '5G链路场景',
+  rflyInferenceLocationLabel: '推理位置',
   startCollectionLabel: '启动采集',
   startDetectionLabel: '启动检测',
   startBlindTestLabel: '启动盲测',

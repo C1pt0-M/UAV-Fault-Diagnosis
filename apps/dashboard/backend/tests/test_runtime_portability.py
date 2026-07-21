@@ -32,6 +32,9 @@ def _reload_config(monkeypatch, **env):
         "OFFLINE_NORM_STATS",
         "ML_PYTHON_BIN",
         "TELEMETRY_PYTHON_BIN",
+        "RFLY_PYTHON_BIN",
+        "RFLY_PYMAV_ADDRESS",
+        "RFLY_ENABLE_PYMAV",
         "FAULT_DATASET_ROOT",
         "ULG_PREPARE_SCRIPT",
         "PX4_ROOT",
@@ -148,41 +151,47 @@ def test_run_ulg_to_csv_requires_prepare_script_configuration(tmp_path: Path):
  
  
  
-def test_config_blank_env_exposes_px4_runtime_defaults(monkeypatch, tmp_path: Path): 
-    for key in ( 
-        "PX4_LAUNCH_MODE", 
-        "PX4_READY_HOST", 
-        "PX4_READY_PORT", 
-        "TELEMETRY_MAVSDK_ADDRESS", 
-        "TELEMETRY_MAVSDK_GRPC_PORT", 
-        "TELEMETRY_PYMAV_ADDRESS", 
-        "TELEMETRY_FORWARD_HOST", 
-        "TELEMETRY_FORWARD_PORT", 
-        "TELEMETRY_EMIT_RATE_HZ", 
-        "TELEMETRY_ENABLE_PYMAV", 
-        "TELEMETRY_START_FLIGHT_CONTROLLER", 
-    ): 
-        monkeypatch.delenv(key, raising=False) 
- 
-    repo_root = tmp_path / "repo" 
-    repo_root.mkdir() 
-    runtime_dir = tmp_path / "runtime" 
- 
-    config_module = _reload_config( 
-        monkeypatch, 
-        REPO_ROOT=str(repo_root), 
-        RUNTIME_DIR=str(runtime_dir), 
-        AI_RUNTIME_DIR=str(runtime_dir / "ai"), 
-    ) 
- 
-    assert config_module.Config.PX4_LAUNCH_MODE == "managed" 
-    assert config_module.Config.PX4_READY_HOST == "127.0.0.1" 
-    assert config_module.Config.PX4_READY_PORT == 18570 
-    assert config_module.Config.TELEMETRY_MAVSDK_ADDRESS == "udpin://0.0.0.0:14550" 
-    assert config_module.Config.TELEMETRY_MAVSDK_GRPC_PORT == 50052 
-    assert config_module.Config.TELEMETRY_PYMAV_ADDRESS == "udpin:0.0.0.0:14030" 
-    assert config_module.Config.TELEMETRY_FORWARD_HOST == "127.0.0.1" 
-    assert config_module.Config.TELEMETRY_FORWARD_PORT == 15550 
-    assert config_module.Config.TELEMETRY_EMIT_RATE_HZ == 50 
-    assert config_module.Config.TELEMETRY_ENABLE_PYMAV is True 
-    assert config_module.Config.TELEMETRY_START_FLIGHT_CONTROLLER is True 
+def test_config_blank_env_exposes_px4_runtime_defaults(monkeypatch, tmp_path: Path):
+    for key in (
+        "PX4_LAUNCH_MODE",
+        "PX4_READY_HOST",
+        "PX4_READY_PORT",
+        "TELEMETRY_MAVSDK_ADDRESS",
+        "TELEMETRY_MAVSDK_GRPC_PORT",
+        "TELEMETRY_PYMAV_ADDRESS",
+        "TELEMETRY_FORWARD_HOST",
+        "TELEMETRY_FORWARD_PORT",
+        "TELEMETRY_EMIT_RATE_HZ",
+        "TELEMETRY_ENABLE_PYMAV",
+        "TELEMETRY_START_FLIGHT_CONTROLLER",
+        "RFLY_PYMAV_ADDRESS",
+        "RFLY_ENABLE_PYMAV",
+        "RFLY_SIM_MAP",
+    ):
+        monkeypatch.delenv(key, raising=False)
+
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    runtime_dir = tmp_path / "runtime"
+
+    config_module = _reload_config(
+        monkeypatch,
+        REPO_ROOT=str(repo_root),
+        RUNTIME_DIR=str(runtime_dir),
+        AI_RUNTIME_DIR=str(runtime_dir / "ai"),
+    )
+
+    assert config_module.Config.PX4_LAUNCH_MODE == "managed"
+    assert config_module.Config.PX4_READY_HOST == "127.0.0.1"
+    assert config_module.Config.PX4_READY_PORT == 18570
+    assert config_module.Config.TELEMETRY_MAVSDK_ADDRESS == "udpin://0.0.0.0:14550"
+    assert config_module.Config.TELEMETRY_MAVSDK_GRPC_PORT == 50052
+    assert config_module.Config.TELEMETRY_PYMAV_ADDRESS == "udpin:0.0.0.0:14030"
+    assert config_module.Config.TELEMETRY_FORWARD_HOST == "127.0.0.1"
+    assert config_module.Config.TELEMETRY_FORWARD_PORT == 15550
+    assert config_module.Config.TELEMETRY_EMIT_RATE_HZ == 50
+    assert config_module.Config.TELEMETRY_ENABLE_PYMAV is True
+    assert config_module.Config.TELEMETRY_START_FLIGHT_CONTROLLER is True
+    assert config_module.Config.RFLY_PYMAV_ADDRESS == "udpin:0.0.0.0:14031"
+    assert config_module.Config.RFLY_ENABLE_PYMAV is True
+    assert config_module.Config.RFLY_SIM_MAP == "LowGPU"

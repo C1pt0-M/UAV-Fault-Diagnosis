@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import shlex
 import subprocess
 import sys
@@ -94,10 +95,23 @@ def build_commands(
     return commands
 
 
+def _subprocess_env(repo_root: Path, base: dict[str, str] | None = None) -> dict[str, str]:
+    env = dict(base if base is not None else os.environ)
+    additions = [
+        str(repo_root),
+        str(repo_root / "packages" / "uav_fault"),
+        str(repo_root / "packages" / "rfly_bridge"),
+    ]
+    existing = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = os.pathsep.join([*additions, existing]) if existing else os.pathsep.join(additions)
+    return env
+
+
 def _run_commands(commands: list[list[str]], workdir: Path) -> None:
+    env = _subprocess_env(workdir)
     for index, cmd in enumerate(commands, start=1):
         print(f"[{index}/{len(commands)}] {' '.join(shlex.quote(part) for part in cmd)}")
-        subprocess.run(cmd, cwd=str(workdir), check=True)
+        subprocess.run(cmd, cwd=str(workdir), env=env, check=True)
 
 
 def parse_args() -> argparse.Namespace:

@@ -8,7 +8,7 @@
 - 仅构建 trainmix，不包含 holdout。
 
 示例：
-  python scripts/prepare_trainmix_dataset.py \
+  python scripts/data/prepare_trainmix_dataset.py \
     --offline-csv-dir data/csv_raw \
     --offline-meta-dir data/metadata \
     --online-csv-dir data/telemetry_live/csv_labeled \

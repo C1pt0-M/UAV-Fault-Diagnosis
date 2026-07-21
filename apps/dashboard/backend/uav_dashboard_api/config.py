@@ -222,6 +222,7 @@ class Config:
     MODEL_ROOT = _resolve_model_root(_REPO_ROOT_PATH)
     ML_PYTHON_BIN = _get_env('ML_PYTHON_BIN', _default_python_bin())
     TELEMETRY_PYTHON_BIN = _get_env('TELEMETRY_PYTHON_BIN', ML_PYTHON_BIN)
+    RFLY_PYTHON_BIN = _get_env('RFLY_PYTHON_BIN', TELEMETRY_PYTHON_BIN)
     PX4_ROOT = _resolve_optional_path(
         'PX4_ROOT',
         str(Path.home() / 'PX4-Autopilot'),
@@ -250,16 +251,73 @@ class Config:
         '',
         base_dir=_REPO_ROOT_PATH,
     )
+    RFLY_BRIDGE_MODE = os.getenv('RFLY_BRIDGE_MODE', 'attach').strip().lower()
+    RFLY_SIM_MAP = os.getenv('RFLY_SIM_MAP', 'LowGPU').strip() or 'LowGPU'
+    RFLY_AUTO_START_SIM = _get_env_bool('RFLY_AUTO_START_SIM', True)
+    RFLY_POWERSHELL_BIN = os.getenv('RFLY_POWERSHELL_BIN', 'pwsh').strip() or 'pwsh'
+    RFLY_SIM_START_SCRIPT = _resolve_optional_path(
+        'RFLY_SIM_START_SCRIPT',
+        'scripts/start_rflysim_sitl_qgc.ps1',
+        base_dir=_REPO_ROOT_PATH,
+    )
+    RFLY_SIM_STOP_SCRIPT = _resolve_optional_path(
+        'RFLY_SIM_STOP_SCRIPT',
+        'scripts/stop_rflysim_sitl.ps1',
+        base_dir=_REPO_ROOT_PATH,
+    )
+    RFLY_SIM_START_TIMEOUT_S = float(os.getenv('RFLY_SIM_START_TIMEOUT_S', '180.0'))
+    RFLY_SIM_STOP_TIMEOUT_S = float(os.getenv('RFLY_SIM_STOP_TIMEOUT_S', '45.0'))
+    RFLY_SIM_ATTACH_WAIT_S = float(os.getenv('RFLY_SIM_ATTACH_WAIT_S', '2.0'))
+    RFLY_SITL_FRAME = os.getenv('RFLY_SITL_FRAME', 'iris').strip() or 'iris'
+    RFLY_QGC_UDP_PORT = int(os.getenv('RFLY_QGC_UDP_PORT', '14600'))
+    RFLY_DASHBOARD_PYMAV_UDP_PORT = int(
+        os.getenv('RFLY_DASHBOARD_PYMAV_UDP_PORT', '14031')
+    )
+    RFLY_BUAA_AUTOTEST_DIR = _resolve_optional_path(
+        'RFLY_BUAA_AUTOTEST_DIR',
+        r'D:\BuaaAutoTestPlatForm\AutoTestAPI',
+        base_dir=_REPO_ROOT_PATH,
+    )
+    RFLY_BUAA_UNIQUE_INDEX = int(os.getenv('RFLY_BUAA_UNIQUE_INDEX', '1419000188'))
+    RFLY_BUAA_STARTUP_WAIT_S = float(os.getenv('RFLY_BUAA_STARTUP_WAIT_S', '25.0'))
+    RFLY_BUAA_READY_TIMEOUT_S = float(os.getenv('RFLY_BUAA_READY_TIMEOUT_S', '90.0'))
+    RFLY_BUAA_AUTO_CONTROL = _get_env_bool('RFLY_BUAA_AUTO_CONTROL', False)
     RFLY_FORWARD_HOST = os.getenv('RFLY_FORWARD_HOST', '127.0.0.1')
     RFLY_FORWARD_PORT = int(os.getenv('RFLY_FORWARD_PORT', '15550'))
+    RFLY_NETWORK_PROFILE = os.getenv('RFLY_NETWORK_PROFILE', 'enhanced_5g').strip().lower()
+    RFLY_5G_LINK_LISTEN_HOST = os.getenv('RFLY_5G_LINK_LISTEN_HOST', RFLY_FORWARD_HOST)
+    RFLY_5G_LINK_LISTEN_PORT = int(os.getenv('RFLY_5G_LINK_LISTEN_PORT', '15551'))
+    RFLY_5G_LINK_SCRIPT = _resolve_optional_path(
+        'RFLY_5G_LINK_SCRIPT',
+        'packages/rfly_bridge/rfly_bridge/network_emulator.py',
+        base_dir=_REPO_ROOT_PATH,
+    )
+    RFLY_5G_LINK_CONFIG_CSV = _resolve_optional_path(
+        'RFLY_5G_LINK_CONFIG_CSV',
+        'packages/rfly_bridge/rfly_bridge/configs/network_profiles.csv',
+        base_dir=_REPO_ROOT_PATH,
+    )
+    RFLY_5G_LINK_METRICS_INTERVAL_S = float(os.getenv('RFLY_5G_LINK_METRICS_INTERVAL_S', '1.0'))
+    RFLY_INFERENCE_LOCATION = os.getenv('RFLY_INFERENCE_LOCATION', 'mec').strip().lower()
+    RFLY_MEC_LISTEN_HOST = os.getenv('RFLY_MEC_LISTEN_HOST', RFLY_FORWARD_HOST)
+    RFLY_MEC_LISTEN_PORT = int(os.getenv('RFLY_MEC_LISTEN_PORT', '15552'))
+    RFLY_MEC_FORWARD_HOST = os.getenv('RFLY_MEC_FORWARD_HOST', RFLY_FORWARD_HOST)
+    RFLY_MEC_FORWARD_PORT = int(os.getenv('RFLY_MEC_FORWARD_PORT', str(RFLY_FORWARD_PORT)))
+    RFLY_MEC_SCRIPT = _resolve_optional_path(
+        'RFLY_MEC_SCRIPT',
+        'packages/uav_fault/uav_fault/telemetry/mec_service.py',
+        base_dir=_REPO_ROOT_PATH,
+    )
+    RFLY_MEC_INFERENCE_STRIDE = max(1, int(os.getenv('RFLY_MEC_INFERENCE_STRIDE', '5')))
+    RFLY_MEC_STARTUP_WAIT_S = max(0.0, float(os.getenv('RFLY_MEC_STARTUP_WAIT_S', '0.2')))
     RFLY_EMIT_RATE_HZ = int(os.getenv('RFLY_EMIT_RATE_HZ', '50'))
     RFLY_RPM_SCALE = float(os.getenv('RFLY_RPM_SCALE', '10000.0'))
     RFLY_TEST_ID = int(os.getenv('RFLY_TEST_ID', '1'))
     RFLY_UDP_PORT = int(os.getenv('RFLY_UDP_PORT', '20100'))
     RFLY_UDP_MODE = int(os.getenv('RFLY_UDP_MODE', '2'))
     RFLY_MAV_IP = os.getenv('RFLY_MAV_IP', '127.0.0.1')
-    RFLY_PYMAV_ADDRESS = os.getenv('RFLY_PYMAV_ADDRESS', 'udpin:0.0.0.0:14030')
-    RFLY_ENABLE_PYMAV = _get_env_bool('RFLY_ENABLE_PYMAV', False)
+    RFLY_PYMAV_ADDRESS = os.getenv('RFLY_PYMAV_ADDRESS', 'udpin:0.0.0.0:14031')
+    RFLY_ENABLE_PYMAV = _get_env_bool('RFLY_ENABLE_PYMAV', True)
     RFLY_RECEIVER_TIMEOUT_S = float(os.getenv('RFLY_RECEIVER_TIMEOUT_S', '60.0'))
     FAULT_DATASET_ROOT = _resolve_optional_path(
         'FAULT_DATASET_ROOT',
@@ -278,6 +336,7 @@ class Config:
     )
     DEFAULT_OFFLINE_MODEL = os.getenv('DEFAULT_OFFLINE_MODEL', 'transfer3_cnnlstm_normalproto')
     DEFAULT_ONLINE_MODEL = os.getenv('DEFAULT_ONLINE_MODEL', 'online_detector_kg_mstca_rfly')
+    ONLINE_INFERENCE_STRIDE = max(1, int(os.getenv('ONLINE_INFERENCE_STRIDE', '5')))
     ONLINE_MODEL_PRIORITY = tuple(
         item.strip()
         for item in os.getenv(
@@ -349,6 +408,7 @@ class TestingConfig(Config):
     WTF_CSRF_ENABLED = False
     SQLALCHEMY_ENGINE_OPTIONS = {}
     SQLALCHEMY_ECHO = False
+    ONLINE_INFERENCE_STRIDE = 1
 
 
 # 配置字典

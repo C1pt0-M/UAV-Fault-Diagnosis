@@ -516,7 +516,7 @@ def run_transfer3_protocol_audit(args: argparse.Namespace) -> dict[str, Any]:
         _run_command(
             [
                 str(python_exe),
-                str(PROJECT_ROOT / "src" / "data" / "build_sequence_cache_3class.py"),
+                str(PROJECT_ROOT / "packages" / "uav_fault" / "uav_fault" / "data" / "build_sequence_cache_3class.py"),
                 "--split-dir",
                 str(split_dir),
                 "--output",
@@ -533,7 +533,7 @@ def run_transfer3_protocol_audit(args: argparse.Namespace) -> dict[str, Any]:
         _run_command(
             [
                 str(python_exe),
-                str(PROJECT_ROOT / "src" / "data" / "build_sequence_cache_3class.py"),
+                str(PROJECT_ROOT / "packages" / "uav_fault" / "uav_fault" / "data" / "build_sequence_cache_3class.py"),
                 "--split-dir",
                 str(split_dir),
                 "--output",
@@ -571,7 +571,7 @@ def run_transfer3_protocol_audit(args: argparse.Namespace) -> dict[str, Any]:
                 _run_command(
                     [
                         str(python_exe),
-                        str(PROJECT_ROOT / "src" / "models" / "eval_transfer3_adabn.py"),
+                        str(PROJECT_ROOT / "packages" / "uav_fault" / "uav_fault" / "models" / "eval_transfer3_adabn.py"),
                         "--model",
                         spec.model,
                         "--cache-dir",
@@ -592,7 +592,7 @@ def run_transfer3_protocol_audit(args: argparse.Namespace) -> dict[str, Any]:
                 _run_command(
                     [
                         str(python_exe),
-                        str(PROJECT_ROOT / "src" / "models" / "train_transfer3.py"),
+                        str(PROJECT_ROOT / "packages" / "uav_fault" / "uav_fault" / "models" / "train_transfer3.py"),
                         "--mode",
                         spec.mode,
                         "--model",

@@ -278,6 +278,30 @@ def _online_commands(args: argparse.Namespace, manifest_path: Path) -> list[Pipe
                 ],
             )
         )
+        if args.online_extra_normal_dir:
+            commands[-1].argv.extend(
+                [
+                    "--extra-normal-dir",
+                    _path_arg(args.online_extra_normal_dir),
+                    "--extra-normal-glob",
+                    args.online_extra_normal_glob,
+                    "--extra-normal-split",
+                    args.online_extra_normal_split,
+                    "--extra-normal-max-windows-per-file",
+                    str(args.online_extra_normal_max_windows_per_file),
+                ]
+            )
+        if args.online_extra_labeled_manifest:
+            commands[-1].argv.extend(
+                [
+                    "--extra-labeled-root",
+                    _path_arg(args.online_extra_labeled_root),
+                    "--extra-labeled-manifest",
+                    _path_arg(args.online_extra_labeled_manifest),
+                    "--extra-labeled-max-windows-per-file",
+                    str(args.online_extra_labeled_max_windows_per_file),
+                ]
+            )
     if "train" in args.stages:
         commands.append(
             PipelineCommand(
@@ -351,6 +375,15 @@ def _validate_paths(args: argparse.Namespace) -> None:
         raise FileNotFoundError(f"data root not found: {args.data_root}")
     if not args.source_manifest.exists():
         raise FileNotFoundError(f"manifest not found: {args.source_manifest}")
+    if args.online_extra_labeled_manifest:
+        if not args.online_extra_labeled_manifest.exists():
+            raise FileNotFoundError(
+                f"extra labeled manifest not found: {args.online_extra_labeled_manifest}"
+            )
+        if not args.online_extra_labeled_root or not args.online_extra_labeled_root.exists():
+            raise FileNotFoundError(
+                f"extra labeled root not found: {args.online_extra_labeled_root}"
+            )
 
 
 def _print_plan(args: argparse.Namespace, manifest_path: Path, commands: list[PipelineCommand]) -> None:
@@ -420,6 +453,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--target-hz", type=float, default=50.0)
     parser.add_argument("--fault-threshold", type=float, default=0.5)
     parser.add_argument("--max-windows-per-file", type=int, default=8)
+    parser.add_argument("--online-extra-normal-dir", type=Path, default=None)
+    parser.add_argument("--online-extra-normal-glob", default="nf_*.csv")
+    parser.add_argument("--online-extra-normal-split", default="train")
+    parser.add_argument("--online-extra-normal-max-windows-per-file", type=int, default=128)
+    parser.add_argument("--online-extra-labeled-root", type=Path, default=None)
+    parser.add_argument("--online-extra-labeled-manifest", type=Path, default=None)
+    parser.add_argument("--online-extra-labeled-max-windows-per-file", type=int, default=128)
     parser.add_argument("--online-epochs", type=int, default=100)
     parser.add_argument("--online-batch-size", type=int, default=512)
     parser.add_argument("--online-lr", type=float, default=3e-4)
@@ -438,6 +478,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         if args.work_root
         else args.data_root / "training_runs" / args.run_name
     )
+    if args.online_extra_normal_dir:
+        args.online_extra_normal_dir = _coerce_cli_path(args.online_extra_normal_dir)
+    if args.online_extra_labeled_root:
+        args.online_extra_labeled_root = _coerce_cli_path(args.online_extra_labeled_root)
+    if args.online_extra_labeled_manifest:
+        args.online_extra_labeled_manifest = _coerce_cli_path(
+            args.online_extra_labeled_manifest
+        )
     args.stages = tuple(dict.fromkeys(args.stages))
     return args
 

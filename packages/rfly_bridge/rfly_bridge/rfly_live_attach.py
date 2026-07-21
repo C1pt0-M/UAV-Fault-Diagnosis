@@ -49,9 +49,17 @@ class OfficialRflyAttachSession:
         ctor = self.module.PX4MavCtrler
         params = list(inspect.signature(ctor.__init__).parameters.keys())
         # Support both common official signatures:
-        # 1) PX4MavCtrler(port, ip)
-        # 2) PX4MavCtrler(test_id, port, ip)
-        if len(params) >= 4:
+        # 1) PX4MavCtrler(ID=1, ip='127.0.0.1', Com='udp', port=0)
+        # 2) PX4MavCtrler(port, ip) legacy wrappers
+        param_names = set(params)
+        if {"ID", "Com"}.issubset(param_names):
+            self.mav = ctor(
+                ID=self.test_id,
+                ip=self.ip,
+                Com="udp",
+                port=self.port,
+            )
+        elif len(params) >= 4:
             self.mav = ctor(self.test_id, self.port, self.ip)
         else:
             ip_arg = f"{self.ip}:{self.test_id}"

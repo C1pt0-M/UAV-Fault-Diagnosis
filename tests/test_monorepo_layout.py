@@ -34,7 +34,7 @@ def test_runtime_model_manifest_lives_under_assets() -> None:
     assert actual_dirs <= manifest_dirs
 
 
-def test_scripts_are_layered_with_compatibility_shims() -> None:
+def test_scripts_are_layered_without_compatibility_shims() -> None:
     scripts_root = Path(__file__).resolve().parents[1] / "scripts"
     expected_dirs = {"data", "dev", "eval", "plots"}
 
@@ -47,10 +47,6 @@ def test_scripts_are_layered_with_compatibility_shims() -> None:
         "plot_misclassified_thrust_loss.py": "plots",
     }
     for script_name, bucket in moved_scripts.items():
-        shim = scripts_root / script_name
         target = scripts_root / bucket / script_name
         assert target.is_file()
-        assert shim.is_file()
-        shim_text = shim.read_text(encoding="utf-8")
-        assert "runpy.run_path" in shim_text
-        assert str(Path("scripts") / bucket / script_name).replace("\\", "/") in shim_text.replace("\\", "/")
+        assert not (scripts_root / script_name).exists()

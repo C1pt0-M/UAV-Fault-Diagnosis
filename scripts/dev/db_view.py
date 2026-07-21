@@ -3,8 +3,8 @@
 Small helper to inspect the SQLite DB (runs + events) for demos/debugging.
 
 Examples:
-  python scripts/db_view.py --db data/processed/uav_fault.sqlite --list-runs
-  python scripts/db_view.py --db data/processed/uav_fault.sqlite --run-id 3 --events
+  python scripts/dev/db_view.py --db data/processed/uav_fault.sqlite --list-runs
+  python scripts/dev/db_view.py --db data/processed/uav_fault.sqlite --run-id 3 --events
 """
 
 from __future__ import annotations
@@ -76,4 +76,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

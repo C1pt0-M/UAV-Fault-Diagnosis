@@ -22,33 +22,122 @@ def _manager(tmp_path: Path, config_overrides: dict | None = None):
     config = {
         "REPO_ROOT": str(PROJECT_ROOT),
         "TELEMETRY_PYTHON_BIN": sys.executable,
+        "RFLY_PYTHON_BIN": sys.executable,
         "RFLY_FORWARD_HOST": "127.0.0.1",
         "RFLY_FORWARD_PORT": 15550,
+        "RFLY_NETWORK_PROFILE": "direct",
+        "RFLY_INFERENCE_LOCATION": "center",
+        "RFLY_MEC_LISTEN_HOST": "127.0.0.1",
+        "RFLY_MEC_LISTEN_PORT": 15552,
+        "RFLY_MEC_FORWARD_HOST": "127.0.0.1",
+        "RFLY_MEC_FORWARD_PORT": 15550,
+        "RFLY_MEC_SCRIPT": "",
+        "RFLY_MEC_INFERENCE_STRIDE": 5,
+        "RFLY_MEC_STARTUP_WAIT_S": 0.0,
+        "RFLY_5G_LINK_LISTEN_HOST": "127.0.0.1",
+        "RFLY_5G_LINK_LISTEN_PORT": 15551,
+        "RFLY_5G_LINK_SCRIPT": "",
+        "RFLY_5G_LINK_CONFIG_CSV": "",
+        "RFLY_5G_LINK_METRICS_INTERVAL_S": 1.0,
         "RFLY_EMIT_RATE_HZ": 50,
         "RFLY_RPM_SCALE": 10000.0,
         "RFLY_TEST_ID": 1,
         "RFLY_UDP_PORT": 20100,
         "RFLY_UDP_MODE": 2,
         "RFLY_MAV_IP": "127.0.0.1",
-        "RFLY_PYMAV_ADDRESS": "udpin:0.0.0.0:14030",
+        "RFLY_PYMAV_ADDRESS": "udpin:0.0.0.0:14031",
         "RFLY_ENABLE_PYMAV": True,
         "RFLY_RECEIVER_TIMEOUT_S": 60.0,
         "RFLY_PX4MAVCTRL_PATH": "",
         "RFLY_BRIDGE_SCRIPT": "",
+        "RFLY_BRIDGE_MODE": "attach",
+        "RFLY_AUTO_START_SIM": False,
+        "RFLY_POWERSHELL_BIN": "pwsh",
+        "RFLY_SIM_START_SCRIPT": "scripts/start_rflysim_sitl_qgc.ps1",
+        "RFLY_SIM_STOP_SCRIPT": "scripts/stop_rflysim_sitl.ps1",
+        "RFLY_SITL_FRAME": "iris",
+        "RFLY_QGC_UDP_PORT": 14600,
+        "RFLY_DASHBOARD_PYMAV_UDP_PORT": 14031,
+        "RFLY_SIM_MAP": "LowGPU",
+        "RFLY_BUAA_AUTOTEST_DIR": str(tmp_path / "AutoTestAPI"),
+        "RFLY_BUAA_UNIQUE_INDEX": 1419000188,
+        "RFLY_BUAA_STARTUP_WAIT_S": 25.0,
+        "RFLY_BUAA_READY_TIMEOUT_S": 90.0,
     }
     config.update(config_overrides or {})
     return SimpleNamespace(
         app=SimpleNamespace(config=config),
-        _receiver=None,
-        _receiver_thread=None,
-        _startup_phase=None,
-        _timeout_reason=None,
-        _on_backend_frame=lambda frame, window, source_backend=None: None,
-        _receiver_worker=lambda: None,
-        _popen_session_kwargs=lambda: {},
-        _stop_process=lambda proc, name: None,
-        _proc_status=lambda proc: "running" if proc is not None else None,
+        on_transport_lifecycle=lambda snapshot, session_id, backend: None,
+        start_transport_processing=lambda: None,
+        stop_transport_processing=lambda drain=True: None,
+        submit_transport_frame=lambda frame, window, **kwargs: None,
+        on_transport_finished=lambda session_id, backend: None,
+        _resolve_online_model_meta=lambda requested_model=None: {
+            "name": requested_model or "online_detector_kg_mstca_rfly",
+            "path": str(PROJECT_ROOT / "assets" / "models" / "online_detector_kg_mstca_rfly"),
+            "window_size": 150,
+        },
     )
+
+
+def test_rfly_backend_builds_lowgpu_sim_start_command(tmp_path):
+    from uav_dashboard_api.services.telemetry_backends import RflyScenarioBackend
+
+    manager = _manager(
+        tmp_path,
+        {
+            "RFLY_AUTO_START_SIM": True,
+        },
+    )
+    backend = RflyScenarioBackend(
+        manager,
+        session_id="TS-RFLY-SIM-CMD",
+        csv_path=str(tmp_path / "session.csv"),
+        sim_time=30,
+        options={},
+    )
+
+    cmd = backend._build_sim_start_cmd()
+
+    assert cmd[0] == "pwsh"
+    assert cmd[cmd.index("-File") + 1].endswith("start_rflysim_sitl_qgc.ps1")
+    assert cmd[cmd.index("-Map") + 1] == "LowGPU"
+    assert cmd[cmd.index("-QgcUdpPort") + 1] == "14600"
+    assert cmd[cmd.index("-DashboardPymavUdpPort") + 1] == "14031"
+
+
+def test_rfly_backend_mec_mode_builds_edge_port_chain(tmp_path):
+    from uav_dashboard_api.services.telemetry_backends import RflyScenarioBackend
+
+    px4mavctrl = tmp_path / "PX4MavCtrlV4.py"
+    px4mavctrl.write_text("class PX4MavCtrler:\n    pass\n", encoding="utf-8")
+    manager = _manager(
+        tmp_path,
+        {
+            "RFLY_PX4MAVCTRL_PATH": str(px4mavctrl),
+            "RFLY_NETWORK_PROFILE": "enhanced_5g",
+            "RFLY_INFERENCE_LOCATION": "mec",
+            "RUNTIME_DIR": str(tmp_path / "runtime"),
+        },
+    )
+    backend = RflyScenarioBackend(
+        manager,
+        session_id="TS-MEC-PORTS",
+        csv_path=str(tmp_path / "session.csv"),
+        sim_time=30,
+        options={"network_profile": "enhanced_5g", "inference_location": "mec"},
+    )
+
+    backend.prepare()
+    backend._open_mec_log()
+    network_cmd = backend._build_network_link_cmd()
+    mec_cmd = backend._build_mec_cmd()
+    bridge_cmd = backend._build_bridge_cmd()
+
+    assert network_cmd[network_cmd.index("--forward-port") + 1] == "15552"
+    assert mec_cmd[mec_cmd.index("--listen-port") + 1] == "15552"
+    assert mec_cmd[mec_cmd.index("--forward-port") + 1] == "15550"
+    assert bridge_cmd[bridge_cmd.index("--port") + 1] == "15551"
 
 
 def test_rfly_backend_uses_default_px4mavctrl_path_when_config_is_empty(tmp_path, monkeypatch):
@@ -93,6 +182,9 @@ def test_rfly_backend_starts_receiver_and_bridge_process(tmp_path, monkeypatch):
             self.callbacks = []
             self._sock = SimpleNamespace(close=lambda: None)
 
+        def stop(self):
+            self._sock.close()
+
     thread_calls = []
 
     class FakeThread:
@@ -118,6 +210,9 @@ def test_rfly_backend_starts_receiver_and_bridge_process(tmp_path, monkeypatch):
 
     class FakeProc:
         pid = 1234
+
+        def poll(self):
+            return None
 
     def fake_popen(cmd, stdout=None, stderr=None, cwd=None, env=None, **kwargs):
         popen_calls.append({"cmd": cmd, "cwd": cwd, "env": env})
@@ -152,8 +247,206 @@ def test_rfly_backend_starts_receiver_and_bridge_process(tmp_path, monkeypatch):
     assert "--port" in cmd
     assert "15550" in cmd
     assert "--duration" in cmd
-    assert "60.0" in cmd
+    assert cmd[cmd.index("--duration") + 1] == "0.0"
     assert popen_calls[0]["cwd"] == str(PROJECT_ROOT)
+
+
+def test_rfly_backend_starts_5g_link_before_bridge_when_profile_is_enabled(tmp_path, monkeypatch):
+    from uav_dashboard_api.services import telemetry_backends
+    from uav_dashboard_api.services.telemetry_backends import RflyScenarioBackend
+
+    px4mavctrl = tmp_path / "PX4MavCtrlV4.py"
+    px4mavctrl.write_text("class PX4MavCtrler:\n    pass\n", encoding="utf-8")
+    stop_calls = []
+    manager = _manager(
+        tmp_path,
+        {
+            "RFLY_PX4MAVCTRL_PATH": str(px4mavctrl),
+            "RFLY_NETWORK_PROFILE": "enhanced_5g",
+            "RUNTIME_DIR": str(tmp_path / "runtime"),
+        },
+    )
+    receiver_calls = []
+
+    class FakeReceiver:
+        def __init__(self, **kwargs):
+            receiver_calls.append(kwargs)
+            self.callbacks = []
+            self._sock = SimpleNamespace(close=lambda: None)
+
+        def stop(self):
+            self._sock.close()
+
+    class FakeThread:
+        def __init__(self, target=None, name=None, daemon=None, args=(), kwargs=None):
+            self.name = name
+            self.started = False
+
+        def start(self):
+            self.started = True
+
+        def is_alive(self):
+            return self.started
+
+        def join(self, timeout=None):
+            self.started = False
+
+    popen_calls = []
+
+    class FakeProc:
+        pid = 1234
+
+        def poll(self):
+            return None
+
+    def fake_popen(cmd, stdout=None, stderr=None, cwd=None, env=None, **kwargs):
+        popen_calls.append({"cmd": cmd, "cwd": cwd})
+        return FakeProc()
+
+    monkeypatch.setattr(telemetry_backends, "TelemetryReceiver", FakeReceiver)
+    monkeypatch.setattr(telemetry_backends.threading, "Thread", FakeThread)
+    monkeypatch.setattr(telemetry_backends.subprocess, "Popen", fake_popen)
+
+    backend = RflyScenarioBackend(
+        manager,
+        session_id="TS-RFLY-5G",
+        csv_path=str(tmp_path / "session.csv"),
+        sim_time=30,
+        options={"network_profile": "enhanced_5g"},
+    )
+    backend._stop_process = lambda proc, name: stop_calls.append(name)
+
+    backend.prepare()
+    backend.start()
+
+    assert receiver_calls[0]["port"] == 15550
+    assert len(popen_calls) == 2
+    network_cmd = popen_calls[0]["cmd"]
+    bridge_cmd = popen_calls[1]["cmd"]
+    assert network_cmd[1].endswith("network_emulator.py")
+    assert "--profile" in network_cmd
+    assert "enhanced_5g" in network_cmd
+    assert "--listen-port" in network_cmd
+    assert "15551" in network_cmd
+    assert "--forward-port" in network_cmd
+    assert "15550" in network_cmd
+    assert bridge_cmd[1].endswith("run_rfly_live_bridge.py")
+    assert "--port" in bridge_cmd
+    assert "15551" in bridge_cmd
+    assert backend.status()["network_link"] == "running"
+    assert backend.status()["network_metrics_csv"].endswith("TS-RFLY-5G.csv")
+    backend._network_metrics_path.write_text(
+        "rx_packets,tx_packets,drop_packets,delay_avg_ms,delay_p95_ms,queue_len\n"
+        "1000,994,6,29.4,32.0,1\n",
+        encoding="utf-8",
+    )
+    metrics = backend.status()["network_metrics"]
+    assert metrics["avg_latency_ms"] == 29.4
+    assert metrics["p95_latency_ms"] == 32.0
+    assert metrics["loss_rate"] == pytest.approx(0.006)
+    assert metrics["data_integrity"] == pytest.approx(0.994)
+
+    backend.stop()
+
+    assert stop_calls[:2] == ["rfly_bridge", "network_link"]
+
+
+def test_rfly_backend_prefers_dedicated_rfly_python_bin(tmp_path):
+    from uav_dashboard_api.services.telemetry_backends import RflyScenarioBackend
+
+    px4mavctrl = tmp_path / "PX4MavCtrlV4.py"
+    px4mavctrl.write_text("class PX4MavCtrler:\n    pass\n", encoding="utf-8")
+    manager = _manager(
+        tmp_path,
+        {
+            "RFLY_PX4MAVCTRL_PATH": str(px4mavctrl),
+            "TELEMETRY_PYTHON_BIN": "telemetry-python.exe",
+            "RFLY_PYTHON_BIN": "rfly-python.exe",
+        },
+    )
+    backend = RflyScenarioBackend(
+        manager,
+        session_id="TS-RFLY-PY",
+        csv_path=str(tmp_path / "session.csv"),
+        sim_time=30,
+        options={},
+    )
+
+    backend.prepare()
+
+    assert backend._build_bridge_cmd()[0] == "rfly-python.exe"
+
+
+def test_rfly_backend_buaa_mode_builds_autotest_bridge_cmd(tmp_path):
+    from uav_dashboard_api.services.telemetry_backends import RflyScenarioBackend
+
+    autotest_dir = tmp_path / "AutoTestAPI"
+    autotest_dir.mkdir()
+    manager = _manager(
+        tmp_path,
+        {
+            "RFLY_BRIDGE_MODE": "buaa",
+            "RFLY_BUAA_AUTOTEST_DIR": str(autotest_dir),
+            "RFLY_BUAA_UNIQUE_INDEX": 1419000188,
+            "RFLY_PX4MAVCTRL_PATH": "",
+        },
+    )
+    backend = RflyScenarioBackend(
+        manager,
+        session_id="TS-RFLY-BUAA",
+        csv_path=str(tmp_path / "session.csv"),
+        sim_time=30,
+        options={},
+    )
+
+    backend.prepare()
+    cmd = backend._build_bridge_cmd()
+
+    assert cmd[1].endswith("run_buaa_realtime_bridge.py")
+    assert "--autotest-dir" in cmd
+    assert str(autotest_dir) in cmd
+    assert "--unique-index" in cmd
+    assert "1419000188" in cmd
+    assert "--startup-wait" in cmd
+    assert cmd[cmd.index("--ready-timeout") + 1] == "90.0"
+    assert "--manual-control" in cmd
+    assert "25.0" in cmd
+    assert "--sim-map" in cmd
+    assert "LowGPU" in cmd
+    assert "--duration" in cmd
+    assert cmd[cmd.index("--duration") + 1] == "0.0"
+    assert backend._receiver_timeout_s() == 0.0
+    assert "--px4mavctrl" not in cmd
+
+
+def test_rfly_automatic_mode_keeps_planned_duration_and_receiver_timeout(tmp_path):
+    from uav_dashboard_api.services.telemetry_backends import RflyScenarioBackend
+
+    autotest_dir = tmp_path / "AutoTestAPI"
+    autotest_dir.mkdir()
+    manager = _manager(
+        tmp_path,
+        {
+            "RFLY_BRIDGE_MODE": "buaa",
+            "RFLY_BUAA_AUTO_CONTROL": True,
+            "RFLY_BUAA_AUTOTEST_DIR": str(autotest_dir),
+            "RFLY_RECEIVER_TIMEOUT_S": 75.0,
+        },
+    )
+    backend = RflyScenarioBackend(
+        manager,
+        session_id="TS-RFLY-AUTO",
+        csv_path=str(tmp_path / "session.csv"),
+        sim_time=30,
+        options={},
+    )
+
+    backend.prepare()
+    cmd = backend._build_bridge_cmd()
+
+    assert "--manual-control" not in cmd
+    assert cmd[cmd.index("--duration") + 1] == "30.0"
+    assert backend._receiver_timeout_s() == 75.0
 
 
 @pytest.fixture
@@ -222,6 +515,7 @@ def test_start_collection_api_accepts_rfly_backend(rfly_api_app, monkeypatch, tm
             "backend": "rfly",
             "sim_time": 60,
             "rfly_px4mavctrl_path": str(px4mavctrl),
+            "rfly_inference_location": "mec",
         },
     )
 
@@ -229,6 +523,61 @@ def test_start_collection_api_accepts_rfly_backend(rfly_api_app, monkeypatch, tm
     assert response.get_json()["data"]["scenario_backend"] == "rfly"
     assert captured["backend"] == "rfly"
     assert captured["rfly_options"]["px4mavctrl_path"] == str(px4mavctrl)
+    assert captured["rfly_options"]["network_profile"] in {
+        "enhanced_5g",
+        "baseline",
+        "degraded",
+        "direct",
+    }
+    assert captured["rfly_options"]["inference_location"] == "mec"
+
+
+def test_start_collection_api_rejects_invalid_rfly_network_profile(rfly_api_app, tmp_path):
+    from uav_dashboard_api.utils.jwt_utils import JWTUtils
+
+    px4mavctrl = tmp_path / "PX4MavCtrlV4.py"
+    px4mavctrl.write_text("class PX4MavCtrler:\n    pass\n", encoding="utf-8")
+    token = JWTUtils.generate_token(1)
+    client = rfly_api_app.test_client()
+
+    response = client.post(
+        "/api/telemetry/start-collection",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "backend": "rfly",
+            "sim_time": 60,
+            "rfly_px4mavctrl_path": str(px4mavctrl),
+            "rfly_network_profile": "severe",
+        },
+    )
+
+    assert response.status_code == 400
+    assert "rfly_network_profile" in response.get_json()["message"]
+
+
+def test_start_collection_api_rejects_invalid_rfly_inference_location(
+    rfly_api_app, tmp_path
+):
+    from uav_dashboard_api.utils.jwt_utils import JWTUtils
+
+    px4mavctrl = tmp_path / "PX4MavCtrlV4.py"
+    px4mavctrl.write_text("class PX4MavCtrler:\n    pass\n", encoding="utf-8")
+    token = JWTUtils.generate_token(1)
+    client = rfly_api_app.test_client()
+
+    response = client.post(
+        "/api/telemetry/start-collection",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "backend": "rfly",
+            "sim_time": 60,
+            "rfly_px4mavctrl_path": str(px4mavctrl),
+            "rfly_inference_location": "cloud",
+        },
+    )
+
+    assert response.status_code == 400
+    assert "rfly_inference_location" in response.get_json()["message"]
 
 
 def test_rfly_diagnostics_reports_not_ready_when_backend_is_not_allowed(rfly_api_app):
@@ -302,6 +651,32 @@ def test_rfly_diagnostics_uses_default_px4mavctrl_path_when_config_is_empty(
     assert data["checks"]["px4mavctrl"]["name"] == "PX4MavCtrlV4.py"
 
 
+def test_rfly_diagnostics_buaa_mode_checks_autotest_dir_not_sdk_px4mavctrl(
+    rfly_api_app, tmp_path
+):
+    from uav_dashboard_api.utils.jwt_utils import JWTUtils
+
+    autotest_dir = tmp_path / "AutoTestAPI"
+    autotest_dir.mkdir()
+    rfly_api_app.config["RFLY_BRIDGE_MODE"] = "buaa"
+    rfly_api_app.config["RFLY_BUAA_AUTOTEST_DIR"] = str(autotest_dir)
+    rfly_api_app.config["RFLY_PX4MAVCTRL_PATH"] = ""
+    token = JWTUtils.generate_token(1)
+    client = rfly_api_app.test_client()
+
+    response = client.get(
+        "/api/telemetry/rfly/diagnostics",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    assert data["checks"]["bridge_mode"]["mode"] == "buaa"
+    assert data["checks"]["sim_map"]["map"] == "LowGPU"
+    assert data["checks"]["px4mavctrl"]["ok"] is True
+    assert data["checks"]["buaa_autotest"]["ok"] is True
+
+
 def test_telemetry_status_exposes_rfly_diagnostics_summary(rfly_api_app, monkeypatch):
     from uav_dashboard_api.services.telemetry_manager import telemetry_manager
     from uav_dashboard_api.utils.jwt_utils import JWTUtils
@@ -328,12 +703,8 @@ def test_rfly_transport_status_is_connected_when_bridge_and_receiver_are_running
     mgr._reset_runtime_state()
     mgr._backend_name = "rfly"
 
-    class LiveThread:
-        def is_alive(self):
-            return True
-
-    mgr._receiver_thread = LiveThread()
     mgr._backend = SimpleNamespace(
+        is_collecting=lambda: True,
         status=lambda: {
             "rfly_bridge": "running",
             "receiver": "running",
@@ -382,9 +753,126 @@ def test_rfly_backend_frame_is_canonicalized_and_exposes_proxy_contract(monkeypa
         for idx in range(150)
     ]
 
-    mgr._on_backend_frame(window[-1], window, source_backend="rfly")
+    mgr.process_transport_frame(window[-1], window, source_backend="rfly")
 
     assert mgr._feature_coverage["mapped_count"] > 0
     assert mgr._input_contract_status["actuator_source"] == "proxy"
     assert mgr._input_contract_status["status"] in {"healthy", "degraded"}
     assert mgr._realtime_buffer[-1]["motor1"] == 1300.0
+
+
+def test_rfly_backend_blocks_detection_when_critical_signals_are_zero(monkeypatch):
+    from uav_dashboard_api.services.telemetry_manager import TelemetryProcessManager
+
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._backend_name = "rfly"
+    mgr._detecting = True
+
+    calls = []
+
+    class FakeDetector:
+        window_size = 150
+
+        def update(self, *, frame, window, frame_idx):
+            calls.append((frame, window, frame_idx))
+            return {"fault_prob": 1.0, "label": "fault", "confidence": 1.0}, []
+
+    mgr._detector = FakeDetector()
+    window = [
+        {
+            "seq": idx,
+            "time_s": float(idx) / 50.0,
+            "actuator_out_1": 0.0,
+            "actuator_out_2": 0.0,
+            "actuator_out_3": 0.0,
+            "actuator_out_4": 0.0,
+            "att_q_w": 1.0,
+            "att_q_x": 0.0,
+            "att_q_y": 0.0,
+            "att_q_z": 0.0,
+            "vel_x": 0.0,
+            "vel_y": 0.0,
+            "vel_z": 0.0,
+            "accel_x": 0.0,
+            "accel_y": 0.0,
+            "accel_z": 0.0,
+            "gyro_x": 0.0,
+            "gyro_y": 0.0,
+            "gyro_z": 0.0,
+            "baro_alt": 0.0,
+            "baro_temp": 25.0,
+            "baro_pressure": 101325.0,
+        }
+        for idx in range(150)
+    ]
+
+    mgr.process_transport_frame(window[-1], window, source_backend="rfly")
+
+    assert calls == []
+    assert mgr._input_contract_status["status"] == "degraded"
+    assert mgr._input_contract_status["reason"] == "untrusted_zero_signals"
+    assert mgr._input_contract_status["detection_blocked"] is True
+    assert "actuator_outputs" in mgr._input_contract_status["zero_signal_groups"]
+    assert "imu_accel_z" in mgr._input_contract_status["zero_signal_groups"]
+
+
+def test_rfly_backend_allows_detection_for_proxy_outputs_with_valid_imu(monkeypatch):
+    from uav_dashboard_api.services.telemetry_manager import TelemetryProcessManager
+
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._realtime_buffer.clear()
+    monkeypatch.setattr(mgr, "_get_online_inference_stride", lambda: 2)
+    mgr._backend_name = "rfly"
+    mgr._detecting = True
+
+    calls = []
+
+    class FakeDetector:
+        window_size = 150
+
+        def update(self, *, frame, window, frame_idx):
+            calls.append((frame, window, frame_idx))
+            return {"fault_prob": 0.2, "label": "normal", "confidence": 0.8}, []
+
+    mgr._detector = FakeDetector()
+    window = [
+        {
+            "seq": idx,
+            "time_s": float(idx) / 50.0,
+            "actuator_out_1": 1300.0,
+            "actuator_out_2": 1310.0,
+            "actuator_out_3": 1290.0,
+            "actuator_out_4": 1305.0,
+            "actuator_source": "proxy",
+            "att_q_w": 1.0,
+            "att_q_x": 0.0,
+            "att_q_y": 0.0,
+            "att_q_z": 0.0,
+            "vel_x": 0.1,
+            "vel_y": 0.0,
+            "vel_z": -0.2,
+            "accel_x": 0.0,
+            "accel_y": 0.0,
+            "accel_z": -9.8,
+            "gyro_x": 0.0,
+            "gyro_y": 0.0,
+            "gyro_z": 0.0,
+            "baro_alt": 12.0,
+            "baro_temp": 25.0,
+            "baro_pressure": 101325.0,
+        }
+        for idx in range(150)
+    ]
+
+    mgr.process_transport_frame(window[-1], window, source_backend="rfly")
+    assert calls == []
+    mgr.process_transport_frame(window[-1], window, source_backend="rfly")
+
+    assert len(calls) == 1
+    assert len(mgr._realtime_buffer) == 2
+    assert mgr._input_contract_status["status"] == "degraded"
+    assert mgr._input_contract_status["actuator_source"] == "proxy"
+    assert mgr._input_contract_status["detection_blocked"] is False
+    assert mgr._current_fault_prob == 0.2

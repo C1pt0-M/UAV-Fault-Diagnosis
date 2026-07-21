@@ -12,7 +12,7 @@
 - fault (bf/mf/pi/tf) -> 按 fault_time_rel 切分，故障后标 1。
 
 示例：
-  python scripts/annotate_fault_activity.py \
+  python scripts/data/annotate_fault_activity.py \
     --csv-dir data/telemetry_live/csv_raw \
     --meta-dir data/telemetry_live/metadata \
     --output-dir data/telemetry_live/csv_labeled

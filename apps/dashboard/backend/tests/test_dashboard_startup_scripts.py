@@ -40,7 +40,30 @@ class DashboardStartupScriptsTest(unittest.TestCase):
     def test_backend_powershell_script_prefers_windows_venv_python(self):
         script = (SCRIPTS_DIR / 'start_dashboard_backend.ps1').read_text(encoding='utf-8')
         self.assertIn('.venv\\Scripts\\python.exe', script)
-        self.assertIn('run.py', script)
+        self.assertIn('-m uav_dashboard_api', script)
+
+    def test_backend_powershell_script_exposes_monorepo_packages_to_python(self):
+        script = (SCRIPTS_DIR / 'start_dashboard_backend.ps1').read_text(encoding='utf-8')
+
+        self.assertIn('packages\\\\uav_fault', script)
+        self.assertIn('packages\\\\rfly_bridge', script)
+        self.assertIn('$env:PYTHONPATH', script)
+        self.assertIn('[IO.Path]::PathSeparator', script)
+
+    def test_duplicate_backend_run_script_is_removed(self):
+        self.assertFalse((REPO_ROOT / 'apps' / 'dashboard' / 'backend' / 'run.py').exists())
+
+    def test_application_factory_does_not_override_sigint(self):
+        app_factory = (
+            REPO_ROOT
+            / 'apps'
+            / 'dashboard'
+            / 'backend'
+            / 'uav_dashboard_api'
+            / '__init__.py'
+        ).read_text(encoding='utf-8')
+
+        self.assertNotIn('signal.signal(signal.SIGINT', app_factory)
 
     def test_frontend_powershell_script_runs_frontend_command(self):
         script = (SCRIPTS_DIR / 'start_dashboard_frontend.ps1').read_text(encoding='utf-8')
@@ -51,6 +74,30 @@ class DashboardStartupScriptsTest(unittest.TestCase):
         self.assertIn('Start-Process', script)
         self.assertIn('start_dashboard_backend.ps1', script)
         self.assertIn('start_dashboard_frontend.ps1', script)
+
+    def test_rfly_launcher_preserves_tcp_simulator_and_mavlink_udp(self):
+        powershell_script = (SCRIPTS_DIR / 'start_rflysim_sitl_qgc.ps1').read_text(
+            encoding='utf-8'
+        )
+        wsl_script = (SCRIPTS_DIR / 'rflysim_sitl_qgc.sh').read_text(
+            encoding='utf-8'
+        )
+
+        self.assertNotIn('export PX4_SIM_HOST_ADDR=', powershell_script)
+        self.assertIn('export RFLY_SIM_HOST_IP=', powershell_script)
+        self.assertIn('rfly_wsl_udp_relay.py', powershell_script)
+        self.assertIn('export RFLY_SIM_FORWARD_PORT=', powershell_script)
+        self.assertIn('Test-TcpListenPort', powershell_script)
+        self.assertIn('cat ${rcs_romfs_path}/rcS', wsl_script)
+        self.assertNotIn('skip px4-rc.simulator', wsl_script)
+        self.assertIn('-t $RFLY_SIM_HOST_IP', wsl_script)
+        self.assertIn('$udp_rfly_remote_port', wsl_script)
+
+    def test_rfly_stop_script_cleans_all_px4_and_coptersim_variants(self):
+        script = (SCRIPTS_DIR / 'stop_rflysim_sitl.ps1').read_text(encoding='utf-8')
+
+        self.assertIn('CopterSimNoUI', script)
+        self.assertIn("pkill -9 -f '[p]x4'", script)
 
     def test_readme_uses_windows_dashboard_startup_commands(self):
         root_readme = (REPO_ROOT / 'README.md').read_text(encoding='utf-8')

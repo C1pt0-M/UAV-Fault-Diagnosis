@@ -56,8 +56,12 @@ UAV-Data/
 │  └─ manifest_v2.csv
 ├─ processed_SIL_50hz/
 ├─ processed_HIL_50hz/
-└─ processed_Real_50hz/
+├─ processed_Real_50hz/
+└─ extra_normals/
+   └─ nf_buaa_case_189_1419000188.csv
 ```
+
+`extra_normals/` 只用于在线二分类的 normal domain alignment。离线三分类不使用它。本轮要解决 RflySim/Buaa No Fault 实时误报，因此建议带上这个目录。
 
 不需要上传：
 
@@ -110,6 +114,13 @@ ssh -p 50682 root@connect.westd.seetacloud.com
 scp -P 50682 D:\uav_fault_train_min.zip root@connect.westd.seetacloud.com:/root/
 ```
 
+如果 AutoDL 上还没有 Buaa/RflySim No Fault extra normal，同步上传：
+
+```powershell
+ssh -p 50682 root@connect.westd.seetacloud.com "mkdir -p /root/UAV/extra_normals"
+scp -P 50682 D:\UAV-Fault-Diagnosis\runtime\extra_normals\nf_buaa_case_189_1419000188.csv root@connect.westd.seetacloud.com:/root/UAV/extra_normals/
+```
+
 ## AutoDL 解压
 
 在 AutoDL 终端执行：
@@ -131,6 +142,7 @@ ls /root/UAV/manifest/manifest_v2.csv
 ls /root/UAV/processed_SIL_50hz | head
 ls /root/UAV/processed_HIL_50hz | head
 ls /root/UAV/processed_Real_50hz | head
+ls /root/UAV/extra_normals/nf_buaa_case_189_1419000188.csv
 ```
 
 如果 `unzip` 后多了一层目录，整理到上述路径即可。
@@ -173,7 +185,7 @@ python -m pip install -U pip
 python -m pip install -r requirements-autodl-train.txt
 ```
 
-`requirements-autodl-train.txt` 只包含训练需要的包：
+`pyproject.toml` 是依赖唯一事实来源。`requirements-autodl-train.txt` 选择不重复安装 PyTorch 的 `training-autodl` 分组，补充依赖包括：
 
 ```text
 numpy
@@ -182,6 +194,8 @@ scikit-learn
 matplotlib
 tabulate
 ```
+
+如果镜像没有预装 PyTorch，改用 `python -m pip install ".[training]"`。
 
 检查 PyTorch 和 GPU：
 
@@ -206,7 +220,9 @@ cd /root/uav_fault_train_min
 python -B scripts/train_pipeline.py \
   --task both \
   --data-root /root/UAV \
-  --run-name real3_v1
+  --run-name real3_buaa_nf_v1 \
+  --online-extra-normal-dir /root/UAV/extra_normals \
+  --online-extra-normal-glob 'nf_*.csv'
 ```
 
 确认输出包含：
@@ -232,7 +248,9 @@ cd /root/uav_fault_train_min
 python -B scripts/train_pipeline.py \
   --task both \
   --data-root /root/UAV \
-  --run-name real3_v1 \
+  --run-name real3_buaa_nf_v1 \
+  --online-extra-normal-dir /root/UAV/extra_normals \
+  --online-extra-normal-glob 'nf_*.csv' \
   --execute
 ```
 
@@ -249,7 +267,7 @@ python -B scripts/train_pipeline.py \
 输出目录：
 
 ```text
-/root/UAV/training_runs/real3_v1/
+/root/UAV/training_runs/real3_buaa_nf_v1/
 ├─ manifest/manifest_v2.local.csv
 ├─ offline_transfer3/
 │  ├─ splits_transfer3_v1/
@@ -271,7 +289,9 @@ python -B scripts/train_pipeline.py \
 python -B scripts/train_pipeline.py \
   --task both \
   --data-root /root/UAV \
-  --run-name real3_v1 \
+  --run-name real3_buaa_nf_v1 \
+  --online-extra-normal-dir /root/UAV/extra_normals \
+  --online-extra-normal-glob 'nf_*.csv' \
   --stages splits cache \
   --execute
 ```
@@ -282,7 +302,7 @@ python -B scripts/train_pipeline.py \
 python -B scripts/train_pipeline.py \
   --task both \
   --data-root /root/UAV \
-  --work-root /root/UAV/training_runs/real3_v1 \
+  --work-root /root/UAV/training_runs/real3_buaa_nf_v1 \
   --stages train summary \
   --execute \
   --force
@@ -294,7 +314,9 @@ python -B scripts/train_pipeline.py \
 python -B scripts/train_pipeline.py \
   --task online \
   --data-root /root/UAV \
-  --run-name real3_online_v1 \
+  --run-name real3_online_buaa_nf_v1 \
+  --online-extra-normal-dir /root/UAV/extra_normals \
+  --online-extra-normal-glob 'nf_*.csv' \
   --execute
 ```
 
@@ -343,8 +365,10 @@ mkdir -p /root/UAV/training_runs/logs
 python -B scripts/train_pipeline.py \
   --task both \
   --data-root /root/UAV \
-  --run-name real3_v1 \
-  --execute 2>&1 | tee /root/UAV/training_runs/logs/real3_v1.log
+  --run-name real3_buaa_nf_v1 \
+  --online-extra-normal-dir /root/UAV/extra_normals \
+  --online-extra-normal-glob 'nf_*.csv' \
+  --execute 2>&1 | tee /root/UAV/training_runs/logs/real3_buaa_nf_v1.log
 ```
 
 ## 结果检查
@@ -352,7 +376,7 @@ python -B scripts/train_pipeline.py \
 离线结果：
 
 ```text
-/root/UAV/training_runs/real3_v1/offline_transfer3/results/transfer3_cnnlstm_normalproto/
+/root/UAV/training_runs/real3_buaa_nf_v1/offline_transfer3/results/transfer3_cnnlstm_normalproto/
 ├─ best.pt
 ├─ config.json
 ├─ metrics_val.json
@@ -363,7 +387,7 @@ python -B scripts/train_pipeline.py \
 在线结果：
 
 ```text
-/root/UAV/training_runs/real3_v1/online_real3_binary/models/
+/root/UAV/training_runs/real3_buaa_nf_v1/online_real3_binary/models/
 ├─ online_detector_kg_mstca_rfly/
 ├─ online_detector_mstca_rfly/
 └─ online_detector_cnn1d_rfly/
@@ -372,8 +396,8 @@ python -B scripts/train_pipeline.py \
 汇总文件：
 
 ```text
-/root/UAV/training_runs/real3_v1/offline_transfer3/summary/transfer3_backbone_ranking.md
-/root/UAV/training_runs/real3_v1/online_real3_binary/summary/online_backbone_ranking.md
+/root/UAV/training_runs/real3_buaa_nf_v1/offline_transfer3/summary/transfer3_backbone_ranking.md
+/root/UAV/training_runs/real3_buaa_nf_v1/online_real3_binary/summary/online_backbone_ranking.md
 ```
 
 快速查看指标：
@@ -383,7 +407,7 @@ python - <<'PY'
 import json
 from pathlib import Path
 
-run = Path("/root/UAV/training_runs/real3_v1")
+run = Path("/root/UAV/training_runs/real3_buaa_nf_v1")
 offline = run / "offline_transfer3/results/transfer3_cnnlstm_normalproto"
 print("offline external:", json.loads((offline / "metrics_external_test.json").read_text()))
 
@@ -400,6 +424,30 @@ for model_dir in sorted((run / "online_real3_binary/models").iterdir()):
 PY
 ```
 
+检查在线模型训练合同是否正确写入：
+
+```bash
+python - <<'PY'
+import json
+from pathlib import Path
+
+run = Path("/root/UAV/training_runs/real3_buaa_nf_v1")
+for model_dir in sorted((run / "online_real3_binary/models").iterdir()):
+    if not model_dir.is_dir():
+        continue
+    cfg = json.loads((model_dir / "config.json").read_text())
+    stats = json.loads((model_dir / "norm_stats.json").read_text())
+    print(model_dir.name, {
+        "task": cfg.get("task"),
+        "protocol_name": cfg.get("protocol_name"),
+        "label_space": cfg.get("label_space"),
+        "source_fault_classes": cfg.get("source_fault_classes"),
+        "extra_normal_dir": stats.get("extra_normal_dir"),
+        "extra_normal_max_windows_per_file": stats.get("extra_normal_max_windows_per_file"),
+    })
+PY
+```
+
 ## 回传结果
 
 只回传训练结果，不回传 cache。cache 体积大且可以重建。
@@ -408,18 +456,18 @@ AutoDL 上打包：
 
 ```bash
 cd /root/UAV/training_runs
-tar -czf real3_v1_results.tar.gz \
-  real3_v1/manifest \
-  real3_v1/offline_transfer3/results \
-  real3_v1/offline_transfer3/summary \
-  real3_v1/online_real3_binary/models \
-  real3_v1/online_real3_binary/summary
+tar -czf real3_buaa_nf_v1_results.tar.gz \
+  real3_buaa_nf_v1/manifest \
+  real3_buaa_nf_v1/offline_transfer3/results \
+  real3_buaa_nf_v1/offline_transfer3/summary \
+  real3_buaa_nf_v1/online_real3_binary/models \
+  real3_buaa_nf_v1/online_real3_binary/summary
 ```
 
 Windows PowerShell 下载：
 
 ```powershell
-scp -P 50682 root@connect.westd.seetacloud.com:/root/UAV/training_runs/real3_v1_results.tar.gz D:\UAV-Data\training_runs\
+scp -P 50682 root@connect.westd.seetacloud.com:/root/UAV/training_runs/real3_buaa_nf_v1_results.tar.gz D:\UAV-Data\training_runs\
 ```
 
 ## 常见问题
@@ -441,7 +489,13 @@ scp -P 50682 root@connect.westd.seetacloud.com:/root/UAV/training_runs/real3_v1_
 第一轮建议只跑默认主线：
 
 ```bash
-python -B scripts/train_pipeline.py --task both --data-root /root/UAV --run-name real3_v1 --execute
+python -B scripts/train_pipeline.py \
+  --task both \
+  --data-root /root/UAV \
+  --run-name real3_buaa_nf_v1 \
+  --online-extra-normal-dir /root/UAV/extra_normals \
+  --online-extra-normal-glob 'nf_*.csv' \
+  --execute
 ```
 
 拿到结果后再决定是否扩展 backbone、重复随机种子或重新设计模型结构。

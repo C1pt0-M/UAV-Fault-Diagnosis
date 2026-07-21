@@ -1,8 +1,6 @@
 """Flask application factory for the UAV fault diagnosis dashboard API."""
 
-import signal
-
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
@@ -75,8 +73,6 @@ def create_app(config_class=Config):
     )
 
     app.after_request(log_request)
-    signal.signal(signal.SIGINT, lambda sig, frame: app.logger.info('应用关闭'))
-
     from uav_dashboard_api.routes import ai, auth, dashboard, diagnosis_reports, health, settings, setup, users
     from uav_dashboard_api.routes import telemetry
 
@@ -95,14 +91,6 @@ def create_app(config_class=Config):
     app.register_blueprint(health.bp)
     if app.config.get('ENABLE_TELEMETRY', True):
         app.register_blueprint(telemetry.bp, url_prefix=f'{api_prefix}/telemetry')
-
-    @app.route('/health')
-    def health_check():
-        return jsonify({
-            'status': 'healthy',
-            'service': 'data-driven-uav-fault-diagnosis-backend',
-            'timestamp': __import__('time').strftime('%Y-%m-%d %H:%M:%S'),
-        })
 
     @app.route('/')
     def index():

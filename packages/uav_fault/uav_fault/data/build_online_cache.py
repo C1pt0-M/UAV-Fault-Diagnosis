@@ -63,6 +63,30 @@ def _cap_windows(x_windows: np.ndarray, y_windows: np.ndarray, max_windows_per_f
     return x_windows[idx], y_windows[idx]
 
 
+def _cap_windows_balanced(
+    x_windows: np.ndarray, y_windows: np.ndarray, max_windows_per_file: int
+):
+    """Cap labeled adaptation windows without dropping the minority phase."""
+    if max_windows_per_file <= 0 or len(y_windows) <= max_windows_per_file:
+        return x_windows, y_windows
+    labels = np.unique(y_windows)
+    per_label = max(1, max_windows_per_file // max(1, len(labels)))
+    selected = []
+    for label in labels:
+        candidates = np.flatnonzero(y_windows == label)
+        count = min(len(candidates), per_label)
+        positions = np.linspace(0, len(candidates) - 1, num=count, dtype=int)
+        selected.extend(candidates[positions].tolist())
+    if len(selected) < max_windows_per_file:
+        remaining = np.setdiff1d(np.arange(len(y_windows)), np.asarray(selected), assume_unique=False)
+        count = min(len(remaining), max_windows_per_file - len(selected))
+        if count:
+            positions = np.linspace(0, len(remaining) - 1, num=count, dtype=int)
+            selected.extend(remaining[positions].tolist())
+    selected = np.asarray(sorted(set(selected)), dtype=int)
+    return x_windows[selected], y_windows[selected]
+
+
 def _infer_source_hz(df: pd.DataFrame) -> float | None:
     time_col = None
     scale = 1.0
@@ -167,6 +191,10 @@ def build_cache(
     extra_normal_glob: str = "nf_*.csv",
     extra_normal_split: str = "train",
     extra_normal_limit_files: int = 0,
+    extra_normal_max_windows_per_file: int | None = None,
+    extra_labeled_root: str | None = None,
+    extra_labeled_manifest: str | None = None,
+    extra_labeled_max_windows_per_file: int = 128,
     max_windows_per_file: int = MAX_WINDOWS_PER_FILE,
     manifest_path: str | None = None,
     protocol_name: str = "",
@@ -226,6 +254,16 @@ def build_cache(
         "extra_normal_dir": str(extra_normal_dir) if extra_normal_dir else None,
         "extra_normal_glob": str(extra_normal_glob) if extra_normal_dir else None,
         "extra_normal_split": str(extra_normal_split) if extra_normal_dir else None,
+        "extra_normal_max_windows_per_file": (
+            int(extra_normal_max_windows_per_file)
+            if extra_normal_max_windows_per_file is not None
+            else None
+        ),
+        "extra_labeled_root": str(extra_labeled_root) if extra_labeled_root else None,
+        "extra_labeled_manifest": (
+            str(extra_labeled_manifest) if extra_labeled_manifest else None
+        ),
+        "extra_labeled_max_windows_per_file": int(extra_labeled_max_windows_per_file),
     }
 
     # 估计源采样率（只读一个文件，避免后续重复打印/猜测）
@@ -266,6 +304,36 @@ def build_cache(
         else:
             print(f"[WARN] extra_normal_dir not found, ignoring: {p}")
             extra_files = []
+
+    extra_labeled_by_split: dict[str, list[Path]] = {}
+    extra_labeled_rows: list[dict] = []
+    if extra_labeled_manifest:
+        split_manifest_path = Path(extra_labeled_manifest)
+        if not split_manifest_path.exists():
+            raise FileNotFoundError(
+                f"extra labeled manifest not found: {split_manifest_path}"
+            )
+        split_manifest = pd.read_csv(split_manifest_path)
+        required = {"file", "split"}
+        missing = required - set(split_manifest.columns)
+        if missing:
+            raise ValueError(
+                f"extra labeled manifest missing columns {sorted(missing)}: {split_manifest_path}"
+            )
+        root = Path(extra_labeled_root) if extra_labeled_root else split_manifest_path.parent
+        for row in split_manifest.to_dict(orient="records"):
+            relative = Path(str(row["file"]))
+            path = relative if relative.is_absolute() else root / relative
+            split_name = str(row["split"]).strip()
+            record = {**row, "resolved_path": str(path)}
+            extra_labeled_rows.append(record)
+            if split_name in splits:
+                extra_labeled_by_split.setdefault(split_name, []).append(path)
+        cache_cfg["extra_labeled_split_counts"] = {
+            str(name): int(count)
+            for name, count in split_manifest["split"].value_counts().to_dict().items()
+        }
+        cache_cfg["extra_labeled_files"] = extra_labeled_rows
 
     for split_name, filenames in splits.items():
         if limit_files and limit_files > 0:
@@ -316,7 +384,11 @@ def build_cache(
                         source_hz_hint=source_hz_hint,
                         fault_threshold=fault_threshold,
                         force_label=0,
-                        max_windows_per_file=max_windows_per_file,
+                        max_windows_per_file=(
+                            int(extra_normal_max_windows_per_file)
+                            if extra_normal_max_windows_per_file is not None
+                            else max_windows_per_file
+                        ),
                     )
                 except Exception as e:
                     print(f"[WARN] extra normal failed: {csv_path.name}: {e}")
@@ -329,6 +401,29 @@ def build_cache(
                 stats[split_name]['source_normal_files'] += 1
                 if (j + 1) % 50 == 0:
                     print(f"  {split_name} (extra normals): {j + 1}/{len(extra_files)} files processed...")
+
+        # Append explicitly split, phase-labeled RflySim adaptation files.
+        for csv_path in extra_labeled_by_split.get(split_name, []):
+            if not csv_path.exists() or csv_path.stat().st_size == 0:
+                raise FileNotFoundError(f"extra labeled CSV not found or empty: {csv_path}")
+            x_windows, y_windows = extract_windows(
+                csv_path,
+                window_size,
+                stride,
+                target_hz=target_hz,
+                source_hz_hint=source_hz_hint,
+                fault_threshold=fault_threshold,
+                max_windows_per_file=0,
+            )
+            if x_windows is None:
+                continue
+            x_windows, y_windows = _cap_windows_balanced(
+                x_windows, y_windows, int(extra_labeled_max_windows_per_file)
+            )
+            all_x.append(x_windows)
+            all_y.append(y_windows)
+            stats[split_name]['files'] += 1
+            stats[split_name]['source_fault_files'] += 1
 
         if not all_x:
             print(f"[WARN] {split_name}: 没有生成任何窗口样本（可能 window_size 过大或文件过少）")
@@ -421,6 +516,14 @@ if __name__ == '__main__':
                         help='将额外 normal 文件合并到哪个 split（默认 train）')
     parser.add_argument('--extra-normal-limit-files', type=int, default=0,
                         help='extra-normal-dir 仅处理前 N 个文件（0=全量）')
+    parser.add_argument('--extra-normal-max-windows-per-file', type=int, default=-1,
+                        help='额外 normal 每文件最多保留多少窗口（-1=沿用 max-windows-per-file，0=不限制）')
+    parser.add_argument('--extra-labeled-root', default='',
+                        help='额外 phase-labeled CSV 的根目录')
+    parser.add_argument('--extra-labeled-manifest', default='',
+                        help='额外数据 split CSV，必需列为 file,split')
+    parser.add_argument('--extra-labeled-max-windows-per-file', type=int, default=128,
+                        help='每个额外 phase-labeled 文件的均衡窗口上限')
     parser.add_argument('--max-windows-per-file', type=int, default=MAX_WINDOWS_PER_FILE,
                         help='每个文件最多保留多少个窗口（0=不限制）')
     parser.add_argument('--protocol-name', default='',
@@ -441,6 +544,14 @@ if __name__ == '__main__':
                 extra_normal_glob=args.extra_normal_glob,
                 extra_normal_split=args.extra_normal_split,
                 extra_normal_limit_files=args.extra_normal_limit_files,
+                extra_normal_max_windows_per_file=(
+                    None
+                    if args.extra_normal_max_windows_per_file < 0
+                    else args.extra_normal_max_windows_per_file
+                ),
+                extra_labeled_root=(args.extra_labeled_root if args.extra_labeled_root else None),
+                extra_labeled_manifest=(args.extra_labeled_manifest if args.extra_labeled_manifest else None),
+                extra_labeled_max_windows_per_file=args.extra_labeled_max_windows_per_file,
                 max_windows_per_file=args.max_windows_per_file,
                 manifest_path=(args.manifest_path if args.manifest_path else None),
                 protocol_name=args.protocol_name,

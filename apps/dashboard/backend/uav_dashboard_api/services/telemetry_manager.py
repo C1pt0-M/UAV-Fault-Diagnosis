@@ -1,16 +1,14 @@
-"""遥测进程管理服务。
+"""遥测会话协调模块。
 
-管理 PX4 SITL → Collector → Receiver → Detector 的完整生命周期。
-采用单例模式，同一时间只允许一个采集会话。
+通过 transport Adapter 协调采集、处理与检测，同一时间只允许一个会话。
 """
 
 import copy
 import json
 import os
+import queue
 import random
 import shutil
-import signal
-import socket
 import subprocess
 import sys
 import threading
@@ -36,21 +34,23 @@ from uav_dashboard_api.services.diagnosis_contract import (
 )
 from uav_dashboard_api.services.model_registry import resolve_registered_model
 from uav_dashboard_api.services.telemetry_backends import (
+    DEFAULT_RFLY_NETWORK_PROFILE,
     PX4ScenarioBackend,
+    RFLY_INFERENCE_LOCATIONS,
+    RFLY_NETWORK_PROFILES,
     ReplayScenarioBackend,
     RflyScenarioBackend,
 )
 from uav_dashboard_api.utils.path_store import resolve_local_path, serialize_local_path
-from uav_fault.telemetry.receiver import TelemetryReceiver
 from uav_fault.telemetry.replay_metrics import gt_event_metrics
 from uav_fault.telemetry.schema_adapter import (
     CANONICAL_SCHEMA_VERSION,
+    assess_canonical_input_contract,
     adapt_px4_live_frame,
     canonicalize_rfly_frame,
 )
-from uav_fault.online.decision_engine import TemporalDecisionEngine
-from uav_fault.online.decision_models import DecisionSignal
-from uav_fault.online.risk_evaluator import RiskEvaluator
+from uav_fault.online.event_aggregator import AggregatedEvent
+from uav_fault.online.monitoring_session import OnlineMonitoringSession
 
 DetectionRunner = None
 
@@ -174,6 +174,9 @@ class TelemetryPersistence:
         fault_count,
         replay_metrics=None,
         fault_prob_curve=None,
+        network_link=None,
+        mec=None,
+        inference=None,
     ) -> None:
         if not self.manager.app:
             return
@@ -188,6 +191,15 @@ class TelemetryPersistence:
                     meta = session.get_meta()
                     if replay_metrics:
                         meta["replay_metrics"] = replay_metrics
+                    if network_link:
+                        meta["network_link"] = network_link
+                        meta["network_profile"] = network_link.get("profile")
+                    if mec:
+                        meta["mec"] = mec
+                        meta["inference_location"] = mec.get("location")
+                    if inference:
+                        meta["inference"] = inference
+                        meta["inference_location"] = inference.get("location")
                     if fault_prob_curve:
                         curve_dir = Path(self.manager.app.config["RUNTIME_DIR"]) / "telemetry_fault_prob"
                         curve_dir.mkdir(parents=True, exist_ok=True)
@@ -200,7 +212,13 @@ class TelemetryPersistence:
                             curve_path, self.manager.app.config
                         )
                         meta["fault_prob_curve_points"] = len(fault_prob_curve)
-                    if replay_metrics or fault_prob_curve:
+                    if (
+                        replay_metrics
+                        or fault_prob_curve
+                        or network_link
+                        or mec
+                        or inference
+                    ):
                         session.set_meta(meta)
                     session.end_time = datetime.now()
                     session.duration_seconds = round(duration, 1)
@@ -327,17 +345,22 @@ class TelemetryProcessManager:
         self._initialized = True
 
         self.app = app
-        # 进程/线程句柄
-        self._px4_proc: subprocess.Popen | None = None
-        self._collector_proc: subprocess.Popen | None = None
-        self._flight_proc: subprocess.Popen | None = None
-        self._receiver: TelemetryReceiver | None = None
-        self._receiver_thread: threading.Thread | None = None
+        self._frame_queue: queue.Queue = queue.Queue(maxsize=4096)
+        self._inference_queue: queue.Queue = queue.Queue(maxsize=1)
+        self._frame_worker_thread: threading.Thread | None = None
+        self._inference_worker_thread: threading.Thread | None = None
+        self._frame_worker_stop = threading.Event()
+        self._inference_worker_stop = threading.Event()
+        self._inference_idle = threading.Event()
+        self._inference_idle.set()
+        self._canonical_window: deque = deque(maxlen=150)
+        self._frame_queue_drops = 0
+        self._inference_queue_drops = 0
         # 检测
         self._detector = None
-        self._aggregator = None
         self._detecting = False
         self._detection_callback = None
+        self._monitoring_session = OnlineMonitoringSession()
         # 状态
         self._session_id: str | None = None
         self._start_time: float | None = None
@@ -355,7 +378,6 @@ class TelemetryProcessManager:
         # 路径
         self._active_model: dict | None = None
         self._telemetry_python_bin: str | None = None
-        self._px4_root = os.path.expanduser(os.environ.get("PX4_ROOT", "~/PX4-Autopilot"))
         self._src_dir = PROJECT_ROOT
         self._pythonpath_dirs = [path for path in PYTHONPATH_DIRS if path.exists()]
         self._backend = None
@@ -369,6 +391,14 @@ class TelemetryProcessManager:
         self._startup_phase = None
         self._timeout_reason = None
         self._replay_metrics: dict | None = None
+        self._network_link_status = self._initial_network_link_status()
+        self._mec_status = self._initial_mec_status()
+        self._inference_status = self._initial_inference_status()
+        self._center_inference_samples: deque[float] = deque(maxlen=1000)
+        self._center_decision_latency_samples: deque[float] = deque(maxlen=1000)
+        self._center_inference_count = 0
+        self._mec_last_inference_count = 0
+        self._mec_last_event_seq = 0
         self._current_fault_prob: float = 0.0
         self._risk_score: float = 0.0
         self._risk_trend: str = "stable"
@@ -377,8 +407,6 @@ class TelemetryProcessManager:
         self._preview_started_at: float | None = None
         self._top_recommendations: list[dict] = []
         self._last_preview_lead_time_s: float | None = None
-        self._risk_evaluator = RiskEvaluator()
-        self._decision_engine = TemporalDecisionEngine()
         self._stop_in_progress = False
         self._last_stop_result: dict | None = None
         self._last_stop_error: Exception | None = None
@@ -392,6 +420,24 @@ class TelemetryProcessManager:
         self._sessions_dir = Path(app.config["RUNTIME_DIR"]) / "telemetry_sessions"
         self._sessions_dir.mkdir(parents=True, exist_ok=True)
 
+    def on_transport_lifecycle(self, snapshot, session_id=None, backend=None) -> None:
+        """Receive lifecycle snapshots from the active transport Adapter."""
+        with self._lock:
+            if (
+                backend is not None
+                and self._backend is not None
+                and self._backend is not backend
+            ):
+                return
+            if (
+                session_id is not None
+                and self._session_id is not None
+                and self._session_id != session_id
+            ):
+                return
+            self._startup_phase = snapshot.phase
+            self._timeout_reason = snapshot.failure_reason
+
     @staticmethod
     def _get_detection_runner_cls():
         global DetectionRunner
@@ -401,45 +447,10 @@ class TelemetryProcessManager:
             DetectionRunner = _DetectionRunner
         return DetectionRunner
 
-    @staticmethod
-    def _popen_session_kwargs() -> dict:
-        if os.name == "nt":
-            creationflags = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
-            return {"creationflags": creationflags} if creationflags else {}
-        return {"start_new_session": True}
-
-    def _get_px4_root(self) -> str:
-        if self.app:
-            configured = str(self.app.config.get("PX4_ROOT", "") or "").strip()
-            if configured:
-                return os.path.expanduser(configured)
-        return self._px4_root
-
-    def _build_collector_cmd(self, telemetry_python_bin: str) -> list[str]:
-        cfg = self.app.config if self.app else {}
-        cmd = [
-            telemetry_python_bin,
-            "-m",
-            "uav_fault.telemetry.collector",
-            "--host",
-            str(cfg.get("TELEMETRY_FORWARD_HOST", "127.0.0.1")),
-            "--port",
-            str(cfg.get("TELEMETRY_FORWARD_PORT", 15550)),
-            "--emit-rate",
-            str(cfg.get("TELEMETRY_EMIT_RATE_HZ", 50)),
-            "--mavsdk-address",
-            str(cfg.get("TELEMETRY_MAVSDK_ADDRESS", "udpin://0.0.0.0:14550")),
-            "--grpc-port",
-            str(cfg.get("TELEMETRY_MAVSDK_GRPC_PORT", 50052)),
-            "--pymav-address",
-            str(cfg.get("TELEMETRY_PYMAV_ADDRESS", "udpin:0.0.0.0:14030")),
-        ]
-        enable_pymav = cfg.get("TELEMETRY_ENABLE_PYMAV", True)
-        if isinstance(enable_pymav, str):
-            enable_pymav = enable_pymav.strip().lower() in {"1", "true", "yes", "on"}
-        if not enable_pymav:
-            cmd.append("--no-pymav")
-        return cmd
+    def _get_online_inference_stride(self) -> int:
+        if self.app is None:
+            return 1
+        return max(1, int(self.app.config.get("ONLINE_INFERENCE_STRIDE", 5)))
 
     def _reset_runtime_state(self) -> None:
         self._session_id = None
@@ -462,6 +473,14 @@ class TelemetryProcessManager:
         self._startup_phase = None
         self._timeout_reason = None
         self._replay_metrics = None
+        self._network_link_status = self._initial_network_link_status()
+        self._mec_status = self._initial_mec_status()
+        self._inference_status = self._initial_inference_status()
+        self._center_inference_samples.clear()
+        self._center_decision_latency_samples.clear()
+        self._center_inference_count = 0
+        self._mec_last_inference_count = 0
+        self._mec_last_event_seq = 0
         self._current_fault_prob = 0.0
         self._risk_score = 0.0
         self._risk_trend = "stable"
@@ -470,8 +489,10 @@ class TelemetryProcessManager:
         self._preview_started_at = None
         self._top_recommendations = []
         self._last_preview_lead_time_s = None
-        self._risk_evaluator.reset()
-        self._decision_engine.reset()
+        self._monitoring_session.reset_collection()
+        self._canonical_window.clear()
+        self._frame_queue_drops = 0
+        self._inference_queue_drops = 0
 
     def _activate_runtime_state(
         self,
@@ -502,6 +523,34 @@ class TelemetryProcessManager:
         self._startup_phase = "starting"
         self._timeout_reason = None
         self._replay_metrics = None
+        network_profile = str(
+            backend_options.get("network_profile") or "direct"
+        ).strip().lower()
+        network_enabled = backend_name == "rfly" and network_profile != "direct"
+        self._network_link_status = self._initial_network_link_status(
+            enabled=network_enabled,
+            profile=network_profile,
+            status="waiting" if network_enabled else "disabled",
+        )
+        inference_location = str(
+            backend_options.get("inference_location") or "center"
+        ).strip().lower()
+        self._mec_status = self._initial_mec_status(
+            enabled=backend_name == "rfly" and inference_location == "mec",
+            location=inference_location,
+            status="waiting"
+            if backend_name == "rfly" and inference_location == "mec"
+            else "disabled",
+        )
+        self._inference_status = self._initial_inference_status(
+            location=inference_location,
+            status="waiting",
+        )
+        self._center_inference_samples.clear()
+        self._center_decision_latency_samples.clear()
+        self._center_inference_count = 0
+        self._mec_last_inference_count = 0
+        self._mec_last_event_seq = 0
         self._current_fault_prob = 0.0
         self._risk_score = 0.0
         self._risk_trend = "stable"
@@ -510,8 +559,10 @@ class TelemetryProcessManager:
         self._preview_started_at = None
         self._top_recommendations = []
         self._last_preview_lead_time_s = None
-        self._risk_evaluator.reset()
-        self._decision_engine.reset()
+        self._monitoring_session.reset_collection()
+        self._canonical_window.clear()
+        self._frame_queue_drops = 0
+        self._inference_queue_drops = 0
         self._stop_in_progress = False
         self._last_stop_result = None
         self._last_stop_error = None
@@ -519,6 +570,170 @@ class TelemetryProcessManager:
         if session_type != "blind_test":
             self._blind_test_active = False
             self._blind_test_ground_truth = None
+
+    @staticmethod
+    def _clear_work_queue(work_queue: queue.Queue) -> None:
+        while True:
+            try:
+                work_queue.get_nowait()
+                work_queue.task_done()
+            except queue.Empty:
+                return
+
+    def start_transport_processing(self) -> None:
+        """Start the processing pipeline used by a live transport Adapter."""
+        self._start_live_processing_pipeline()
+
+    def stop_transport_processing(self, *, drain: bool = True) -> None:
+        """Stop the processing pipeline owned by this monitoring session."""
+        self._stop_live_processing_pipeline(drain=drain)
+
+    def submit_transport_frame(
+        self,
+        frame: dict,
+        _window=None,
+        *,
+        source_backend: str,
+        session_id: str,
+        backend,
+    ) -> None:
+        """Accept a frame only from the currently active transport Adapter."""
+        with self._lock:
+            if (
+                self._backend is not backend
+                or self._session_id != session_id
+                or self._backend_name != source_backend
+            ):
+                return
+        self._submit_backend_frame(frame, _window, source_backend=source_backend)
+
+    def on_transport_finished(self, session_id: str, backend) -> None:
+        """Schedule finalization for the active transport only."""
+        with self._lock:
+            if self._backend is not backend or self._session_id != session_id:
+                return
+        threading.Thread(
+            target=self._auto_finalize,
+            args=(session_id, backend),
+            name=f"telemetry-finalize-{session_id}",
+            daemon=True,
+        ).start()
+
+    def _start_live_processing_pipeline(self) -> None:
+        self._clear_work_queue(self._frame_queue)
+        self._clear_work_queue(self._inference_queue)
+        self._canonical_window.clear()
+        self._frame_worker_stop.clear()
+        self._inference_worker_stop.clear()
+        self._inference_idle.set()
+        self._frame_queue_drops = 0
+        self._inference_queue_drops = 0
+        self._frame_worker_thread = threading.Thread(
+            target=self._frame_processing_worker,
+            name="telemetry-frame-processing",
+            daemon=True,
+        )
+        self._inference_worker_thread = threading.Thread(
+            target=self._inference_worker,
+            name="telemetry-model-inference",
+            daemon=True,
+        )
+        self._frame_worker_thread.start()
+        self._inference_worker_thread.start()
+
+    def _stop_live_processing_pipeline(self, *, drain: bool = True) -> None:
+        if not drain:
+            self._clear_work_queue(self._frame_queue)
+        self._frame_worker_stop.set()
+        if self._frame_worker_thread is not None:
+            self._frame_worker_thread.join(timeout=15)
+            if self._frame_worker_thread.is_alive():
+                print("[telemetry_manager] frame worker 未在 15s 内退出")
+            else:
+                self._frame_worker_thread = None
+
+        if not drain:
+            self._clear_work_queue(self._inference_queue)
+        self._inference_worker_stop.set()
+        if self._inference_worker_thread is not None:
+            self._inference_worker_thread.join(timeout=15)
+            if self._inference_worker_thread.is_alive():
+                print("[telemetry_manager] inference worker 未在 15s 内退出")
+            else:
+                self._inference_worker_thread = None
+
+    def _submit_backend_frame(
+        self,
+        frame: dict,
+        _window=None,
+        source_backend: str | None = None,
+    ) -> None:
+        item = (dict(frame), source_backend or self._backend_name)
+        try:
+            self._frame_queue.put_nowait(item)
+        except queue.Full:
+            try:
+                self._frame_queue.get_nowait()
+                self._frame_queue.task_done()
+            except queue.Empty:
+                pass
+            self._frame_queue_drops += 1
+            self._frame_queue.put_nowait(item)
+
+    def _frame_processing_worker(self) -> None:
+        while not self._frame_worker_stop.is_set() or not self._frame_queue.empty():
+            try:
+                frame, backend_name = self._frame_queue.get(timeout=0.05)
+            except queue.Empty:
+                continue
+            try:
+                canonical, coverage = self._canonicalize_frame(frame, backend_name)
+                self._canonical_window.append(canonical)
+                self._handle_canonical_frame(
+                    frame=frame,
+                    canonical=canonical,
+                    detect_window=list(self._canonical_window),
+                    coverage=coverage,
+                    async_inference=True,
+                    force_contract_assessment=False,
+                )
+            except Exception as exc:
+                print(f"[telemetry_manager] frame worker 异常: {exc}")
+            finally:
+                self._frame_queue.task_done()
+
+    def _inference_worker(self) -> None:
+        while (
+            not self._inference_worker_stop.is_set()
+            or not self._inference_queue.empty()
+        ):
+            try:
+                job = self._inference_queue.get(timeout=0.05)
+            except queue.Empty:
+                continue
+            self._inference_idle.clear()
+            try:
+                if self._detecting and self._detector is not None:
+                    self._execute_detection_job(*job, detector=self._detector)
+            except Exception as exc:
+                print(f"[telemetry_manager] inference worker 异常: {exc}")
+            finally:
+                self._inference_idle.set()
+                self._inference_queue.task_done()
+
+    def _enqueue_inference_job(self, job: tuple) -> None:
+        try:
+            self._inference_queue.put_nowait(job)
+            return
+        except queue.Full:
+            pass
+        try:
+            self._inference_queue.get_nowait()
+            self._inference_queue.task_done()
+        except queue.Empty:
+            pass
+        self._inference_queue_drops += 1
+        self._inference_queue.put_nowait(job)
 
     def _python_supports_telemetry(self, python_bin: str) -> bool:
         try:
@@ -539,7 +754,7 @@ class TelemetryProcessManager:
         except Exception:
             return False
 
-    def _resolve_telemetry_python_bin(self) -> str:
+    def resolve_telemetry_python_bin(self) -> str:
         if self._telemetry_python_bin and self._python_supports_telemetry(
             self._telemetry_python_bin
         ):
@@ -582,10 +797,11 @@ class TelemetryProcessManager:
 
     @property
     def is_collecting(self) -> bool:
-        if self._backend_name == "replay" and self._backend is not None:
-            thread = getattr(self._backend, "_thread", None)
-            return thread is not None and thread.is_alive()
-        return self._receiver_thread is not None and self._receiver_thread.is_alive()
+        backend = self._backend
+        if backend is None:
+            return False
+        probe = getattr(backend, "is_collecting", None)
+        return bool(probe()) if callable(probe) else False
 
     @property
     def is_detecting(self) -> bool:
@@ -701,14 +917,10 @@ class TelemetryProcessManager:
             try:
                 return dict(self._backend.status() or {})
             except Exception:
-                return {
-                    "px4_sitl": self._proc_status(self._px4_proc),
-                    "collector": self._proc_status(self._collector_proc),
-                    "receiver": "running" if self.is_collecting else None,
-                }
+                pass
         return {
-            "px4_sitl": self._proc_status(self._px4_proc),
-            "collector": self._proc_status(self._collector_proc),
+            "px4_sitl": None,
+            "collector": None,
             "receiver": "running" if self.is_collecting else None,
         }
 
@@ -723,6 +935,13 @@ class TelemetryProcessManager:
             and self.is_collecting
             and processes.get("rfly_bridge") == "running"
         ):
+            if (
+                self._network_link_status.get("enabled")
+                and processes.get("network_link") != "running"
+            ):
+                return "degraded"
+            if self._mec_status.get("enabled") and processes.get("mec") != "running":
+                return "degraded"
             return "connected"
         if self.is_collecting and processes.get("collector") == "running":
             return "connected"
@@ -766,6 +985,237 @@ class TelemetryProcessManager:
     def _snapshot_runtime_value(self, value):
         return copy.deepcopy(value) if value is not None else None
 
+    def _initial_network_link_status(
+        self,
+        *,
+        enabled: bool = False,
+        profile: str = "direct",
+        status: str | None = None,
+    ) -> dict:
+        return {
+            "enabled": bool(enabled),
+            "profile": profile,
+            "status": status or ("waiting" if enabled else "disabled"),
+            "latest_latency_ms": None,
+            "avg_latency_ms": None,
+            "p95_latency_ms": None,
+            "rx_packets": 0,
+            "tx_packets": 0,
+            "lost_packets": 0,
+            "loss_rate": 0.0,
+            "data_integrity": 1.0,
+            "_last_seq": None,
+            "_latency_samples": [],
+            "metrics_csv": None,
+        }
+
+    @staticmethod
+    def _safe_float(value):
+        try:
+            out = float(value)
+        except (TypeError, ValueError):
+            return None
+        return out if out == out else None
+
+    def _update_network_link_status_locked(self, frame: dict) -> None:
+        status = self._network_link_status
+        profile = str(frame.get("net_profile") or status.get("profile") or "direct")
+        has_network_fields = any(
+            key in frame
+            for key in (
+                "net_profile",
+                "net_seq",
+                "net_tx_ms",
+                "net_delay_ms",
+                "net_e2e_latency_ms",
+            )
+        )
+        if not status.get("enabled") and not has_network_fields:
+            return
+        status["enabled"] = profile != "direct"
+        status["profile"] = profile
+        status["status"] = "active" if has_network_fields else status.get("status", "waiting")
+        status["rx_packets"] = int(status.get("rx_packets") or 0) + 1
+
+        # 仅使用 emulator 生成的连续链路序号。业务层 seq 可能因多源采样
+        # 或 bridge 降采样而跳变，用它估算丢包会严重夸大 loss rate。
+        seq = self._safe_float(frame.get("net_seq"))
+        if seq is not None:
+            seq = int(seq)
+            last_seq = status.get("_last_seq")
+            if last_seq is not None and seq > int(last_seq) + 1:
+                status["lost_packets"] = int(status.get("lost_packets") or 0) + (
+                    seq - int(last_seq) - 1
+                )
+            status["_last_seq"] = seq
+
+        latency = self._safe_float(frame.get("net_delay_ms"))
+        if latency is None:
+            latency = self._safe_float(frame.get("net_e2e_latency_ms"))
+        if latency is not None:
+            samples = list(status.get("_latency_samples") or [])
+            samples.append(float(latency))
+            samples = samples[-500:]
+            ordered = sorted(samples)
+            p95_idx = int(0.95 * (len(ordered) - 1)) if ordered else 0
+            status["_latency_samples"] = samples
+            status["latest_latency_ms"] = round(float(latency), 3)
+            status["avg_latency_ms"] = round(sum(samples) / len(samples), 3)
+            status["p95_latency_ms"] = round(ordered[p95_idx], 3)
+
+        rx_packets = int(status.get("rx_packets") or 0)
+        lost_packets = int(status.get("lost_packets") or 0)
+        total_packets = max(1, rx_packets + lost_packets)
+        status["loss_rate"] = round(lost_packets / total_packets, 6)
+        status["data_integrity"] = round(rx_packets / total_packets, 6)
+
+    def _public_network_link_status(self) -> dict:
+        status = self._snapshot_runtime_value(self._network_link_status) or {}
+        status.pop("_last_seq", None)
+        status.pop("_latency_samples", None)
+        return status
+
+    def _initial_mec_status(
+        self,
+        *,
+        enabled: bool = False,
+        location: str = "center",
+        status: str | None = None,
+    ) -> dict:
+        return {
+            "enabled": bool(enabled),
+            "location": location,
+            "status": status or ("waiting" if enabled else "disabled"),
+            "latest_inference_ms": None,
+            "avg_inference_ms": None,
+            "p95_inference_ms": None,
+            "inference_count": 0,
+            "frames_forwarded": 0,
+            "inference_queue_drops": 0,
+            "latest_fault_prob": None,
+            "latest_label": None,
+            "alert_active": False,
+            "contract_status": "waiting",
+            "model_status": "loading" if enabled else "disabled",
+            "metrics_csv": None,
+        }
+
+    def _initial_inference_status(
+        self,
+        *,
+        location: str = "center",
+        status: str = "waiting",
+    ) -> dict:
+        return {
+            "location": location,
+            "status": status,
+            "latest_inference_ms": None,
+            "avg_inference_ms": None,
+            "p95_inference_ms": None,
+            "latest_decision_latency_ms": None,
+            "avg_decision_latency_ms": None,
+            "p95_decision_latency_ms": None,
+            "inference_count": 0,
+            "inference_queue_drops": 0,
+        }
+
+    @staticmethod
+    def _sample_summary(samples) -> tuple[float | None, float | None]:
+        ordered = sorted(float(value) for value in samples)
+        if not ordered:
+            return None, None
+        p95_idx = int(0.95 * (len(ordered) - 1))
+        return sum(ordered) / len(ordered), ordered[p95_idx]
+
+    def _record_center_inference_metrics(
+        self,
+        *,
+        canonical: dict,
+        inference_ms: float,
+        completed_ms: int,
+    ) -> None:
+        decision_latency_ms = None
+        net_tx_ms = self._safe_float(canonical.get("net_tx_ms"))
+        if net_tx_ms is not None:
+            decision_latency_ms = max(0.0, float(completed_ms) - net_tx_ms)
+        with self._lock:
+            self._center_inference_samples.append(float(inference_ms))
+            self._center_inference_count += 1
+            if decision_latency_ms is not None:
+                self._center_decision_latency_samples.append(decision_latency_ms)
+            avg_inference, p95_inference = self._sample_summary(
+                self._center_inference_samples
+            )
+            avg_decision, p95_decision = self._sample_summary(
+                self._center_decision_latency_samples
+            )
+            self._inference_status.update(
+                {
+                    "location": "center",
+                    "status": "active",
+                    "latest_inference_ms": round(float(inference_ms), 3),
+                    "avg_inference_ms": round(avg_inference, 3)
+                    if avg_inference is not None
+                    else None,
+                    "p95_inference_ms": round(p95_inference, 3)
+                    if p95_inference is not None
+                    else None,
+                    "latest_decision_latency_ms": round(decision_latency_ms, 3)
+                    if decision_latency_ms is not None
+                    else None,
+                    "avg_decision_latency_ms": round(avg_decision, 3)
+                    if avg_decision is not None
+                    else None,
+                    "p95_decision_latency_ms": round(p95_decision, 3)
+                    if p95_decision is not None
+                    else None,
+                    "inference_count": self._center_inference_count,
+                    "inference_queue_drops": int(self._inference_queue_drops),
+                }
+            )
+
+    def _update_mec_status_locked(self, frame: dict) -> None:
+        if not self._mec_status.get("enabled") and not frame.get("mec_enabled"):
+            return
+        status = self._mec_status
+        status["enabled"] = True
+        status["location"] = str(
+            frame.get("mec_inference_location") or status.get("location") or "mec"
+        )
+        status["status"] = "active"
+        field_map = {
+            "mec_inference_ms": "latest_inference_ms",
+            "mec_avg_inference_ms": "avg_inference_ms",
+            "mec_p95_inference_ms": "p95_inference_ms",
+            "mec_inference_count": "inference_count",
+            "mec_frames_forwarded": "frames_forwarded",
+            "mec_inference_queue_drops": "inference_queue_drops",
+            "mec_fault_prob": "latest_fault_prob",
+            "mec_label": "latest_label",
+            "mec_contract_status": "contract_status",
+            "mec_model_status": "model_status",
+        }
+        for source, target in field_map.items():
+            if frame.get(source) is not None:
+                status[target] = frame.get(source)
+        status["alert_active"] = bool(frame.get("mec_alert_active"))
+        inference = self._inference_status
+        inference["location"] = "mec"
+        inference["status"] = "active"
+        inference_field_map = {
+            "mec_inference_ms": "latest_inference_ms",
+            "mec_avg_inference_ms": "avg_inference_ms",
+            "mec_p95_inference_ms": "p95_inference_ms",
+            "mec_decision_latency_ms": "latest_decision_latency_ms",
+            "mec_avg_decision_latency_ms": "avg_decision_latency_ms",
+            "mec_p95_decision_latency_ms": "p95_decision_latency_ms",
+            "mec_inference_count": "inference_count",
+            "mec_inference_queue_drops": "inference_queue_drops",
+        }
+        for source, target in inference_field_map.items():
+            if frame.get(source) is not None:
+                inference[target] = frame.get(source)
+
     def get_status(self) -> dict:
         with self._lock:
             uptime = time.time() - self._start_time if self._start_time else 0
@@ -782,6 +1232,31 @@ class TelemetryProcessManager:
             startup_phase = self._startup_phase
             timeout_reason = self._timeout_reason
             replay_metrics = self._snapshot_runtime_value(self._replay_metrics)
+            network_link = self._public_network_link_status()
+            mec = self._snapshot_runtime_value(self._mec_status) or {}
+            inference = self._snapshot_runtime_value(self._inference_status) or {}
+            if network_link.get("enabled"):
+                proc_status = processes.get("network_link")
+                if proc_status == "running" and network_link.get("status") == "waiting":
+                    network_link["status"] = "running"
+                elif proc_status in {"stopped", "failed"}:
+                    network_link["status"] = proc_status
+                if processes.get("network_metrics_csv"):
+                    network_link["metrics_csv"] = processes.get("network_metrics_csv")
+                metrics = processes.get("network_metrics")
+                if metrics:
+                    network_link.update(metrics)
+            if mec.get("enabled"):
+                proc_status = processes.get("mec")
+                if proc_status == "running" and mec.get("status") == "waiting":
+                    mec["status"] = "running"
+                elif proc_status in {"stopped", "failed"}:
+                    mec["status"] = proc_status
+                if processes.get("mec_metrics_csv"):
+                    mec["metrics_csv"] = processes.get("mec_metrics_csv")
+                mec_metrics = processes.get("mec_metrics")
+                if mec_metrics:
+                    mec.update(mec_metrics)
             preview_started_at = self._preview_started_at
             current_fault_prob = self._current_fault_prob
             risk_score = self._risk_score
@@ -826,7 +1301,23 @@ class TelemetryProcessManager:
                 "startup_phase": startup_phase,
                 "timeout_reason": timeout_reason,
                 "replay_metrics": replay_metrics,
+                "network_link": network_link,
+                "mec": mec,
+                "inference": inference,
+                "processing_pipeline": {
+                    "mode": "async_live"
+                    if self._frame_worker_thread is not None
+                    else "synchronous",
+                    "frame_queue_depth": self._frame_queue.qsize(),
+                    "frame_queue_drops": self._frame_queue_drops,
+                    "inference_queue_depth": self._inference_queue.qsize(),
+                    "inference_queue_drops": self._inference_queue_drops,
+                    "inference_busy": not self._inference_idle.is_set(),
+                },
                 "processes": processes,
+                "transport_lifecycle": self._snapshot_runtime_value(
+                    processes.get("transport_lifecycle")
+                ),
                 "current_fault_prob": round(float(current_fault_prob or 0.0), 3),
                 "risk_score": round(float(risk_score or 0.0), 3),
                 "risk_trend": risk_trend,
@@ -857,6 +1348,9 @@ class TelemetryProcessManager:
                     "pos_y",
                     "pos_z",
                     "fault_prob",
+                    "net_latency_ms",
+                    "net_loss_rate",
+                    "net_data_integrity",
                 ]
             }
 
@@ -874,6 +1368,15 @@ class TelemetryProcessManager:
                     values.append(round(float(default), digits))
             return values
 
+        def optional_series(field: str, digits: int) -> list[float | None]:
+            values = []
+            for frame in sampled:
+                try:
+                    values.append(round(float(frame[field]), digits))
+                except (KeyError, TypeError, ValueError):
+                    values.append(None)
+            return values
+
         return {
             "times": series("time_s", 3),
             "motor1": series("motor1", 4),
@@ -887,6 +1390,9 @@ class TelemetryProcessManager:
             "pos_y": series("pos_y", 3),
             "pos_z": series("pos_z", 3),
             "fault_prob": series("fault_prob", 4),
+            "net_latency_ms": optional_series("net_latency_ms", 3),
+            "net_loss_rate": optional_series("net_loss_rate", 6),
+            "net_data_integrity": optional_series("net_data_integrity", 6),
         }
 
     def _model_summary(self, meta: dict | None) -> dict | None:
@@ -1075,7 +1581,7 @@ class TelemetryProcessManager:
         if self.is_collecting:
             raise RuntimeError("采集已在运行中，请先停止当前会话")
         if backend == "px4":
-            telemetry_python_bin = self._resolve_telemetry_python_bin()
+            telemetry_python_bin = self.resolve_telemetry_python_bin()
             print(f"[telemetry_manager] 遥测子进程解释器: {telemetry_python_bin}")
         sim_time = float(sim_time)
         backend_name = (backend or "px4").strip().lower()
@@ -1093,6 +1599,26 @@ class TelemetryProcessManager:
             )
         backend_options = {"replay_path": replay_path_resolved}
         if backend_name == "rfly":
+            rfly_options = dict(rfly_options or {})
+            cfg = self.app.config if self.app else {}
+            network_profile = str(
+                rfly_options.get("network_profile")
+                or cfg.get("RFLY_NETWORK_PROFILE")
+                or DEFAULT_RFLY_NETWORK_PROFILE
+            ).strip().lower()
+            if network_profile not in RFLY_NETWORK_PROFILES:
+                raise RuntimeError(
+                    "RflySim 5G 链路场景仅支持 direct、baseline、enhanced_5g 或 degraded"
+                )
+            rfly_options["network_profile"] = network_profile
+            inference_location = str(
+                rfly_options.get("inference_location")
+                or cfg.get("RFLY_INFERENCE_LOCATION")
+                or "mec"
+            ).strip().lower()
+            if inference_location not in RFLY_INFERENCE_LOCATIONS:
+                raise RuntimeError("RflySim 推理位置仅支持 center 或 mec")
+            rfly_options["inference_location"] = inference_location
             backend_options.update(rfly_options or {})
         backend_cls = {
             "px4": PX4ScenarioBackend,
@@ -1125,6 +1651,11 @@ class TelemetryProcessManager:
                 backend_instance=backend_instance,
                 session_type=session_type,
             )
+            if (
+                backend_name == "rfly"
+                and getattr(backend_instance, "_manual_qgc_mode", lambda: False)()
+            ):
+                self._planned_duration_s = None
 
         self._create_session_record(
             session_id,
@@ -1136,6 +1667,12 @@ class TelemetryProcessManager:
             meta={
                 "backend": backend_name,
                 "source_asset_id": replay_asset_id,
+                "network_profile": backend_options.get("network_profile")
+                if backend_name == "rfly"
+                else None,
+                "inference_location": backend_options.get("inference_location")
+                if backend_name == "rfly"
+                else "center",
             },
         )
         self._write_log(drone_id, "telemetry", f"开始遥测数据采集，会话 {session_id}")
@@ -1151,7 +1688,7 @@ class TelemetryProcessManager:
             "session_id": session_id,
             "status": "running",
             "csv_path": serialize_local_path(csv_path, self.app.config),
-            "planned_duration_s": sim_time,
+            "planned_duration_s": self._planned_duration_s,
             "scenario_backend": backend_name,
             "replay_path": serialize_local_path(
                 replay_path_resolved, self.app.config
@@ -1170,7 +1707,6 @@ class TelemetryProcessManager:
             if (
                 not self.is_collecting
                 and self._backend is None
-                and self._px4_proc is None
             ):
                 raise RuntimeError("当前没有运行中的采集会话")
             self._stop_in_progress = True
@@ -1178,14 +1714,25 @@ class TelemetryProcessManager:
             self._last_stop_error = None
         session_id = self._session_id
         try:
-            if self._detecting:
-                self.stop_detection()
             stop_error = None
             if self._backend is not None:
                 try:
                     self._backend.stop()
                 except Exception as e:
                     stop_error = e
+            if self._detecting:
+                self.stop_detection()
+            # backend.stop() 后进程已结束，但 metrics CSV 仍可读取。冻结最终
+            # emulator KPI，确保会话 meta 使用链路统计而不是接收端临时估算。
+            final_network_link = self.get_status().get("network_link") or {}
+            final_mec = self.get_status().get("mec") or {}
+            with self._lock:
+                for key, value in final_network_link.items():
+                    if key in self._network_link_status and value is not None:
+                        self._network_link_status[key] = value
+                for key, value in final_mec.items():
+                    if key in self._mec_status and value is not None:
+                        self._mec_status[key] = value
             self._replay_metrics = self._collect_replay_metrics(session_id)
             duration = time.time() - self._start_time if self._start_time else 0
             result = {
@@ -1195,6 +1742,7 @@ class TelemetryProcessManager:
                 "fault_events_count": len(self._fault_events),
                 "scenario_backend": self._backend_name,
                 "replay_metrics": self._replay_metrics,
+                "mec": final_mec,
             }
             self._finalize_session(
                 session_id,
@@ -1235,7 +1783,19 @@ class TelemetryProcessManager:
             if requested_model is not None
             else None
         )
-        model_meta = self._resolve_online_model_meta(requested_model=requested_model)
+        mec_enabled = bool(self._mec_status.get("enabled"))
+        model_meta = (
+            getattr(self._backend, "_mec_model_meta", None)
+            if mec_enabled
+            else self._resolve_online_model_meta(requested_model=requested_model)
+        )
+        if (
+            mec_enabled
+            and requested_model
+            and model_meta
+            and requested_model != model_meta.get("name")
+        ):
+            raise RuntimeError("MEC 模型已在采集启动时加载；切换模型请停止采集后重启")
         if model_meta is None:
             if requested_model:
                 raise RuntimeError(f"未找到可用在线模型: {requested_model}")
@@ -1243,19 +1803,33 @@ class TelemetryProcessManager:
                 "未找到可用在线模型，请先配置 DEFAULT_ONLINE_MODEL 或补齐模型目录"
             )
         try:
-            runner_cls = self._get_detection_runner_cls()
-            self._detector = runner_cls(model_meta["path"], device="cpu")
+            self._clear_work_queue(self._inference_queue)
+            self._inference_idle.wait(timeout=5)
+            if mec_enabled:
+                self._detector = None
+            else:
+                runner_cls = self._get_detection_runner_cls()
+                self._detector = runner_cls(model_meta["path"], device="cpu")
+            self._active_model = self._model_summary(model_meta)
+            self._monitoring_session.start_detection(
+                self._detector,
+                model_summary=self._active_model,
+            )
             self._detecting = True
             self._startup_phase = "detecting"
-            self._active_model = self._model_summary(model_meta)
             self._update_session_detection(self._session_id, True)
             self._write_log(
                 None,
                 "realtime_detection",
                 f"启动实时故障检测，关联会话 {self._session_id}",
             )
-            return {"detector_status": "running", "model": self._active_model}
+            return {
+                "detector_status": "running",
+                "model": self._active_model,
+                "inference_location": "mec" if mec_enabled else "center",
+            }
         except Exception as exc:
+            self._monitoring_session.reset_collection()
             self._detector = None
             self._detecting = False
             self._active_model = None
@@ -1269,9 +1843,19 @@ class TelemetryProcessManager:
         if not self._detecting:
             raise RuntimeError("实时检测未在运行")
         self._detecting = False
-        if self._detector:
-            for event in self._detector.flush():
-                self._record_fault_event(event)
+        self._clear_work_queue(self._inference_queue)
+        self._inference_idle.wait(timeout=10)
+        if self._monitoring_session.snapshot().state != "running":
+            self._monitoring_session.start_detection(
+                self._detector,
+                model_summary=self._active_model,
+            )
+        update = self._monitoring_session.stop_detection()
+        self._apply_monitoring_update(
+            canonical=None,
+            frame_idx=None,
+            update=update,
+        )
         self._replay_metrics = self._collect_replay_metrics(self._session_id)
         fault_events = [self._event_to_dict(e) for e in self._fault_events[-10:]]
         count = len(self._fault_events)
@@ -1287,24 +1871,53 @@ class TelemetryProcessManager:
             "replay_metrics": self._replay_metrics,
         }
 
-    def _on_backend_frame(
+    def _canonicalize_frame(
+        self, frame: dict, backend_name: str | None
+    ) -> tuple[dict, dict | None]:
+        if backend_name == "px4":
+            return adapt_px4_live_frame(frame)
+        if backend_name in {"replay", "rfly"}:
+            return canonicalize_rfly_frame(frame)
+        return frame, None
+
+    def process_transport_frame(
         self, frame: dict, window: deque, source_backend: str | None = None
     ) -> None:
+        """Synchronous path retained for replay and focused unit tests."""
         backend_name = source_backend or self._backend_name
-        canonical = frame
-        detect_window = list(window)
-        coverage = None
+        canonical, coverage = self._canonicalize_frame(frame, backend_name)
         if backend_name == "px4":
-            canonical, coverage = adapt_px4_live_frame(frame)
             detect_window = [adapt_px4_live_frame(item)[0] for item in window]
         elif backend_name in {"replay", "rfly"}:
-            canonical, coverage = canonicalize_rfly_frame(frame)
             detect_window = [canonicalize_rfly_frame(item)[0] for item in window]
+        else:
+            detect_window = list(window)
+        self._handle_canonical_frame(
+            frame=frame,
+            canonical=canonical,
+            detect_window=detect_window,
+            coverage=coverage,
+            async_inference=False,
+            force_contract_assessment=True,
+        )
+
+    def _handle_canonical_frame(
+        self,
+        *,
+        frame: dict,
+        canonical: dict,
+        detect_window: list[dict],
+        coverage: dict | None,
+        async_inference: bool,
+        force_contract_assessment: bool,
+    ) -> None:
         with self._lock:
             self._frame_count += 1
-            self._last_frame_time_s = canonical.get("time_s", self._frame_count / 50.0)
+            frame_idx = self._frame_count
+            self._last_frame_time_s = canonical.get("time_s", frame_idx / 50.0)
             self._last_frame_wall_time = time.time()
             self._startup_phase = "streaming"
+            input_contract_status = self._input_contract_status
             if coverage is not None:
                 self._feature_coverage = {
                     "mapped_count": len(coverage.get("mapped", [])),
@@ -1316,30 +1929,29 @@ class TelemetryProcessManager:
                     "default": coverage.get("default", []),
                     "proxy": coverage.get("proxy", []),
                 }
-                default_count = len(coverage.get("default", []))
-                proxy_count = len(coverage.get("proxy", []))
-                actuator_source = canonical.get("actuator_source") or frame.get(
-                    "actuator_source"
+                should_assess = len(detect_window) >= 150 and (
+                    force_contract_assessment
+                    or input_contract_status is None
+                    or frame_idx % 50 == 0
                 )
-                if default_count > 0:
-                    contract_status = "degraded"
-                    reason = "missing_features"
-                elif actuator_source == "proxy" or proxy_count > 0:
-                    contract_status = "degraded"
-                    reason = "proxy_actuator_source"
-                else:
-                    contract_status = "healthy"
-                    reason = "ok"
-                self._input_contract_status = {
-                    "status": contract_status,
-                    "reason": reason,
-                    "actuator_source": actuator_source,
-                    "default_count": default_count,
-                    "proxy_count": proxy_count,
-                }
+                if should_assess:
+                    input_contract_status = assess_canonical_input_contract(
+                        detect_window,
+                        coverage=coverage,
+                        actuator_source=canonical.get("actuator_source")
+                        or frame.get("actuator_source"),
+                    )
+                    self._input_contract_status = input_contract_status
+            self._update_network_link_status_locked(frame)
+            self._update_mec_status_locked(frame)
+            network_link = self._network_link_status
+            net_latency_ms = self._safe_float(frame.get("net_delay_ms"))
+            if net_latency_ms is None:
+                net_latency_ms = self._safe_float(frame.get("net_e2e_latency_ms"))
             self._realtime_buffer.append(
                 {
-                    "time_s": canonical.get("time_s", self._frame_count / 50.0),
+                    "frame_idx": frame_idx,
+                    "time_s": canonical.get("time_s", frame_idx / 50.0),
                     "motor1": canonical.get("actuator_out_1", frame.get("motor1", 0)),
                     "motor2": canonical.get("actuator_out_2", frame.get("motor2", 0)),
                     "motor3": canonical.get("actuator_out_3", frame.get("motor3", 0)),
@@ -1357,49 +1969,158 @@ class TelemetryProcessManager:
                         ),
                     ),
                     "fault_prob": self._current_fault_prob,
+                    "net_latency_ms": net_latency_ms,
+                    "net_loss_rate": network_link.get("loss_rate"),
+                    "net_data_integrity": network_link.get("data_integrity"),
                 }
             )
-        if not self._detecting or self._detector is None:
-            return
-        if len(detect_window) < self._detector.window_size:
-            return
-        result, new_events = self._detector.update(
-            frame=canonical, window=detect_window, frame_idx=self._frame_count
-        )
-        if result is None:
-            return
-        fault_prob = float(result.get("fault_prob", 0.0))
-        frame_time_s = float(canonical.get("time_s") or self._frame_count / 50.0)
-        if self._realtime_buffer:
-            self._realtime_buffer[-1]["fault_prob"] = fault_prob
-        with self._lock:
-            self._fault_prob_curve.append(
-                {
-                    "time_s": round(frame_time_s, 4),
-                    "fault_prob": round(fault_prob, 6),
-                }
+            detector = self._detector
+            detecting = self._detecting
+            mec_enabled = bool(self._mec_status.get("enabled"))
+            mec_inference_count = int(frame.get("mec_inference_count") or 0)
+            should_consume_mec = (
+                mec_enabled
+                and detecting
+                and mec_inference_count > self._mec_last_inference_count
+                and frame.get("mec_fault_prob") is not None
             )
-        onset_th = float(
-            getattr(getattr(self._detector, "aggregator", None), "onset_th", 0.6)
-        )
-        if new_events:
-            if (
-                self._preview_started_at is not None
-                and canonical.get("time_s") is not None
-            ):
-                self._last_preview_lead_time_s = round(
-                    max(
-                        0.0,
-                        float(canonical.get("time_s"))
-                        - float(self._preview_started_at),
-                    ),
-                    1,
+            if should_consume_mec:
+                self._mec_last_inference_count = mec_inference_count
+        if should_consume_mec:
+            session_snapshot = self._monitoring_session.snapshot()
+            if session_snapshot.state != "running":
+                session_snapshot = self._monitoring_session.start_detection(
+                    None,
+                    model_summary=self._active_model,
                 )
-            self._preview_alert = None
-            self._preview_started_at = None
-        elif fault_prob >= onset_th:
-            if self._preview_started_at is None:
-                self._preview_started_at = canonical.get("time_s")
+            event_seq = int(frame.get("mec_event_seq") or 0)
+            new_events = []
+            if event_seq > self._mec_last_event_seq:
+                for item in frame.get("mec_events") or []:
+                    new_events.append(
+                        AggregatedEvent(
+                            start_t=float(item["start_t"]),
+                            end_t=float(item["end_t"]),
+                            start_frame_idx=item.get("start_frame_idx"),
+                            end_frame_idx=item.get("end_frame_idx"),
+                            n_points=int(item.get("n_points") or 0),
+                            max_fault_prob=float(item.get("max_fault_prob") or 0.0),
+                            mean_fault_prob=float(item.get("mean_fault_prob") or 0.0),
+                            meta={"inference_location": "mec"},
+                        )
+                    )
+                self._mec_last_event_seq = event_seq
+            update = self._monitoring_session.ingest_external(
+                result={
+                    "fault_prob": float(frame.get("mec_fault_prob") or 0.0),
+                    "label": str(frame.get("mec_label") or "normal"),
+                    "confidence": float(frame.get("mec_confidence") or 0.0),
+                },
+                new_events=new_events,
+                frame_idx=frame_idx,
+                time_s=float(canonical.get("time_s") or frame_idx / 50.0),
+                onset_th=0.6,
+                generation=session_snapshot.generation,
+            )
+            self._apply_monitoring_update(
+                canonical=canonical,
+                frame_idx=frame_idx,
+                update=update,
+            )
+            return
+        if not detecting or detector is None:
+            return
+        if input_contract_status and input_contract_status.get("detection_blocked"):
+            return
+        if len(detect_window) < detector.window_size:
+            return
+        if frame_idx % self._get_online_inference_stride() != 0:
+            return
+        session_snapshot = self._monitoring_session.snapshot()
+        if session_snapshot.state != "running":
+            session_snapshot = self._monitoring_session.start_detection(
+                detector,
+                model_summary=self._active_model,
+            )
+        job = (canonical, detect_window, frame_idx, session_snapshot.generation)
+        if async_inference:
+            self._enqueue_inference_job(job)
+        else:
+            self._execute_detection_job(*job, detector=detector)
+
+    def _execute_detection_job(
+        self,
+        canonical: dict,
+        detect_window: list[dict],
+        frame_idx: int,
+        generation: int,
+        *,
+        detector,
+    ) -> None:
+        started = time.perf_counter()
+        update = self._monitoring_session.ingest(
+            frame=canonical,
+            window=detect_window,
+            frame_idx=frame_idx,
+            generation=generation,
+        )
+        inference_ms = (time.perf_counter() - started) * 1000.0
+        if update.stale:
+            return
+        self._record_center_inference_metrics(
+            canonical=canonical,
+            inference_ms=inference_ms,
+            completed_ms=int(time.time() * 1000),
+        )
+        if update.result is None:
+            return
+        self._apply_monitoring_update(
+            canonical=canonical,
+            frame_idx=frame_idx,
+            update=update,
+        )
+
+    def _apply_monitoring_update(
+        self,
+        *,
+        canonical: dict | None,
+        frame_idx: int | None,
+        update,
+    ) -> None:
+        if update.stale:
+            return
+        snapshot = update.snapshot
+        result = update.result
+        canonical = canonical or {}
+        self._current_fault_prob = snapshot.current_fault_prob
+        self._risk_score = snapshot.risk_score
+        self._risk_trend = snapshot.risk_trend
+        self._warning_stage = snapshot.warning_stage
+        self._warning_reason = snapshot.warning_reason
+        self._preview_started_at = snapshot.preview_started_at
+        self._last_preview_lead_time_s = snapshot.last_preview_lead_time_s
+        self._top_recommendations = self._recommend_actions_for_stage(
+            snapshot.warning_stage
+        )
+
+        if result is not None and frame_idx is not None:
+            fault_prob = float(result.get("fault_prob", 0.0))
+            frame_time_s = float(canonical.get("time_s") or frame_idx / 50.0)
+            with self._lock:
+                for buffered in reversed(self._realtime_buffer):
+                    if buffered.get("frame_idx") == frame_idx:
+                        buffered["fault_prob"] = fault_prob
+                        break
+                self._fault_prob_curve.append(
+                    {
+                        "time_s": round(frame_time_s, 4),
+                        "fault_prob": round(fault_prob, 6),
+                    }
+                )
+
+        if result is not None and snapshot.preview_active:
+            fault_prob = float(result.get("fault_prob", 0.0))
+            frame_time_s = canonical.get("time_s")
             self._preview_alert = build_diagnosis_payload(
                 source="realtime_preview",
                 label=str(result.get("label") or "fault"),
@@ -1408,55 +2129,22 @@ class TelemetryProcessManager:
                 recommendations=[],
                 model=self._get_online_model_summary(),
                 time_range=build_time_range(
-                    start_time=canonical.get("time_s"),
-                    end_time=canonical.get("time_s"),
+                    start_time=frame_time_s,
+                    end_time=frame_time_s,
                 ),
                 evidence_summary=self._build_online_evidence_summary(
                     label=str(result.get("label") or "fault"),
                     severity=canonical_severity_from_probability(fault_prob),
                     probability=fault_prob,
-                    start_time=canonical.get("time_s"),
-                    end_time=canonical.get("time_s"),
+                    start_time=frame_time_s,
+                    end_time=frame_time_s,
                     lead_time_s=None,
                 ),
             )
-        else:
+        elif not snapshot.preview_active:
             self._preview_alert = None
-            self._preview_started_at = None
-        risk_state = self._risk_evaluator.update(
-            fault_prob=fault_prob,
-            has_preview=self._preview_alert is not None,
-            has_confirmed=bool(new_events),
-        )
-        decision_signal = DecisionSignal(
-            ts=frame_time_s,
-            frame_idx=int(self._frame_count),
-            fault_prob=fault_prob,
-            label=str(result.get("label") or "fault"),
-            confidence=result.get("confidence"),
-            risk_score=risk_state["risk_score"],
-            risk_trend=risk_state["risk_trend"],
-            warning_stage=risk_state["warning_stage"],
-        )
-        self._decision_engine.ingest_signal(
-            decision_signal,
-            onset_th=onset_th,
-            online_model=self._get_online_model_summary(),
-        )
-        self._current_fault_prob = risk_state["current_fault_prob"]
-        self._risk_score = risk_state["risk_score"]
-        self._risk_trend = risk_state["risk_trend"]
-        self._warning_stage = risk_state["warning_stage"]
-        self._warning_reason = risk_state["warning_reason"]
-        self._top_recommendations = self._recommend_actions_for_stage(
-            self._warning_stage
-        )
-        for event in new_events:
-            self._decision_engine.confirm_event(
-                event,
-                ts=float(canonical.get("time_s") or getattr(event, "end_t", 0.0)),
-            )
-            event.lead_time_s = self._last_preview_lead_time_s
+
+        for event in update.new_events:
             self._record_fault_event(event)
 
     def _record_fault_event(self, event) -> None:
@@ -1475,118 +2163,19 @@ class TelemetryProcessManager:
             legacy_severity=legacy_severity_from_canonical(diagnosis["severity"]),
         )
 
-    def _receiver_worker(self) -> None:
-        try:
-            self._receiver.start()
-        except Exception as e:
-            self._startup_phase = "receiver_timeout"
-            self._timeout_reason = "receiver_timeout"
-            print(f"[telemetry_manager] Receiver 异常退出: {e}")
-        finally:
-            if self._session_id and self._start_time:
-                threading.Thread(target=self._auto_finalize, daemon=True).start()
-
-    def _auto_finalize(self) -> None:
+    def _auto_finalize(self, session_id=None, backend=None) -> None:
         time.sleep(1)
-        if self._session_id and not self.is_collecting:
+        with self._lock:
+            if session_id is not None and self._session_id != session_id:
+                return
+            if backend is not None and self._backend is not backend:
+                return
+            should_finalize = bool(self._session_id) and not self.is_collecting
+        if should_finalize:
             try:
                 self.stop_collection()
             except Exception:
                 pass
-
-    def _start_px4(self) -> None:
-        try:
-            result = subprocess.run(
-                ["pgrep", "-f", "px4_sitl_default/bin/px4"],
-                capture_output=True,
-                text=True,
-                timeout=5,
-            )
-            if result.returncode == 0:
-                subprocess.run(
-                    ["pkill", "-9", "-f", "px4_sitl_default/bin/px4"],
-                    timeout=5,
-                    capture_output=True,
-                )
-                subprocess.run(
-                    ["pkill", "-9", "-f", "gz sim"], timeout=5, capture_output=True
-                )
-                time.sleep(3)
-        except Exception:
-            pass
-        env = os.environ.copy()
-        env["HEADLESS"] = "1"
-        px4_sys_autostart = "4001"
-        px4_sim_target = "gz_x500_lawn"
-        px4_root = self._get_px4_root()
-        if self.app:
-            px4_sys_autostart = str(
-                self.app.config.get("PX4_SYS_AUTOSTART", px4_sys_autostart)
-            )
-            px4_sim_target = str(self.app.config.get("PX4_SIM_TARGET", px4_sim_target))
-        env["PX4_SYS_AUTOSTART"] = px4_sys_autostart
-        px4_make = f"make -C {px4_root} px4_sitl {px4_sim_target}"
-        self._px4_proc = subprocess.Popen(
-            ["bash", "-c", px4_make],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            env=env,
-            **self._popen_session_kwargs(),
-        )
-        print(f"[telemetry_manager] PX4 SITL 启动中 (PID={self._px4_proc.pid})")
-
-    def _wait_for_px4(self, timeout: int = 90) -> bool:
-        cfg = self.app.config if self.app else {}
-        ready_host = str(cfg.get("PX4_READY_HOST", "127.0.0.1"))
-        ready_port = int(cfg.get("PX4_READY_PORT", 18570))
-        deadline = time.time() + timeout
-        while time.time() < deadline:
-            if self._px4_proc is not None and self._px4_proc.poll() is not None:
-                print("[telemetry_manager] PX4 进程已退出")
-                return False
-            try:
-                with socket.create_connection((ready_host, ready_port), timeout=2):
-                    return True
-            except (ConnectionRefusedError, OSError):
-                time.sleep(2)
-        return False
-
-    def _spawn_process(self, cmd: list[str], *, env: dict | None = None):
-        proc = subprocess.Popen(
-            cmd,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            cwd=str(self._src_dir),
-            env=env,
-            **self._popen_session_kwargs(),
-        )
-        print(f"[telemetry_manager] 子进程已启动 PID={proc.pid}: {' '.join(cmd[:3])}")
-        return proc
-
-    def _stop_process(self, proc: subprocess.Popen | None, name: str) -> None:
-        if proc is None or proc.poll() is not None:
-            return
-        try:
-            if os.name == "nt":
-                proc.terminate()
-                proc.wait(timeout=10)
-            else:
-                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
-                proc.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            if os.name == "nt":
-                proc.kill()
-                proc.wait(timeout=5)
-            else:
-                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
-                proc.wait(timeout=5)
-        except Exception as e:
-            print(f"[telemetry_manager] 停止 {name} 失败: {e}")
-
-    def _proc_status(self, proc: subprocess.Popen | None) -> str | None:
-        if proc is None:
-            return None
-        return "running" if proc.poll() is None else "exited"
 
     @staticmethod
     def _event_to_dict(event) -> dict:
@@ -1686,6 +2275,22 @@ class TelemetryProcessManager:
     def _finalize_session(
         self, session_id, duration, frame_count, fault_count, replay_metrics=None
     ):
+        network_link = self._public_network_link_status()
+        mec = self._snapshot_runtime_value(self._mec_status) or {}
+        inference = self._snapshot_runtime_value(self._inference_status) or {}
+        tx_packets = int(network_link.get("tx_packets") or 0)
+        network_link.update(
+            {
+                "application_rx_packets": int(frame_count),
+                "application_delivery_rate": round(
+                    min(1.0, frame_count / tx_packets), 6
+                )
+                if tx_packets > 0
+                else None,
+                "frame_queue_drops": int(self._frame_queue_drops),
+                "inference_queue_drops": int(self._inference_queue_drops),
+            }
+        )
         self._persistence.finalize_session(
             session_id=session_id,
             duration=duration,
@@ -1693,6 +2298,9 @@ class TelemetryProcessManager:
             fault_count=fault_count,
             replay_metrics=replay_metrics,
             fault_prob_curve=list(self._fault_prob_curve),
+            network_link=network_link,
+            mec=mec,
+            inference=inference,
         )
 
     def _update_session_detection(self, session_id, has_detection):

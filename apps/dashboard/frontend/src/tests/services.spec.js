@@ -62,4 +62,10 @@ describe('shared services', () => {
       rfly_px4mavctrl_path: 'D:/PX4MavCtrlV4.py'
     })
   })
+
+  it('exposes the 5G realtime session comparison endpoint', () => {
+    telemetryApi.networkComparison()
+
+    expect(mocks.get).toHaveBeenCalledWith('/telemetry/network-comparison')
+  })
 })

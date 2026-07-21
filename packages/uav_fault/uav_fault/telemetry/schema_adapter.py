@@ -12,17 +12,37 @@ ACTUATOR_COLUMNS = [
     "actuator_ctrl_1", "actuator_ctrl_2", "actuator_ctrl_3", "actuator_ctrl_4",
     "actuator_out_1", "actuator_out_2", "actuator_out_3", "actuator_out_4",
 ]
+ACTUATOR_OUTPUT_COLUMNS = (
+    "actuator_out_1",
+    "actuator_out_2",
+    "actuator_out_3",
+    "actuator_out_4",
+)
 BASE_COLUMNS = [name for name, _ in SEQ_COLUMN_ALIASES]
 DERIVED_COLUMNS = [name for name in SEQ_COLUMNS if name not in BASE_COLUMNS]
 PX4_MAP = {
     "actuator_ctrl_1": "actuator_ctrl_1", "actuator_ctrl_2": "actuator_ctrl_2", "actuator_ctrl_3": "actuator_ctrl_3", "actuator_ctrl_4": "actuator_ctrl_4",
-    "actuator_out_1": "motor1", "actuator_out_2": "motor2", "actuator_out_3": "motor3", "actuator_out_4": "motor4",
     "gyro_x": "gyro_x", "gyro_y": "gyro_y", "gyro_z": "gyro_z",
     "accel_x": "accel_x", "accel_y": "accel_y", "accel_z": "accel_z",
     "baro_alt": "baro_alt_meter", "baro_temp": "baro_temp", "baro_pressure": "baro_pressure_pa",
     "vel_x": "vx", "vel_y": "vy", "vel_z": "vz",
     "mag_x": "mag_x", "mag_y": "mag_y", "mag_z": "mag_z",
     "att_q_w": "q_w", "att_q_x": "q_x", "att_q_y": "q_y", "att_q_z": "q_z",
+}
+LIVE_CANONICAL_ALIASES = {
+    "actuator_out_1": ("motor1",),
+    "actuator_out_2": ("motor2",),
+    "actuator_out_3": ("motor3",),
+    "actuator_out_4": ("motor4",),
+    "baro_alt": ("baro_alt_meter",),
+    "baro_pressure": ("baro_pressure_pa",),
+    "vel_x": ("vx",),
+    "vel_y": ("vy",),
+    "vel_z": ("vz",),
+    "att_q_w": ("q_w",),
+    "att_q_x": ("q_x",),
+    "att_q_y": ("q_y",),
+    "att_q_z": ("q_z",),
 }
 
 
@@ -32,6 +52,109 @@ def _safe_float(value: Any) -> float | None:
     except (TypeError, ValueError):
         return None
     return out if np.isfinite(out) else None
+
+
+def _window_has_signal(records: list[dict[str, Any]], columns: tuple[str, ...], *, eps: float) -> bool:
+    for row in records:
+        for column in columns:
+            value = _safe_float(row.get(column))
+            if value is not None and abs(value) > eps:
+                return True
+    return False
+
+
+def _window_mean_abs(records: list[dict[str, Any]], column: str) -> float:
+    values = [
+        abs(value)
+        for row in records
+        for value in [_safe_float(row.get(column))]
+        if value is not None
+    ]
+    return float(sum(values) / len(values)) if values else 0.0
+
+
+def _window_mean(records: list[dict[str, Any]], columns: tuple[str, ...]) -> float:
+    values = [
+        value
+        for row in records
+        for column in columns
+        for value in [_safe_float(row.get(column))]
+        if value is not None
+    ]
+    return float(sum(values) / len(values)) if values else 0.0
+
+
+def assess_canonical_input_contract(
+    records: list[dict[str, Any]] | tuple[dict[str, Any], ...],
+    *,
+    coverage: dict[str, list[str]] | None = None,
+    actuator_source: Any = None,
+    window_size: int = 150,
+) -> dict[str, Any]:
+    """Assess whether canonical telemetry is trustworthy enough for online inference."""
+    coverage = coverage or {}
+    recent_window = list(records)[-int(window_size) :] if records else []
+    default_count = len(coverage.get("default", []))
+    proxy_count = len(coverage.get("proxy", []))
+    if actuator_source is None and recent_window:
+        actuator_source = recent_window[-1].get("actuator_source")
+
+    zero_signal_groups: list[str] = []
+    if not recent_window:
+        zero_signal_groups.append("empty_window")
+    else:
+        if not _window_has_signal(recent_window, ACTUATOR_OUTPUT_COLUMNS, eps=1.0):
+            zero_signal_groups.append("actuator_outputs")
+
+        if _window_mean_abs(recent_window, "accel_z") < 1.0:
+            zero_signal_groups.append("imu_accel_z")
+
+        if (
+            not _window_has_signal(recent_window, ("vel_x", "vel_y", "vel_z"), eps=1e-3)
+            and not _window_has_signal(recent_window, ("baro_alt",), eps=1e-3)
+        ):
+            zero_signal_groups.append("motion_reference")
+
+        if (
+            _window_mean(recent_window, ACTUATOR_OUTPUT_COLUMNS) < 1050.0
+            and _window_mean_abs(recent_window, "baro_alt") < 0.5
+        ):
+            zero_signal_groups.append("preflight_idle")
+
+    detection_blocked = bool(
+        {
+            "empty_window",
+            "actuator_outputs",
+            "imu_accel_z",
+            "motion_reference",
+            "preflight_idle",
+        }.intersection(zero_signal_groups)
+    )
+    if detection_blocked:
+        contract_status = "degraded"
+        reason = "untrusted_zero_signals"
+    elif zero_signal_groups:
+        contract_status = "degraded"
+        reason = "weak_motion_reference"
+    elif default_count > 0:
+        contract_status = "degraded"
+        reason = "missing_features"
+    elif actuator_source == "proxy" or proxy_count > 0:
+        contract_status = "degraded"
+        reason = "proxy_actuator_source"
+    else:
+        contract_status = "healthy"
+        reason = "ok"
+
+    return {
+        "status": contract_status,
+        "reason": reason,
+        "actuator_source": actuator_source,
+        "default_count": default_count,
+        "proxy_count": proxy_count,
+        "zero_signal_groups": zero_signal_groups,
+        "detection_blocked": detection_blocked,
+    }
 
 
 def _quat_from_euler(roll_deg: Any, pitch_deg: Any, yaw_deg: Any) -> tuple[float, float, float, float] | None:
@@ -140,7 +263,7 @@ def canonicalize_rfly_frame(row: dict[str, Any]) -> tuple[dict[str, Any], dict[s
         if _safe_float(out.get(name)) is not None:
             source_map[name] = "mapped"
             continue
-        for alias in aliases:
+        for alias in (*LIVE_CANONICAL_ALIASES.get(name, ()), *aliases):
             if _safe_float(row.get(alias)) is not None:
                 out[name] = row.get(alias)
                 source_map[name] = "mapped"
@@ -186,6 +309,17 @@ def adapt_px4_live_frame(frame: dict[str, Any]) -> tuple[dict[str, Any], dict[st
         source_map["time_s"] = "mapped"
     if _safe_float(frame.get("seq")) is not None:
         source_map["seq"] = "mapped"
+    for idx in range(1, 5):
+        canonical = f"actuator_out_{idx}"
+        value = _safe_float(frame.get(canonical))
+        if value is not None:
+            out[canonical] = value
+            source_map[canonical] = "mapped"
+            continue
+        value = _safe_float(frame.get(f"motor{idx}"))
+        if value is not None:
+            out[canonical] = value
+            source_map[canonical] = "mapped"
     for canonical, live_name in PX4_MAP.items():
         value = _safe_float(frame.get(live_name))
         if value is not None:

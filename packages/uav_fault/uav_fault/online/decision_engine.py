@@ -4,16 +4,13 @@ from typing import Any
 from uuid import uuid4
 
 from uav_fault.online.decision_models import DecisionOutcome, DecisionSignal, DecisionState
-from uav_fault.online.risk_evaluator import RiskEvaluator
 
 
 class TemporalDecisionEngine:
     def __init__(self):
-        self._risk_evaluator = RiskEvaluator()
         self._state = DecisionState()
 
     def reset(self) -> None:
-        self._risk_evaluator.reset()
         self._state = DecisionState()
 
     def current_state(self) -> DecisionState:

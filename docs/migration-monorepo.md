@@ -12,7 +12,7 @@
 | `realtime/*` | `packages/rfly_bridge/rfly_bridge/*` | RflySim/PX4 实时桥接 |
 | `models/*` | `assets/models/*` | 运行必需模型权重和 metadata |
 
-根目录保留 `uav_dashboard_api/`、`uav_fault/`、`rfly_bridge/` shim 包，保证从仓库根目录直接 import 和 `python -m ...` 可用。
+根目录 package shim 已在迁移验收后删除。`apps/` 与 `packages/` 下的 package 是唯一 Implementation，开发环境通过 editable install 使用其公开 Interface。
 
 ## 模型资产策略
 
@@ -35,19 +35,16 @@
 - `scripts/eval/`
 - `scripts/plots/`
 
-旧顶层 Python 脚本暂时保留 shim，打印迁移提示并转发到新路径。后续确认没有外部依赖后，可以删除这些 shim。
+旧顶层 Python 转发脚本已在仓内调用清零后删除；脚本只从上述 canonical 路径运行。
 
 ## 验证命令
 
+Python 依赖和 pytest discovery 已统一到根 `pyproject.toml`，本地和 CI 使用同一入口：
+
 ```powershell
-python -m compileall -q uav_dashboard_api uav_fault rfly_bridge apps\dashboard\backend\uav_dashboard_api packages\uav_fault\uav_fault packages\rfly_bridge\rfly_bridge scripts tests
-python -m pytest tests\test_monorepo_layout.py tests\test_decision_engine.py -q
-.\apps\dashboard\backend\.venv\Scripts\python.exe -m pytest apps\dashboard\backend\tests\test_model_registry.py apps\dashboard\backend\tests\test_runtime_portability.py -q
-cd apps\dashboard\frontend
-npm run test
-npm run build
+.\apps\dashboard\backend\.venv\Scripts\python.exe .\scripts\verify.py
 ```
 
-## Deferred Refactors
+## Remaining Refactors
 
-本轮不继续拆分 `telemetry_manager.py`、`ai_assistant.py`、`dashboard.py`，也不把 `uav_fault.models` 改名为 `modeling` 或 `nn`。这些适合在当前目录迁移合并后作为独立 refactor 处理。
+`telemetry_manager.py` 与 `ai_assistant.py` 的后续深 Module 治理独立进行；`uav_fault.models` 继续作为稳定 package Interface。

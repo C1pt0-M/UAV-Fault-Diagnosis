@@ -15,11 +15,8 @@ from types import ModuleType
 
 CURRENT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = CURRENT_DIR.parents[0]
-SRC_ROOT = PROJECT_ROOT / "src"
 if str(CURRENT_DIR) not in sys.path:
     sys.path.insert(0, str(CURRENT_DIR))
-if str(SRC_ROOT) not in sys.path:
-    sys.path.insert(0, str(SRC_ROOT))
 
 from rfly_bridge.rfly_live_bridge import PymavStateSource, RflyLiveBridge, RflyLiveEmitter
 
@@ -60,7 +57,7 @@ def load_official_module(autotest_dir: str | Path, filename: str, tag: str) -> M
 
 
 class BatchLaunchSession:
-    def __init__(self, *, platform_root: str | Path, px4_module: ModuleType, test_id: int, port: int = 20100, ip: str = "127.0.0.1", udp_mode: int = 2, startup_wait_s: float = 25.0, enable_true_loop: bool = False) -> None:
+    def __init__(self, *, platform_root: str | Path, px4_module: ModuleType, test_id: int, port: int = 20100, ip: str = "127.0.0.1", udp_mode: int = 2, startup_wait_s: float = 25.0, ready_timeout_s: float = 90.0, init_offboard: bool = True, enable_true_loop: bool = False, sim_map: str = "LowGPU") -> None:
         self.platform_root = Path(platform_root)
         self.px4_module = px4_module
         self.test_id = int(test_id)
@@ -68,11 +65,23 @@ class BatchLaunchSession:
         self.ip = str(ip)
         self.udp_mode = int(udp_mode)
         self.startup_wait_s = float(startup_wait_s)
+        self.ready_timeout_s = float(ready_timeout_s)
+        self.init_offboard = bool(init_offboard)
         self.enable_true_loop = bool(enable_true_loop)
+        self.sim_map = str(sim_map or "LowGPU")
         self.mav = None
         self.proc = None
         self._mav_started = False
         self._true_started = False
+
+    def _wait_for_px4_heartbeat(self) -> None:
+        deadline = time.monotonic() + max(0.0, self.ready_timeout_s)
+        while not bool(getattr(self.mav, 'hasHeartbeat', False)):
+            if time.monotonic() >= deadline:
+                raise RuntimeError(
+                    f'PX4 heartbeat not received within {self.ready_timeout_s:.1f}s'
+                )
+            time.sleep(0.1)
 
     def _resolve_batch_path(self) -> Path:
         db_path = self.platform_root / 'AutoTestAPI' / 'db.json'
@@ -80,14 +89,70 @@ class BatchLaunchSession:
         testbat = data['testbat']
         return self.platform_root / 'bat' / f'{testbat}.bat'
 
+    def _ensure_lowgpu_batch(self, batch_path: Path) -> None:
+        if not self.sim_map:
+            return
+        text = batch_path.read_text(encoding='utf-8', errors='ignore')
+        updated = re.sub(
+            r'(?im)^SET\s+UE4_MAP=.*$',
+            f'SET UE4_MAP={self.sim_map}',
+            text,
+        )
+        if updated == text and 'UE4_MAP' not in text:
+            updated = text.rstrip() + f'\nSET UE4_MAP={self.sim_map}\n'
+        updated = re.sub(
+            r'(?im)^tasklist\|find /i "RflySim3D\.exe" \|\| start .*RflySim3D\.exe.*$',
+            lambda _match: (
+                'tasklist|find /i "RflySim3D.exe" && taskkill /f /im "RflySim3D.exe"\n'
+                'choice /t 2 /d y /n >nul\n'
+                f'start %PSP_PATH%\\RflySim3D\\RflySim3D.exe -cmd=RflyChangeMapbyName-{self.sim_map}'
+            ),
+            updated,
+        )
+        if not self.init_offboard:
+            updated = re.sub(
+                r'(?im)^set\s+DLLModel=.*$',
+                'set DLLModel=0',
+                updated,
+            )
+            updated = re.sub(
+                r'(?im)^set\s+PX4SitlFrame=.*$',
+                'set PX4SitlFrame=iris',
+                updated,
+            )
+            updated = re.sub(
+                r'(?im)^SET\s+UDPSIMMODE=.*$',
+                'SET UDPSIMMODE=2',
+                updated,
+            )
+            if not re.search(r'(?im)^SET\s+/a\s+CLASS_3D_ID=', updated):
+                updated = re.sub(
+                    r'(?im)^(SET\s+/a\s+START_INDEX=.*)$',
+                    r'\1\nSET /a CLASS_3D_ID=-1',
+                    updated,
+                    count=1,
+                )
+            updated = re.sub(
+                r'(?im)^start\s+/realtime\s+CopterSim\.exe\s+1\s+%cntr%\s+%portNum%\s+%DLLModel%(.*)$',
+                r'start /realtime CopterSim.exe 1 %cntr% %CLASS_3D_ID% %DLLModel%\1',
+                updated,
+            )
+        if updated != text:
+            batch_path.write_text(updated, encoding='utf-8')
+
     def start(self):
         batch_path = self._resolve_batch_path()
+        self._ensure_lowgpu_batch(batch_path)
         self.proc = subprocess.Popen(['cmd.exe', '/k', str(batch_path)], cwd=str(self.platform_root))
         if self.startup_wait_s > 0:
             time.sleep(self.startup_wait_s)
         self.mav = self.px4_module.PX4MavCtrler(self.test_id, self.port, self.ip)
         self.mav.InitMavLoop(self.udp_mode)
         self._mav_started = True
+        self._wait_for_px4_heartbeat()
+        if self.init_offboard and hasattr(self.mav, 'initOffboard'):
+            self.mav.initOffboard()
+            time.sleep(0.5)
         if self.enable_true_loop and hasattr(self.mav, 'InitTrueDataLoop'):
             self.mav.InitTrueDataLoop()
             self._true_started = True
@@ -102,6 +167,17 @@ class BatchLaunchSession:
                 self.mav.endMavLoop()
                 self._mav_started = False
         if self.proc is not None:
+            pid = getattr(self.proc, 'pid', None)
+            if os.name == 'nt' and pid:
+                try:
+                    subprocess.run(
+                        ['taskkill', '/PID', str(pid), '/T', '/F'],
+                        capture_output=True,
+                        timeout=10,
+                    )
+                    return
+                except Exception:
+                    pass
             try:
                 self.proc.terminate()
             except Exception:
@@ -296,7 +372,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--port", type=int, default=15550)
     parser.add_argument("--emit-rate", type=int, default=50)
     parser.add_argument("--rpm-scale", type=float, default=10000.0)
-    parser.add_argument("--pymav-address", default="udpin:0.0.0.0:14030")
+    parser.add_argument("--pymav-address", default="udpin:0.0.0.0:14031")
+    parser.add_argument("--startup-wait", type=float, default=25.0)
+    parser.add_argument("--ready-timeout", type=float, default=90.0)
+    parser.add_argument(
+        "--manual-control",
+        action="store_true",
+        help="Start RflySim/PX4 telemetry only; QGC owns arm, takeoff and flight control",
+    )
+    parser.add_argument("--duration", type=float, default=0.0)
+    parser.add_argument("--sim-map", default="LowGPU")
     parser.add_argument("--no-pymav", action="store_true")
     return parser.parse_args()
 
@@ -305,7 +390,9 @@ def main() -> None:
     args = parse_args()
     autotest_dir = Path(args.autotest_dir)
     px4_module = load_official_module(autotest_dir, 'PX4MavCtrlV4.py', 'px4')
-    command_module = load_official_module(autotest_dir, 'command.py', 'command')
+    command_module = None
+    if not args.manual_control:
+        command_module = load_official_module(autotest_dir, 'command.py', 'command')
     platform_root = autotest_dir.parent
     session = BatchLaunchSession(
         platform_root=platform_root,
@@ -314,8 +401,11 @@ def main() -> None:
         port=args.udp_port,
         ip=args.ip,
         udp_mode=2,
-        startup_wait_s=25.0,
+        startup_wait_s=args.startup_wait,
+        ready_timeout_s=args.ready_timeout,
+        init_offboard=not args.manual_control,
         enable_true_loop=False,
+        sim_map=args.sim_map,
     )
 
     bridge_runtime = lambda mav: _BridgeRuntimeAdapter(
@@ -333,16 +423,28 @@ def main() -> None:
 
     try:
         mav = session.start()
-        controller = BuaaCaseController(
-            command_module=command_module,
-            db_json_path=autotest_dir / 'db.json',
-            mav=mav,
-            unique_index=args.unique_index,
-            loop_hz=100,
-        )
+        controller = None
+        if not args.manual_control:
+            if command_module is None:
+                raise RuntimeError('command module required in autotest control mode')
+            controller = BuaaCaseController(
+                command_module=command_module,
+                db_json_path=autotest_dir / 'db.json',
+                mav=mav,
+                unique_index=args.unique_index,
+                loop_hz=100,
+            )
         runner.start(mav=mav, controller=controller)
+        print(
+            'buaa_control_mode=manual_qgc'
+            if args.manual_control
+            else 'buaa_control_mode=autotest_case'
+        )
         print('buaa_realtime_bridge_ready')
+        start_time = time.time()
         while True:
+            if args.duration > 0 and time.time() - start_time >= args.duration:
+                break
             time.sleep(1.0)
     except KeyboardInterrupt:
         pass

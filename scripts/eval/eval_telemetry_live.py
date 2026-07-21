@@ -7,7 +7,7 @@ runs sliding-window inference every N frames, then summarizes both point-level s
 event-level aggregations (hysteresis).
 
 Typical usage (recommended: run with the conda env that has torch installed):
-  python scripts/eval_telemetry_live.py \\
+  python scripts/eval/eval_telemetry_live.py \\
     --csv-dir csv_raw_nf \\
     --model-dir assets/models/online_detector_cnn1d_50hz \\
     --every 10 \\
@@ -35,6 +35,7 @@ _add_import_paths()
 
 from uav_fault.telemetry.replay_metrics import gt_event_metrics as _gt_event_metrics
 from uav_fault.telemetry.schema_adapter import (
+    assess_canonical_input_contract as _assess_canonical_input_contract,
     adapt_px4_live_frame as _adapt_px4_live_frame,
     canonicalize_rfly_records as _canonicalize_rfly_records,
     normalize_time_columns as _normalize_time_columns,
@@ -105,6 +106,19 @@ def _records_for_backend(df, backend: str) -> list[dict]:
         rows = df.to_dict(orient="records")
         return [_adapt_px4_live_frame(row)[0] for row in rows]
     return _canonicalize_rfly_records(df)
+
+
+def _input_contract_columns(records: list[dict]) -> dict:
+    contract = _assess_canonical_input_contract(records)
+    return {
+        "input_contract_status": contract["status"],
+        "input_contract_reason": contract["reason"],
+        "input_contract_detection_blocked": int(bool(contract["detection_blocked"])),
+        "input_contract_zero_signal_groups": ",".join(
+            contract.get("zero_signal_groups", [])
+        ),
+        "input_contract_actuator_source": contract.get("actuator_source") or "",
+    }
 
 
 def _maybe_plot(
@@ -182,12 +196,60 @@ def _replay_points_legacy(detector, records, every_n: int) -> list[dict]:
     return points
 
 
-def _replay_points_fast(detector, records, every_n: int, batch_size: int) -> list[dict]:
+def _window_detection_blocked(records: list[dict], end: int, window_size: int) -> bool:
+    start = max(0, int(end) - int(window_size))
+    contract = _assess_canonical_input_contract(records[start:int(end)])
+    return bool(contract.get("detection_blocked"))
+
+
+def _replay_points_legacy_gated(detector, records, every_n: int) -> list[dict]:
+    window = deque(maxlen=int(detector.window_size))
+    points = []
+    for idx, row in enumerate(records):
+        window.append(row)
+        if (idx + 1) % every_n != 0:
+            continue
+        if len(window) < int(detector.window_size):
+            continue
+        if _window_detection_blocked(records, idx + 1, int(detector.window_size)):
+            continue
+        pred = detector.predict(window)
+        if pred is None:
+            continue
+        t_val = row.get("time_s", idx)
+        try:
+            t = float(t_val)
+        except Exception:
+            t = float(idx)
+        points.append(
+            {
+                "time_s": t,
+                "frame_idx": int(idx),
+                "fault_prob": float(pred.get("fault_prob", 0.0)),
+                "label": str(pred.get("label", "")),
+                "confidence": float(pred.get("confidence", 0.0)),
+            }
+        )
+    return points
+
+
+def _replay_points_fast(
+    detector,
+    records,
+    every_n: int,
+    batch_size: int,
+    *,
+    respect_input_contract: bool = True,
+) -> list[dict]:
     outputs = detector.predict_records_batch(
         records, every_n=every_n, batch_size=batch_size
     )
     points = []
     for end, pred in outputs:
+        if respect_input_contract and _window_detection_blocked(
+            records, int(end), int(detector.window_size)
+        ):
+            continue
         idx = int(end - 1)
         row = records[idx]
         t_val = row.get("time_s", idx)
@@ -321,6 +383,11 @@ def main() -> int:
         default=0.5,
         help="Merge events with small gaps (seconds).",
     )
+    parser.add_argument(
+        "--ignore-input-contract",
+        action="store_true",
+        help="Run raw model replay even for windows blocked by the input contract.",
+    )
     args = parser.parse_args()
 
     csv_dir = Path(args.csv_dir)
@@ -435,12 +502,21 @@ def main() -> int:
         )
 
         records = _records_for_backend(df, args.backend)
+        input_contract = _input_contract_columns(records)
         if args.replay_mode == "fast":
             points = _replay_points_fast(
-                detector, records, every_n=every_n, batch_size=int(args.batch_size)
+                detector,
+                records,
+                every_n=every_n,
+                batch_size=int(args.batch_size),
+                respect_input_contract=not bool(args.ignore_input_contract),
             )
         else:
-            points = _replay_points_legacy(detector, records, every_n=every_n)
+            points = (
+                _replay_points_legacy(detector, records, every_n=every_n)
+                if args.ignore_input_contract
+                else _replay_points_legacy_gated(detector, records, every_n=every_n)
+            )
 
         fps = np.asarray([pt["fault_prob"] for pt in points], dtype=float)
         n_inf = int(len(points))
@@ -458,6 +534,7 @@ def main() -> int:
                 "window_size": window_size,
                 "every": every_n,
                 "n_inferences": 0,
+                **input_contract,
             }
             rows.append(row_out)
             continue
@@ -542,6 +619,7 @@ def main() -> int:
             "max_event_fault_prob": max_event_fp,
             "pred_fault_by_event": int(pred_fault_by_event),
             "pred_fault_by_max05": int(pred_fault_by_max05),
+            **input_contract,
             **gt_metrics,
         }
         if events:
@@ -590,6 +668,10 @@ def main() -> int:
         "p_fault_prob_ge_06",
         "n_events",
         "total_event_s",
+        "input_contract_status",
+        "input_contract_reason",
+        "input_contract_detection_blocked",
+        "input_contract_zero_signal_groups",
     ]
     present = [c for c in show_cols if c in df_out.columns]
     with pd.option_context("display.max_rows", 200, "display.max_columns", 200):

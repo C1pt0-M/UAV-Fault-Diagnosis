@@ -83,8 +83,9 @@
             <div class="form-group form-group--section">
               <label>在线监测预警引擎</label>
               <select v-model="aiConfig.onlineModel" class="styled-select">
-                <option value="online_detector_cnn1d_rfly">1D-CNN (高频实时检测)</option>
                 <option value="online_detector_kg_mstca_rfly">KG-MSTCA (带知识图谱)</option>
+                <option value="online_detector_mstca_rfly">MSTCA (轻量时序卷积)</option>
+                <option value="online_detector_cnn1d_rfly">1D-CNN (高频实时检测)</option>
               </select>
               <p class="form-hint">影响遥测监测页面的延迟和召回率。</p>
             </div>
@@ -142,6 +143,7 @@
                 :placeholder="aiKeyStatus.set ? '已配置，留空不修改' : 'sk-...'"
               />
               <p v-if="!aiKeyStatus.set" class="form-hint">保存后写入后端 runtime 配置，不再保存到浏览器 localStorage。</p>
+              <p v-else class="form-hint">已配置：{{ aiKeyStatus.preview || '******' }}，留空保存时不会覆盖。</p>
             </div>
 
             <div class="form-actions form-actions--footer">
@@ -192,7 +194,7 @@ function setTheme(dark) {
 
 const aiConfig = ref({
   offlineModel: 'transfer3_cnnlstm_normalproto',
-  onlineModel: 'online_detector_cnn1d_rfly',
+  onlineModel: 'online_detector_kg_mstca_rfly',
   llmProvider: 'openai',
   customProviderName: '',
   llmFormat: 'openai',

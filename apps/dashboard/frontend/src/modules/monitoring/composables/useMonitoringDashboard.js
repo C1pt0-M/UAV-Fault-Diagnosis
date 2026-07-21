@@ -7,6 +7,8 @@ import {
   formatMonitoringModelName,
   monitoringBackendOptions,
   monitoringCopy,
+  rflyInferenceLocationOptions,
+  rflyNetworkProfileOptions,
   monitoringStateLabels,
   resolveMonitoringBackendOptions,
   resolveMonitoringState,
@@ -50,6 +52,32 @@ function resolveSeverityTone(severity) {
   return 'pending'
 }
 
+function formatMs(value) {
+  if (value === null || value === undefined || value === '') return monitoringCopy.noValue
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return monitoringCopy.noValue
+  return `${parsed.toFixed(parsed >= 100 ? 0 : 1)} ms`
+}
+
+function formatRate(value) {
+  if (value === null || value === undefined || value === '') return monitoringCopy.noValue
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return monitoringCopy.noValue
+  return `${(parsed * 100).toFixed(1)}%`
+}
+
+function formatInputContractZeroGroups(groups) {
+  const labels = {
+    actuator_outputs: '动力输出',
+    imu_accel_z: 'Z 轴加速度',
+    motion_reference: '运动参考'
+  }
+  return (Array.isArray(groups) ? groups : [])
+    .map((item) => labels[item] || item)
+    .filter(Boolean)
+    .join('、')
+}
+
 export function useMonitoringDashboard() {
   const router = useRouter()
 
@@ -63,11 +91,14 @@ export function useMonitoringDashboard() {
   const sessionDetail = ref(null)
   const detailVisible = ref(false)
   const realtime = ref({ times: [] })
+  const networkComparison = ref({ profiles: [], complete: false })
   const selectedBackend = ref('replay')
   const selectedDuration = ref(60)
   const selectedModel = ref('')
   const selectedReplayAssetId = ref(null)
   const rflyPx4mavctrlPath = ref('')
+  const rflyNetworkProfile = ref('enhanced_5g')
+  const rflyInferenceLocation = ref('mec')
   const faultHandoffDialogVisible = ref(false)
   const faultHandoffPayload = ref({
     session_id: null,
@@ -102,6 +133,46 @@ export function useMonitoringDashboard() {
     return option?.display_name || option?.name || selectedModel.value
   })
   const compactModelLabel = computed(() => formatMonitoringModelName(activeModelLabel.value))
+  const networkLink = computed(() => runStatus.network_link || {})
+  const networkProcesses = computed(() => runStatus.processes || {})
+  const mec = computed(() => runStatus.mec || {})
+  const inference = computed(() => runStatus.inference || {})
+  const networkLatencySeries = computed(() => (
+    Array.isArray(realtime.value?.net_latency_ms) ? realtime.value.net_latency_ms : []
+  ))
+  const networkLossSeries = computed(() => (
+    Array.isArray(realtime.value?.net_loss_rate) ? realtime.value.net_loss_rate : []
+  ))
+  const networkIntegritySeries = computed(() => (
+    Array.isArray(realtime.value?.net_data_integrity) ? realtime.value.net_data_integrity : []
+  ))
+  const rflyNetworkProfileLabel = computed(() => {
+    const activeProfile = networkLink.value?.enabled
+      ? networkLink.value?.profile
+      : rflyNetworkProfile.value
+    const option = rflyNetworkProfileOptions.find((item) => item.value === activeProfile)
+    return option?.label || activeProfile || monitoringCopy.noValue
+  })
+  const networkLatencyText = computed(() => formatMs(networkLink.value?.avg_latency_ms))
+  const networkP95Text = computed(() => formatMs(networkLink.value?.p95_latency_ms))
+  const networkLossText = computed(() => (
+    networkLink.value?.enabled
+      ? formatRate(networkLink.value?.loss_rate)
+      : monitoringCopy.noValue
+  ))
+  const networkIntegrityText = computed(() => (
+    networkLink.value?.enabled
+      ? formatRate(networkLink.value?.data_integrity)
+      : monitoringCopy.noValue
+  ))
+  const networkTone = computed(() => {
+    if (!networkLink.value?.enabled) return 'offline'
+    const lossRate = Number(networkLink.value?.loss_rate || 0)
+    const p95Latency = Number(networkLink.value?.p95_latency_ms || 0)
+    if (lossRate >= 0.03 || p95Latency >= 120) return 'danger'
+    if (lossRate >= 0.01 || p95Latency >= 60) return 'warn'
+    return 'ok'
+  })
   const faultPeakText = computed(() => {
     const values = Array.isArray(realtime.value?.fault_prob) ? realtime.value.fault_prob : []
     const numeric = values.map((item) => Number(item)).filter((item) => Number.isFinite(item))
@@ -110,6 +181,7 @@ export function useMonitoringDashboard() {
   })
   const inputContractStatus = computed(() => runStatus.input_contract_status || {})
   const inputContractLabel = computed(() => {
+    if (inputContractStatus.value?.detection_blocked) return '检测暂停'
     const status = String(inputContractStatus.value?.status || '').toLowerCase()
     if (status === 'healthy') return '字段正常'
     if (status === 'degraded') return '字段降级'
@@ -118,7 +190,14 @@ export function useMonitoringDashboard() {
   const inputContractMeta = computed(() => {
     const actuatorSource = inputContractStatus.value?.actuator_source || 'unknown'
     const reason = inputContractStatus.value?.reason || 'waiting'
-    return `动力字段：${actuatorSource} / ${reason}`
+    const zeroGroups = formatInputContractZeroGroups(inputContractStatus.value?.zero_signal_groups)
+    const blocked = inputContractStatus.value?.detection_blocked
+      ? ' / 检测已暂停'
+      : ''
+    const zeroSummary = zeroGroups
+      ? ` / 零信号：${zeroGroups}`
+      : ''
+    return `动力字段：${actuatorSource} / ${reason}${blocked}${zeroSummary}`
   })
   const stateTone = computed(() => {
     if (currentState.value === 'DETECTING') return 'ok'
@@ -127,6 +206,7 @@ export function useMonitoringDashboard() {
     return 'offline'
   })
   const contractTone = computed(() => {
+    if (inputContractStatus.value?.detection_blocked) return 'danger'
     const status = String(inputContractStatus.value?.status || '').toLowerCase()
     if (status === 'healthy') return 'ok'
     if (status === 'degraded') return 'warn'
@@ -160,6 +240,7 @@ export function useMonitoringDashboard() {
   function resolveAltitudeFromPosZ(rawValue) {
     const raw = Number(rawValue)
     if (Number.isNaN(raw)) return NaN
+    if (raw === 0) return 0
 
     const backend = String(runStatus.scenario_backend || '').toLowerCase()
     if (backend === 'px4' || backend === 'rfly') return -raw
@@ -220,60 +301,83 @@ export function useMonitoringDashboard() {
   })
 
   const realtimePositionSeries = computed(() => {
-    return [
-      { name: 'Position Z', field: 'pos_z' }
-    ]
-      .map((item) => ({
-        name: item.name,
-        data: Array.isArray(realtime.value?.[item.field]) ? realtime.value[item.field] : []
-      }))
-      .filter((item) => item.data.length > 0)
+    const source = Array.isArray(realtime.value?.pos_z) ? realtime.value.pos_z : []
+    if (!source.length) return []
+
+    return [{
+      name: 'Altitude',
+      data: source.map((value) => {
+        const altitude = resolveAltitudeFromPosZ(value)
+        return Number.isNaN(altitude) ? null : altitude
+      })
+    }]
   })
 
-  const metrics = computed(() => [
-    {
-      label: monitoringCopy.heroStatusLabel,
-      value: stateLabel.value,
-      meta: `会话 ${currentSessionId.value}`,
-      tone: stateTone.value,
-      icon: 'Monitor'
-    },
-    {
-      label: '风险评分',
-      value: riskScore.value,
-      meta: `故障概率峰值 ${faultPeakText.value}`,
-      tone: riskTone.value,
-      icon: 'Warning'
-    },
-    {
-      label: '在线检测模型',
-      value: compactModelLabel.value,
-      meta: selectedModel.value || monitoringCopy.noSelection,
-      tone: 'active',
-      icon: 'Cpu'
-    },
-    {
-      label: '字段合同',
-      value: inputContractLabel.value,
-      meta: inputContractMeta.value,
-      tone: contractTone.value,
-      icon: 'DocumentChecked'
-    },
-    {
-      label: '实时样本',
-      value: formatCount(realtimeCount.value),
-      meta: `最近时间 ${latestTimestamp.value}`,
-      tone: realtimeCount.value > 0 ? 'ok' : 'offline',
-      icon: 'DataLine'
-    },
-    {
-      label: '估算采样率',
-      value: estimatedSampleRate.value,
-      meta: '基于实时 times 间隔计算',
-      tone: estimatedSampleRate.value === monitoringCopy.noValue ? 'offline' : 'ok',
-      icon: 'Timer'
+  const metrics = computed(() => {
+    const cards = [
+      {
+        label: monitoringCopy.heroStatusLabel,
+        value: stateLabel.value,
+        meta: `会话 ${currentSessionId.value}`,
+        tone: stateTone.value,
+        icon: 'Monitor'
+      },
+      {
+        label: '风险评分',
+        value: riskScore.value,
+        meta: `故障概率峰值 ${faultPeakText.value}`,
+        tone: riskTone.value,
+        icon: 'Warning'
+      },
+      {
+        label: '在线检测模型',
+        value: compactModelLabel.value,
+        meta: selectedModel.value || monitoringCopy.noSelection,
+        tone: 'active',
+        icon: 'Cpu'
+      },
+      {
+        label: '字段合同',
+        value: inputContractLabel.value,
+        meta: inputContractMeta.value,
+        tone: contractTone.value,
+        icon: 'DocumentChecked'
+      },
+      {
+        label: '实时样本',
+        value: formatCount(realtimeCount.value),
+        meta: `最近时间 ${latestTimestamp.value}`,
+        tone: realtimeCount.value > 0 ? 'ok' : 'offline',
+        icon: 'DataLine'
+      },
+      {
+        label: '估算采样率',
+        value: estimatedSampleRate.value,
+        meta: '基于实时 times 间隔计算',
+        tone: estimatedSampleRate.value === monitoringCopy.noValue ? 'offline' : 'ok',
+        icon: 'Timer'
+      }
+    ]
+    if (selectedBackend.value === 'rfly') {
+      cards.push(
+        {
+          label: '5G链路场景',
+          value: rflyNetworkProfileLabel.value,
+          meta: `均值 ${networkLatencyText.value} / P95 ${networkP95Text.value}`,
+          tone: networkTone.value,
+          icon: 'DataLine'
+        },
+        {
+          label: '链路完整率',
+          value: networkIntegrityText.value,
+          meta: `丢包 ${networkLossText.value}`,
+          tone: networkTone.value,
+          icon: 'DocumentChecked'
+        }
+      )
     }
-  ])
+    return cards
+  })
 
   const sampleSummaryItems = computed(() => [
     { label: '采样点数量', value: formatCount(realtimeCount.value) },
@@ -364,8 +468,18 @@ export function useMonitoringDashboard() {
     sessions.value = response.data?.items || []
   }
 
+  async function loadNetworkComparison() {
+    const response = await telemetryApi.networkComparison()
+    networkComparison.value = response.data || { profiles: [], complete: false }
+  }
+
   async function refreshDashboard() {
-    await Promise.all([fetchStatus(), loadSessions(), fetchRealtime()])
+    await Promise.all([
+      fetchStatus(),
+      loadSessions(),
+      fetchRealtime(),
+      loadNetworkComparison()
+    ])
   }
 
   function startPolling() {
@@ -416,6 +530,15 @@ export function useMonitoringDashboard() {
             : undefined,
           rfly_px4mavctrl_path: selectedBackend.value === 'rfly' && rflyPath
             ? rflyPath
+            : undefined,
+          rfly_network_profile: selectedBackend.value === 'rfly'
+            ? rflyNetworkProfile.value
+            : undefined,
+          rfly_inference_location: selectedBackend.value === 'rfly'
+            ? rflyInferenceLocation.value
+            : undefined,
+          model: selectedBackend.value === 'rfly'
+            ? selectedModel.value || undefined
             : undefined
         })
         ElMessage.success(monitoringCopy.startCollectionSuccess)
@@ -546,6 +669,27 @@ export function useMonitoringDashboard() {
     }
   })
 
+  watch(telemetryCapabilities, (capabilities) => {
+    const defaultProfile = capabilities?.rfly_default_network_profile
+    const currentProfileOk = rflyNetworkProfileOptions.some(
+      (item) => item.value === rflyNetworkProfile.value
+    )
+    if (
+      defaultProfile &&
+      !currentProfileOk &&
+      rflyNetworkProfileOptions.some((item) => item.value === defaultProfile)
+    ) {
+      rflyNetworkProfile.value = defaultProfile
+    }
+    const defaultLocation = capabilities?.rfly_default_inference_location
+    if (
+      defaultLocation &&
+      rflyInferenceLocationOptions.some((item) => item.value === defaultLocation)
+    ) {
+      rflyInferenceLocation.value = defaultLocation
+    }
+  })
+
   onUnmounted(stopPolling)
 
   return {
@@ -563,8 +707,17 @@ export function useMonitoringDashboard() {
     faultHandoffPayload,
     inputContractLabel,
     inputContractMeta,
+    inference,
+    loadNetworkComparison,
     loadSessions,
     metrics,
+    mec,
+    networkComparison,
+    networkIntegritySeries,
+    networkLatencySeries,
+    networkLink,
+    networkLossSeries,
+    networkProcesses,
     onlineModels,
     openFaultHandoffDialog,
     openSessionDetail,
@@ -576,6 +729,8 @@ export function useMonitoringDashboard() {
     realtimePositionSeries,
     rflyDiagnostics,
     rflyDiagnosticsLoading,
+    rflyInferenceLocation,
+    rflyNetworkProfile,
     rflyPx4mavctrlPath,
     rflyReady,
     riskScore,

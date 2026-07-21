@@ -72,7 +72,7 @@ def build_splits_v2(manifest_path, output_dir, seed: int = 42):
     df = pd.read_csv(manifest_path)
     missing = REQUIRED_COLUMNS - set(df.columns)
     if missing:
-        raise ValueError(f"manifest 缺少字段: {sorted(missing)}")
+        raise ValueError(f"manifest missing required columns: {sorted(missing)}")
 
     dev_df = df[
         df["platform"].isin(["SIL", "HIL"])

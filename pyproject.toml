@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=65.5"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uav-fault-diagnosis"
+version = "2.0.0"
+description = "Data-driven UAV fault diagnosis, monitoring, and dashboard system"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+  "numpy>=1.24,<2.0",
+  "pandas>=2.0,<2.3",
+  "scipy>=1.10,<1.15",
+  "scikit-learn>=1.3,<1.6",
+  "matplotlib>=3.7,<3.10",
+  "PyYAML>=6.0,<7.0",
+]
+
+[project.optional-dependencies]
+training = ["torch>=2.2,<2.6", "tabulate>=0.9,<1.0"]
+training-autodl = ["tabulate>=0.9,<1.0"]
+dashboard = [
+  "torch>=2.2,<2.6",
+  "Flask>=3.0,<3.1",
+  "Flask-CORS>=4.0,<5.0",
+  "Flask-SQLAlchemy>=3.1,<4.0",
+  "mysql-connector-python>=8.2,<9.0",
+  "PyMySQL>=1.1,<2.0",
+  "python-dotenv>=1.0,<2.0",
+  "flask-restful>=0.3.10,<0.4",
+  "bcrypt>=4.1,<5.0",
+  "PyJWT>=2.8,<3.0",
+  "Werkzeug>=3.0,<3.1",
+  "gunicorn>=23.0,<24.0",
+]
+telemetry = ["mavsdk>=2.0,<4.0", "pymavlink>=2.4,<3.0"]
+test = ["pytest>=7.4,<9.0", "pytest-cov>=4.1,<6.0"]
+
+[project.scripts]
+uav-dashboard = "uav_dashboard_api.__main__:main"
+rfly-bridge = "rfly_bridge.run_rfly_live_bridge:main"
+
+[tool.setuptools.packages.find]
+where = ["packages/uav_fault", "packages/rfly_bridge", "apps/dashboard/backend"]
+include = ["uav_fault*", "rfly_bridge*", "uav_dashboard_api*"]
+
+[tool.setuptools.package-data]
+uav_dashboard_api = ["configs/*.yaml"]
+rfly_bridge = ["configs/*.csv"]
+
+[tool.pytest.ini_options]
+minversion = "7.4"
+pythonpath = [
+  "apps/dashboard/backend",
+  "packages/uav_fault",
+  "packages/rfly_bridge",
+]
+testpaths = [
+  "tests",
+  "apps/dashboard/backend/tests",
+  "packages/uav_fault/uav_fault/online",
+  "packages/uav_fault/uav_fault/telemetry",
+  "packages/rfly_bridge/rfly_bridge",
+]
+python_files = ["test_*.py"]
+norecursedirs = [
+  ".git",
+  ".pytest_cache",
+  ".venv",
+  "node_modules",
+  "runtime",
+  "data",
+  "competition",
+  "vendor",
+]
+addopts = '-ra -m "not external" --ignore-glob=tests/test_sim_factory_*.py'
+markers = [
+  "external: requires software or source outside this repository",
+]

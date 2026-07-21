@@ -129,6 +129,123 @@ python3 -B scripts/train_pipeline.py --task both --data-root /mnt/d/UAV-Data --e
 --force
 ```
 
+## Buaa/RflySim No Fault 额外 normal 样本
+
+当实时链路或 BuaaAutoTestPlatform 的 No Fault case 被在线模型误报时，先把 case 合并为 RflyMAD-style CSV，再作为 extra normal 加入在线 cache：
+
+```powershell
+cd D:\UAV-Fault-Diagnosis
+.\apps\dashboard\backend\.venv\Scripts\python.exe .\scripts\data\merge_buaa_ulog_case.py `
+  --case-dir D:\BuaaAutoTestPlatForm\Data\TestCase_189_1419000188 `
+  --out .\runtime\extra_normals\nf_buaa_case_189_1419000188.csv `
+  --target-hz 50
+```
+
+合并后先诊断分布漂移：
+
+```powershell
+.\apps\dashboard\backend\.venv\Scripts\python.exe .\scripts\eval\diagnose_live_schema_drift.py `
+  --csv .\runtime\extra_normals\nf_buaa_case_189_1419000188.csv `
+  --model-dir .\assets\models\online_detector_kg_mstca_rfly `
+  --backend replay `
+  --every 50 `
+  --out .\runtime\buaa_case_189_schema_drift_summary.csv `
+  --windows-out .\runtime\buaa_case_189_schema_drift_windows.csv
+```
+
+重建在线 cache 时传入 extra normal：
+
+```powershell
+.\apps\dashboard\backend\.venv\Scripts\python.exe .\scripts\train_pipeline.py `
+  --task online `
+  --stages splits cache train summary `
+  --data-root <processed_RflyMAD root with manifest> `
+  --work-root <training run dir> `
+  --online-extra-normal-dir .\runtime\extra_normals `
+  --online-extra-normal-glob nf_*.csv `
+  --online-extra-normal-max-windows-per-file 128 `
+  --execute
+```
+
+这条路径用于系统修正 Buaa/RflySim 正常工况覆盖不足；不要把 `runtime/extra_normals` 当作仓库交付数据提交。
+
+### 复用本机 processed_RflyMAD split
+
+如果本机已经存在按历史实验固定好的 split 目录：
+
+```text
+data/processed_RflyMAD/
+├─ train/
+├─ val/
+├─ test/
+└─ external_test/
+```
+
+不要再用 `build_online_real3_splits.py` 随机重分割，先把现有 split materialize 成 manifest + splits：
+
+```powershell
+.\apps\dashboard\backend\.venv\Scripts\python.exe .\scripts\data\materialize_processed_splits.py `
+  --processed-root .\data\processed_RflyMAD `
+  --output-dir .\runtime\training_full
+```
+
+如果 `manifest_from_processed_splits.csv` 已经扫过完整 CSV，可复用它快速重写 splits/summary：
+
+```powershell
+.\apps\dashboard\backend\.venv\Scripts\python.exe .\scripts\data\materialize_processed_splits.py `
+  --processed-root .\data\processed_RflyMAD `
+  --output-dir .\runtime\training_full `
+  --reuse-manifest
+```
+
+本机已验证的 split 分布：
+
+```text
+train         2368 files: motor 1177, normal 308, sensor 883
+val            592 files: motor 295, normal 76, sensor 221
+test           741 files: motor 369, normal 96, sensor 276
+external_test  345 files: motor 172, normal 36, sensor 137
+```
+
+所有 4046 个样本均为 `quality_flag=ok` 且 `has_required_online_columns=1`。使用现有 split 和 Buaa extra normal 构建正式候选 cache：
+
+```powershell
+.\apps\dashboard\backend\.venv\Scripts\python.exe .\packages\uav_fault\uav_fault\data\build_online_cache.py `
+  --csv-dir .\data\processed_RflyMAD `
+  --splits .\runtime\training_full\splits_from_processed_splits.json `
+  --output .\runtime\training_full\cache_online_real3_binary_with_buaa_nf `
+  --manifest-path .\runtime\training_full\manifest_from_processed_splits.csv `
+  --window-size 150 `
+  --stride 10 `
+  --target-hz 50 `
+  --fault-threshold 0.5 `
+  --max-windows-per-file 8 `
+  --extra-normal-dir .\runtime\extra_normals `
+  --extra-normal-glob nf_*.csv `
+  --extra-normal-split train `
+  --extra-normal-max-windows-per-file 128 `
+  --protocol-name rflymad_online_real3_binary_existing_splits_with_buaa_nf_v1 `
+  --label-space real3 `
+  --source-fault-classes motor sensor
+```
+
+本机已验证该 cache 可成功构建，窗口统计为：
+
+```text
+split          files  src_nf  src_ff  normal  fault  total
+train          2369     309    2060    9963   9109  19072
+val             592      76     516    2455   2281   4736
+test            741      96     645    3054   2874   5928
+external_test   345      36     309    1924    794   2718
+```
+
+当前 probe 结论：
+
+- 原始 `online_detector_kg_mstca_rfly` 在 `TestCase_189_1419000188` No Fault 上 `mean_fault_prob≈0.984`，属于明确 false alarm。
+- 小型 extra-normal probe 可把该 case 压到 `mean_fault_prob≈0.081`，说明 Buaa/RflySim normal domain alignment 有效。
+- 同一个小型 probe 会漏掉 `TS-416582` 的故障段，说明不能把 probe 模型发布；正式修正必须使用完整 train/val/test/external_test 覆盖后重训，并同时验收 No Fault false alarm 和 fault recall。
+- 发布候选模型最低验收：`TestCase_189_1419000188` 不产生事件，原有 labeled fault replay 不出现系统性漏检，`metrics_external_test.json` 不退化到 fault recall 接近 0。
+
 ## 当前不纳入默认流水线的内容
 
 - 旧 6 分类实验：Real 数据只有 `normal/motor/sensor`，不适合作为当前交付主线。

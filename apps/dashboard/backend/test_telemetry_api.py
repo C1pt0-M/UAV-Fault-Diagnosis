@@ -61,7 +61,7 @@ def test_telemetry_routes():
     print("✓ 所有检查通过")
     print("=" * 60)
     print("\n后端已就绪，可以启动 Flask 服务进行前端对接。")
-    print("启动命令: python run.py")
+    print("启动命令: python -m uav_dashboard_api")
     print()
 
 

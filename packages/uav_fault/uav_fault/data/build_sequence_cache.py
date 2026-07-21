@@ -42,6 +42,13 @@ SEQ_COLUMN_ALIASES = [
 ]
 DERIVED_COLUMNS = ['actuator_mean', 'actuator_std', 'acc_norm', 'actuator_effort']
 SEQ_COLUMNS = [name for name, _ in SEQ_COLUMN_ALIASES] + DERIVED_COLUMNS
+LIVE_COLUMN_ALIASES = {
+    'baro_alt': ['baro_alt_meter'],
+    'baro_pressure': ['baro_pressure_pa'],
+    'vel_x': ['vx'],
+    'vel_y': ['vy'],
+    'vel_z': ['vz'],
+}
 
 LABEL_MAP = {
     'normal': 0,
@@ -68,11 +75,33 @@ def interp_resample(data: np.ndarray, target_len: int) -> np.ndarray:
 
 def _extract_channels(df: pd.DataFrame) -> np.ndarray:
     data = np.zeros((len(df), len(SEQ_COLUMN_ALIASES)), dtype=np.float32)
-    for i, (_, aliases) in enumerate(SEQ_COLUMN_ALIASES):
-        for col in aliases:
+    populated = set()
+    for i, (name, aliases) in enumerate(SEQ_COLUMN_ALIASES):
+        candidates = [name, *LIVE_COLUMN_ALIASES.get(name, []), *aliases]
+        for col in candidates:
             if col in df.columns:
                 data[:, i] = pd.to_numeric(df[col], errors='coerce').to_numpy(dtype=np.float32)
+                populated.add(name)
                 break
+
+    quat_names = ('att_q_w', 'att_q_x', 'att_q_y', 'att_q_z')
+    if not any(name in populated for name in quat_names) and all(
+        name in df.columns for name in ('roll', 'pitch', 'yaw')
+    ):
+        roll = pd.to_numeric(df['roll'], errors='coerce').fillna(0.0).to_numpy(dtype=np.float32)
+        pitch = pd.to_numeric(df['pitch'], errors='coerce').fillna(0.0).to_numpy(dtype=np.float32)
+        yaw = pd.to_numeric(df['yaw'], errors='coerce').fillna(0.0).to_numpy(dtype=np.float32)
+        cr, sr = np.cos(roll * 0.5), np.sin(roll * 0.5)
+        cp, sp = np.cos(pitch * 0.5), np.sin(pitch * 0.5)
+        cy, sy = np.cos(yaw * 0.5), np.sin(yaw * 0.5)
+        quat = (
+            cr * cp * cy + sr * sp * sy,
+            sr * cp * cy - cr * sp * sy,
+            cr * sp * cy + sr * cp * sy,
+            cr * cp * sy - sr * sp * cy,
+        )
+        for name, values in zip(quat_names, quat):
+            data[:, SEQ_COLUMNS.index(name)] = values
     data = np.nan_to_num(data, nan=0.0, posinf=0.0, neginf=0.0)
 
     actuator_idx = [0, 1, 2, 3, 4, 5, 6, 7]

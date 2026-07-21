@@ -2,10 +2,19 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $backendDir = Join-Path $repoRoot "apps\\dashboard\\backend"
+$uavFaultPackageDir = Join-Path $repoRoot "packages\\uav_fault"
+$rflyBridgePackageDir = Join-Path $repoRoot "packages\\rfly_bridge"
 
 if (-not (Test-Path -LiteralPath $backendDir -PathType Container)) {
     Write-Error "backend directory not found: $backendDir"
     exit 1
+}
+
+foreach ($packageDir in @($uavFaultPackageDir, $rflyBridgePackageDir)) {
+    if (-not (Test-Path -LiteralPath $packageDir -PathType Container)) {
+        Write-Error "local package directory not found: $packageDir"
+        exit 1
+    }
 }
 
 if ($env:DASHBOARD_BACKEND_PYTHON) {
@@ -24,6 +33,12 @@ if ($env:DASHBOARD_BACKEND_PYTHON) {
     }
 }
 
+$pythonPathEntries = @($uavFaultPackageDir, $rflyBridgePackageDir)
+if ($env:PYTHONPATH) {
+    $pythonPathEntries += $env:PYTHONPATH.Split([IO.Path]::PathSeparator)
+}
+$env:PYTHONPATH = ($pythonPathEntries | Where-Object { $_ } | Select-Object -Unique) -join [IO.Path]::PathSeparator
+
 Write-Host "[INFO] Starting Dashboard Backend"
 Set-Location -LiteralPath $backendDir
-& $pythonBin "run.py"
+& $pythonBin -m uav_dashboard_api

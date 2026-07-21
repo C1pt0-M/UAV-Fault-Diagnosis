@@ -2,6 +2,12 @@
   "model": "kg_mstca",
   "mode": "fewshot",
   "task": "online_binary",
+  "protocol_name": "rflymad_online_real3_binary_v1",
+  "label_space": "real3",
+  "source_fault_classes": [
+    "motor",
+    "sensor"
+  ],
   "feature_schema": "rfly_seq_columns_v1",
   "window_size": 150,
   "feature_count": 31,
@@ -14,8 +20,8 @@
     "normal",
     "fault"
   ],
-  "epochs_trained": 60,
-  "best_val_f1": 0.9555472493255055,
+  "epochs_trained": 90,
+  "best_val_f1": 0.9625451718872376,
   "gamma": 2.0,
   "lr": 0.0003,
   "batch_size": 512,

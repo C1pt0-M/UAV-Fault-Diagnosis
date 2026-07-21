@@ -27,6 +27,7 @@ function mountControlPanel(overrides = {}) {
       selectedModel: 'online_detector_kg_mstca_rfly',
       selectedReplayAssetId: null,
       rflyPx4mavctrlPath: '',
+      rflyNetworkProfile: 'enhanced_5g',
       ...overrides
     }
   })
@@ -72,6 +73,8 @@ describe('MonitoringControlPanel telemetry console', () => {
     })
 
     expect(wrapper.find('[data-test="rfly-diagnostics-panel"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="rfly-network-profile"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('5G链路场景')
     expect(wrapper.text()).toContain('RflySim 配置诊断')
     expect(wrapper.text()).toContain('PX4MavCtrlV4.py 未配置')
     expect(wrapper.find('[data-test="start-collection"]').attributes('disabled')).toBeDefined()

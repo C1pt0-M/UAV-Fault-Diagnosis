@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import sys
+import time
 import types
 
 import pytest
@@ -155,6 +156,7 @@ def isolated_runtime_env(tmp_path, monkeypatch):
     manager._receiver_thread = None
     manager.app = None
     yield runtime_dir
+    manager._stop_live_processing_pipeline(drain=False)
     manager._reset_runtime_state()
     manager._realtime_buffer.clear()
     manager._px4_proc = None
@@ -163,6 +165,85 @@ def isolated_runtime_env(tmp_path, monkeypatch):
     manager._receiver = None
     manager._receiver_thread = None
     manager.app = None
+
+
+def test_live_pipeline_decouples_frame_ingest_from_slow_inference(monkeypatch):
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._backend_name = "rfly"
+    mgr.app = types.SimpleNamespace(config={"ONLINE_INFERENCE_STRIDE": 5})
+
+    class SlowDetector:
+        window_size = 1
+        aggregator = types.SimpleNamespace(onset_th=0.6)
+
+        def update(self, *, frame, window, frame_idx):
+            time.sleep(0.04)
+            return ({"fault_prob": 0.1, "label": "normal", "confidence": 0.9}, [])
+
+    mgr._detector = SlowDetector()
+    mgr._detecting = True
+    monkeypatch.setattr(
+        mgr, "_canonicalize_frame", lambda frame, backend: (dict(frame), None)
+    )
+    mgr._start_live_processing_pipeline()
+    started = time.perf_counter()
+    for index in range(500):
+        mgr._submit_backend_frame(
+            {"seq": index, "time_s": index / 50.0, "accel_z": -9.8},
+            source_backend="rfly",
+        )
+    submit_elapsed = time.perf_counter() - started
+    mgr._stop_live_processing_pipeline(drain=True)
+
+    assert submit_elapsed < 0.2
+    assert mgr._frame_count == 500
+    assert mgr._frame_queue_drops == 0
+    assert mgr._inference_queue_drops > 0
+
+
+def test_old_transport_callback_cannot_submit_into_new_session():
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._clear_work_queue(mgr._frame_queue)
+    old_backend = object()
+    active_backend = object()
+    mgr._backend = active_backend
+    mgr._backend_name = "rfly"
+    mgr._session_id = "TS-NEW"
+
+    mgr.submit_transport_frame(
+        {"seq": 1},
+        [],
+        source_backend="rfly",
+        session_id="TS-OLD",
+        backend=old_backend,
+    )
+
+    assert mgr._frame_queue.empty()
+
+
+def test_live_pipeline_canonicalizes_each_frame_once(monkeypatch):
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._backend_name = "rfly"
+    calls = []
+
+    def canonicalize(frame, backend):
+        calls.append(frame["seq"])
+        return dict(frame), None
+
+    monkeypatch.setattr(mgr, "_canonicalize_frame", canonicalize)
+    mgr._start_live_processing_pipeline()
+    for index in range(200):
+        mgr._submit_backend_frame(
+            {"seq": index, "time_s": index / 50.0},
+            source_backend="rfly",
+        )
+    mgr._stop_live_processing_pipeline(drain=True)
+
+    assert calls == list(range(200))
+    assert mgr._frame_count == 200
 
 
 def test_test_runtime_dirs_are_isolated_from_real_dashboard_runtime(isolated_runtime_env):
@@ -195,10 +276,141 @@ def test_get_status_exposes_predictive_warning_fields():
     assert status["top_recommendations"][0]["priority"] == "P1"
 
 
+def test_network_link_status_updates_from_5g_frame_fields():
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._backend_name = "rfly"
+    mgr._network_link_status = mgr._initial_network_link_status(
+        enabled=True,
+        profile="enhanced_5g",
+        status="running",
+    )
+
+    base_frame = {
+        "time_s": 0.02,
+        "actuator_out_1": 1300.0,
+        "actuator_out_2": 1300.0,
+        "actuator_out_3": 1300.0,
+        "actuator_out_4": 1300.0,
+        "att_q_w": 1.0,
+        "att_q_x": 0.0,
+        "att_q_y": 0.0,
+        "att_q_z": 0.0,
+        "vel_x": 0.1,
+        "vel_y": 0.0,
+        "vel_z": -0.1,
+        "accel_x": 0.0,
+        "accel_y": 0.0,
+        "accel_z": -9.8,
+    }
+    first = {
+        **base_frame,
+        "seq": 1,
+        "net_seq": 1,
+        "net_profile": "enhanced_5g",
+        "net_delay_ms": 18.0,
+        "net_e2e_latency_ms": 20.0,
+    }
+    second = {
+        **base_frame,
+        "seq": 3,
+        "net_seq": 3,
+        "time_s": 0.06,
+        "net_profile": "enhanced_5g",
+        "net_delay_ms": 22.0,
+        "net_e2e_latency_ms": 24.0,
+    }
+
+    mgr.process_transport_frame(first, [first], source_backend="rfly")
+    mgr.process_transport_frame(second, [first, second], source_backend="rfly")
+
+    status = mgr.get_status()["network_link"]
+    assert status["enabled"] is True
+    assert status["profile"] == "enhanced_5g"
+    assert status["status"] == "active"
+    assert status["rx_packets"] == 2
+    assert status["lost_packets"] == 1
+    assert status["loss_rate"] == pytest.approx(1 / 3)
+    assert status["data_integrity"] == pytest.approx(2 / 3)
+    assert status["avg_latency_ms"] == pytest.approx(20.0)
+    assert status["latest_latency_ms"] == pytest.approx(22.0)
+
+
+def test_network_link_ignores_non_contiguous_upstream_sequence_numbers():
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._network_link_status = mgr._initial_network_link_status(
+        enabled=True,
+        profile="enhanced_5g",
+        status="active",
+    )
+    base_frame = {
+        "time_s": 0.02,
+        "motor1": 0.1,
+        "motor2": 0.1,
+        "motor3": 0.1,
+        "motor4": 0.1,
+        "accel_x": 0.0,
+        "accel_y": 0.0,
+        "accel_z": -9.8,
+        "net_profile": "enhanced_5g",
+        "net_delay_ms": 20.0,
+    }
+
+    first = {**base_frame, "seq": 100, "net_seq": 1}
+    second = {**base_frame, "seq": 250, "net_seq": 2, "time_s": 0.04}
+    mgr.process_transport_frame(first, [first], source_backend="rfly")
+    mgr.process_transport_frame(second, [first, second], source_backend="rfly")
+
+    status = mgr.get_status()["network_link"]
+    assert status["rx_packets"] == 2
+    assert status["lost_packets"] == 0
+    assert status["loss_rate"] == 0.0
+
+
+def test_network_link_status_prefers_emulator_metrics_over_receiver_backlog(monkeypatch):
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._network_link_status = mgr._initial_network_link_status(
+        enabled=True,
+        profile="enhanced_5g",
+        status="active",
+    )
+    mgr._network_link_status.update(
+        avg_latency_ms=304.0,
+        p95_latency_ms=410.0,
+        loss_rate=0.2,
+        data_integrity=0.8,
+    )
+    monkeypatch.setattr(mgr, "_backend", types.SimpleNamespace(
+        status=lambda: {
+            "network_link": "running",
+            "network_metrics": {
+                "avg_latency_ms": 29.4,
+                "p95_latency_ms": 32.0,
+                "rx_packets": 1000,
+                "tx_packets": 994,
+                "lost_packets": 6,
+                "loss_rate": 0.006,
+                "data_integrity": 0.994,
+                "queue_len": 1,
+            },
+        }
+    ))
+
+    status = mgr.get_status()["network_link"]
+
+    assert status["avg_latency_ms"] == 29.4
+    assert status["p95_latency_ms"] == 32.0
+    assert status["loss_rate"] == 0.006
+    assert status["data_integrity"] == 0.994
+
+
 def test_predictive_warning_transitions_from_preview_to_confirmed():
     mgr = TelemetryProcessManager()
     mgr._reset_runtime_state()
     mgr._detecting = True
+    original_record_fault_event = mgr._record_fault_event
 
     class _FakeEvent:
         def __init__(self):
@@ -237,38 +449,48 @@ def test_predictive_warning_transitions_from_preview_to_confirmed():
 
     mgr._detector = _FakeDetector()
     mgr._record_fault_event = lambda event: mgr._fault_events.append(event)
-    frame = {
-        "time_s": 10.0,
-        "seq": 1,
-        "motor1": 0.2,
-        "motor2": 0.2,
-        "motor3": 0.2,
-        "motor4": 0.2,
-    }
+    try:
+        frame = {
+            "time_s": 10.0,
+            "seq": 1,
+            "motor1": 1300.0,
+            "motor2": 1305.0,
+            "motor3": 1295.0,
+            "motor4": 1310.0,
+            "accel_z": -9.8,
+            "vx": 0.1,
+            "baro_alt_meter": 12.0,
+        }
 
-    mgr._on_backend_frame(frame, [frame], source_backend="px4")
-    status_preview = mgr.get_status()
-    assert status_preview["warning_stage"] in {"watch", "warning"}
-    assert status_preview["latest_diagnoses"][0]["source"] == "realtime_preview"
-    assert (
-        status_preview["latest_diagnoses"][0]["evidence_summary"]["source"] == "online"
-    )
-    assert status_preview["latest_diagnoses"][0]["evidence_summary"]["top_evidence"]
+        mgr.process_transport_frame(frame, [frame], source_backend="px4")
+        status_preview = mgr.get_status()
+        assert status_preview["warning_stage"] in {"watch", "warning"}
+        assert status_preview["latest_diagnoses"][0]["source"] == "realtime_preview"
+        assert (
+            status_preview["latest_diagnoses"][0]["evidence_summary"]["source"]
+            == "online"
+        )
+        assert status_preview["latest_diagnoses"][0]["evidence_summary"]["top_evidence"]
 
-    frame2 = {
-        "time_s": 13.0,
-        "seq": 2,
-        "motor1": 0.3,
-        "motor2": 0.3,
-        "motor3": 0.3,
-        "motor4": 0.3,
-    }
-    mgr._on_backend_frame(frame2, [frame2], source_backend="px4")
-    status_confirmed = mgr.get_status()
-    assert status_confirmed["warning_stage"] == "critical"
-    assert status_confirmed["fault_events_count"] == 1
-    assert status_confirmed["latest_diagnoses"][0]["source"] == "realtime"
-    assert status_confirmed["latest_diagnoses"][0]["lead_time_s"] == 3.0
+        frame2 = {
+            "time_s": 13.0,
+            "seq": 2,
+            "motor1": 1320.0,
+            "motor2": 1315.0,
+            "motor3": 1305.0,
+            "motor4": 1325.0,
+            "accel_z": -9.6,
+            "vx": 0.2,
+            "baro_alt_meter": 12.5,
+        }
+        mgr.process_transport_frame(frame2, [frame2], source_backend="px4")
+        status_confirmed = mgr.get_status()
+        assert status_confirmed["warning_stage"] == "critical"
+        assert status_confirmed["fault_events_count"] == 1
+        assert status_confirmed["latest_diagnoses"][0]["source"] == "realtime"
+        assert status_confirmed["latest_diagnoses"][0]["lead_time_s"] == 3.0
+    finally:
+        mgr._record_fault_event = original_record_fault_event
     assert status_confirmed["preview_lead_time_s"] == 3.0
     assert (
         status_confirmed["latest_diagnoses"][0]["evidence_summary"]["source"]
@@ -327,7 +549,7 @@ def test_realtime_data_uses_canonical_frame_values_after_px4_frame_callback():
     }
     window = [frame]
 
-    mgr._on_backend_frame(frame, window, source_backend="px4")
+    mgr.process_transport_frame(frame, window, source_backend="px4")
     data = mgr.get_realtime_data()
 
     assert data["times"] == [1.0]
@@ -358,7 +580,7 @@ def test_realtime_data_derives_attitude_from_replay_quaternion_frame():
         "baro_alt": 15.2,
     }
 
-    mgr._on_backend_frame(frame, [frame], source_backend="replay")
+    mgr.process_transport_frame(frame, [frame], source_backend="replay")
     data = mgr.get_realtime_data()
 
     assert data["times"] == [1.5]
@@ -369,22 +591,108 @@ def test_realtime_data_derives_attitude_from_replay_quaternion_frame():
     assert data["pos_z"] == [15.2]
 
 
-def test_receiver_worker_marks_timeout_reason_when_no_frames_arrive():
+def test_realtime_data_exposes_5g_link_trend_series():
     mgr = TelemetryProcessManager()
     mgr._reset_runtime_state()
-    mgr._session_id = "TS-RX"
-    mgr._start_time = 100.0
+    mgr._realtime_buffer.clear()
+    mgr._backend_name = "rfly"
 
-    class _FakeReceiver:
-        def start(self):
-            raise TimeoutError("receiver timeout")
+    frame = {
+        "time_s": 2.0,
+        "seq": 10,
+        "net_profile": "enhanced_5g",
+        "net_delay_ms": 24.5,
+        "net_e2e_latency_ms": 29.75,
+    }
+    mgr.process_transport_frame(frame, [frame], source_backend="rfly")
+    data = mgr.get_realtime_data()
 
-    mgr._receiver = _FakeReceiver()
-    mgr._receiver_worker()
+    assert data["net_latency_ms"] == [24.5]
+    assert data["net_loss_rate"] == [0.0]
+    assert data["net_data_integrity"] == [1.0]
+
+
+def test_mec_result_is_consumed_without_local_detector():
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._backend_name = "rfly"
+    mgr._detecting = True
+    mgr._detector = None
+    mgr._mec_status = mgr._initial_mec_status(
+        enabled=True, location="mec", status="running"
+    )
+
+    frame = {
+        "seq": 1,
+        "time_s": 3.0,
+        "accel_z": -9.8,
+        "mec_enabled": 1,
+        "mec_inference_location": "mec",
+        "mec_inference_count": 1,
+        "mec_fault_prob": 0.72,
+        "mec_label": "fault",
+        "mec_confidence": 0.72,
+        "mec_inference_ms": 4.2,
+        "mec_avg_inference_ms": 4.0,
+        "mec_p95_inference_ms": 5.1,
+        "mec_decision_latency_ms": 31.2,
+        "mec_avg_decision_latency_ms": 29.8,
+        "mec_p95_decision_latency_ms": 35.4,
+        "mec_event_seq": 0,
+        "mec_events": [],
+    }
+
+    mgr.process_transport_frame(frame, [frame], source_backend="rfly")
 
     status = mgr.get_status()
-    assert status["timeout_reason"] == "receiver_timeout"
-    assert status["startup_phase"] == "receiver_timeout"
+    assert status["current_fault_prob"] == 0.72
+    assert status["mec"]["location"] == "mec"
+    assert status["mec"]["latest_inference_ms"] == 4.2
+    assert status["inference"] == {
+        "location": "mec",
+        "status": "active",
+        "latest_inference_ms": 4.2,
+        "avg_inference_ms": 4.0,
+        "p95_inference_ms": 5.1,
+        "latest_decision_latency_ms": 31.2,
+        "avg_decision_latency_ms": 29.8,
+        "p95_decision_latency_ms": 35.4,
+        "inference_count": 1,
+        "inference_queue_drops": 0,
+    }
+
+
+def test_center_inference_status_tracks_runtime_and_data_to_decision_latency():
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr._center_inference_count = 1000
+
+    mgr._record_center_inference_metrics(
+        canonical={"net_tx_ms": 970.0},
+        inference_ms=2.0,
+        completed_ms=1000,
+    )
+    mgr._record_center_inference_metrics(
+        canonical={"net_tx_ms": 960.0},
+        inference_ms=4.0,
+        completed_ms=1000,
+    )
+    mgr._record_center_inference_metrics(
+        canonical={"net_tx_ms": 950.0},
+        inference_ms=8.0,
+        completed_ms=1000,
+    )
+
+    status = mgr.get_status()["inference"]
+    assert status["location"] == "center"
+    assert status["status"] == "active"
+    assert status["latest_inference_ms"] == 8.0
+    assert status["avg_inference_ms"] == 4.667
+    assert status["p95_inference_ms"] == 4.0
+    assert status["latest_decision_latency_ms"] == 50.0
+    assert status["avg_decision_latency_ms"] == 40.0
+    assert status["p95_decision_latency_ms"] == 40.0
+    assert status["inference_count"] == 1003
 
 
 def test_start_detection_marks_startup_phase_detecting():
@@ -395,14 +703,7 @@ def test_start_detection_marks_startup_phase_detecting():
     mgr._planned_duration_s = 120.0
     mgr._backend_name = "px4"
 
-    mgr._backend = object()
-    mgr._receiver = object()
-
-    class _LiveThread:
-        def is_alive(self):
-            return True
-
-    mgr._receiver_thread = _LiveThread()
+    mgr._backend = types.SimpleNamespace(is_collecting=lambda: True)
 
     mgr._resolve_online_model_meta = lambda requested_model=None: {
         "name": "online_detector_alpha",
@@ -444,16 +745,10 @@ def test_start_detection_wraps_detector_init_error_as_runtime_error():
     mgr._backend_name = "replay"
 
     class _ReplayBackend:
-        pass
-
-    mgr._backend = _ReplayBackend()
-    mgr._receiver = object()
-
-    class _LiveThread:
-        def is_alive(self):
+        def is_collecting(self):
             return True
 
-    mgr._backend._thread = _LiveThread()
+    mgr._backend = _ReplayBackend()
     mgr._resolve_online_model_meta = lambda requested_model=None: {
         "name": "online_detector_cnn1d_rfly",
         "path": "bad_model_dir",
@@ -514,12 +809,15 @@ def test_on_backend_frame_adds_preview_alert_when_fault_prob_reaches_onset_thres
     frame = {
         "time_s": 3.5,
         "seq": 1,
-        "motor1": 0.2,
-        "motor2": 0.2,
-        "motor3": 0.2,
-        "motor4": 0.2,
+        "motor1": 1300.0,
+        "motor2": 1305.0,
+        "motor3": 1295.0,
+        "motor4": 1310.0,
+        "accel_z": -9.8,
+        "vx": 0.1,
+        "baro_alt_meter": 12.0,
     }
-    mgr._on_backend_frame(frame, [frame], source_backend="px4")
+    mgr.process_transport_frame(frame, [frame], source_backend="px4")
 
     status = mgr.get_status()
     assert status["fault_events_count"] == 1
@@ -557,17 +855,24 @@ def test_start_px4_uses_configured_sim_target_and_autostart(monkeypatch):
         )
         return _FakeProc()
 
-    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.subprocess.run", _fake_run)
-    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.subprocess.Popen", _fake_popen)
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_backends.subprocess.run", _fake_run)
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_backends.subprocess.Popen", _fake_popen)
 
     mgr.app = _FakeApp()
-    mgr._start_px4()
+    backend = PX4ScenarioBackend(
+        mgr,
+        session_id="TS-PX4-START",
+        csv_path="session.csv",
+        sim_time=30,
+        options={},
+    )
+    backend._start_px4()
 
     assert len(calls) == 1
     assert calls[0]["cmd"] == [
         "bash",
         "-c",
-        f"make -C {mgr._px4_root} px4_sitl gz_x500",
+        f"make -C {backend._get_px4_root()} px4_sitl gz_x500",
     ]
     assert calls[0]["env"]["PX4_SYS_AUTOSTART"] == "4005"
     assert calls[0]["env"]["HEADLESS"] == "1"
@@ -600,7 +905,7 @@ def test_resolve_telemetry_python_bin_prefers_runtime_python_over_legacy_linux_p
     )
 
     mgr.app = _FakeApp()
-    resolved = mgr._resolve_telemetry_python_bin()
+    resolved = mgr.resolve_telemetry_python_bin()
 
     assert resolved == sys.executable
     assert checked[0] == sys.executable
@@ -632,11 +937,18 @@ def test_start_px4_uses_configured_px4_root(monkeypatch):
         calls.append({"cmd": cmd, "env": env})
         return _FakeProc()
 
-    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.subprocess.run", _fake_run)
-    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.subprocess.Popen", _fake_popen)
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_backends.subprocess.run", _fake_run)
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_backends.subprocess.Popen", _fake_popen)
 
     mgr.app = _FakeApp()
-    mgr._start_px4()
+    backend = PX4ScenarioBackend(
+        mgr,
+        session_id="TS-PX4-ROOT",
+        csv_path="session.csv",
+        sim_time=30,
+        options={},
+    )
+    backend._start_px4()
 
     assert calls[0]["cmd"] == [
         "bash",
@@ -666,10 +978,18 @@ def test_wait_for_px4_uses_configured_ready_endpoint(monkeypatch):
         calls.append({"address": address, "timeout": timeout}) 
         return _Conn() 
  
-    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.socket.create_connection", fake_create_connection) 
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_backends.socket.create_connection", fake_create_connection)
     mgr.app = _FakeApp() 
+    backend = PX4ScenarioBackend(
+        mgr,
+        session_id="TS-PX4-WAIT",
+        csv_path="session.csv",
+        sim_time=30,
+        options={},
+    )
+    backend._startup_cancelled = lambda generation: False
  
-    assert mgr._wait_for_px4(timeout=1) is True 
+    assert backend._wait_for_px4(timeout=1, generation=1) is True
     assert calls == [{"address": ("10.8.0.9", 19001), "timeout": 2}] 
  
  
@@ -689,8 +1009,15 @@ def test_build_collector_command_uses_runtime_config():
         } 
  
     mgr.app = _FakeApp() 
+    backend = PX4ScenarioBackend(
+        mgr,
+        session_id="TS-PX4-COLLECTOR",
+        csv_path="session.csv",
+        sim_time=30,
+        options={},
+    )
  
-    assert mgr._build_collector_cmd("python-bin") == [ 
+    assert backend._build_collector_cmd("python-bin") == [
         "python-bin", 
         "-m", 
         "uav_fault.telemetry.collector",
@@ -748,3 +1075,104 @@ def test_px4_backend_uses_packaged_flight_controller_module():
     ]
     assert "--fault-type" in cmd
     assert "motor_failure" in cmd
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows process-group behavior")
+def test_stop_process_sends_ctrl_break_for_graceful_child_cleanup():
+    import signal
+
+    events = []
+
+    class FakeProcess:
+        pid = 4321
+
+        def poll(self):
+            return None
+
+        def send_signal(self, sig):
+            events.append(("signal", sig))
+
+        def wait(self, timeout):
+            events.append(("wait", timeout))
+            return 0
+
+    PX4ScenarioBackend._stop_process(FakeProcess(), "rfly_bridge")
+
+    assert events == [
+        ("signal", signal.CTRL_BREAK_EVENT),
+        ("wait", 15),
+    ]
+
+
+def test_px4_backend_sets_timeout_reason_when_px4_never_becomes_ready(
+    isolated_runtime_env, monkeypatch
+):
+    mgr = TelemetryProcessManager()
+    mgr._reset_runtime_state()
+    mgr.app = types.SimpleNamespace(
+        config={
+            "RUNTIME_DIR": isolated_runtime_env,
+            "UPLOAD_DIR": isolated_runtime_env / "uploads",
+            "DERIVED_DIR": isolated_runtime_env / "derived",
+            "RUNS_DIR": isolated_runtime_env / "runs",
+            "REPORTS_DIR": isolated_runtime_env / "reports",
+        }
+    )
+
+    class _FakeThread:
+        def __init__(self, target=None, name=None, daemon=None, args=(), kwargs=None):
+            self._target = target
+            self._name = name
+            self._args = args
+            self._kwargs = kwargs or {}
+
+        def start(self):
+            if self._target and self._name == "px4-transport-startup":
+                self._target(*self._args, **self._kwargs)
+
+        def is_alive(self):
+            return False
+
+        def join(self, timeout=None):
+            return None
+
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_backends.threading.Thread", _FakeThread)
+    monkeypatch.setattr("uav_dashboard_api.services.telemetry_manager.threading.Thread", _FakeThread)
+    monkeypatch.setattr(mgr, "_start_live_processing_pipeline", lambda: None)
+    monkeypatch.setattr(
+        mgr,
+        "_stop_live_processing_pipeline",
+        lambda drain=True: None,
+    )
+    monkeypatch.setattr(
+        "uav_dashboard_api.services.telemetry_backends.PX4ScenarioBackend._start_px4",
+        lambda self: None,
+    )
+    monkeypatch.setattr(
+        mgr, "resolve_telemetry_python_bin", lambda: "/usr/bin/python3"
+    )
+    monkeypatch.setattr(
+        "uav_dashboard_api.services.telemetry_backends.PX4ScenarioBackend._wait_for_px4",
+        lambda self, timeout, generation: False,
+    )
+    monkeypatch.setattr(
+        "uav_dashboard_api.services.telemetry_backends.TelemetryReceiver",
+        lambda *args, **kwargs: types.SimpleNamespace(
+            callbacks=[], stop=lambda: None
+        ),
+    )
+    monkeypatch.setattr(mgr, "_write_log", lambda *args, **kwargs: None)
+    monkeypatch.setattr(mgr, "_create_session_record", lambda *args, **kwargs: None)
+
+    result = mgr.start_collection(
+        drone_id="DRONE-PX4-READY-001",
+        session_type="simulation",
+        sim_time=30,
+        backend="px4",
+    )
+    status = mgr.get_status()
+
+    assert result["scenario_backend"] == "px4"
+    assert status["startup_phase"] == "px4_not_ready"
+    assert status["timeout_reason"] == "px4_not_ready"
+    assert status["transport_status"] == "degraded"

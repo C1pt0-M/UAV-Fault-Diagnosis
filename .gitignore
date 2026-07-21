@@ -52,11 +52,12 @@ docs/*
 !docs/migration-monorepo.md
 !docs/model_training_pipeline.md
 !docs/autodl_training_runbook.md
-/tests/*
-!/tests/test_monorepo_layout.py
+# Tests are project source. Tests for the removed sim_factory implementation
+# stay local and excluded from the active suite.
+/tests/test_sim_factory_*.py
 /data/
 /logs/
-/runtime/report_test*/
+/runtime/
 /competition/
 results/
 tmp/
@@ -82,9 +83,11 @@ build_online_real3_splits.py
 build_sequence_cache_3class.py
 build_sequence_cache.py
 build_transfer3_splits.py
-CONTEXT.md
-requirements-autodl-train.txt
 
 # Keep curated archived docs visible to Git even though most docs are local-only.
 !docs/archive/
 !docs/archive/**
+
+# Local agent configuration is not part of the product source tree.
+/.agents/
+/.codex/

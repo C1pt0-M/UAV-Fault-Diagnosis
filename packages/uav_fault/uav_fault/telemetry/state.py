@@ -12,6 +12,8 @@ class TelemetryState:
             "ax": 0.0,
             "ay": 0.0,
             "az": 0.0,
+            "armed": 0.0,
+            "pymav_heartbeat_seen": 0.0,
             "pymav_highres_imu_seen": 0.0,
             "pymav_attitude_target_seen": 0.0,
             "pymav_actuator_control_seen": 0.0,
