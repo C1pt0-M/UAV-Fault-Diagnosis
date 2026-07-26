@@ -4,9 +4,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from uav_dashboard_api.services.telemetry_backends import RFLY_NETWORK_PROFILES
-
-
 DEFAULT_RFLY_PX4MAVCTRL_PATH = Path(
     r"D:\PX4PSP\RflySimAPIs\RflySimSDK\ctrl\PX4MavCtrlV4.py"
 )
@@ -65,28 +62,6 @@ def build_rfly_diagnostics(config: dict, override_px4mavctrl_path: str | None = 
         config.get("RFLY_BUAA_AUTOTEST_DIR"),
         base_dir=repo_root,
     )
-    network_profile = str(config.get("RFLY_NETWORK_PROFILE") or "enhanced_5g").strip().lower()
-    network_enabled = network_profile != "direct"
-    network_script = _resolve_path(config.get("RFLY_5G_LINK_SCRIPT"), base_dir=repo_root)
-    if network_script is None:
-        network_script = (
-            repo_root
-            / "packages"
-            / "rfly_bridge"
-            / "rfly_bridge"
-            / "network_emulator.py"
-        )
-    network_config_csv = _resolve_path(config.get("RFLY_5G_LINK_CONFIG_CSV"), base_dir=repo_root)
-    if network_config_csv is None:
-        network_config_csv = (
-            repo_root
-            / "packages"
-            / "rfly_bridge"
-            / "rfly_bridge"
-            / "configs"
-            / "network_profiles.csv"
-        )
-
     python_bin = str(
         config.get("RFLY_PYTHON_BIN")
         or config.get("TELEMETRY_PYTHON_BIN")
@@ -174,34 +149,6 @@ def build_rfly_diagnostics(config: dict, override_px4mavctrl_path: str | None = 
             host=str(config.get("RFLY_FORWARD_HOST", "127.0.0.1")),
             port=forward_port,
         ),
-        "network_profile": _check(
-            network_profile in RFLY_NETWORK_PROFILES,
-            code="network_profile_valid",
-            label="5G 链路场景",
-            message=f"5G 链路场景: {network_profile}"
-            if network_profile in RFLY_NETWORK_PROFILES
-            else "RFLY_NETWORK_PROFILE 仅支持 direct、baseline、enhanced_5g 或 degraded",
-            profile=network_profile,
-            enabled=network_enabled,
-        ),
-        "network_script": _check(
-            (not network_enabled) or network_script.exists(),
-            code="network_script_exists",
-            label="5G link emulator",
-            message="5G link emulator 可用"
-            if (not network_enabled) or network_script.exists()
-            else "5G link emulator 脚本不存在",
-            name=_safe_name(network_script),
-        ),
-        "network_config": _check(
-            (not network_enabled) or network_config_csv.exists(),
-            code="network_config_exists",
-            label="5G profile 配置",
-            message="5G profile 配置可用"
-            if (not network_enabled) or network_config_csv.exists()
-            else "5G profile 配置不存在",
-            name=_safe_name(network_config_csv),
-        ),
         "pymav": _check(
             True,
             code="pymav_configured",
@@ -221,9 +168,6 @@ def build_rfly_diagnostics(config: dict, override_px4mavctrl_path: str | None = 
         "bridge_script",
         "python_bin",
         "forward_port",
-        "network_profile",
-        "network_script",
-        "network_config",
     }
     issues = [
         {

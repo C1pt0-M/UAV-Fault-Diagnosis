@@ -245,7 +245,9 @@ def canonicalize_rfly_frame(row: dict[str, Any]) -> tuple[dict[str, Any], dict[s
     if actuator_source:
         out["actuator_source"] = actuator_source
         source_map["actuator_source"] = "mapped"
-    if _safe_float(out.get("time_s")) is None:
+    if _safe_float(out.get("time_s")) is not None:
+        source_map["time_s"] = "mapped"
+    else:
         true_time = _safe_float(row.get("trueTime"))
         timestamp_us = _safe_float(row.get("Timestamp"))
         if true_time is not None:
@@ -254,7 +256,9 @@ def canonicalize_rfly_frame(row: dict[str, Any]) -> tuple[dict[str, Any], dict[s
         elif timestamp_us is not None:
             out["time_s"] = timestamp_us * 1e-6
             source_map["time_s"] = "mapped"
-    if _safe_float(out.get("seq")) is None:
+    if _safe_float(out.get("seq")) is not None:
+        source_map["seq"] = "mapped"
+    else:
         seq = _safe_float(row.get("Index"))
         if seq is not None:
             out["seq"] = seq

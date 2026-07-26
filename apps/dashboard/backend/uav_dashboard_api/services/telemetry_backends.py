@@ -20,8 +20,6 @@ DEFAULT_RFLY_PX4MAVCTRL_PATH = Path(
     r"D:\PX4PSP\RflySimAPIs\RflySimSDK\ctrl\PX4MavCtrlV4.py"
 )
 
-RFLY_NETWORK_PROFILES = {"direct", "baseline", "enhanced_5g", "degraded"}
-DEFAULT_RFLY_NETWORK_PROFILE = "enhanced_5g"
 RFLY_INFERENCE_LOCATIONS = {"center", "mec"}
 _KEEP_LIFECYCLE_VALUE = object()
 
@@ -663,11 +661,6 @@ class RflyScenarioBackend(ScenarioBackend):
         self._bridge_script: Path | None = None
         self._bridge_log_handle = None
         self._bridge_log_name: str | None = None
-        self._network_proc = None
-        self._network_log_handle = None
-        self._network_log_name: str | None = None
-        self._network_metrics_path: Path | None = None
-        self._network_profile = self._resolve_network_profile()
         self._mec_proc = None
         self._mec_log_handle = None
         self._mec_log_name: str | None = None
@@ -859,22 +852,6 @@ class RflyScenarioBackend(ScenarioBackend):
     def _forward_host(self) -> str:
         return str(self._config().get("RFLY_FORWARD_HOST", "127.0.0.1"))
 
-    def _resolve_network_profile(self) -> str:
-        cfg = self._config()
-        profile = str(
-            self.options.get("network_profile")
-            or cfg.get("RFLY_NETWORK_PROFILE")
-            or DEFAULT_RFLY_NETWORK_PROFILE
-        ).strip().lower()
-        if profile not in RFLY_NETWORK_PROFILES:
-            raise RuntimeError(
-                "RflySim 5G 链路场景仅支持 direct、baseline、enhanced_5g 或 degraded"
-            )
-        return profile
-
-    def _network_enabled(self) -> bool:
-        return self._network_profile != "direct"
-
     def _resolve_inference_location(self) -> str:
         cfg = self._config()
         location = str(
@@ -898,12 +875,7 @@ class RflyScenarioBackend(ScenarioBackend):
     def _upstream_forward_port(self) -> int:
         return self._mec_listen_port() if self._mec_enabled() else self._forward_port()
 
-    def _network_listen_port(self) -> int:
-        return int(self._config().get("RFLY_5G_LINK_LISTEN_PORT", 15551))
-
     def _bridge_forward_port(self) -> int:
-        if self._network_enabled():
-            return self._network_listen_port()
         return self._upstream_forward_port()
 
     def _resolve_mec_script(self) -> Path:
@@ -924,52 +896,13 @@ class RflyScenarioBackend(ScenarioBackend):
             raise RuntimeError(f"MEC 服务脚本不存在: {path}")
         return path
 
-    def _resolve_network_script(self) -> Path:
-        cfg = self._config()
-        raw_value = str(cfg.get("RFLY_5G_LINK_SCRIPT") or "").strip()
-        if raw_value:
-            path = self._resolve_path(raw_value, base_dir=self._repo_root())
-        else:
-            path = (
-                self._repo_root()
-                / "packages"
-                / "rfly_bridge"
-                / "rfly_bridge"
-                / "network_emulator.py"
-            )
-        if not path.exists():
-            raise RuntimeError(f"5G 链路仿真脚本不存在: {path}")
-        return path
-
-    def _resolve_network_config_csv(self) -> Path:
-        cfg = self._config()
-        raw_value = str(cfg.get("RFLY_5G_LINK_CONFIG_CSV") or "").strip()
-        if raw_value:
-            path = self._resolve_path(raw_value, base_dir=self._repo_root())
-        else:
-            path = (
-                self._repo_root()
-                / "packages"
-                / "rfly_bridge"
-                / "rfly_bridge"
-                / "configs"
-                / "network_profiles.csv"
-            )
-        if not path.exists():
-            raise RuntimeError(f"5G 链路 profile 配置不存在: {path}")
-        return path
-
     def _prepare(self) -> None:
         if self._bridge_mode() == "buaa":
             self._px4mavctrl_path = None
         else:
             self._px4mavctrl_path = self._resolve_px4mavctrl_path()
         self._bridge_script = self._resolve_bridge_script()
-        self._network_profile = self._resolve_network_profile()
         self._inference_location = self._resolve_inference_location()
-        if self._network_enabled():
-            self._resolve_network_script()
-            self._resolve_network_config_csv()
         if self._mec_enabled():
             self._resolve_mec_script()
             requested_model = str(self.options.get("inference_model") or "").strip() or None
@@ -1068,14 +1001,6 @@ class RflyScenarioBackend(ScenarioBackend):
         env["PYTHONPATH"] = os.pathsep.join([item for item in paths if item])
         return env
 
-    def _network_paths(self) -> tuple[Path | None, Path | None]:
-        runtime_dir = self._config().get("RUNTIME_DIR")
-        if not runtime_dir:
-            return None, None
-        log_dir = Path(runtime_dir) / "telemetry" / "5g_link"
-        log_dir.mkdir(parents=True, exist_ok=True)
-        return log_dir / f"{self.session_id}.log", log_dir / f"{self.session_id}.csv"
-
     def _mec_paths(self) -> tuple[Path | None, Path | None]:
         runtime_dir = self._config().get("RUNTIME_DIR")
         if not runtime_dir:
@@ -1117,39 +1042,6 @@ class RflyScenarioBackend(ScenarioBackend):
             "--metrics-csv",
             str(self._mec_metrics_path),
         ]
-
-    def _open_network_log(self):
-        log_path, metrics_path = self._network_paths()
-        self._network_metrics_path = metrics_path
-        if log_path is None:
-            return subprocess.DEVNULL
-        self._network_log_name = log_path.name
-        self._network_log_handle = log_path.open("a", encoding="utf-8")
-        return self._network_log_handle
-
-    def _build_network_link_cmd(self) -> list[str]:
-        cfg = self._config()
-        cmd = [
-            self._python_bin(),
-            str(self._resolve_network_script()),
-            "--config-csv",
-            str(self._resolve_network_config_csv()),
-            "--profile",
-            self._network_profile,
-            "--listen-host",
-            str(cfg.get("RFLY_5G_LINK_LISTEN_HOST", self._forward_host())),
-            "--listen-port",
-            str(self._network_listen_port()),
-            "--forward-host",
-            self._forward_host(),
-            "--forward-port",
-            str(self._upstream_forward_port()),
-            "--metrics-interval-s",
-            str(float(cfg.get("RFLY_5G_LINK_METRICS_INTERVAL_S", 1.0))),
-        ]
-        if self._network_metrics_path is not None:
-            cmd.extend(["--metrics-csv", str(self._network_metrics_path)])
-        return cmd
 
     def _open_bridge_log(self):
         runtime_dir = self._config().get("RUNTIME_DIR")
@@ -1198,40 +1090,10 @@ class RflyScenarioBackend(ScenarioBackend):
                     self._mec_log_handle = None
                 self._stop_receiver()
                 raise
-        if self._network_enabled():
-            self._transition(phase="starting_5g_link")
-            network_log = self._open_network_log()
-            try:
-                self._network_proc = self._spawn_process(
-                    self._build_network_link_cmd(),
-                    stdout=network_log,
-                    stderr=network_log,
-                    cwd=str(self._repo_root()),
-                    env=self._bridge_env(),
-                )
-                self._ensure_process_alive(self._network_proc, "5G 链路进程")
-                self._transition(phase="5g_link_running")
-            except Exception as exc:
-                self.report_failure("5g_link_failed", exc)
-                if self._network_log_handle is not None:
-                    self._network_log_handle.close()
-                    self._network_log_handle = None
-                self._stop_process(self._mec_proc, "mec")
-                self._mec_proc = None
-                if self._mec_log_handle is not None:
-                    self._mec_log_handle.close()
-                    self._mec_log_handle = None
-                self._stop_receiver()
-                raise
         try:
             self._start_simulation()
         except Exception as exc:
             self.report_failure("rfly_simulation_failed", exc)
-            self._stop_process(self._network_proc, "network_link")
-            self._network_proc = None
-            if self._network_log_handle is not None:
-                self._network_log_handle.close()
-                self._network_log_handle = None
             self._stop_process(self._mec_proc, "mec")
             self._mec_proc = None
             if self._mec_log_handle is not None:
@@ -1255,11 +1117,6 @@ class RflyScenarioBackend(ScenarioBackend):
             if self._bridge_log_handle is not None:
                 self._bridge_log_handle.close()
                 self._bridge_log_handle = None
-            self._stop_process(self._network_proc, "network_link")
-            self._network_proc = None
-            if self._network_log_handle is not None:
-                self._network_log_handle.close()
-                self._network_log_handle = None
             self._stop_process(self._mec_proc, "mec")
             self._mec_proc = None
             if self._mec_log_handle is not None:
@@ -1275,11 +1132,6 @@ class RflyScenarioBackend(ScenarioBackend):
         if self._bridge_log_handle is not None:
             self._bridge_log_handle.close()
             self._bridge_log_handle = None
-        self._stop_process(self._network_proc, "network_link")
-        self._network_proc = None
-        if self._network_log_handle is not None:
-            self._network_log_handle.close()
-            self._network_log_handle = None
         self._stop_process(self._mec_proc, "mec")
         self._mec_proc = None
         if self._mec_log_handle is not None:
@@ -1289,31 +1141,7 @@ class RflyScenarioBackend(ScenarioBackend):
         self._stop_receiver()
 
     def _status(self) -> dict:
-        network_metrics = None
         mec_metrics = None
-        if self._network_metrics_path and self._network_metrics_path.exists():
-            try:
-                with self._network_metrics_path.open(
-                    newline="", encoding="utf-8"
-                ) as metrics_file:
-                    rows = list(csv.DictReader(metrics_file))
-                if rows:
-                    latest = rows[-1]
-                    rx_packets = int(float(latest.get("rx_packets") or 0))
-                    drop_packets = int(float(latest.get("drop_packets") or 0))
-                    loss_rate = drop_packets / rx_packets if rx_packets > 0 else 0.0
-                    network_metrics = {
-                        "avg_latency_ms": float(latest.get("delay_avg_ms") or 0.0),
-                        "p95_latency_ms": float(latest.get("delay_p95_ms") or 0.0),
-                        "rx_packets": rx_packets,
-                        "tx_packets": int(float(latest.get("tx_packets") or 0)),
-                        "lost_packets": drop_packets,
-                        "loss_rate": loss_rate,
-                        "data_integrity": 1.0 - loss_rate,
-                        "queue_len": int(float(latest.get("queue_len") or 0)),
-                    }
-            except (OSError, ValueError, csv.Error):
-                network_metrics = None
         if self._mec_metrics_path and self._mec_metrics_path.exists():
             try:
                 with self._mec_metrics_path.open(
@@ -1345,25 +1173,17 @@ class RflyScenarioBackend(ScenarioBackend):
             "px4_sitl": None,
             "collector": None,
             "rfly_bridge": self._process_status(self._bridge_proc),
-            "network_link": self._process_status(self._network_proc)
-            if self._network_enabled()
-            else None,
             "mec": self._process_status(self._mec_proc)
             if self._mec_enabled()
             else None,
             "receiver": "running" if self.is_collecting() else None,
             "rfly_bridge_log": self._bridge_log_name,
-            "network_link_log": self._network_log_name,
             "mec_log": self._mec_log_name,
             "rfly_sim_log": self._simulation_log_name,
             "mec_metrics_csv": str(self._mec_metrics_path)
             if self._mec_metrics_path is not None
             else None,
             "mec_metrics": mec_metrics,
-            "network_metrics_csv": str(self._network_metrics_path)
-            if self._network_metrics_path is not None
-            else None,
-            "network_metrics": network_metrics,
         }
 
 

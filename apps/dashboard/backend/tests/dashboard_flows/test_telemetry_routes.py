@@ -239,95 +239,6 @@ def test_telemetry_replay_session_detail_persists_session_fields(
     assert detail["fault_events"][0]["duration"] == 3.6
 
 
-def test_network_comparison_returns_latest_completed_rfly_session_per_profile(
-    app, client, auth_header
-):
-    rows = [
-        ("TS-NET-BASE", "baseline", 10.2, 14.1, 0.001, 0.999),
-        ("TS-NET-5G", "enhanced_5g", 29.5, 32.0, 0.0057, 0.9943),
-        ("TS-NET-WEAK", "degraded", 85.0, 112.0, 0.031, 0.969),
-    ]
-    with app.app_context():
-        for index, (session_id, profile, avg, p95, loss, integrity) in enumerate(rows):
-            session = TelemetrySession(
-                id=session_id,
-                session_type="simulation",
-                scenario_backend="rfly",
-                start_time=datetime(2026, 7, 10, 10, index, 0),
-                end_time=datetime(2026, 7, 10, 10, index, 30),
-                duration_seconds=30.0,
-                frame_count=1500,
-                status="completed",
-                created_at=datetime(2026, 7, 10, 10, index, 0),
-            )
-            session.set_meta({
-                "network_profile": profile,
-                "network_link": {
-                    "profile": profile,
-                    "avg_latency_ms": avg,
-                    "p95_latency_ms": p95,
-                    "loss_rate": loss,
-                    "data_integrity": integrity,
-                    "rx_packets": 1500,
-                    "lost_packets": round(1500 * loss),
-                    "metrics_csv": f"runtime://telemetry/5g_link/{session_id}.csv",
-                },
-            })
-            db.session.add(session)
-        db.session.commit()
-
-    response = client.get("/api/telemetry/network-comparison", headers=auth_header)
-
-    assert response.status_code == 200
-    data = response.get_json()["data"]
-    assert data["source"] == "latest_completed_rfly_sessions"
-    assert data["complete"] is True
-    assert [item["profile"] for item in data["profiles"]] == [
-        "baseline",
-        "enhanced_5g",
-        "degraded",
-    ]
-    assert all(item["available"] for item in data["profiles"])
-    assert data["profiles"][1]["session_id"] == "TS-NET-5G"
-    assert data["enhanced_vs_degraded"]["latency_reduction_ms"] == pytest.approx(55.5)
-    assert data["enhanced_vs_degraded"]["p95_reduction_ms"] == pytest.approx(80.0)
-    assert data["enhanced_vs_degraded"]["loss_reduction"] == pytest.approx(0.0253)
-    assert data["enhanced_vs_degraded"]["integrity_improvement"] == pytest.approx(0.0253)
-
-
-def test_network_comparison_marks_missing_profiles_without_using_replay_sessions(
-    app, client, auth_header
-):
-    with app.app_context():
-        replay = TelemetrySession(
-            id="TS-NET-REPLAY",
-            session_type="simulation",
-            scenario_backend="replay",
-            status="completed",
-        )
-        replay.set_meta({"network_profile": "baseline"})
-        rfly = TelemetrySession(
-            id="TS-NET-ONLY-5G",
-            session_type="simulation",
-            scenario_backend="rfly",
-            status="completed",
-        )
-        rfly.set_meta({
-            "network_profile": "enhanced_5g",
-            "network_link": {"profile": "enhanced_5g", "avg_latency_ms": 29.0},
-        })
-        db.session.add_all([replay, rfly])
-        db.session.commit()
-
-    data = client.get(
-        "/api/telemetry/network-comparison", headers=auth_header
-    ).get_json()["data"]
-
-    assert data["complete"] is False
-    assert [item["available"] for item in data["profiles"]] == [False, True, False]
-    assert data["enhanced_vs_degraded"]["latency_reduction_ms"] is None
-
-
 def test_telemetry_replay_session_detail_builds_fault_evidence_timeline(
     app, client, auth_header
 ):
@@ -1250,9 +1161,6 @@ def test_telemetry_stop_collection_clears_realtime_buffer_after_finalize(
             "pos_y": [],
                 "pos_z": [],
                 "fault_prob": [],
-                "net_latency_ms": [],
-                "net_loss_rate": [],
-                "net_data_integrity": [],
             }
     finally:
         telemetry_manager._backend = original_backend
@@ -1917,9 +1825,6 @@ def test_telemetry_realtime_data_route_returns_chart_shape_from_manager_buffer(
             "pos_y",
             "pos_z",
             "fault_prob",
-            "net_latency_ms",
-            "net_loss_rate",
-            "net_data_integrity",
         }
         assert payload["times"] == [1.0, 2.0]
         assert payload["motor4"] == [1198.0, 1208.0]

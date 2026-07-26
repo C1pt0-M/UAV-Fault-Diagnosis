@@ -34,10 +34,8 @@ from uav_dashboard_api.services.diagnosis_contract import (
 )
 from uav_dashboard_api.services.model_registry import resolve_registered_model
 from uav_dashboard_api.services.telemetry_backends import (
-    DEFAULT_RFLY_NETWORK_PROFILE,
     PX4ScenarioBackend,
     RFLY_INFERENCE_LOCATIONS,
-    RFLY_NETWORK_PROFILES,
     ReplayScenarioBackend,
     RflyScenarioBackend,
 )
@@ -174,7 +172,6 @@ class TelemetryPersistence:
         fault_count,
         replay_metrics=None,
         fault_prob_curve=None,
-        network_link=None,
         mec=None,
         inference=None,
     ) -> None:
@@ -191,9 +188,6 @@ class TelemetryPersistence:
                     meta = session.get_meta()
                     if replay_metrics:
                         meta["replay_metrics"] = replay_metrics
-                    if network_link:
-                        meta["network_link"] = network_link
-                        meta["network_profile"] = network_link.get("profile")
                     if mec:
                         meta["mec"] = mec
                         meta["inference_location"] = mec.get("location")
@@ -215,7 +209,6 @@ class TelemetryPersistence:
                     if (
                         replay_metrics
                         or fault_prob_curve
-                        or network_link
                         or mec
                         or inference
                     ):
@@ -391,11 +384,9 @@ class TelemetryProcessManager:
         self._startup_phase = None
         self._timeout_reason = None
         self._replay_metrics: dict | None = None
-        self._network_link_status = self._initial_network_link_status()
         self._mec_status = self._initial_mec_status()
         self._inference_status = self._initial_inference_status()
         self._center_inference_samples: deque[float] = deque(maxlen=1000)
-        self._center_decision_latency_samples: deque[float] = deque(maxlen=1000)
         self._center_inference_count = 0
         self._mec_last_inference_count = 0
         self._mec_last_event_seq = 0
@@ -473,11 +464,9 @@ class TelemetryProcessManager:
         self._startup_phase = None
         self._timeout_reason = None
         self._replay_metrics = None
-        self._network_link_status = self._initial_network_link_status()
         self._mec_status = self._initial_mec_status()
         self._inference_status = self._initial_inference_status()
         self._center_inference_samples.clear()
-        self._center_decision_latency_samples.clear()
         self._center_inference_count = 0
         self._mec_last_inference_count = 0
         self._mec_last_event_seq = 0
@@ -523,15 +512,6 @@ class TelemetryProcessManager:
         self._startup_phase = "starting"
         self._timeout_reason = None
         self._replay_metrics = None
-        network_profile = str(
-            backend_options.get("network_profile") or "direct"
-        ).strip().lower()
-        network_enabled = backend_name == "rfly" and network_profile != "direct"
-        self._network_link_status = self._initial_network_link_status(
-            enabled=network_enabled,
-            profile=network_profile,
-            status="waiting" if network_enabled else "disabled",
-        )
         inference_location = str(
             backend_options.get("inference_location") or "center"
         ).strip().lower()
@@ -547,7 +527,6 @@ class TelemetryProcessManager:
             status="waiting",
         )
         self._center_inference_samples.clear()
-        self._center_decision_latency_samples.clear()
         self._center_inference_count = 0
         self._mec_last_inference_count = 0
         self._mec_last_event_seq = 0
@@ -935,11 +914,6 @@ class TelemetryProcessManager:
             and self.is_collecting
             and processes.get("rfly_bridge") == "running"
         ):
-            if (
-                self._network_link_status.get("enabled")
-                and processes.get("network_link") != "running"
-            ):
-                return "degraded"
             if self._mec_status.get("enabled") and processes.get("mec") != "running":
                 return "degraded"
             return "connected"
@@ -985,96 +959,6 @@ class TelemetryProcessManager:
     def _snapshot_runtime_value(self, value):
         return copy.deepcopy(value) if value is not None else None
 
-    def _initial_network_link_status(
-        self,
-        *,
-        enabled: bool = False,
-        profile: str = "direct",
-        status: str | None = None,
-    ) -> dict:
-        return {
-            "enabled": bool(enabled),
-            "profile": profile,
-            "status": status or ("waiting" if enabled else "disabled"),
-            "latest_latency_ms": None,
-            "avg_latency_ms": None,
-            "p95_latency_ms": None,
-            "rx_packets": 0,
-            "tx_packets": 0,
-            "lost_packets": 0,
-            "loss_rate": 0.0,
-            "data_integrity": 1.0,
-            "_last_seq": None,
-            "_latency_samples": [],
-            "metrics_csv": None,
-        }
-
-    @staticmethod
-    def _safe_float(value):
-        try:
-            out = float(value)
-        except (TypeError, ValueError):
-            return None
-        return out if out == out else None
-
-    def _update_network_link_status_locked(self, frame: dict) -> None:
-        status = self._network_link_status
-        profile = str(frame.get("net_profile") or status.get("profile") or "direct")
-        has_network_fields = any(
-            key in frame
-            for key in (
-                "net_profile",
-                "net_seq",
-                "net_tx_ms",
-                "net_delay_ms",
-                "net_e2e_latency_ms",
-            )
-        )
-        if not status.get("enabled") and not has_network_fields:
-            return
-        status["enabled"] = profile != "direct"
-        status["profile"] = profile
-        status["status"] = "active" if has_network_fields else status.get("status", "waiting")
-        status["rx_packets"] = int(status.get("rx_packets") or 0) + 1
-
-        # 仅使用 emulator 生成的连续链路序号。业务层 seq 可能因多源采样
-        # 或 bridge 降采样而跳变，用它估算丢包会严重夸大 loss rate。
-        seq = self._safe_float(frame.get("net_seq"))
-        if seq is not None:
-            seq = int(seq)
-            last_seq = status.get("_last_seq")
-            if last_seq is not None and seq > int(last_seq) + 1:
-                status["lost_packets"] = int(status.get("lost_packets") or 0) + (
-                    seq - int(last_seq) - 1
-                )
-            status["_last_seq"] = seq
-
-        latency = self._safe_float(frame.get("net_delay_ms"))
-        if latency is None:
-            latency = self._safe_float(frame.get("net_e2e_latency_ms"))
-        if latency is not None:
-            samples = list(status.get("_latency_samples") or [])
-            samples.append(float(latency))
-            samples = samples[-500:]
-            ordered = sorted(samples)
-            p95_idx = int(0.95 * (len(ordered) - 1)) if ordered else 0
-            status["_latency_samples"] = samples
-            status["latest_latency_ms"] = round(float(latency), 3)
-            status["avg_latency_ms"] = round(sum(samples) / len(samples), 3)
-            status["p95_latency_ms"] = round(ordered[p95_idx], 3)
-
-        rx_packets = int(status.get("rx_packets") or 0)
-        lost_packets = int(status.get("lost_packets") or 0)
-        total_packets = max(1, rx_packets + lost_packets)
-        status["loss_rate"] = round(lost_packets / total_packets, 6)
-        status["data_integrity"] = round(rx_packets / total_packets, 6)
-
-    def _public_network_link_status(self) -> dict:
-        status = self._snapshot_runtime_value(self._network_link_status) or {}
-        status.pop("_last_seq", None)
-        status.pop("_latency_samples", None)
-        return status
-
     def _initial_mec_status(
         self,
         *,
@@ -1112,9 +996,6 @@ class TelemetryProcessManager:
             "latest_inference_ms": None,
             "avg_inference_ms": None,
             "p95_inference_ms": None,
-            "latest_decision_latency_ms": None,
-            "avg_decision_latency_ms": None,
-            "p95_decision_latency_ms": None,
             "inference_count": 0,
             "inference_queue_drops": 0,
         }
@@ -1130,24 +1011,13 @@ class TelemetryProcessManager:
     def _record_center_inference_metrics(
         self,
         *,
-        canonical: dict,
         inference_ms: float,
-        completed_ms: int,
     ) -> None:
-        decision_latency_ms = None
-        net_tx_ms = self._safe_float(canonical.get("net_tx_ms"))
-        if net_tx_ms is not None:
-            decision_latency_ms = max(0.0, float(completed_ms) - net_tx_ms)
         with self._lock:
             self._center_inference_samples.append(float(inference_ms))
             self._center_inference_count += 1
-            if decision_latency_ms is not None:
-                self._center_decision_latency_samples.append(decision_latency_ms)
             avg_inference, p95_inference = self._sample_summary(
                 self._center_inference_samples
-            )
-            avg_decision, p95_decision = self._sample_summary(
-                self._center_decision_latency_samples
             )
             self._inference_status.update(
                 {
@@ -1159,15 +1029,6 @@ class TelemetryProcessManager:
                     else None,
                     "p95_inference_ms": round(p95_inference, 3)
                     if p95_inference is not None
-                    else None,
-                    "latest_decision_latency_ms": round(decision_latency_ms, 3)
-                    if decision_latency_ms is not None
-                    else None,
-                    "avg_decision_latency_ms": round(avg_decision, 3)
-                    if avg_decision is not None
-                    else None,
-                    "p95_decision_latency_ms": round(p95_decision, 3)
-                    if p95_decision is not None
                     else None,
                     "inference_count": self._center_inference_count,
                     "inference_queue_drops": int(self._inference_queue_drops),
@@ -1206,9 +1067,6 @@ class TelemetryProcessManager:
             "mec_inference_ms": "latest_inference_ms",
             "mec_avg_inference_ms": "avg_inference_ms",
             "mec_p95_inference_ms": "p95_inference_ms",
-            "mec_decision_latency_ms": "latest_decision_latency_ms",
-            "mec_avg_decision_latency_ms": "avg_decision_latency_ms",
-            "mec_p95_decision_latency_ms": "p95_decision_latency_ms",
             "mec_inference_count": "inference_count",
             "mec_inference_queue_drops": "inference_queue_drops",
         }
@@ -1232,20 +1090,8 @@ class TelemetryProcessManager:
             startup_phase = self._startup_phase
             timeout_reason = self._timeout_reason
             replay_metrics = self._snapshot_runtime_value(self._replay_metrics)
-            network_link = self._public_network_link_status()
             mec = self._snapshot_runtime_value(self._mec_status) or {}
             inference = self._snapshot_runtime_value(self._inference_status) or {}
-            if network_link.get("enabled"):
-                proc_status = processes.get("network_link")
-                if proc_status == "running" and network_link.get("status") == "waiting":
-                    network_link["status"] = "running"
-                elif proc_status in {"stopped", "failed"}:
-                    network_link["status"] = proc_status
-                if processes.get("network_metrics_csv"):
-                    network_link["metrics_csv"] = processes.get("network_metrics_csv")
-                metrics = processes.get("network_metrics")
-                if metrics:
-                    network_link.update(metrics)
             if mec.get("enabled"):
                 proc_status = processes.get("mec")
                 if proc_status == "running" and mec.get("status") == "waiting":
@@ -1301,7 +1147,6 @@ class TelemetryProcessManager:
                 "startup_phase": startup_phase,
                 "timeout_reason": timeout_reason,
                 "replay_metrics": replay_metrics,
-                "network_link": network_link,
                 "mec": mec,
                 "inference": inference,
                 "processing_pipeline": {
@@ -1348,9 +1193,6 @@ class TelemetryProcessManager:
                     "pos_y",
                     "pos_z",
                     "fault_prob",
-                    "net_latency_ms",
-                    "net_loss_rate",
-                    "net_data_integrity",
                 ]
             }
 
@@ -1390,9 +1232,6 @@ class TelemetryProcessManager:
             "pos_y": series("pos_y", 3),
             "pos_z": series("pos_z", 3),
             "fault_prob": series("fault_prob", 4),
-            "net_latency_ms": optional_series("net_latency_ms", 3),
-            "net_loss_rate": optional_series("net_loss_rate", 6),
-            "net_data_integrity": optional_series("net_data_integrity", 6),
         }
 
     def _model_summary(self, meta: dict | None) -> dict | None:
@@ -1601,20 +1440,10 @@ class TelemetryProcessManager:
         if backend_name == "rfly":
             rfly_options = dict(rfly_options or {})
             cfg = self.app.config if self.app else {}
-            network_profile = str(
-                rfly_options.get("network_profile")
-                or cfg.get("RFLY_NETWORK_PROFILE")
-                or DEFAULT_RFLY_NETWORK_PROFILE
-            ).strip().lower()
-            if network_profile not in RFLY_NETWORK_PROFILES:
-                raise RuntimeError(
-                    "RflySim 5G 链路场景仅支持 direct、baseline、enhanced_5g 或 degraded"
-                )
-            rfly_options["network_profile"] = network_profile
             inference_location = str(
                 rfly_options.get("inference_location")
                 or cfg.get("RFLY_INFERENCE_LOCATION")
-                or "mec"
+                or "center"
             ).strip().lower()
             if inference_location not in RFLY_INFERENCE_LOCATIONS:
                 raise RuntimeError("RflySim 推理位置仅支持 center 或 mec")
@@ -1667,9 +1496,6 @@ class TelemetryProcessManager:
             meta={
                 "backend": backend_name,
                 "source_asset_id": replay_asset_id,
-                "network_profile": backend_options.get("network_profile")
-                if backend_name == "rfly"
-                else None,
                 "inference_location": backend_options.get("inference_location")
                 if backend_name == "rfly"
                 else "center",
@@ -1722,14 +1548,8 @@ class TelemetryProcessManager:
                     stop_error = e
             if self._detecting:
                 self.stop_detection()
-            # backend.stop() 后进程已结束，但 metrics CSV 仍可读取。冻结最终
-            # emulator KPI，确保会话 meta 使用链路统计而不是接收端临时估算。
-            final_network_link = self.get_status().get("network_link") or {}
             final_mec = self.get_status().get("mec") or {}
             with self._lock:
-                for key, value in final_network_link.items():
-                    if key in self._network_link_status and value is not None:
-                        self._network_link_status[key] = value
                 for key, value in final_mec.items():
                     if key in self._mec_status and value is not None:
                         self._mec_status[key] = value
@@ -1942,12 +1762,7 @@ class TelemetryProcessManager:
                         or frame.get("actuator_source"),
                     )
                     self._input_contract_status = input_contract_status
-            self._update_network_link_status_locked(frame)
             self._update_mec_status_locked(frame)
-            network_link = self._network_link_status
-            net_latency_ms = self._safe_float(frame.get("net_delay_ms"))
-            if net_latency_ms is None:
-                net_latency_ms = self._safe_float(frame.get("net_e2e_latency_ms"))
             self._realtime_buffer.append(
                 {
                     "frame_idx": frame_idx,
@@ -1969,9 +1784,6 @@ class TelemetryProcessManager:
                         ),
                     ),
                     "fault_prob": self._current_fault_prob,
-                    "net_latency_ms": net_latency_ms,
-                    "net_loss_rate": network_link.get("loss_rate"),
-                    "net_data_integrity": network_link.get("data_integrity"),
                 }
             )
             detector = self._detector
@@ -2068,9 +1880,7 @@ class TelemetryProcessManager:
         if update.stale:
             return
         self._record_center_inference_metrics(
-            canonical=canonical,
             inference_ms=inference_ms,
-            completed_ms=int(time.time() * 1000),
         )
         if update.result is None:
             return
@@ -2275,22 +2085,8 @@ class TelemetryProcessManager:
     def _finalize_session(
         self, session_id, duration, frame_count, fault_count, replay_metrics=None
     ):
-        network_link = self._public_network_link_status()
         mec = self._snapshot_runtime_value(self._mec_status) or {}
         inference = self._snapshot_runtime_value(self._inference_status) or {}
-        tx_packets = int(network_link.get("tx_packets") or 0)
-        network_link.update(
-            {
-                "application_rx_packets": int(frame_count),
-                "application_delivery_rate": round(
-                    min(1.0, frame_count / tx_packets), 6
-                )
-                if tx_packets > 0
-                else None,
-                "frame_queue_drops": int(self._frame_queue_drops),
-                "inference_queue_drops": int(self._inference_queue_drops),
-            }
-        )
         self._persistence.finalize_session(
             session_id=session_id,
             duration=duration,
@@ -2298,7 +2094,6 @@ class TelemetryProcessManager:
             fault_count=fault_count,
             replay_metrics=replay_metrics,
             fault_prob_curve=list(self._fault_prob_curve),
-            network_link=network_link,
             mec=mec,
             inference=inference,
         )

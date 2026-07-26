@@ -284,21 +284,7 @@ class Config:
     RFLY_BUAA_AUTO_CONTROL = _get_env_bool('RFLY_BUAA_AUTO_CONTROL', False)
     RFLY_FORWARD_HOST = os.getenv('RFLY_FORWARD_HOST', '127.0.0.1')
     RFLY_FORWARD_PORT = int(os.getenv('RFLY_FORWARD_PORT', '15550'))
-    RFLY_NETWORK_PROFILE = os.getenv('RFLY_NETWORK_PROFILE', 'enhanced_5g').strip().lower()
-    RFLY_5G_LINK_LISTEN_HOST = os.getenv('RFLY_5G_LINK_LISTEN_HOST', RFLY_FORWARD_HOST)
-    RFLY_5G_LINK_LISTEN_PORT = int(os.getenv('RFLY_5G_LINK_LISTEN_PORT', '15551'))
-    RFLY_5G_LINK_SCRIPT = _resolve_optional_path(
-        'RFLY_5G_LINK_SCRIPT',
-        'packages/rfly_bridge/rfly_bridge/network_emulator.py',
-        base_dir=_REPO_ROOT_PATH,
-    )
-    RFLY_5G_LINK_CONFIG_CSV = _resolve_optional_path(
-        'RFLY_5G_LINK_CONFIG_CSV',
-        'packages/rfly_bridge/rfly_bridge/configs/network_profiles.csv',
-        base_dir=_REPO_ROOT_PATH,
-    )
-    RFLY_5G_LINK_METRICS_INTERVAL_S = float(os.getenv('RFLY_5G_LINK_METRICS_INTERVAL_S', '1.0'))
-    RFLY_INFERENCE_LOCATION = os.getenv('RFLY_INFERENCE_LOCATION', 'mec').strip().lower()
+    RFLY_INFERENCE_LOCATION = os.getenv('RFLY_INFERENCE_LOCATION', 'center').strip().lower()
     RFLY_MEC_LISTEN_HOST = os.getenv('RFLY_MEC_LISTEN_HOST', RFLY_FORWARD_HOST)
     RFLY_MEC_LISTEN_PORT = int(os.getenv('RFLY_MEC_LISTEN_PORT', '15552'))
     RFLY_MEC_FORWARD_HOST = os.getenv('RFLY_MEC_FORWARD_HOST', RFLY_FORWARD_HOST)

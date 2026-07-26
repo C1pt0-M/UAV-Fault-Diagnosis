@@ -23,14 +23,6 @@ def _now_ms() -> int:
     return int(time.time() * 1000)
 
 
-def _decision_latency_ms(net_tx_ms, completed_ms: int) -> float | None:
-    try:
-        value = float(net_tx_ms)
-    except (TypeError, ValueError):
-        return None
-    return round(max(0.0, float(completed_ms) - value), 3)
-
-
 def _event_payload(event) -> dict:
     return {
         "start_t": float(event.start_t),
@@ -76,7 +68,6 @@ class MecTelemetryService:
             "confidence": 1.0,
             "fault_prob": 0.0,
             "inference_ms": None,
-            "decision_latency_ms": None,
             "alert_active": False,
             "event_seq": 0,
             "events": [],
@@ -87,7 +78,6 @@ class MecTelemetryService:
         self.inference_count = 0
         self.inference_drops = 0
         self.inference_samples: deque[float] = deque(maxlen=1000)
-        self.decision_latency_samples: deque[float] = deque(maxlen=1000)
         self.stop_event = threading.Event()
 
     @staticmethod
@@ -152,16 +142,10 @@ class MecTelemetryService:
                 continue
             result = detector.predict(window)
             inference_ms = (time.perf_counter() - started) * 1000.0
-            completed_ms = _now_ms()
-            decision_latency_ms = _decision_latency_ms(
-                canonical.get("net_tx_ms"), completed_ms
-            )
             if generation != self.inference_generation or not self.flight_active:
                 continue
             self.inference_count += 1
             self.inference_samples.append(inference_ms)
-            if decision_latency_ms is not None:
-                self.decision_latency_samples.append(decision_latency_ms)
             if result is None:
                 continue
             fault_prob = float(result.get("fault_prob", 0.0))
@@ -183,7 +167,6 @@ class MecTelemetryService:
                     "confidence": float(result.get("confidence", 0.0)),
                     "fault_prob": fault_prob,
                     "inference_ms": round(inference_ms, 3),
-                    "decision_latency_ms": decision_latency_ms,
                     "alert_active": bool(active or fault_prob >= self.aggregator.onset_th),
                     "event_seq": event_seq,
                     "events": event_payloads,
@@ -211,7 +194,6 @@ class MecTelemetryService:
                 "confidence": 1.0,
                 "fault_prob": 0.0,
                 "inference_ms": None,
-                "decision_latency_ms": None,
                 "alert_active": False,
                 "events": [],
                 "contract_status": "waiting_for_arm",
@@ -238,7 +220,6 @@ class MecTelemetryService:
                     "confidence": 1.0,
                     "fault_prob": 0.0,
                     "inference_ms": None,
-                    "decision_latency_ms": None,
                     "alert_active": False,
                     "events": [],
                     "contract_status": "waiting_for_window",
@@ -262,7 +243,6 @@ class MecTelemetryService:
                         "confidence": 1.0,
                         "fault_prob": 0.0,
                         "inference_ms": None,
-                        "decision_latency_ms": None,
                         "alert_active": False,
                         "events": [],
                         "model_status": "blocked_by_contract",
@@ -284,15 +264,6 @@ class MecTelemetryService:
         samples = sorted(self.inference_samples)
         average = sum(samples) / len(samples) if samples else None
         p95 = samples[int(0.95 * (len(samples) - 1))] if samples else None
-        decision_samples = sorted(self.decision_latency_samples)
-        decision_average = (
-            sum(decision_samples) / len(decision_samples) if decision_samples else None
-        )
-        decision_p95 = (
-            decision_samples[int(0.95 * (len(decision_samples) - 1))]
-            if decision_samples
-            else None
-        )
         row.update(
             {
                 "mec_enabled": 1,
@@ -304,13 +275,6 @@ class MecTelemetryService:
                 "mec_inference_ms": result.get("inference_ms"),
                 "mec_avg_inference_ms": None if average is None else round(average, 3),
                 "mec_p95_inference_ms": None if p95 is None else round(p95, 3),
-                "mec_decision_latency_ms": result.get("decision_latency_ms"),
-                "mec_avg_decision_latency_ms": None
-                if decision_average is None
-                else round(decision_average, 3),
-                "mec_p95_decision_latency_ms": None
-                if decision_p95 is None
-                else round(decision_p95, 3),
                 "mec_alert_active": int(bool(result.get("alert_active"))),
                 "mec_event_seq": int(result.get("event_seq") or 0),
                 "mec_events": result.get("events") or [],
@@ -331,15 +295,6 @@ class MecTelemetryService:
         samples = sorted(self.inference_samples)
         avg = sum(samples) / len(samples) if samples else 0.0
         p95 = samples[int(0.95 * (len(samples) - 1))] if samples else 0.0
-        decision_samples = sorted(self.decision_latency_samples)
-        decision_avg = (
-            sum(decision_samples) / len(decision_samples) if decision_samples else 0.0
-        )
-        decision_p95 = (
-            decision_samples[int(0.95 * (len(decision_samples) - 1))]
-            if decision_samples
-            else 0.0
-        )
         with self.metrics_csv.open("w", newline="", encoding="utf-8") as handle:
             writer = csv.DictWriter(
                 handle,
@@ -349,8 +304,6 @@ class MecTelemetryService:
                     "inference_queue_drops",
                     "inference_avg_ms",
                     "inference_p95_ms",
-                    "decision_latency_avg_ms",
-                    "decision_latency_p95_ms",
                 ],
             )
             writer.writeheader()
@@ -361,8 +314,6 @@ class MecTelemetryService:
                     "inference_queue_drops": self.inference_drops,
                     "inference_avg_ms": round(avg, 3),
                     "inference_p95_ms": round(p95, 3),
-                    "decision_latency_avg_ms": round(decision_avg, 3),
-                    "decision_latency_p95_ms": round(decision_p95, 3),
                 }
             )
 

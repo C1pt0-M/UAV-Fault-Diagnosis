@@ -328,7 +328,6 @@ def test_telemetry_finalize_session_delegates_persistence_writes(app, monkeypatc
         fault_count,
         replay_metrics,
         fault_prob_curve,
-        network_link=None,
         mec=None,
         inference=None,
     ):
@@ -338,7 +337,6 @@ def test_telemetry_finalize_session_delegates_persistence_writes(app, monkeypatc
         captured["fault_count"] = fault_count
         captured["replay_metrics"] = replay_metrics
         captured["fault_prob_curve"] = fault_prob_curve
-        captured["network_link"] = network_link
         captured["mec"] = mec
         captured["inference"] = inference
 
@@ -356,10 +354,6 @@ def test_telemetry_finalize_session_delegates_persistence_writes(app, monkeypatc
     assert captured["fault_count"] == 2
     assert captured["replay_metrics"] == replay_metrics
     assert captured["fault_prob_curve"] == [{"time_s": 0.1, "fault_prob": 0.8}]
-    assert captured["network_link"]["enabled"] is False
-    assert captured["network_link"]["profile"] == "direct"
-    assert captured["network_link"]["application_rx_packets"] == 45
-    assert captured["network_link"]["application_delivery_rate"] is None
     assert captured["mec"] == telemetry_manager._mec_status
     assert captured["inference"] == telemetry_manager._inference_status
 
@@ -392,8 +386,6 @@ def test_telemetry_finalize_session_skips_replay_asset_registration(app, tmp_pat
             "location": "center",
             "avg_inference_ms": 7.2,
             "p95_inference_ms": 9.8,
-            "avg_decision_latency_ms": 36.4,
-            "p95_decision_latency_ms": 41.1,
         },
     )
 
@@ -404,7 +396,7 @@ def test_telemetry_finalize_session_skips_replay_asset_registration(app, tmp_pat
         assert session.get_meta()["fault_prob_curve_points"] == 1
         assert session.get_meta()["inference_location"] == "center"
         assert session.get_meta()["inference"]["avg_inference_ms"] == 7.2
-        assert session.get_meta()["inference"]["p95_decision_latency_ms"] == 41.1
+        assert session.get_meta()["inference"]["p95_inference_ms"] == 9.8
 
 
 def test_telemetry_finalize_session_registers_non_replay_session_asset(

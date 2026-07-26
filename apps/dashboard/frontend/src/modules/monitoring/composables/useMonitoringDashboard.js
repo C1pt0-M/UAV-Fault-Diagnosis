@@ -8,7 +8,6 @@ import {
   monitoringBackendOptions,
   monitoringCopy,
   rflyInferenceLocationOptions,
-  rflyNetworkProfileOptions,
   monitoringStateLabels,
   resolveMonitoringBackendOptions,
   resolveMonitoringState,
@@ -59,13 +58,6 @@ function formatMs(value) {
   return `${parsed.toFixed(parsed >= 100 ? 0 : 1)} ms`
 }
 
-function formatRate(value) {
-  if (value === null || value === undefined || value === '') return monitoringCopy.noValue
-  const parsed = Number(value)
-  if (!Number.isFinite(parsed)) return monitoringCopy.noValue
-  return `${(parsed * 100).toFixed(1)}%`
-}
-
 function formatInputContractZeroGroups(groups) {
   const labels = {
     actuator_outputs: '动力输出',
@@ -91,14 +83,12 @@ export function useMonitoringDashboard() {
   const sessionDetail = ref(null)
   const detailVisible = ref(false)
   const realtime = ref({ times: [] })
-  const networkComparison = ref({ profiles: [], complete: false })
   const selectedBackend = ref('replay')
   const selectedDuration = ref(60)
   const selectedModel = ref('')
   const selectedReplayAssetId = ref(null)
   const rflyPx4mavctrlPath = ref('')
-  const rflyNetworkProfile = ref('enhanced_5g')
-  const rflyInferenceLocation = ref('mec')
+  const rflyInferenceLocation = ref('center')
   const faultHandoffDialogVisible = ref(false)
   const faultHandoffPayload = ref({
     session_id: null,
@@ -133,45 +123,11 @@ export function useMonitoringDashboard() {
     return option?.display_name || option?.name || selectedModel.value
   })
   const compactModelLabel = computed(() => formatMonitoringModelName(activeModelLabel.value))
-  const networkLink = computed(() => runStatus.network_link || {})
-  const networkProcesses = computed(() => runStatus.processes || {})
-  const mec = computed(() => runStatus.mec || {})
   const inference = computed(() => runStatus.inference || {})
-  const networkLatencySeries = computed(() => (
-    Array.isArray(realtime.value?.net_latency_ms) ? realtime.value.net_latency_ms : []
-  ))
-  const networkLossSeries = computed(() => (
-    Array.isArray(realtime.value?.net_loss_rate) ? realtime.value.net_loss_rate : []
-  ))
-  const networkIntegritySeries = computed(() => (
-    Array.isArray(realtime.value?.net_data_integrity) ? realtime.value.net_data_integrity : []
-  ))
-  const rflyNetworkProfileLabel = computed(() => {
-    const activeProfile = networkLink.value?.enabled
-      ? networkLink.value?.profile
-      : rflyNetworkProfile.value
-    const option = rflyNetworkProfileOptions.find((item) => item.value === activeProfile)
-    return option?.label || activeProfile || monitoringCopy.noValue
-  })
-  const networkLatencyText = computed(() => formatMs(networkLink.value?.avg_latency_ms))
-  const networkP95Text = computed(() => formatMs(networkLink.value?.p95_latency_ms))
-  const networkLossText = computed(() => (
-    networkLink.value?.enabled
-      ? formatRate(networkLink.value?.loss_rate)
-      : monitoringCopy.noValue
-  ))
-  const networkIntegrityText = computed(() => (
-    networkLink.value?.enabled
-      ? formatRate(networkLink.value?.data_integrity)
-      : monitoringCopy.noValue
-  ))
-  const networkTone = computed(() => {
-    if (!networkLink.value?.enabled) return 'offline'
-    const lossRate = Number(networkLink.value?.loss_rate || 0)
-    const p95Latency = Number(networkLink.value?.p95_latency_ms || 0)
-    if (lossRate >= 0.03 || p95Latency >= 120) return 'danger'
-    if (lossRate >= 0.01 || p95Latency >= 60) return 'warn'
-    return 'ok'
+  const inferenceLocationLabel = computed(() => {
+    const location = inference.value?.location || rflyInferenceLocation.value
+    const option = rflyInferenceLocationOptions.find((item) => item.value === location)
+    return option?.label || location || monitoringCopy.noValue
   })
   const faultPeakText = computed(() => {
     const values = Array.isArray(realtime.value?.fault_prob) ? realtime.value.fault_prob : []
@@ -359,22 +315,13 @@ export function useMonitoringDashboard() {
       }
     ]
     if (selectedBackend.value === 'rfly') {
-      cards.push(
-        {
-          label: '5G链路场景',
-          value: rflyNetworkProfileLabel.value,
-          meta: `均值 ${networkLatencyText.value} / P95 ${networkP95Text.value}`,
-          tone: networkTone.value,
-          icon: 'DataLine'
-        },
-        {
-          label: '链路完整率',
-          value: networkIntegrityText.value,
-          meta: `丢包 ${networkLossText.value}`,
-          tone: networkTone.value,
-          icon: 'DocumentChecked'
-        }
-      )
+      cards.push({
+        label: '推理位置',
+        value: inferenceLocationLabel.value,
+        meta: `均值 ${formatMs(inference.value?.avg_inference_ms)} / P95 ${formatMs(inference.value?.p95_inference_ms)}`,
+        tone: inference.value?.status === 'active' ? 'ok' : 'offline',
+        icon: 'Cpu'
+      })
     }
     return cards
   })
@@ -468,17 +415,11 @@ export function useMonitoringDashboard() {
     sessions.value = response.data?.items || []
   }
 
-  async function loadNetworkComparison() {
-    const response = await telemetryApi.networkComparison()
-    networkComparison.value = response.data || { profiles: [], complete: false }
-  }
-
   async function refreshDashboard() {
     await Promise.all([
       fetchStatus(),
       loadSessions(),
-      fetchRealtime(),
-      loadNetworkComparison()
+      fetchRealtime()
     ])
   }
 
@@ -530,9 +471,6 @@ export function useMonitoringDashboard() {
             : undefined,
           rfly_px4mavctrl_path: selectedBackend.value === 'rfly' && rflyPath
             ? rflyPath
-            : undefined,
-          rfly_network_profile: selectedBackend.value === 'rfly'
-            ? rflyNetworkProfile.value
             : undefined,
           rfly_inference_location: selectedBackend.value === 'rfly'
             ? rflyInferenceLocation.value
@@ -670,17 +608,6 @@ export function useMonitoringDashboard() {
   })
 
   watch(telemetryCapabilities, (capabilities) => {
-    const defaultProfile = capabilities?.rfly_default_network_profile
-    const currentProfileOk = rflyNetworkProfileOptions.some(
-      (item) => item.value === rflyNetworkProfile.value
-    )
-    if (
-      defaultProfile &&
-      !currentProfileOk &&
-      rflyNetworkProfileOptions.some((item) => item.value === defaultProfile)
-    ) {
-      rflyNetworkProfile.value = defaultProfile
-    }
     const defaultLocation = capabilities?.rfly_default_inference_location
     if (
       defaultLocation &&
@@ -707,17 +634,8 @@ export function useMonitoringDashboard() {
     faultHandoffPayload,
     inputContractLabel,
     inputContractMeta,
-    inference,
-    loadNetworkComparison,
     loadSessions,
     metrics,
-    mec,
-    networkComparison,
-    networkIntegritySeries,
-    networkLatencySeries,
-    networkLink,
-    networkLossSeries,
-    networkProcesses,
     onlineModels,
     openFaultHandoffDialog,
     openSessionDetail,
@@ -730,7 +648,6 @@ export function useMonitoringDashboard() {
     rflyDiagnostics,
     rflyDiagnosticsLoading,
     rflyInferenceLocation,
-    rflyNetworkProfile,
     rflyPx4mavctrlPath,
     rflyReady,
     riskScore,

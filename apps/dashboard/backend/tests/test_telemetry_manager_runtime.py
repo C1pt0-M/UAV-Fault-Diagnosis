@@ -276,136 +276,6 @@ def test_get_status_exposes_predictive_warning_fields():
     assert status["top_recommendations"][0]["priority"] == "P1"
 
 
-def test_network_link_status_updates_from_5g_frame_fields():
-    mgr = TelemetryProcessManager()
-    mgr._reset_runtime_state()
-    mgr._backend_name = "rfly"
-    mgr._network_link_status = mgr._initial_network_link_status(
-        enabled=True,
-        profile="enhanced_5g",
-        status="running",
-    )
-
-    base_frame = {
-        "time_s": 0.02,
-        "actuator_out_1": 1300.0,
-        "actuator_out_2": 1300.0,
-        "actuator_out_3": 1300.0,
-        "actuator_out_4": 1300.0,
-        "att_q_w": 1.0,
-        "att_q_x": 0.0,
-        "att_q_y": 0.0,
-        "att_q_z": 0.0,
-        "vel_x": 0.1,
-        "vel_y": 0.0,
-        "vel_z": -0.1,
-        "accel_x": 0.0,
-        "accel_y": 0.0,
-        "accel_z": -9.8,
-    }
-    first = {
-        **base_frame,
-        "seq": 1,
-        "net_seq": 1,
-        "net_profile": "enhanced_5g",
-        "net_delay_ms": 18.0,
-        "net_e2e_latency_ms": 20.0,
-    }
-    second = {
-        **base_frame,
-        "seq": 3,
-        "net_seq": 3,
-        "time_s": 0.06,
-        "net_profile": "enhanced_5g",
-        "net_delay_ms": 22.0,
-        "net_e2e_latency_ms": 24.0,
-    }
-
-    mgr.process_transport_frame(first, [first], source_backend="rfly")
-    mgr.process_transport_frame(second, [first, second], source_backend="rfly")
-
-    status = mgr.get_status()["network_link"]
-    assert status["enabled"] is True
-    assert status["profile"] == "enhanced_5g"
-    assert status["status"] == "active"
-    assert status["rx_packets"] == 2
-    assert status["lost_packets"] == 1
-    assert status["loss_rate"] == pytest.approx(1 / 3)
-    assert status["data_integrity"] == pytest.approx(2 / 3)
-    assert status["avg_latency_ms"] == pytest.approx(20.0)
-    assert status["latest_latency_ms"] == pytest.approx(22.0)
-
-
-def test_network_link_ignores_non_contiguous_upstream_sequence_numbers():
-    mgr = TelemetryProcessManager()
-    mgr._reset_runtime_state()
-    mgr._network_link_status = mgr._initial_network_link_status(
-        enabled=True,
-        profile="enhanced_5g",
-        status="active",
-    )
-    base_frame = {
-        "time_s": 0.02,
-        "motor1": 0.1,
-        "motor2": 0.1,
-        "motor3": 0.1,
-        "motor4": 0.1,
-        "accel_x": 0.0,
-        "accel_y": 0.0,
-        "accel_z": -9.8,
-        "net_profile": "enhanced_5g",
-        "net_delay_ms": 20.0,
-    }
-
-    first = {**base_frame, "seq": 100, "net_seq": 1}
-    second = {**base_frame, "seq": 250, "net_seq": 2, "time_s": 0.04}
-    mgr.process_transport_frame(first, [first], source_backend="rfly")
-    mgr.process_transport_frame(second, [first, second], source_backend="rfly")
-
-    status = mgr.get_status()["network_link"]
-    assert status["rx_packets"] == 2
-    assert status["lost_packets"] == 0
-    assert status["loss_rate"] == 0.0
-
-
-def test_network_link_status_prefers_emulator_metrics_over_receiver_backlog(monkeypatch):
-    mgr = TelemetryProcessManager()
-    mgr._reset_runtime_state()
-    mgr._network_link_status = mgr._initial_network_link_status(
-        enabled=True,
-        profile="enhanced_5g",
-        status="active",
-    )
-    mgr._network_link_status.update(
-        avg_latency_ms=304.0,
-        p95_latency_ms=410.0,
-        loss_rate=0.2,
-        data_integrity=0.8,
-    )
-    monkeypatch.setattr(mgr, "_backend", types.SimpleNamespace(
-        status=lambda: {
-            "network_link": "running",
-            "network_metrics": {
-                "avg_latency_ms": 29.4,
-                "p95_latency_ms": 32.0,
-                "rx_packets": 1000,
-                "tx_packets": 994,
-                "lost_packets": 6,
-                "loss_rate": 0.006,
-                "data_integrity": 0.994,
-                "queue_len": 1,
-            },
-        }
-    ))
-
-    status = mgr.get_status()["network_link"]
-
-    assert status["avg_latency_ms"] == 29.4
-    assert status["p95_latency_ms"] == 32.0
-    assert status["loss_rate"] == 0.006
-    assert status["data_integrity"] == 0.994
-
-
 def test_predictive_warning_transitions_from_preview_to_confirmed():
     mgr = TelemetryProcessManager()
     mgr._reset_runtime_state()
@@ -591,27 +461,6 @@ def test_realtime_data_derives_attitude_from_replay_quaternion_frame():
     assert data["pos_z"] == [15.2]
 
 
-def test_realtime_data_exposes_5g_link_trend_series():
-    mgr = TelemetryProcessManager()
-    mgr._reset_runtime_state()
-    mgr._realtime_buffer.clear()
-    mgr._backend_name = "rfly"
-
-    frame = {
-        "time_s": 2.0,
-        "seq": 10,
-        "net_profile": "enhanced_5g",
-        "net_delay_ms": 24.5,
-        "net_e2e_latency_ms": 29.75,
-    }
-    mgr.process_transport_frame(frame, [frame], source_backend="rfly")
-    data = mgr.get_realtime_data()
-
-    assert data["net_latency_ms"] == [24.5]
-    assert data["net_loss_rate"] == [0.0]
-    assert data["net_data_integrity"] == [1.0]
-
-
 def test_mec_result_is_consumed_without_local_detector():
     mgr = TelemetryProcessManager()
     mgr._reset_runtime_state()
@@ -635,9 +484,6 @@ def test_mec_result_is_consumed_without_local_detector():
         "mec_inference_ms": 4.2,
         "mec_avg_inference_ms": 4.0,
         "mec_p95_inference_ms": 5.1,
-        "mec_decision_latency_ms": 31.2,
-        "mec_avg_decision_latency_ms": 29.8,
-        "mec_p95_decision_latency_ms": 35.4,
         "mec_event_seq": 0,
         "mec_events": [],
     }
@@ -654,34 +500,19 @@ def test_mec_result_is_consumed_without_local_detector():
         "latest_inference_ms": 4.2,
         "avg_inference_ms": 4.0,
         "p95_inference_ms": 5.1,
-        "latest_decision_latency_ms": 31.2,
-        "avg_decision_latency_ms": 29.8,
-        "p95_decision_latency_ms": 35.4,
         "inference_count": 1,
         "inference_queue_drops": 0,
     }
 
 
-def test_center_inference_status_tracks_runtime_and_data_to_decision_latency():
+def test_center_inference_status_tracks_runtime_latency():
     mgr = TelemetryProcessManager()
     mgr._reset_runtime_state()
     mgr._center_inference_count = 1000
 
-    mgr._record_center_inference_metrics(
-        canonical={"net_tx_ms": 970.0},
-        inference_ms=2.0,
-        completed_ms=1000,
-    )
-    mgr._record_center_inference_metrics(
-        canonical={"net_tx_ms": 960.0},
-        inference_ms=4.0,
-        completed_ms=1000,
-    )
-    mgr._record_center_inference_metrics(
-        canonical={"net_tx_ms": 950.0},
-        inference_ms=8.0,
-        completed_ms=1000,
-    )
+    mgr._record_center_inference_metrics(inference_ms=2.0)
+    mgr._record_center_inference_metrics(inference_ms=4.0)
+    mgr._record_center_inference_metrics(inference_ms=8.0)
 
     status = mgr.get_status()["inference"]
     assert status["location"] == "center"
@@ -689,9 +520,6 @@ def test_center_inference_status_tracks_runtime_and_data_to_decision_latency():
     assert status["latest_inference_ms"] == 8.0
     assert status["avg_inference_ms"] == 4.667
     assert status["p95_inference_ms"] == 4.0
-    assert status["latest_decision_latency_ms"] == 50.0
-    assert status["avg_decision_latency_ms"] == 40.0
-    assert status["p95_decision_latency_ms"] == 40.0
     assert status["inference_count"] == 1003
 
 

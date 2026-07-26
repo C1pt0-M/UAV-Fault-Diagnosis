@@ -1,4 +1,4 @@
-"""UDP JSON-lines 转发器，模拟 5G 上行链路。"""
+"""UDP JSON-lines 转发器。"""
 
 import json
 import socket

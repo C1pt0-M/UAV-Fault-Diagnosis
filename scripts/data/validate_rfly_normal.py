@@ -252,7 +252,6 @@ def main() -> int:
         "airframe": "iris",
         "map": "LowGPU",
         "udp_mode": 2,
-        "network_profile": "direct",
         "maneuver": args.maneuver,
         "target_altitude_m": args.target_altitude_m,
         "target_speed_m_s": args.target_speed_m_s,

@@ -30,18 +30,11 @@ const dashboardState = vi.hoisted(() => ({
   riskScore: '0.14',
   inputContractLabel: '字段正常',
   inputContractMeta: '动力字段：motor / healthy',
-  loadNetworkComparison: vi.fn(),
   loadSessions: vi.fn(),
   metrics: [
     { label: '当前状态', value: '检测中', meta: '会话 TS-262735', tone: 'active', icon: 'Monitor' },
     { label: '风险评分', value: '0.14', meta: '故障概率峰值 0.83', tone: 'ok', icon: 'Warning' }
   ],
-  networkComparison: { profiles: [], complete: false },
-  networkIntegritySeries: [],
-  networkLatencySeries: [],
-  networkLink: {},
-  networkLossSeries: [],
-  networkProcesses: {},
   onlineModels: [],
   openSessionDetail: vi.fn(),
   replayAssets: [],
@@ -52,7 +45,7 @@ const dashboardState = vi.hoisted(() => ({
   realtimePositionSeries: [],
   rflyDiagnostics: null,
   rflyDiagnosticsLoading: false,
-  rflyNetworkProfile: 'enhanced_5g',
+  rflyInferenceLocation: 'center',
   rflyPx4mavctrlPath: '',
   sampleSummaryItems: [
     { label: '采样点数量', value: 0 },
@@ -102,8 +95,6 @@ function mountPage() {
           template: '<section v-if="modelValue" class="el-dialog-stub"><slot name="header" /><slot /><footer><slot name="footer" /></footer></section>'
         },
         MonitoringControlPanel: { template: '<section>监测控制台</section>' },
-        Monitoring5GLinkPanel: { template: '<section>5G链路运行监测</section>' },
-        Monitoring5GComparisonPanel: { template: '<section>三档实时会话对比</section>' },
         MonitoringMetrics: { template: '<section>故障概率峰值</section>' },
         MonitoringRealtimeChartPanel: { template: '<section>故障概率趋势</section>' },
         MonitoringInsightsPanel: { template: '<section>最近告警事件 实时样本摘要</section>' },
@@ -129,7 +120,6 @@ describe('MonitoringPage telemetry cockpit', () => {
     expect(text).toContain('最近告警事件')
     expect(text).toContain('实时样本摘要')
     expect(text).toContain('监测会话记录')
-    expect(text).toContain('三档实时会话对比')
     expect(text).not.toContain('电池电压')
     expect(text).not.toContain('电机温度')
     expect(text).not.toContain('GPS')

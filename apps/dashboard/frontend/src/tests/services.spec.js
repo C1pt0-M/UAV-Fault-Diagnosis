@@ -63,9 +63,4 @@ describe('shared services', () => {
     })
   })
 
-  it('exposes the 5G realtime session comparison endpoint', () => {
-    telemetryApi.networkComparison()
-
-    expect(mocks.get).toHaveBeenCalledWith('/telemetry/network-comparison')
-  })
 })

@@ -22,5 +22,4 @@ def test_collect_rfly_normal_uses_direct_bridge_and_quality_gate():
     assert "trim_rfly_prearm.py" in script
     assert "--max-prearm-seconds 30" in script
     assert "--keep-prearm-seconds 20" in script
-    assert "udp_5g_link.py" not in script
     assert "start_dashboard" not in script

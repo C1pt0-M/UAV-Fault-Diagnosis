@@ -7,7 +7,7 @@ MAVSDK_GRPC_PORT = 50052  # 避免与注入脚本的默认 50051 冲突
 # ── pymavlink 连接 (补充字段) ──
 PYMAV_ADDRESS = "udpin:0.0.0.0:14030"  # PX4 onboard payload 链路远程端口 (SITL 下空闲)
 
-# ── UDP 转发 (模拟 5G 上行) ──
+# ── UDP 转发 ──
 UDP_FORWARD_HOST = "127.0.0.1"
 UDP_FORWARD_PORT = 15550
 
@@ -82,12 +82,6 @@ AUX_COLUMNS = [
     "pymav_highres_imu_seen",
     "pymav_attitude_target_seen",
     "pymav_actuator_control_seen",
-    "net_profile",
-    "net_seq",
-    "net_tx_ms",
-    "net_delay_ms",
-    "net_rx_ms",
-    "net_e2e_latency_ms",
     "mec_enabled",
     "mec_inference_location",
     "mec_rx_ms",
@@ -98,9 +92,6 @@ AUX_COLUMNS = [
     "mec_inference_ms",
     "mec_avg_inference_ms",
     "mec_p95_inference_ms",
-    "mec_decision_latency_ms",
-    "mec_avg_decision_latency_ms",
-    "mec_p95_decision_latency_ms",
     "mec_alert_active",
     "mec_event_seq",
     "mec_inference_count",

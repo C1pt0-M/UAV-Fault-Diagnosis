@@ -97,18 +97,6 @@ class TelemetryReceiver:
                         print(f"[receiver] 后续坏包将不再打印")
                     continue
 
-                net_tx_ms = row.get("net_tx_ms")
-                if net_tx_ms is not None:
-                    net_rx_ms = int(time.time() * 1000)
-                    row["net_rx_ms"] = net_rx_ms
-                    try:
-                        row["net_e2e_latency_ms"] = round(
-                            max(0.0, net_rx_ms - float(net_tx_ms)),
-                            3,
-                        )
-                    except (TypeError, ValueError):
-                        row["net_e2e_latency_ms"] = ""
-
                 if not _required_fields_ready(row, self._required_ready_fields):
                     if not waiting_logged:
                         print(
@@ -126,10 +114,7 @@ class TelemetryReceiver:
                 count += 1
 
                 # 丢包检测
-                seq = _coerce_seq(
-                    row.get("net_seq", row.get("seq", expected_seq or 0)),
-                    expected_seq or 0,
-                )
+                seq = _coerce_seq(row.get("seq"), expected_seq or 0)
                 if expected_seq is not None and seq > expected_seq:
                     lost += seq - expected_seq
                 expected_seq = seq + 1

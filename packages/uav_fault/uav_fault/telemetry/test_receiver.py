@@ -32,9 +32,6 @@ def test_telemetry_receiver_persists_live_baro_temp_and_actuator_controls(
         "actuator_ctrl_2": -0.22,
         "actuator_ctrl_3": 0.33,
         "actuator_ctrl_4": 0.44,
-        "net_profile": "enhanced_5g",
-        "net_tx_ms": 100000,
-        "net_delay_ms": 20.5,
     }
 
     class _FakeSocket:
@@ -59,8 +56,6 @@ def test_telemetry_receiver_persists_live_baro_temp_and_actuator_controls(
         "uav_fault.telemetry.receiver.socket.socket",
         lambda *args, **kwargs: _FakeSocket([json.dumps(payload).encode("utf-8")]),
     )
-    monkeypatch.setattr("uav_fault.telemetry.receiver.time.time", lambda: 100.1)
-
     rows = []
     csv_path = tmp_path / "receiver_live.csv"
     receiver = TelemetryReceiver(
@@ -84,13 +79,7 @@ def test_telemetry_receiver_persists_live_baro_temp_and_actuator_controls(
     assert saved_rows[0]["actuator_ctrl_2"] == "-0.22"
     assert saved_rows[0]["actuator_ctrl_3"] == "0.33"
     assert saved_rows[0]["actuator_ctrl_4"] == "0.44"
-    assert saved_rows[0]["net_profile"] == "enhanced_5g"
-    assert saved_rows[0]["net_tx_ms"] == "100000"
-    assert saved_rows[0]["net_delay_ms"] == "20.5"
-    assert saved_rows[0]["net_rx_ms"] == "100100"
-    assert saved_rows[0]["net_e2e_latency_ms"] == "100.0"
     assert rows[0][0]["baro_temp"] == 24.5
     assert rows[0][0]["actuator_ctrl_1"] == 0.11
-    assert rows[0][0]["net_e2e_latency_ms"] == 100.0
     assert rows[0][1][0]["baro_temp"] == 24.5
     assert rows[0][1][0]["actuator_ctrl_4"] == 0.44

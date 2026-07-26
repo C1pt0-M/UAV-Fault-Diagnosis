@@ -68,22 +68,6 @@
           </label>
 
           <label v-if="selectedBackend === 'rfly'" class="monitoring-field">
-            <span>{{ monitoringCopy.rflyNetworkProfileLabel }}</span>
-            <el-select
-              v-model="rflyNetworkProfile"
-              class="monitoring-control monitoring-control--network-profile"
-              data-test="rfly-network-profile"
-            >
-              <el-option
-                v-for="option in rflyNetworkProfileOptions"
-                :key="option.value"
-                :label="option.label"
-                :value="option.value"
-              />
-            </el-select>
-          </label>
-
-          <label v-if="selectedBackend === 'rfly'" class="monitoring-field">
             <span>{{ monitoringCopy.rflyInferenceLocationLabel }}</span>
             <el-select
               v-model="rflyInferenceLocation"
@@ -239,7 +223,6 @@ import {
   monitoringCopy,
   monitoringDurationOptions,
   rflyInferenceLocationOptions,
-  rflyNetworkProfileOptions,
   monitoringStateLabels
 } from '@/modules/monitoring/monitoringView'
 
@@ -268,8 +251,7 @@ const selectedDuration = defineModel('selectedDuration', { type: Number, require
 const selectedModel = defineModel('selectedModel', { type: String, required: true })
 const selectedReplayAssetId = defineModel('selectedReplayAssetId', { default: null })
 const rflyPx4mavctrlPath = defineModel('rflyPx4mavctrlPath', { type: String, default: '' })
-const rflyNetworkProfile = defineModel('rflyNetworkProfile', { type: String, default: 'enhanced_5g' })
-const rflyInferenceLocation = defineModel('rflyInferenceLocation', { type: String, default: 'mec' })
+const rflyInferenceLocation = defineModel('rflyInferenceLocation', { type: String, default: 'center' })
 
 const currentStateText = computed(() => monitoringStateLabels[props.currentState] || props.currentState)
 const currentBackendLabel = computed(() => {

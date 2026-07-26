@@ -57,7 +57,6 @@
           v-model:selected-model="selectedModel"
           v-model:selected-replay-asset-id="selectedReplayAssetId"
           v-model:rfly-px4mavctrl-path="rflyPx4mavctrlPath"
-          v-model:rfly-network-profile="rflyNetworkProfile"
           v-model:rfly-inference-location="rflyInferenceLocation"
           :action-loading="actionLoading"
           :backend-options="backendOptions"
@@ -76,24 +75,6 @@
         />
 
         <MonitoringMetrics :metrics="metrics" />
-
-        <Monitoring5GLinkPanel
-          v-if="selectedBackend === 'rfly'"
-          :network-link="networkLink"
-          :mec="mec"
-          :inference="inference"
-          :selected-profile="rflyNetworkProfile"
-          :processes="networkProcesses"
-          :times="realtimeChartTimes"
-          :latency-series="networkLatencySeries"
-          :loss-series="networkLossSeries"
-          :integrity-series="networkIntegritySeries"
-        />
-
-        <Monitoring5GComparisonPanel
-          :comparison="networkComparison"
-          @refresh="loadNetworkComparison"
-        />
 
         <MonitoringRealtimeChartPanel
           :chart-times="realtimeChartTimes"
@@ -171,8 +152,6 @@
 import { computed } from 'vue'
 import { ElButton, ElDialog } from 'element-plus'
 import MonitoringControlPanel from '@/modules/monitoring/components/MonitoringControlPanel.vue'
-import Monitoring5GComparisonPanel from '@/modules/monitoring/components/Monitoring5GComparisonPanel.vue'
-import Monitoring5GLinkPanel from '@/modules/monitoring/components/Monitoring5GLinkPanel.vue'
 import MonitoringInsightsPanel from '@/modules/monitoring/components/MonitoringInsightsPanel.vue'
 import MonitoringMetrics from '@/modules/monitoring/components/MonitoringMetrics.vue'
 import MonitoringRealtimeChartPanel from '@/modules/monitoring/components/MonitoringRealtimeChartPanel.vue'
@@ -196,17 +175,8 @@ const {
   faultHandoffPayload,
   inputContractLabel,
   inputContractMeta,
-  inference,
-  loadNetworkComparison,
   loadSessions,
   metrics,
-  mec,
-  networkComparison,
-  networkIntegritySeries,
-  networkLatencySeries,
-  networkLink,
-  networkLossSeries,
-  networkProcesses,
   onlineModels,
   openSessionDetail,
   replayAssets,
@@ -218,7 +188,6 @@ const {
   rflyDiagnostics,
   rflyDiagnosticsLoading,
   rflyInferenceLocation,
-  rflyNetworkProfile,
   rflyPx4mavctrlPath,
   riskScore,
   sampleSummaryItems,

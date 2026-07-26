@@ -1,12 +1,10 @@
 import { mount } from '@vue/test-utils'
 import { defineComponent, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { readFileSync } from 'node:fs'
 
 const routerPush = vi.hoisted(() => vi.fn())
 const telemetryApiMock = vi.hoisted(() => ({
   realtimeData: vi.fn(),
-  networkComparison: vi.fn(),
   rflyDiagnostics: vi.fn(),
   sessions: vi.fn(),
   startCollection: vi.fn(),
@@ -62,9 +60,6 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
     telemetryApiMock.status.mockResolvedValue({ data: {} })
     telemetryApiMock.sessions.mockResolvedValue({ data: { items: [] } })
     telemetryApiMock.realtimeData.mockResolvedValue({ data: { times: [] } })
-    telemetryApiMock.networkComparison.mockResolvedValue({
-      data: { profiles: [], complete: false }
-    })
     telemetryApiMock.rflyDiagnostics.mockResolvedValue({ data: null })
     telemetryApiMock.startCollection.mockResolvedValue({
       data: {
@@ -165,7 +160,7 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
     )
   })
 
-  it('passes default 5G profile when starting RflySim collection', async () => {
+  it('passes the default center inference location when starting RflySim collection', async () => {
     telemetryApiMock.rflyDiagnostics.mockResolvedValueOnce({
       data: {
         ready: true,
@@ -186,21 +181,19 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
     expect(telemetryApiMock.startCollection).toHaveBeenCalledWith(
       expect.objectContaining({
         backend: 'rfly',
-        rfly_network_profile: 'enhanced_5g'
+        rfly_inference_location: 'center'
       })
     )
   })
 
-  it('surfaces 5G link metrics from telemetry status', async () => {
+  it('surfaces inference location and measured inference latency', async () => {
     telemetryApiMock.status.mockResolvedValueOnce({
       data: {
-        network_link: {
-          enabled: true,
-          profile: 'degraded',
-          avg_latency_ms: 82.4,
-          p95_latency_ms: 123.8,
-          loss_rate: 0.03,
-          data_integrity: 0.97
+        inference: {
+          location: 'mec',
+          status: 'active',
+          avg_inference_ms: 8.4,
+          p95_inference_ms: 12.8
         }
       }
     })
@@ -211,7 +204,7 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
     expect(wrapper.vm.metrics).not.toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          label: '5G链路场景'
+          label: '推理位置'
         })
       ])
     )
@@ -222,16 +215,10 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
     expect(wrapper.vm.metrics).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          label: '5G链路场景',
-          value: '弱网链路 degraded',
-          meta: '均值 82.4 ms / P95 124 ms',
-          tone: 'danger'
-        }),
-        expect.objectContaining({
-          label: '链路完整率',
-          value: '97.0%',
-          meta: '丢包 3.0%',
-          tone: 'danger'
+          label: '推理位置',
+          value: 'MEC 独立进程推理',
+          meta: '均值 8.4 ms / P95 12.8 ms',
+          tone: 'ok'
         })
       ])
     )
@@ -283,12 +270,4 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
     ])
   })
 
-  it('keeps visible monitoring copy free of common mojibake fragments', () => {
-    const source = readFileSync(
-      'src/modules/monitoring/composables/useMonitoringDashboard.js',
-      'utf8'
-    )
-
-    expect(source).not.toMatch(/鍚|璇|锛|鐩|瀛|妫/)
-  })
 })

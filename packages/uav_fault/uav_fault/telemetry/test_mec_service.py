@@ -49,24 +49,15 @@ def test_arming_starts_a_fresh_mec_window() -> None:
     assert decorated["mec_model_status"] == "waiting_for_window"
 
 
-def test_decorated_frame_exposes_inference_and_decision_latency_statistics() -> None:
+def test_decorated_frame_exposes_inference_latency_statistics() -> None:
     service = _service()
     service.inference_samples.extend([2.0, 4.0, 8.0])
-    service.decision_latency_samples.extend([20.0, 30.0, 50.0])
     service.inference_count = 3
-    service._publish_result(
-        {
-            "inference_ms": 8.0,
-            "decision_latency_ms": 50.0,
-        }
-    )
+    service._publish_result({"inference_ms": 8.0})
 
     decorated = service._decorate_frame({})
 
     assert decorated["mec_inference_ms"] == 8.0
     assert decorated["mec_avg_inference_ms"] == 4.667
     assert decorated["mec_p95_inference_ms"] == 4.0
-    assert decorated["mec_decision_latency_ms"] == 50.0
-    assert decorated["mec_avg_decision_latency_ms"] == 33.333
-    assert decorated["mec_p95_decision_latency_ms"] == 30.0
     assert decorated["mec_inference_count"] == 3

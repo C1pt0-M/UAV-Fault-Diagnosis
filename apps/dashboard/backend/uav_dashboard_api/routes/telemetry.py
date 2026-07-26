@@ -5,17 +5,11 @@ from flask import Blueprint, current_app, jsonify, request
 from uav_dashboard_api import db
 from uav_dashboard_api.models.asset import Asset
 from uav_dashboard_api.services.rfly_diagnostics import build_rfly_diagnostics
-from uav_dashboard_api.services.telemetry_backends import (
-    RFLY_INFERENCE_LOCATIONS,
-    RFLY_NETWORK_PROFILES,
-)
+from uav_dashboard_api.services.telemetry_backends import RFLY_INFERENCE_LOCATIONS
 from uav_dashboard_api.utils.path_store import resolve_local_path
 from uav_dashboard_api.utils.jwt_utils import token_required
 
 bp = Blueprint('telemetry', __name__)
-
-NETWORK_COMPARISON_PROFILES = ('baseline', 'enhanced_5g', 'degraded')
-
 
 def _get_manager():
     from uav_dashboard_api.services.telemetry_manager import telemetry_manager
@@ -40,13 +34,9 @@ def _telemetry_capabilities() -> dict:
         'rfly_enabled': 'rfly' in allowed_backends,
         'rfly_ready': bool(rfly_diagnostics.get('ready')),
         'rfly_diagnostics_summary': rfly_diagnostics.get('summary'),
-        'rfly_network_profiles': ['enhanced_5g', 'baseline', 'degraded', 'direct'],
-        'rfly_default_network_profile': str(
-            current_app.config.get('RFLY_NETWORK_PROFILE') or 'enhanced_5g'
-        ).strip().lower(),
         'rfly_inference_locations': ['mec', 'center'],
         'rfly_default_inference_location': str(
-            current_app.config.get('RFLY_INFERENCE_LOCATION') or 'mec'
+            current_app.config.get('RFLY_INFERENCE_LOCATION') or 'center'
         ).strip().lower(),
         'rfly_sim_map': str(current_app.config.get('RFLY_SIM_MAP') or 'LowGPU').strip(),
         'blind_test_enabled': bool(current_app.config.get('ENABLE_BLIND_TEST', False)),
@@ -91,18 +81,10 @@ def start_collection(current_user):
     if backend not in allowed_backends:
         return _error('backend_not_allowed')
     if backend == 'rfly':
-        rfly_network_profile = str(
-            data.get('rfly_network_profile')
-            or current_app.config.get('RFLY_NETWORK_PROFILE')
-            or 'enhanced_5g'
-        ).strip().lower()
-        if rfly_network_profile not in RFLY_NETWORK_PROFILES:
-            return _error('rfly_network_profile 仅支持 direct、baseline、enhanced_5g 或 degraded')
-        rfly_options['network_profile'] = rfly_network_profile
         inference_location = str(
             data.get('rfly_inference_location')
             or current_app.config.get('RFLY_INFERENCE_LOCATION')
-            or 'mec'
+            or 'center'
         ).strip().lower()
         if inference_location not in RFLY_INFERENCE_LOCATIONS:
             return _error('rfly_inference_location 仅支持 mec 或 center')
@@ -236,92 +218,6 @@ def get_realtime_data(current_user):
     """获取实时遥测数据缓冲（用于前端图表）。"""
     mgr = _get_manager()
     return _ok(mgr.get_realtime_data())
-
-
-def _network_session_row(session) -> dict | None:
-    meta = session.get_meta()
-    network_link = meta.get('network_link') or {}
-    profile = str(
-        meta.get('network_profile') or network_link.get('profile') or ''
-    ).strip().lower()
-    if profile not in NETWORK_COMPARISON_PROFILES:
-        return None
-    return {
-        'profile': profile,
-        'available': True,
-        'session_id': session.id,
-        'start_time': session.start_time.strftime('%Y-%m-%d %H:%M:%S')
-        if session.start_time else None,
-        'end_time': session.end_time.strftime('%Y-%m-%d %H:%M:%S')
-        if session.end_time else None,
-        'duration_seconds': session.duration_seconds,
-        'frame_count': session.frame_count or 0,
-        'fault_events_count': session.fault_events_count or 0,
-        'avg_latency_ms': network_link.get('avg_latency_ms'),
-        'p95_latency_ms': network_link.get('p95_latency_ms'),
-        'loss_rate': network_link.get('loss_rate'),
-        'data_integrity': network_link.get('data_integrity'),
-        'rx_packets': network_link.get('rx_packets'),
-        'lost_packets': network_link.get('lost_packets'),
-        'metrics_csv': network_link.get('metrics_csv'),
-    }
-
-
-def _metric_delta(enhanced: dict | None, degraded: dict | None, key: str):
-    if not enhanced or not degraded:
-        return None
-    try:
-        return round(float(degraded[key]) - float(enhanced[key]), 6)
-    except (KeyError, TypeError, ValueError):
-        return None
-
-
-@bp.route('/network-comparison', methods=['GET'])
-@token_required
-def get_network_comparison(current_user):
-    """返回三档网络 profile 各自最新的已完成 RflySim 会话。"""
-    from uav_dashboard_api.models.telemetry_session import TelemetrySession
-
-    sessions = (
-        TelemetrySession.query
-        .filter_by(scenario_backend='rfly', status='completed')
-        .order_by(TelemetrySession.created_at.desc())
-        .limit(500)
-        .all()
-    )
-    latest = {}
-    for session in sessions:
-        row = _network_session_row(session)
-        if row and row['profile'] not in latest:
-            latest[row['profile']] = row
-        if len(latest) == len(NETWORK_COMPARISON_PROFILES):
-            break
-
-    profiles = [
-        latest.get(profile) or {'profile': profile, 'available': False}
-        for profile in NETWORK_COMPARISON_PROFILES
-    ]
-    enhanced = latest.get('enhanced_5g')
-    degraded = latest.get('degraded')
-    return _ok({
-        'source': 'latest_completed_rfly_sessions',
-        'profiles': profiles,
-        'complete': all(item['available'] for item in profiles),
-        'enhanced_vs_degraded': {
-            'latency_reduction_ms': _metric_delta(
-                enhanced, degraded, 'avg_latency_ms'
-            ),
-            'p95_reduction_ms': _metric_delta(
-                enhanced, degraded, 'p95_latency_ms'
-            ),
-            'loss_reduction': _metric_delta(enhanced, degraded, 'loss_rate'),
-            'integrity_improvement': (
-                -_metric_delta(enhanced, degraded, 'data_integrity')
-                if _metric_delta(enhanced, degraded, 'data_integrity') is not None
-                else None
-            ),
-        },
-    })
 
 
 # ── 获取会话列表 ──────────────────────────────────────────────

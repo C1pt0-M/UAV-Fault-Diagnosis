@@ -25,7 +25,6 @@ def _manager(tmp_path: Path, config_overrides: dict | None = None):
         "RFLY_PYTHON_BIN": sys.executable,
         "RFLY_FORWARD_HOST": "127.0.0.1",
         "RFLY_FORWARD_PORT": 15550,
-        "RFLY_NETWORK_PROFILE": "direct",
         "RFLY_INFERENCE_LOCATION": "center",
         "RFLY_MEC_LISTEN_HOST": "127.0.0.1",
         "RFLY_MEC_LISTEN_PORT": 15552,
@@ -34,11 +33,6 @@ def _manager(tmp_path: Path, config_overrides: dict | None = None):
         "RFLY_MEC_SCRIPT": "",
         "RFLY_MEC_INFERENCE_STRIDE": 5,
         "RFLY_MEC_STARTUP_WAIT_S": 0.0,
-        "RFLY_5G_LINK_LISTEN_HOST": "127.0.0.1",
-        "RFLY_5G_LINK_LISTEN_PORT": 15551,
-        "RFLY_5G_LINK_SCRIPT": "",
-        "RFLY_5G_LINK_CONFIG_CSV": "",
-        "RFLY_5G_LINK_METRICS_INTERVAL_S": 1.0,
         "RFLY_EMIT_RATE_HZ": 50,
         "RFLY_RPM_SCALE": 10000.0,
         "RFLY_TEST_ID": 1,
@@ -115,7 +109,6 @@ def test_rfly_backend_mec_mode_builds_edge_port_chain(tmp_path):
         tmp_path,
         {
             "RFLY_PX4MAVCTRL_PATH": str(px4mavctrl),
-            "RFLY_NETWORK_PROFILE": "enhanced_5g",
             "RFLY_INFERENCE_LOCATION": "mec",
             "RUNTIME_DIR": str(tmp_path / "runtime"),
         },
@@ -125,19 +118,17 @@ def test_rfly_backend_mec_mode_builds_edge_port_chain(tmp_path):
         session_id="TS-MEC-PORTS",
         csv_path=str(tmp_path / "session.csv"),
         sim_time=30,
-        options={"network_profile": "enhanced_5g", "inference_location": "mec"},
+        options={"inference_location": "mec"},
     )
 
     backend.prepare()
     backend._open_mec_log()
-    network_cmd = backend._build_network_link_cmd()
     mec_cmd = backend._build_mec_cmd()
     bridge_cmd = backend._build_bridge_cmd()
 
-    assert network_cmd[network_cmd.index("--forward-port") + 1] == "15552"
     assert mec_cmd[mec_cmd.index("--listen-port") + 1] == "15552"
     assert mec_cmd[mec_cmd.index("--forward-port") + 1] == "15550"
-    assert bridge_cmd[bridge_cmd.index("--port") + 1] == "15551"
+    assert bridge_cmd[bridge_cmd.index("--port") + 1] == "15552"
 
 
 def test_rfly_backend_uses_default_px4mavctrl_path_when_config_is_empty(tmp_path, monkeypatch):
@@ -249,106 +240,6 @@ def test_rfly_backend_starts_receiver_and_bridge_process(tmp_path, monkeypatch):
     assert "--duration" in cmd
     assert cmd[cmd.index("--duration") + 1] == "0.0"
     assert popen_calls[0]["cwd"] == str(PROJECT_ROOT)
-
-
-def test_rfly_backend_starts_5g_link_before_bridge_when_profile_is_enabled(tmp_path, monkeypatch):
-    from uav_dashboard_api.services import telemetry_backends
-    from uav_dashboard_api.services.telemetry_backends import RflyScenarioBackend
-
-    px4mavctrl = tmp_path / "PX4MavCtrlV4.py"
-    px4mavctrl.write_text("class PX4MavCtrler:\n    pass\n", encoding="utf-8")
-    stop_calls = []
-    manager = _manager(
-        tmp_path,
-        {
-            "RFLY_PX4MAVCTRL_PATH": str(px4mavctrl),
-            "RFLY_NETWORK_PROFILE": "enhanced_5g",
-            "RUNTIME_DIR": str(tmp_path / "runtime"),
-        },
-    )
-    receiver_calls = []
-
-    class FakeReceiver:
-        def __init__(self, **kwargs):
-            receiver_calls.append(kwargs)
-            self.callbacks = []
-            self._sock = SimpleNamespace(close=lambda: None)
-
-        def stop(self):
-            self._sock.close()
-
-    class FakeThread:
-        def __init__(self, target=None, name=None, daemon=None, args=(), kwargs=None):
-            self.name = name
-            self.started = False
-
-        def start(self):
-            self.started = True
-
-        def is_alive(self):
-            return self.started
-
-        def join(self, timeout=None):
-            self.started = False
-
-    popen_calls = []
-
-    class FakeProc:
-        pid = 1234
-
-        def poll(self):
-            return None
-
-    def fake_popen(cmd, stdout=None, stderr=None, cwd=None, env=None, **kwargs):
-        popen_calls.append({"cmd": cmd, "cwd": cwd})
-        return FakeProc()
-
-    monkeypatch.setattr(telemetry_backends, "TelemetryReceiver", FakeReceiver)
-    monkeypatch.setattr(telemetry_backends.threading, "Thread", FakeThread)
-    monkeypatch.setattr(telemetry_backends.subprocess, "Popen", fake_popen)
-
-    backend = RflyScenarioBackend(
-        manager,
-        session_id="TS-RFLY-5G",
-        csv_path=str(tmp_path / "session.csv"),
-        sim_time=30,
-        options={"network_profile": "enhanced_5g"},
-    )
-    backend._stop_process = lambda proc, name: stop_calls.append(name)
-
-    backend.prepare()
-    backend.start()
-
-    assert receiver_calls[0]["port"] == 15550
-    assert len(popen_calls) == 2
-    network_cmd = popen_calls[0]["cmd"]
-    bridge_cmd = popen_calls[1]["cmd"]
-    assert network_cmd[1].endswith("network_emulator.py")
-    assert "--profile" in network_cmd
-    assert "enhanced_5g" in network_cmd
-    assert "--listen-port" in network_cmd
-    assert "15551" in network_cmd
-    assert "--forward-port" in network_cmd
-    assert "15550" in network_cmd
-    assert bridge_cmd[1].endswith("run_rfly_live_bridge.py")
-    assert "--port" in bridge_cmd
-    assert "15551" in bridge_cmd
-    assert backend.status()["network_link"] == "running"
-    assert backend.status()["network_metrics_csv"].endswith("TS-RFLY-5G.csv")
-    backend._network_metrics_path.write_text(
-        "rx_packets,tx_packets,drop_packets,delay_avg_ms,delay_p95_ms,queue_len\n"
-        "1000,994,6,29.4,32.0,1\n",
-        encoding="utf-8",
-    )
-    metrics = backend.status()["network_metrics"]
-    assert metrics["avg_latency_ms"] == 29.4
-    assert metrics["p95_latency_ms"] == 32.0
-    assert metrics["loss_rate"] == pytest.approx(0.006)
-    assert metrics["data_integrity"] == pytest.approx(0.994)
-
-    backend.stop()
-
-    assert stop_calls[:2] == ["rfly_bridge", "network_link"]
 
 
 def test_rfly_backend_prefers_dedicated_rfly_python_bin(tmp_path):
@@ -523,36 +414,12 @@ def test_start_collection_api_accepts_rfly_backend(rfly_api_app, monkeypatch, tm
     assert response.get_json()["data"]["scenario_backend"] == "rfly"
     assert captured["backend"] == "rfly"
     assert captured["rfly_options"]["px4mavctrl_path"] == str(px4mavctrl)
-    assert captured["rfly_options"]["network_profile"] in {
-        "enhanced_5g",
-        "baseline",
-        "degraded",
-        "direct",
+    assert captured["rfly_options"] == {
+        "px4mavctrl_path": str(px4mavctrl),
+        "inference_location": "mec",
+        "inference_model": None,
     }
     assert captured["rfly_options"]["inference_location"] == "mec"
-
-
-def test_start_collection_api_rejects_invalid_rfly_network_profile(rfly_api_app, tmp_path):
-    from uav_dashboard_api.utils.jwt_utils import JWTUtils
-
-    px4mavctrl = tmp_path / "PX4MavCtrlV4.py"
-    px4mavctrl.write_text("class PX4MavCtrler:\n    pass\n", encoding="utf-8")
-    token = JWTUtils.generate_token(1)
-    client = rfly_api_app.test_client()
-
-    response = client.post(
-        "/api/telemetry/start-collection",
-        headers={"Authorization": f"Bearer {token}"},
-        json={
-            "backend": "rfly",
-            "sim_time": 60,
-            "rfly_px4mavctrl_path": str(px4mavctrl),
-            "rfly_network_profile": "severe",
-        },
-    )
-
-    assert response.status_code == 400
-    assert "rfly_network_profile" in response.get_json()["message"]
 
 
 def test_start_collection_api_rejects_invalid_rfly_inference_location(
