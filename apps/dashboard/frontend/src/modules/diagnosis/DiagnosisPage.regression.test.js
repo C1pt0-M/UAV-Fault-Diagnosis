@@ -17,10 +17,9 @@ const workspaceState = vi.hoisted(() => ({
   evidenceRows: [{ name: '故障类别置信度', source: 'Top-K 概率', window: '当前任务', note: '规则参考' }],
   explanationSummary:
     '在当前分析窗口内，电机故障为最高概率类别；规则解释基于诊断结果摘要与规则匹配，不代表真实特征贡献算法。',
-  flowSteps: [{ label: '数据加载', time: '10:22:14', status: 'ok' }],
   latestReportId: null,
   loadMeta: vi.fn(),
-  modelSummaryItems: [{ label: '模型族', value: 'KG-MSTCA' }],
+  modelContextText: '正常 / 电机故障 / 传感器故障 · 31 项输入特征',
   models: [],
   openReportAssistant: vi.fn(),
   openReportsCenter: vi.fn(),
@@ -69,8 +68,8 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
         stubs: {
           DiagnosisSessionBanner: { template: '<div>会话承接</div>' },
           DiagnosisCommandHero: { template: '<section>顶部状态条报告状态最近更新</section>' },
-          DiagnosisTaskForm: { template: '<section>任务发起 / 输入配置日志概览模型概览</section>' },
-          DiagnosisResultPanel: { template: '<section>诊断结果Top-K 概率分布风险等级</section>' },
+          DiagnosisTaskForm: { template: '<section>离线诊断日志资产诊断模型</section>' },
+          DiagnosisResultPanel: { template: '<section>诊断结果类别概率</section>' },
           DiagnosisEvidencePanel: { template: '<aside>规则解释 / 诊断摘要可追溯证据 TOP5历史参考报告</aside>' },
           DiagnosisRecentRunsPanel: { template: '<section>最近诊断任务 / 报告出口</section>' }
         }
@@ -79,7 +78,7 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
 
     const text = wrapper.text()
     expect(text).toContain('顶部状态条')
-    expect(text).toContain('任务发起 / 输入配置')
+    expect(text).toContain('离线诊断')
     expect(text).toContain('诊断结果')
     expect(text).toContain('规则解释 / 诊断摘要')
     expect(text).toContain('可追溯证据 TOP5')
@@ -104,14 +103,38 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
     })
 
     const text = wrapper.text()
-    expect(text).toContain('诊断准备状态')
-    expect(text).toContain('待选择资产')
-    expect(text).toContain('待启动任务')
-    expect(text).toContain('报告待生成')
-    expect(text).toContain('AI 解读待解锁')
+    expect(text).toContain('等待诊断任务')
+    expect(text).toContain('选择日志资产并启动诊断')
     expect(text).not.toContain('下一步操作')
     expect(text).not.toContain('Top-K 概率分布')
     expect(text).not.toContain('风险等级')
+  })
+
+  it('renders one concise result panel without the duplicate risk meter', () => {
+    const wrapper = mount(DiagnosisResultPanel, {
+      props: {
+        confidenceText: '89.00%',
+        latestReportId: null,
+        probabilityRows: [
+          { label: '电机故障', probability: '89.00%' },
+          { label: '状态正常', probability: '11.00%' }
+        ],
+        reportCreating: false,
+        resultData: { prediction: { label: 'motor', confidence: 0.89 } },
+        resultMetaItems: [
+          { label: '诊断来源', value: 'flight_case.csv' },
+          { label: '完成时间', value: '2026-05-05 10:26:18' }
+        ],
+        riskLevel: { label: '高风险', tone: 'danger', description: '置信度较高' },
+        stage: { key: 'completed', label: '诊断完成' }
+      }
+    })
+
+    const text = wrapper.text()
+    expect(text).toContain('类别概率')
+    expect(text).toContain('生成报告')
+    expect(text).not.toContain('Top-K')
+    expect(wrapper.find('.risk-meter').exists()).toBe(false)
   })
 
   it('renders an explicit failed state when the run status is error', () => {

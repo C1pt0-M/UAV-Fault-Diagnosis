@@ -6,9 +6,31 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
-from uav_dashboard_api.config import Config
+from uav_dashboard_api.config import resolve_config_class
 
 db = SQLAlchemy()
+
+
+_INSECURE_SECRET_VALUES = {
+    '',
+    'change-me',
+    'change-me-too',
+    'dev-secret-key-change-in-production',
+}
+
+
+def _validate_runtime_config(app):
+    if app.config.get('APP_ENV') != 'production':
+        return
+
+    secret_key = str(app.config.get('SECRET_KEY') or '').strip()
+    jwt_secret_key = str(app.config.get('JWT_SECRET_KEY') or '').strip()
+    if secret_key in _INSECURE_SECRET_VALUES or len(secret_key) < 32:
+        raise ValueError('production SECRET_KEY 必须设置为至少 32 字符的非默认值')
+    if jwt_secret_key in _INSECURE_SECRET_VALUES or len(jwt_secret_key) < 32:
+        raise ValueError('production JWT_SECRET_KEY 必须设置为至少 32 字符的非默认值')
+    if secret_key == jwt_secret_key:
+        raise ValueError('production SECRET_KEY 与 JWT_SECRET_KEY 必须使用不同值')
 
 
 def _configure_sqlite_engine(app):
@@ -28,10 +50,16 @@ def _configure_sqlite_engine(app):
             cursor.close()
 
 
-def create_app(config_class=Config):
+def create_app(config_class=None):
     """应用工厂函数"""
     app = Flask(__name__)
-    app.config.from_object(config_class)
+    selected_config = (
+        resolve_config_class(config_class)
+        if isinstance(config_class, str)
+        else config_class or resolve_config_class()
+    )
+    app.config.from_object(selected_config)
+    _validate_runtime_config(app)
 
     from uav_dashboard_api.utils.persistence_guard import audit_runtime_persistence, backup_sqlite_database
 
@@ -43,10 +71,6 @@ def create_app(config_class=Config):
 
     from uav_dashboard_api.utils.error_logger import init_error_logger
     init_error_logger(app)
-
-    from uav_dashboard_api.utils.rate_limiter import init_circuit_breakers, init_rate_limiters
-    init_rate_limiters()
-    init_circuit_breakers()
 
     from uav_dashboard_api.utils.error_handler import register_error_handlers
     register_error_handlers(app)
@@ -80,7 +104,8 @@ def create_app(config_class=Config):
 
     app.register_blueprint(auth.bp, url_prefix=f'{api_prefix}/auth')
     app.register_blueprint(users.bp, url_prefix=f'{api_prefix}/users')
-    app.register_blueprint(setup.bp, url_prefix=f'{api_prefix}/setup')
+    if app.config.get('ENABLE_SETUP_API', False):
+        app.register_blueprint(setup.bp, url_prefix=f'{api_prefix}/setup')
     app.register_blueprint(settings.bp, url_prefix=f'{api_prefix}/settings')
     app.register_blueprint(dashboard.bp, url_prefix=f'{api_prefix}')
     app.register_blueprint(
@@ -110,7 +135,8 @@ def create_app(config_class=Config):
                 'diagnosis_reports': '/api/reports/diagnosis/*',
             },
         }
-        payload['endpoints']['setup'] = '/api/setup/*'
+        if app.config.get('ENABLE_SETUP_API', False):
+            payload['endpoints']['setup'] = '/api/setup/*'
         if app.config.get('ENABLE_AI', True):
             payload['endpoints']['ai'] = '/api/ai/*'
         if app.config.get('ENABLE_TELEMETRY', True):

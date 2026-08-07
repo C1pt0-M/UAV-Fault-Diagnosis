@@ -169,18 +169,6 @@ class Config:
     SQLITE_ENABLE_WAL = os.getenv('SQLITE_ENABLE_WAL', 'True') == 'True'
     SQLITE_SYNCHRONOUS = os.getenv('SQLITE_SYNCHRONOUS', 'NORMAL')
 
-    # 限流配置
-    RATE_LIMIT_ENABLED = os.getenv('RATE_LIMIT_ENABLED', 'True') == 'True'
-    RATE_LIMIT_PER_MINUTE = int(os.getenv('RATE_LIMIT_PER_MINUTE', '60'))
-    RATE_LIMIT_PER_HOUR = int(os.getenv('RATE_LIMIT_PER_HOUR', '1000'))
-    RATE_LIMIT_STORAGE_URL = os.getenv('RATE_LIMIT_STORAGE_URL', 'memory://')
-
-    # 熔断器配置
-    CIRCUIT_BREAKER_ENABLED = os.getenv('CIRCUIT_BREAKER_ENABLED', 'True') == 'True'
-    CIRCUIT_BREAKER_FAILURE_THRESHOLD = int(os.getenv('CIRCUIT_BREAKER_FAILURE_THRESHOLD', '5'))
-    CIRCUIT_BREAKER_RECOVERY_TIMEOUT = int(os.getenv('CIRCUIT_BREAKER_RECOVERY_TIMEOUT', '60'))
-    CIRCUIT_BREAKER_EXPECTED_EXCEPTION = None
-
     # JWT配置
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', SECRET_KEY)
     JWT_EXPIRE_HOURS = int(os.getenv('JWT_EXPIRE_HOURS', '24'))
@@ -368,27 +356,36 @@ class Config:
 
 class DevelopmentConfig(Config):
     """开发环境配置"""
-    DEBUG = True
-    ALLOW_AUTO_BOOTSTRAP_ADMIN = False
-    ENABLE_SETUP_API = True
-    ENABLE_PUBLIC_REGISTER = True
-    ENABLE_BLIND_TEST = True
-    TELEMETRY_ALLOWED_BACKENDS = ('replay', 'rfly')
+    APP_ENV = 'development'
+    DEBUG = _get_env_bool('FLASK_DEBUG', True)
+    ALLOW_AUTO_BOOTSTRAP_ADMIN = _get_env_bool('ALLOW_AUTO_BOOTSTRAP_ADMIN', False)
+    ENABLE_SETUP_API = _get_env_bool('ENABLE_SETUP_API', True)
+    ENABLE_PUBLIC_REGISTER = _get_env_bool('ENABLE_PUBLIC_REGISTER', False)
+    ENABLE_BLIND_TEST = _get_env_bool('ENABLE_BLIND_TEST', True)
+    TELEMETRY_ALLOWED_BACKENDS = _get_env_list(
+        'TELEMETRY_ALLOWED_BACKENDS',
+        'replay,rfly',
+    )
 
 
 class ProductionConfig(Config):
     """生产环境配置"""
+    APP_ENV = 'production'
     DEBUG = False
     SQLALCHEMY_ECHO = False
-    ALLOW_AUTO_BOOTSTRAP_ADMIN = False
-    ENABLE_SETUP_API = True
-    ENABLE_PUBLIC_REGISTER = True
-    ENABLE_BLIND_TEST = False
-    TELEMETRY_ALLOWED_BACKENDS = ('replay',)
+    ALLOW_AUTO_BOOTSTRAP_ADMIN = _get_env_bool('ALLOW_AUTO_BOOTSTRAP_ADMIN', False)
+    ENABLE_SETUP_API = _get_env_bool('ENABLE_SETUP_API', False)
+    ENABLE_PUBLIC_REGISTER = _get_env_bool('ENABLE_PUBLIC_REGISTER', False)
+    ENABLE_BLIND_TEST = _get_env_bool('ENABLE_BLIND_TEST', False)
+    TELEMETRY_ALLOWED_BACKENDS = _get_env_list(
+        'TELEMETRY_ALLOWED_BACKENDS',
+        'replay',
+    )
 
 
 class TestingConfig(Config):
     """测试环境配置"""
+    APP_ENV = 'testing'
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     WTF_CSRF_ENABLED = False
@@ -397,10 +394,21 @@ class TestingConfig(Config):
     ONLINE_INFERENCE_STRIDE = 1
 
 
-# 配置字典
-config = {
+# 配置 Profile。应用默认根据 APP_ENV 选择，也允许测试直接传入配置类。
+CONFIG_PROFILES = {
     'development': DevelopmentConfig,
     'production': ProductionConfig,
     'testing': TestingConfig,
-    'default': DevelopmentConfig
 }
+
+
+def resolve_config_class(app_env: str | None = None):
+    """根据 APP_ENV 返回配置类，并拒绝静默回退到错误环境。"""
+    profile_name = str(app_env or os.getenv('APP_ENV') or 'development').strip().lower()
+    try:
+        return CONFIG_PROFILES[profile_name]
+    except KeyError as exc:
+        supported = ', '.join(sorted(CONFIG_PROFILES))
+        raise ValueError(
+            f'不支持的 APP_ENV: {profile_name!r}；可选值: {supported}'
+        ) from exc

@@ -138,6 +138,7 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
           id: 265,
           filename: 'flight.csv',
           kind: 'csv',
+          source_category: 'csv',
           meta: { prepared_csv_path: 'runtime://uploads/csv/flight.csv' }
         }
       ]
@@ -186,7 +187,7 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
     )
   })
 
-  it('surfaces inference location and measured inference latency', async () => {
+  it('hides inference location metric when MEC is disabled in frontend', async () => {
     telemetryApiMock.status.mockResolvedValueOnce({
       data: {
         inference: {
@@ -201,24 +202,13 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
     const wrapper = mount(Harness)
     await flushMountedWork()
 
+    wrapper.vm.selectedBackend = 'rfly'
+    await nextTick()
+
     expect(wrapper.vm.metrics).not.toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           label: '推理位置'
-        })
-      ])
-    )
-
-    wrapper.vm.selectedBackend = 'rfly'
-    await nextTick()
-
-    expect(wrapper.vm.metrics).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          label: '推理位置',
-          value: 'MEC 独立进程推理',
-          meta: '均值 8.4 ms / P95 12.8 ms',
-          tone: 'ok'
         })
       ])
     )

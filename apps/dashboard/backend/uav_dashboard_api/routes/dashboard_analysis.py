@@ -12,7 +12,24 @@ from uav_dashboard_api.routes.dashboard_asset_input import (
     _resolved_csv_path,
 )
 from uav_dashboard_api.services.analysis import build_fields_response, build_timeseries_response
-from uav_dashboard_api.utils.jwt_utils import token_required
+from uav_dashboard_api.utils.jwt_utils import token_required, is_admin
+
+def _get_asset_or_404(asset_id):
+    asset = db.session.get(Asset, asset_id)
+    if asset is None:
+        return None, (jsonify({"success": False, "message": "资产不存在"}), 404)
+    return asset, None
+
+
+def _asset_visible(asset, user) -> bool:
+    return is_admin(user) or asset.created_by == getattr(user, 'id', None)
+
+
+def _assert_asset_visible(asset, user):
+    if not _asset_visible(asset, user):
+        return jsonify({"success": False, "message": "资产不存在"}), 404
+    return None
+
 
 def get_analysis_fields(current_user):
     asset_id = request.args.get("asset_id", type=int)
@@ -21,6 +38,9 @@ def get_analysis_fields(current_user):
     asset = db.session.get(Asset, asset_id)
     if asset is None:
         return jsonify({"success": False, "message": "资产不存在"}), 404
+    denied = _assert_asset_visible(asset, current_user)
+    if denied:
+        return denied
 
     try:
         csv_path = _resolved_csv_path(asset, strict_prepare=True)
@@ -52,6 +72,9 @@ def get_analysis_timeseries(current_user):
     asset = db.session.get(Asset, asset_id)
     if asset is None:
         return jsonify({"success": False, "message": "资产不存在"}), 404
+    denied = _assert_asset_visible(asset, current_user)
+    if denied:
+        return denied
 
     try:
         csv_path = _resolved_csv_path(asset, strict_prepare=True)
@@ -80,6 +103,9 @@ def get_fault_prob_curve(current_user):
     asset = db.session.get(Asset, asset_id)
     if asset is None:
         return jsonify({"success": False, "message": "资产不存在"}), 404
+    denied = _assert_asset_visible(asset, current_user)
+    if denied:
+        return denied
 
     session = _resolve_asset_telemetry_session(asset)
     if session is None:

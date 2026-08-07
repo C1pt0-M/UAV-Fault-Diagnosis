@@ -11,7 +11,6 @@ REPO_PREFIX = 'repo://'
 PATH_LIKE_KEYS = {
     'stored_path',
     'prepared_csv_path',
-    'pdf_path',
     'csv_path',
     'input_csv',
     'output_csv',

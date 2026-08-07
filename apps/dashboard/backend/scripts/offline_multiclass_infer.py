@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-离线五分类单文件推理脚本。
+离线多分类单文件推理脚本。
 由 dashboard backend 通过子进程调用（conda 环境）执行。
 """
 import argparse
@@ -12,7 +12,13 @@ import numpy as np
 
 LABEL_NAMES_3CLASS = ['normal', 'motor', 'sensor']
 LABEL_NAMES_4CLASS = ['normal', 'motor', 'propeller', 'sensor']
-LABEL_NAMES_5CLASS = ['normal', 'battery_failure', 'motor_failure', 'prop_imbalance', 'thrust_loss']
+LEGACY_FIVE_CLASS_LABEL_NAMES = [
+    'normal',
+    'battery_failure',
+    'motor_failure',
+    'prop_imbalance',
+    'thrust_loss',
+]
 
 
 def parse_args():
@@ -137,7 +143,7 @@ def _resolve_label_names(model_cfg: dict, num_classes: int) -> list[str]:
     elif num_classes == 4:
         fallback = LABEL_NAMES_4CLASS[:]
     else:
-        fallback = LABEL_NAMES_5CLASS[:num_classes]
+        fallback = LEGACY_FIVE_CLASS_LABEL_NAMES[:num_classes]
     if len(fallback) < num_classes:
         fallback.extend([f'class_{i}' for i in range(len(fallback), num_classes)])
     return fallback
@@ -174,8 +180,8 @@ def run_inference(args):
     x = torch.from_numpy(raw.T.astype(np.float32))  # (C, T)
 
     norm_candidates = [
-        Path(args.norm_stats) if args.norm_stats else None,
         model_dir / 'norm_stats.json',
+        Path(args.norm_stats) if args.norm_stats else None,
         repo_root / 'data' / 'processed' / 'seq_cache' / 'norm_stats.json',
         repo_root / 'data' / 'processed' / 'online_cache_trainmix_labeled_50hz' / 'norm_stats.json',
     ]

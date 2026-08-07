@@ -246,6 +246,12 @@ def _resolve_asset_telemetry_session(asset: Asset):
 def _asset_payload_with_quality(asset: Asset, *, fill_missing_quality: bool = True) -> dict:
     payload = asset.to_dict()
     meta = dict(payload.get("meta") or {})
+    source_type = meta.get("source_type")
+    payload["source_category"] = (
+        "ts"
+        if source_type == "telemetry_session"
+        else str(asset.kind or "").lower()
+    )
     if fill_missing_quality and asset.kind == "csv" and not meta.get("field_completeness"):
         try:
             csv_path = _resolved_csv_path(asset, strict_prepare=False)

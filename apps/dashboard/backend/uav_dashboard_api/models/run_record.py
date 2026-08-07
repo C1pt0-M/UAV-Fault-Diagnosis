@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 
-from flask import has_app_context
+from flask import current_app, has_app_context
 
 from uav_dashboard_api import db
 from uav_dashboard_api.utils.path_store import sanitize_path_payload
@@ -60,7 +60,7 @@ class RunRecord(db.Model):
             report = DiagnosisReport.query.filter_by(run_id=self.id).first()
             report_id = report.id if report is not None else None
 
-        return {
+        payload = {
             'id': self.id,
             'task': self.task,
             'status': self.status,
@@ -68,7 +68,6 @@ class RunRecord(db.Model):
             'params': self.get_params(),
             'result': self.get_result(),
             'error': self.error,
-            'error_detail': self.error_detail,
             'asset_id': self.asset_id,
             'report_id': report_id,
             'created_by': self.created_by,
@@ -77,3 +76,6 @@ class RunRecord(db.Model):
             'finished_at': self.finished_at.strftime('%Y-%m-%d %H:%M:%S') if self.finished_at else None,
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S') if self.updated_at else None,
         }
+        if has_app_context() and current_app.config.get('EXPOSE_SERVER_PATHS', False):
+            payload['error_detail'] = self.error_detail
+        return payload

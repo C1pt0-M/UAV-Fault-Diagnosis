@@ -7,7 +7,7 @@ from uav_dashboard_api.models.asset import Asset
 from uav_dashboard_api.services.rfly_diagnostics import build_rfly_diagnostics
 from uav_dashboard_api.services.telemetry_backends import RFLY_INFERENCE_LOCATIONS
 from uav_dashboard_api.utils.path_store import resolve_local_path
-from uav_dashboard_api.utils.jwt_utils import token_required
+from uav_dashboard_api.utils.jwt_utils import token_required, is_admin
 
 bp = Blueprint('telemetry', __name__)
 
@@ -66,14 +66,14 @@ def start_collection(current_user):
     try:
         sim_time = float(sim_time_raw)
     except (TypeError, ValueError):
-        sim_time = 0.0 if backend == 'replay' else None
-    if backend != 'replay':
+        sim_time = 0.0 if backend in ('replay', 'rfly') else None
+    if backend == 'px4':
         if sim_time is None:
             return _error('sim_time 必须为数值')
         if sim_time <= 0:
             return _error('sim_time 必须大于 0')
     else:
-        # replay 模式按整段 CSV 回放，sim_time 仅用于兼容字段。
+        # replay 按整段 CSV 回放；rfly 由 QGC 手动操控，sim_time 仅用于兼容字段。
         if sim_time is None:
             sim_time = 0.0
     if backend not in {'px4', 'rfly', 'replay'}:
@@ -128,6 +128,7 @@ def start_collection(current_user):
             replay_path=replay_path,
             replay_asset_id=replay_asset.id if replay_asset is not None else None,
             rfly_options=rfly_options,
+            created_by=getattr(current_user, 'id', None),
         )
         return _ok(result, '数据采集已启动')
     except RuntimeError as e:
@@ -233,6 +234,8 @@ def get_sessions(current_user):
     status = request.args.get('status')
 
     query = TelemetrySession.query
+    if not is_admin(current_user):
+        query = query.filter(TelemetrySession.created_by == str(current_user.id))
     if status:
         query = query.filter_by(status=status)
 
@@ -258,6 +261,8 @@ def get_session_detail(current_user, session_id):
 
     session = db.session.get(TelemetrySession, session_id)
     if session is None:
+        return _error('会话不存在', 404)
+    if not is_admin(current_user) and session.created_by != str(current_user.id):
         return _error('会话不存在', 404)
     return _ok(session.to_dict())
 
@@ -285,7 +290,11 @@ def start_blind_test(current_user):
 
     mgr = _get_manager()
     try:
-        result = mgr.start_blind_test(drone_id=drone_id, sim_time=sim_time)
+        result = mgr.start_blind_test(
+            drone_id=drone_id,
+            sim_time=sim_time,
+            created_by=getattr(current_user, 'id', None),
+        )
         return _ok(result, '盲测已启动')
     except RuntimeError as e:
         return _error(str(e))

@@ -18,7 +18,12 @@ SUPPORTED_OFFLINE_ARCHITECTURES = {
     "bilstm_normalproto",
 }
 SUPPORTED_ONLINE_ARCHITECTURES = {"bilstm", "cnn1d", "transformer", "mstca", "kg_mstca"}
-OFFLINE_MULTICLASS_TASKS = {"offline_multiclass", "offline_5class"}
+OFFLINE_MULTICLASS_TASK = "offline_multiclass"
+LEGACY_OFFLINE_MULTICLASS_TASK = "offline_5class"
+OFFLINE_MULTICLASS_TASK_ALIASES = {
+    OFFLINE_MULTICLASS_TASK,
+    LEGACY_OFFLINE_MULTICLASS_TASK,
+}
 
 
 def _as_name_set(value: Any) -> set[str]:
@@ -76,9 +81,20 @@ def _task_matches(model_task: str, requested_task: str | None) -> bool:
         return True
     if model_task == requested_task:
         return True
-    if requested_task == "offline_multiclass" and model_task == "offline_5class":
+    if (
+        requested_task in OFFLINE_MULTICLASS_TASK_ALIASES
+        and model_task in OFFLINE_MULTICLASS_TASK_ALIASES
+    ):
         return True
     return False
+
+
+def _as_nonnegative_int(value: Any) -> int:
+    try:
+        parsed = int(value or 0)
+    except (TypeError, ValueError):
+        return 0
+    return max(0, parsed)
 
 
 def _infer_architecture(model_dir: Path, config: dict[str, Any]) -> str:
@@ -94,15 +110,18 @@ def _infer_task(
     config: dict[str, Any],
     norm_stats: dict[str, Any] | None,
 ) -> str:
-    num_classes = int(config.get("num_classes") or 0)
-    label_names = [str(item).strip().lower() for item in config.get("label_names", []) if str(item).strip()]
+    num_classes = _as_nonnegative_int(config.get("num_classes"))
+    raw_label_names = config.get("label_names")
+    label_names = (
+        [str(item).strip().lower() for item in raw_label_names if str(item).strip()]
+        if isinstance(raw_label_names, list)
+        else []
+    )
 
     if num_classes == 2 or label_names == ["normal", "fault"]:
         return "online_binary"
-    if num_classes == 5:
-        return "offline_5class"
     if num_classes > 2:
-        return "offline_multiclass"
+        return OFFLINE_MULTICLASS_TASK
     if norm_stats and norm_stats.get("columns"):
         return "online_binary"
     if model_dir.name.startswith("online_"):
@@ -113,13 +132,34 @@ def _infer_task(
 def _default_label_names(task: str, num_classes: int) -> list[str]:
     if task == "online_binary" and num_classes == 2:
         return ["normal", "fault"]
-    if task in OFFLINE_MULTICLASS_TASKS and num_classes == 5:
+    if task in OFFLINE_MULTICLASS_TASK_ALIASES and num_classes == 5:
         return ["normal", "battery_failure", "motor_failure", "prop_imbalance", "thrust_loss"]
     if task == "offline_multiclass" and num_classes == 3:
         return ["normal", "motor", "sensor"]
     if task == "offline_multiclass" and num_classes == 4:
         return ["normal", "motor", "propeller", "sensor"]
     return [f"class_{idx}" for idx in range(num_classes)] if num_classes > 0 else []
+
+
+def _has_valid_online_norm_contract(
+    config: dict[str, Any],
+    norm_stats: dict[str, Any] | None,
+) -> bool:
+    if not isinstance(norm_stats, dict):
+        return False
+    columns = norm_stats.get("columns")
+    mean = norm_stats.get("mean")
+    std = norm_stats.get("std")
+    if not all(isinstance(items, list) and items for items in (columns, mean, std)):
+        return False
+    feature_count = len(columns)
+    if len(mean) != feature_count or len(std) != feature_count:
+        return False
+    try:
+        in_channels = _as_nonnegative_int(config.get("in_channels"))
+        return in_channels == feature_count and all(float(value) > 0 for value in std)
+    except (TypeError, ValueError):
+        return False
 
 
 def _metrics_bundle(config: dict[str, Any], metrics: dict[str, Any]) -> dict[str, Any]:
@@ -188,25 +228,26 @@ def _build_metadata(model_dir: Path) -> dict[str, Any] | None:
 
     architecture = _infer_architecture(model_dir, config)
     task = _infer_task(model_dir, config, norm_stats)
-    num_classes = int(config.get("num_classes") or 0)
+    num_classes = _as_nonnegative_int(config.get("num_classes"))
     label_names = config.get("label_names")
     if not isinstance(label_names, list) or not label_names:
         label_names = _default_label_names(task, num_classes)
 
+    has_valid_online_norm_contract = _has_valid_online_norm_contract(config, norm_stats)
     capabilities = {
         "offline_detection": (
-            task in OFFLINE_MULTICLASS_TASKS
+            task in OFFLINE_MULTICLASS_TASK_ALIASES
             and architecture in SUPPORTED_OFFLINE_ARCHITECTURES
         ),
         "realtime_detection": (
             task == "online_binary"
             and architecture in SUPPORTED_ONLINE_ARCHITECTURES
-            and norm_stats_path.exists()
+            and has_valid_online_norm_contract
         ),
         "fault_prob_curve": (
             task == "online_binary"
             and architecture in SUPPORTED_ONLINE_ARCHITECTURES
-            and norm_stats_path.exists()
+            and has_valid_online_norm_contract
         ),
     }
 
@@ -262,7 +303,7 @@ def list_registered_models(
     preferred_names: list[str] = []
     if task == "online_binary" or capability in {"realtime_detection", "fault_prob_curve"}:
         preferred_names.extend(_as_name_list(config.get("ONLINE_MODEL_PRIORITY")))
-    elif capability == "offline_detection" or task in OFFLINE_MULTICLASS_TASKS:
+    elif capability == "offline_detection" or task in OFFLINE_MULTICLASS_TASK_ALIASES:
         preferred_names.extend(_as_name_list(config.get("DEFAULT_OFFLINE_MODEL")))
 
     if preferred_names:
@@ -276,19 +317,23 @@ def list_registered_models(
 def _match_requested_model(
     config: dict[str, Any],
     requested_name: str,
-) -> Path | None:
+    *,
+    task: str | None = None,
+    capability: str | None = None,
+) -> dict[str, Any] | None:
+    """Resolve only a model already accepted by the registry policy."""
     raw = requested_name.strip()
     if not raw:
         return None
 
-    candidate = Path(raw).expanduser()
-    if candidate.is_absolute():
-        return candidate
-
-    model_root = Path(config["MODEL_ROOT"])
-    direct = model_root / raw
-    if direct.exists():
-        return direct
+    for meta in list_registered_models(
+        config,
+        task=task,
+        capability=capability,
+        include_unavailable=False,
+    ):
+        if raw == meta["name"]:
+            return meta
     return None
 
 
@@ -300,33 +345,18 @@ def resolve_registered_model(
     capability: str | None = None,
 ) -> dict[str, Any] | None:
     if requested_name:
-        requested_path = _match_requested_model(config, requested_name)
-        if requested_path is not None:
-            meta = _build_metadata(requested_path)
-            if meta is None:
-                return None
-            if not _task_matches(meta["task"], task):
-                return None
-            if capability and not meta["capabilities"].get(capability, False):
-                return None
-            return meta
-
-        models = list_registered_models(
+        return _match_requested_model(
             config,
+            requested_name,
             task=task,
             capability=capability,
-            include_unavailable=False,
         )
-        for meta in models:
-            if meta["name"] == requested_name:
-                return meta
-        return None
 
     preferred_names: list[str] = []
     if task == "online_binary" or capability in {"realtime_detection", "fault_prob_curve"}:
         preferred_names.extend(_as_name_list(config.get("DEFAULT_ONLINE_MODEL")))
         preferred_names.extend(_as_name_list(config.get("ONLINE_MODEL_PRIORITY")))
-    elif capability == "offline_detection" or task in OFFLINE_MULTICLASS_TASKS:
+    elif capability == "offline_detection" or task in OFFLINE_MULTICLASS_TASK_ALIASES:
         preferred_names.extend(_as_name_list(config.get("DEFAULT_OFFLINE_MODEL")))
 
     models = list_registered_models(

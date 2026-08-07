@@ -1,13 +1,10 @@
 <template>
   <div class="diag-statusbar">
-    <div class="diag-statusbar__item diag-statusbar__item--online">
-      <span class="status-dot status-dot--ok"></span>
-      <span class="diag-statusbar__value">系统在线</span>
-    </div>
-
-    <div class="diag-statusbar__divider"></div>
-
-    <div class="diag-statusbar__item diag-statusbar__item--primary">
+    <div
+      class="diag-statusbar__item diag-statusbar__item--primary"
+      :class="`diag-statusbar__item--${stage.key}`"
+    >
+      <span class="status-dot" :class="stageDotClass"></span>
       <span class="diag-statusbar__label">{{ diagnosisCopy.stageLabel }}</span>
       <span class="diag-statusbar__value">{{ stage.label }}</span>
     </div>
@@ -15,36 +12,8 @@
     <div class="diag-statusbar__divider"></div>
 
     <div class="diag-statusbar__item diag-statusbar__item--asset">
-      <span class="diag-statusbar__label">{{ diagnosisCopy.assetSummaryLabel }}</span>
+      <span class="diag-statusbar__label">诊断来源</span>
       <span class="diag-statusbar__value" :title="selectedAssetName">{{ selectedAssetName }}</span>
-    </div>
-
-    <div class="diag-statusbar__divider"></div>
-
-    <div class="diag-statusbar__item">
-      <span class="diag-statusbar__label">{{ diagnosisCopy.taskIdLabel }}</span>
-      <span class="diag-statusbar__value diag-statusbar__value--mono">{{ currentRun?.id ? `DG-${currentRun.id}` : '-' }}</span>
-    </div>
-
-    <div class="diag-statusbar__divider"></div>
-
-    <div class="diag-statusbar__item">
-      <span class="diag-statusbar__label">{{ diagnosisCopy.modelSummaryLabel }}</span>
-      <span class="diag-statusbar__value" :title="selectedModelName">{{ selectedModelName }}</span>
-    </div>
-
-    <div class="diag-statusbar__divider"></div>
-
-    <div class="diag-statusbar__item">
-      <span class="diag-statusbar__label">{{ diagnosisCopy.taskTypeLabel }}</span>
-      <span class="diag-statusbar__value diag-statusbar__value--mono">{{ currentRun?.task || 'offline_multiclass' }}</span>
-    </div>
-
-    <div class="diag-statusbar__divider"></div>
-
-    <div class="diag-statusbar__item">
-      <span class="diag-statusbar__label">{{ diagnosisCopy.linkedSessionLabel }}</span>
-      <span class="diag-statusbar__value diag-statusbar__value--mono">{{ activeSessionId || '-' }}</span>
     </div>
 
     <div class="diag-statusbar__divider"></div>
@@ -64,17 +33,10 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { diagnosisCopy } from '@/modules/diagnosis/diagnosisView'
 
-defineProps({
-  activeSessionId: {
-    type: String,
-    default: ''
-  },
-  currentRun: {
-    type: Object,
-    default: null
-  },
+const props = defineProps({
   latestUpdatedText: {
     type: String,
     default: '暂无'
@@ -87,14 +49,17 @@ defineProps({
     type: String,
     required: true
   },
-  selectedModelName: {
-    type: String,
-    required: true
-  },
   stage: {
     type: Object,
     required: true
   }
+})
+
+const stageDotClass = computed(() => {
+  if (props.stage.key === 'completed') return 'status-dot--ok'
+  if (props.stage.key === 'error') return 'status-dot--danger'
+  if (props.stage.key === 'running') return 'status-dot--active'
+  return 'status-dot--offline'
 })
 </script>
 
@@ -126,12 +91,16 @@ defineProps({
   flex: 1 1 240px;
 }
 
-.diag-statusbar__item--primary .diag-statusbar__value {
+.diag-statusbar__item--completed .diag-statusbar__value {
   color: var(--status-ok);
 }
 
-.diag-statusbar__item--online {
-  color: var(--status-ok);
+.diag-statusbar__item--running .diag-statusbar__value {
+  color: var(--status-active);
+}
+
+.diag-statusbar__item--error .diag-statusbar__value {
+  color: var(--status-danger);
 }
 
 .diag-statusbar__label {

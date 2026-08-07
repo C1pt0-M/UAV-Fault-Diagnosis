@@ -67,7 +67,17 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start_dashboard.ps1
 - Frontend: `http://localhost:5173`
 - Health: `http://localhost:5000/health`
 
-首次使用请打开 `http://localhost:5173/setup` 初始化管理员账号，然后返回登录页进入系统。
+首次使用请确认 `.env` 中 `ENABLE_SETUP_API=True`，打开
+`http://localhost:5173/setup` 初始化管理员账号。初始化完成后，将该配置改为
+`False` 并重启后端；公开注册默认关闭，后续账号由管理员维护。
+
+`APP_ENV` 是后端配置 Profile 的选择入口：
+
+- `development`：本地开发，默认允许 setup，支持 replay/Rfly 调试。
+- `production`：正式或比赛部署，默认关闭 setup、公开注册和盲测，只开放显式配置的能力。
+- `testing`：自动化测试使用，业务代码不应手工选择。
+
+未知的 `APP_ENV` 会直接阻止应用启动，避免静默落入错误配置。
 
 ## RflySim 接入
 

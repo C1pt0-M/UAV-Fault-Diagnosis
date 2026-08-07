@@ -323,6 +323,10 @@ class ScenarioBackend(ABC):
         payload["transport_lifecycle"] = asdict(self.lifecycle())
         return payload
 
+    def session_meta(self) -> dict:
+        """返回需要写入会话 meta 的额外信息，默认无。"""
+        return {}
+
     @abstractmethod
     def _status(self) -> dict:
         raise NotImplementedError
@@ -1203,6 +1207,7 @@ class ReplayScenarioBackend(ScenarioBackend):
         self.replay_path = str(options.get("replay_path") or "").strip()
         self._thread = None
         self._stop_event = threading.Event()
+        self.replay_completed = False
 
     def _prepare(self) -> None:
         if not self.replay_path:
@@ -1221,10 +1226,10 @@ class ReplayScenarioBackend(ScenarioBackend):
             import pandas as pd
 
             df = normalize_time_columns(pd.read_csv(self.replay_path))
-            self._write_session_csv(df)
             window = deque(maxlen=150)
             t0 = None
             wall0 = time.time()
+            processed = 0
             for row in df.to_dict(orient="records"):
                 if self._stop_event.is_set():
                     break
@@ -1239,12 +1244,21 @@ class ReplayScenarioBackend(ScenarioBackend):
                 delay = max(0.0, (now_t - t0) - (time.time() - wall0))
                 if delay > 0:
                     time.sleep(min(delay, 0.05))
-            self._transition(phase="replay_completed")
+                processed += 1
+            self.replay_completed = bool(not self._stop_event.is_set())
+            if processed > 0:
+                self._write_session_csv(df.iloc[:processed])
+            self._transition(
+                phase=("replay_completed" if self.replay_completed else "replay_stopped")
+            )
         except Exception as exc:
             self.report_failure("replay_failed", exc)
             raise
         finally:
             self.manager.on_transport_finished(self.session_id, self)
+
+    def session_meta(self) -> dict:
+        return {"replay_completed": bool(self.replay_completed)}
 
     def _write_session_csv(self, df) -> None:
         df.to_csv(self.csv_path, index=False)

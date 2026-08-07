@@ -118,7 +118,6 @@ def seeded_records(app, auth_header):
             model_name="cnn1d",
             prediction_label="battery_failure",
             confidence=0.91,
-            pdf_path="",
             created_by=user_id,
         )
         report.set_probs({"battery_failure": 0.91, "normal": 0.09})
@@ -321,7 +320,6 @@ def test_legacy_report_serialization_keeps_canonical_task(app, seeded_records):
             model_name="legacy-model",
             prediction_label="motor",
             confidence=0.8,
-            pdf_path="",
         )
         report.set_summary({"severity": {"level": "medium"}, "recommendations": []})
         db.session.add(report)

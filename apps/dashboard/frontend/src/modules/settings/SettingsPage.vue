@@ -16,7 +16,7 @@
           外观与主题
         </div>
         <div class="settings-nav__item" :class="{ 'is-active': activeTab === 'ai' }" @click="activeTab = 'ai'">
-          模型配置
+          AI 接入
         </div>
       </aside>
 
@@ -68,29 +68,11 @@
         </section>
 
         <section v-show="activeTab === 'ai'" class="settings-section">
-          <h2 class="settings-section__title">模型配置</h2>
+          <h2 class="settings-section__title">AI 接入配置</h2>
           <div class="page-panel settings-panel">
-            <div class="form-group">
-              <label>默认离线诊断模型</label>
-              <select v-model="aiConfig.offlineModel" class="styled-select">
-                <option value="transfer3_cnnlstm_normalproto">Transfer3 CNN-LSTM (默认)</option>
-                <option value="transfer3_bilstm_fewshot">BiLSTM FewShot</option>
-                <option value="xgboost_baseline">XGBoost Baseline</option>
-              </select>
-              <p class="form-hint">用于离线数据集批量推理与报告生成的默认模型权重。</p>
-            </div>
-
-            <div class="form-group form-group--section">
-              <label>在线监测预警引擎</label>
-              <select v-model="aiConfig.onlineModel" class="styled-select">
-                <option value="online_detector_kg_mstca_rfly">KG-MSTCA (带知识图谱)</option>
-                <option value="online_detector_mstca_rfly">MSTCA (轻量时序卷积)</option>
-                <option value="online_detector_cnn1d_rfly">1D-CNN (高频实时检测)</option>
-              </select>
-              <p class="form-hint">影响遥测监测页面的延迟和召回率。</p>
-            </div>
-
-            <div class="settings-divider">大语言模型 (LLM) 接入配置</div>
+            <p class="form-hint settings-intro">
+              诊断模型由模型资产清单统一管理，并在诊断中心或实时监测页面选择；此处只配置 AI 助手使用的大语言模型。
+            </p>
 
             <div class="form-grid">
               <div class="form-group">
@@ -193,8 +175,6 @@ function setTheme(dark) {
 }
 
 const aiConfig = ref({
-  offlineModel: 'transfer3_cnnlstm_normalproto',
-  onlineModel: 'online_detector_kg_mstca_rfly',
   llmProvider: 'openai',
   customProviderName: '',
   llmFormat: 'openai',
@@ -368,9 +348,6 @@ async function testAiConfig() {
 .form-group--spaced {
   margin-top: var(--space-lg);
 }
-.form-group--section {
-  margin-top: var(--space-xl);
-}
 .form-group label {
   font-size: 13px;
   font-weight: 500;
@@ -484,13 +461,8 @@ async function testAiConfig() {
   border-top: 1px solid var(--line-faint);
 }
 
-.settings-divider {
-  margin: 32px 0 20px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed var(--line-strong);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
+.settings-intro {
+  margin-bottom: var(--space-lg);
 }
 .form-grid {
   display: grid;

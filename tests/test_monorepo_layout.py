@@ -50,3 +50,15 @@ def test_scripts_are_layered_without_compatibility_shims() -> None:
         target = scripts_root / bucket / script_name
         assert target.is_file()
         assert not (scripts_root / script_name).exists()
+
+
+def test_dashboard_offline_inference_uses_canonical_multiclass_name() -> None:
+    backend_scripts = (
+        Path(__file__).resolve().parents[1]
+        / "apps"
+        / "dashboard"
+        / "backend"
+        / "scripts"
+    )
+    assert (backend_scripts / "offline_multiclass_infer.py").is_file()
+    assert not (backend_scripts / "offline5_infer.py").exists()

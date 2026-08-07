@@ -17,7 +17,6 @@ class DiagnosisReport(db.Model):
     confidence = db.Column(db.Float, nullable=False, default=0.0)
     probs_json = db.Column(db.Text, nullable=True)
     summary_json = db.Column(db.Text, nullable=True)
-    pdf_path = db.Column(db.String(1024), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
     created_at = db.Column(db.DateTime, default=datetime.now, index=True)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)

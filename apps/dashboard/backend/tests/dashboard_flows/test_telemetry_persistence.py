@@ -330,6 +330,7 @@ def test_telemetry_finalize_session_delegates_persistence_writes(app, monkeypatc
         fault_prob_curve,
         mec=None,
         inference=None,
+        session_meta=None,
     ):
         captured["session_id"] = session_id
         captured["duration"] = duration
@@ -339,6 +340,7 @@ def test_telemetry_finalize_session_delegates_persistence_writes(app, monkeypatc
         captured["fault_prob_curve"] = fault_prob_curve
         captured["mec"] = mec
         captured["inference"] = inference
+        captured["session_meta"] = session_meta
 
     monkeypatch.setattr(
         telemetry_manager._persistence, "finalize_session", fake_finalize_session
@@ -356,6 +358,7 @@ def test_telemetry_finalize_session_delegates_persistence_writes(app, monkeypatc
     assert captured["fault_prob_curve"] == [{"time_s": 0.1, "fault_prob": 0.8}]
     assert captured["mec"] == telemetry_manager._mec_status
     assert captured["inference"] == telemetry_manager._inference_status
+    assert captured["session_meta"] is None
 
 
 def test_telemetry_finalize_session_skips_replay_asset_registration(app, tmp_path: Path):
@@ -453,6 +456,7 @@ def test_telemetry_create_session_record_delegates_persistence_writes(app, monke
         schema_version,
         source_path,
         meta,
+        created_by=None,
     ):
         captured["session_id"] = session_id
         captured["drone_id"] = drone_id
@@ -462,6 +466,7 @@ def test_telemetry_create_session_record_delegates_persistence_writes(app, monke
         captured["schema_version"] = schema_version
         captured["source_path"] = source_path
         captured["meta"] = meta
+        captured["created_by"] = created_by
 
     original_schema_version = telemetry_manager._schema_version
     try:
@@ -492,6 +497,7 @@ def test_telemetry_create_session_record_delegates_persistence_writes(app, monke
         "schema_version": "canonical-v-test",
         "source_path": "/tmp/replay.csv",
         "meta": meta,
+        "created_by": None,
     }
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Plot misclassified thrust_loss samples (offline 5-class seq models).
+Plot misclassified thrust_loss samples from historical offline multiclass models.
 
 This helps answer: are thrust_loss->normal confusions caused by "mild" faults
 that barely change telemetry under the current flight profile?

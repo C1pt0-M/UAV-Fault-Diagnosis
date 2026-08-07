@@ -123,6 +123,7 @@ class TelemetryPersistence:
         schema_version,
         source_path=None,
         meta=None,
+        created_by=None,
     ) -> None:
         if not self.manager.app:
             return
@@ -141,11 +142,13 @@ class TelemetryPersistence:
                     start_time=datetime.now(),
                     csv_path=serialize_local_path(csv_path, self.manager.app.config),
                     status="running",
+                    created_by=str(created_by) if created_by is not None else None,
                 )
                 session.set_meta(meta or {})
                 db.session.add(session)
                 db.session.commit()
         except Exception as e:
+            db.session.rollback()
             print(f"[telemetry_manager] 创建会话记录失败: {e}")
 
     def delete_session_record(self, *, session_id) -> None:
@@ -161,6 +164,7 @@ class TelemetryPersistence:
                     db.session.delete(session)
                     db.session.commit()
         except Exception as e:
+            db.session.rollback()
             print(f"[telemetry_manager] 删除会话记录失败: {e}")
 
     def finalize_session(
@@ -174,6 +178,7 @@ class TelemetryPersistence:
         fault_prob_curve=None,
         mec=None,
         inference=None,
+        session_meta=None,
     ) -> None:
         if not self.manager.app:
             return
@@ -194,6 +199,8 @@ class TelemetryPersistence:
                     if inference:
                         meta["inference"] = inference
                         meta["inference_location"] = inference.get("location")
+                    if session_meta:
+                        meta.update(session_meta)
                     if fault_prob_curve:
                         curve_dir = Path(self.manager.app.config["RUNTIME_DIR"]) / "telemetry_fault_prob"
                         curve_dir.mkdir(parents=True, exist_ok=True)
@@ -236,6 +243,9 @@ class TelemetryPersistence:
                                 stored_path=serialized_csv,
                                 size_bytes=Path(resolved_csv).stat().st_size,
                                 sha256=f"telemetry-session-{session_id}",
+                                created_by=int(session.created_by)
+                                if session.created_by and str(session.created_by).isdigit()
+                                else None,
                             )
                             db.session.add(asset)
                         else:
@@ -251,6 +261,7 @@ class TelemetryPersistence:
                         asset.set_meta(asset_meta)
                     db.session.commit()
         except Exception as e:
+            db.session.rollback()
             print(f"[telemetry_manager] 更新会话记录失败: {e}")
 
     def update_session_detection(self, *, session_id, has_detection) -> None:
@@ -266,6 +277,7 @@ class TelemetryPersistence:
                     session.has_detection = has_detection
                     db.session.commit()
         except Exception as e:
+            db.session.rollback()
             print(f"[telemetry_manager] 更新检测状态失败: {e}")
 
     def write_log(self, *, drone_id, log_type, content) -> None:
@@ -285,6 +297,7 @@ class TelemetryPersistence:
                 db.session.add(log)
                 db.session.commit()
         except Exception as e:
+            db.session.rollback()
             print(f"[telemetry_manager] 写入日志失败: {e}")
 
     def record_fault_event(
@@ -320,6 +333,7 @@ class TelemetryPersistence:
                 )
                 db.session.commit()
         except Exception as e:
+            db.session.rollback()
             print(f"[telemetry_manager] 写入故障事件失败: {e}")
 
 
@@ -407,6 +421,10 @@ class TelemetryProcessManager:
         self._sessions_dir.mkdir(parents=True, exist_ok=True)
 
     def init_app(self, app):
+        if self.app is not None and self.app is not app and (
+            self.is_collecting or self._backend is not None
+        ):
+            raise RuntimeError("遥测管理器仍有活动会话，不能切换 Flask app")
         self.app = app
         self._sessions_dir = Path(app.config["RUNTIME_DIR"]) / "telemetry_sessions"
         self._sessions_dir.mkdir(parents=True, exist_ok=True)
@@ -1277,7 +1295,7 @@ class TelemetryProcessManager:
     # ── 盲测模式 ──────────────────────────────────────────────
 
     def start_blind_test(
-        self, drone_id: str | None = None, sim_time: float = 120.0
+        self, drone_id: str | None = None, sim_time: float = 120.0, created_by=None
     ) -> dict:
         """启动盲测：随机决定故障配置，不泄露 ground truth。"""
         if self.is_collecting:
@@ -1344,7 +1362,7 @@ class TelemetryProcessManager:
 
         try:
             result = self.start_collection(
-                drone_id=drone_id, session_type="blind_test", sim_time=sim_time
+                drone_id=drone_id, session_type="blind_test", sim_time=sim_time, created_by=created_by
             )
         except Exception:
             with self._lock:
@@ -1416,6 +1434,7 @@ class TelemetryProcessManager:
         replay_path: str | None = None,
         replay_asset_id: int | None = None,
         rfly_options: dict | None = None,
+        created_by=None,
     ) -> dict:
         if self.is_collecting:
             raise RuntimeError("采集已在运行中，请先停止当前会话")
@@ -1424,7 +1443,7 @@ class TelemetryProcessManager:
             print(f"[telemetry_manager] 遥测子进程解释器: {telemetry_python_bin}")
         sim_time = float(sim_time)
         backend_name = (backend or "px4").strip().lower()
-        if backend_name != "replay" and sim_time <= 0:
+        if backend_name == "px4" and sim_time <= 0:
             raise RuntimeError("采集时长必须大于 0 秒")
 
         session_id = _generate_id("TS")
@@ -1493,6 +1512,7 @@ class TelemetryProcessManager:
             csv_path,
             backend_name,
             source_path=replay_path_resolved,
+            created_by=created_by,
             meta={
                 "backend": backend_name,
                 "source_asset_id": replay_asset_id,
@@ -1554,6 +1574,7 @@ class TelemetryProcessManager:
                     if key in self._mec_status and value is not None:
                         self._mec_status[key] = value
             self._replay_metrics = self._collect_replay_metrics(session_id)
+            backend_meta = self._backend.session_meta() if self._backend is not None else {}
             duration = time.time() - self._start_time if self._start_time else 0
             result = {
                 "session_id": session_id,
@@ -1570,6 +1591,7 @@ class TelemetryProcessManager:
                 self._frame_count,
                 len(self._fault_events),
                 self._replay_metrics,
+                session_meta=backend_meta,
             )
             self._write_log(
                 None,
@@ -2067,6 +2089,7 @@ class TelemetryProcessManager:
         backend_name,
         source_path=None,
         meta=None,
+        created_by=None,
     ):
         self._persistence.create_session_record(
             session_id=session_id,
@@ -2077,13 +2100,14 @@ class TelemetryProcessManager:
             schema_version=self._schema_version,
             source_path=source_path,
             meta=meta,
+            created_by=created_by,
         )
 
     def _delete_session_record(self, session_id):
         self._persistence.delete_session_record(session_id=session_id)
 
     def _finalize_session(
-        self, session_id, duration, frame_count, fault_count, replay_metrics=None
+        self, session_id, duration, frame_count, fault_count, replay_metrics=None, session_meta=None
     ):
         mec = self._snapshot_runtime_value(self._mec_status) or {}
         inference = self._snapshot_runtime_value(self._inference_status) or {}
@@ -2096,6 +2120,7 @@ class TelemetryProcessManager:
             fault_prob_curve=list(self._fault_prob_curve),
             mec=mec,
             inference=inference,
+            session_meta=session_meta,
         )
 
     def _update_session_detection(self, session_id, has_detection):

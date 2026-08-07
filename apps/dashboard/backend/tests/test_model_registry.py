@@ -59,7 +59,7 @@ def model_root(tmp_path: Path) -> Path:
         "online_detector_alpha",
         config={
             "model": "cnn1d",
-            "in_channels": 33,
+            "in_channels": 2,
             "num_classes": 2,
             "label_names": ["normal", "fault"],
             "best_val_f1": 0.7,
@@ -72,7 +72,7 @@ def model_root(tmp_path: Path) -> Path:
         "online_detector_beta",
         config={
             "model": "cnn1d",
-            "in_channels": 33,
+            "in_channels": 2,
             "num_classes": 2,
             "label_names": ["normal", "fault"],
             "best_val_f1": 0.95,
@@ -182,6 +182,15 @@ def test_resolve_registered_model_prefers_explicit_default_online_model(registry
     assert selected["name"] == "online_detector_alpha"
 
 
+def test_resolve_registered_model_rejects_absolute_path_bypass(registry_config, model_root):
+    selected = resolve_registered_model(
+        registry_config,
+        requested_name=str(model_root / "lstm"),
+        capability="offline_detection",
+    )
+    assert selected is None
+
+
 def test_online_model_priority_controls_realtime_list_order(registry_config):
     registry_config["ONLINE_MODEL_PRIORITY"] = (
         "online_detector_alpha",
@@ -209,6 +218,51 @@ def test_resolve_registered_online_model_exposes_runtime_summary_fields(registry
     assert selected["window_size"] is None
     assert selected["feature_count"] == 2
     assert selected["metrics"]["best_val_f1"] == 0.7
+
+
+def test_registry_tolerates_malformed_model_metadata(registry_config, model_root):
+    _create_model(
+        model_root,
+        "malformed_model",
+        config={
+            "model": "cnn1d",
+            "in_channels": "invalid",
+            "num_classes": {"invalid": True},
+            "label_names": "normal,fault",
+        },
+        norm_stats={"columns": ["roll"], "mean": [0.0], "std": [1.0]},
+    )
+
+    models = list_registered_models(registry_config)
+    by_name = {item["name"]: item for item in models}
+
+    assert by_name["malformed_model"]["num_classes"] == 0
+    assert by_name["malformed_model"]["capabilities"]["realtime_detection"] is False
+    assert by_name["online_detector_alpha"]["capabilities"]["realtime_detection"] is True
+
+
+def test_registry_rejects_online_model_with_mismatched_norm_contract(
+    registry_config,
+    model_root,
+):
+    _create_model(
+        model_root,
+        "online_detector_invalid_norm",
+        config={
+            "model": "cnn1d",
+            "in_channels": 2,
+            "num_classes": 2,
+            "label_names": ["normal", "fault"],
+        },
+        norm_stats={"columns": ["roll"], "mean": [0.0], "std": [1.0]},
+    )
+
+    models = list_registered_models(
+        registry_config,
+        capability="realtime_detection",
+    )
+
+    assert "online_detector_invalid_norm" not in [item["name"] for item in models]
 
 
 def test_models_endpoint_filters_by_capability(client, auth_header):
@@ -280,7 +334,6 @@ def test_overview_endpoint_exposes_industrial_dashboard_aggregates(app, client, 
             model_name="lstm",
             prediction_label="motor",
             confidence=0.86,
-            pdf_path="",
         )
         report.set_summary({
             "severity": {"level": "high"},
@@ -466,7 +519,7 @@ def test_model_registry_infers_multiclass_task_for_four_class_model(registry_con
 
     models = list_registered_models(registry_config, capability='offline_detection', include_unavailable=True)
     by_name = {item['name']: item for item in models}
-    assert by_name['lstm']['task'] == 'offline_5class'
+    assert by_name['lstm']['task'] == 'offline_multiclass'
     assert by_name['cnn_transformer_4class']['task'] == 'offline_multiclass'
 
 
@@ -478,7 +531,7 @@ def test_manifest_registry_ignores_unlisted_models_and_rejects_missing_entries(t
         "listed_online",
         config={
             "model": "cnn1d",
-            "in_channels": 33,
+            "in_channels": 1,
             "num_classes": 2,
             "label_names": ["normal", "fault"],
         },
@@ -489,7 +542,7 @@ def test_manifest_registry_ignores_unlisted_models_and_rejects_missing_entries(t
         "unlisted_online",
         config={
             "model": "cnn1d",
-            "in_channels": 33,
+            "in_channels": 1,
             "num_classes": 2,
             "label_names": ["normal", "fault"],
             "best_val_f1": 0.99,

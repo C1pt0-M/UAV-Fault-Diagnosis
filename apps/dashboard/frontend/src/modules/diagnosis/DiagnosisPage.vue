@@ -3,12 +3,9 @@
     <DiagnosisSessionBanner :active-session-id="activeSessionId" />
 
     <DiagnosisCommandHero
-      :active-session-id="activeSessionId"
-      :current-run="currentRun"
       :latest-updated-text="latestUpdatedText"
       :report-status-text="reportStatusText"
       :selected-asset-name="selectedAssetName"
-      :selected-model-name="selectedModelName"
       :stage="stage"
     />
 
@@ -18,8 +15,7 @@
         v-model:selected-model="selectedModel"
         :asset-summary-items="assetSummaryItems"
         :assets="assets"
-        :flow-steps="flowSteps"
-        :model-summary-items="modelSummaryItems"
+        :model-context-text="modelContextText"
         :models="models"
         :running="running"
         :stage="stage"
@@ -78,14 +74,12 @@ const {
   assets,
   confidenceText,
   createReport,
-  currentRun,
   evidenceRows,
   explanationSummary,
-  flowSteps,
   latestReportId,
   latestUpdatedText,
   loadMeta,
-  modelSummaryItems,
+  modelContextText,
   models,
   openReportAssistant,
   openReportsCenter,
@@ -104,7 +98,6 @@ const {
   selectedAssetId,
   selectedAssetName,
   selectedModel,
-  selectedModelName,
   stage,
   startDiagnosis
 } = useDiagnosisWorkspace()
@@ -117,19 +110,13 @@ const {
 
 .diagnosis-workbench__grid {
   display: grid;
-  grid-template-columns: minmax(320px, 34fr) minmax(360px, 34fr) minmax(340px, 32fr);
+  grid-template-columns: minmax(340px, 0.72fr) minmax(520px, 1.28fr);
   gap: var(--space-lg);
   align-items: start;
 }
 
-@media (max-width: 1480px) {
-  .diagnosis-workbench__grid {
-    grid-template-columns: minmax(0, 1fr) minmax(380px, 1fr);
-  }
-
-  .diagnosis-workbench__grid > :last-child {
-    grid-column: 1 / -1;
-  }
+.diagnosis-workbench__grid > :last-child {
+  grid-column: 1 / -1;
 }
 
 @media (max-width: 1120px) {
@@ -137,8 +124,5 @@ const {
     grid-template-columns: 1fr;
   }
 
-  .diagnosis-workbench__grid > :last-child {
-    grid-column: auto;
-  }
 }
 </style>

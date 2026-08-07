@@ -66,11 +66,15 @@ def run_ulg_to_csv(ulg_path: str, output_csv: str) -> dict:
     }
 
 
-def run_offline_5class(csv_path: str, model_dir: str, output_json: str) -> dict:
-    """调用离线5分类推理桥接脚本。"""
+def run_offline_multiclass(csv_path: str, model_dir: str, output_json: str) -> dict:
+    """调用离线多分类推理桥接脚本。"""
     cfg = current_app.config
     python_bin = cfg['ML_PYTHON_BIN']
-    script_path = Path(__file__).resolve().parents[2] / 'scripts' / 'offline5_infer.py'
+    script_path = (
+        Path(__file__).resolve().parents[2]
+        / 'scripts'
+        / 'offline_multiclass_infer.py'
+    )
     if not script_path.exists():
         raise FileNotFoundError(f'未找到推理脚本: {script_path}')
 

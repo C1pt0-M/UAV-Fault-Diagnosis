@@ -334,6 +334,7 @@ def test_telemetry_start_collection_replay_success(
             "replay_path": str(replay_path),
             "replay_asset_id": None,
             "rfly_options": {"px4mavctrl_path": None},
+            "created_by": 1,
         }
     ]
 
@@ -583,7 +584,7 @@ def test_telemetry_stop_collection_finalize_race_only_finalizes_once(
     monkeypatch.setattr(
         telemetry_manager,
         "_finalize_session",
-        lambda *args: finalize_calls.append(args),
+        lambda *args, **kwargs: finalize_calls.append((args, kwargs)),
     )
     monkeypatch.setattr(telemetry_manager, "_write_log", lambda *args: None)
 
@@ -1208,7 +1209,7 @@ def test_telemetry_blind_test_start_success(app, client, auth_header, monkeypatc
     assert payload["data"]["session_id"] == "TS-BLIND-001"
     assert payload["data"]["collector_status"] == "running"
     assert payload["data"]["blind_test"] is True
-    assert start_calls == [{"drone_id": "DRONE-BLIND-001", "sim_time": 90.0}]
+    assert start_calls == [{"drone_id": "DRONE-BLIND-001", "sim_time": 90.0, "created_by": 1}]
 
 
 def test_telemetry_blind_test_start_validation_errors(

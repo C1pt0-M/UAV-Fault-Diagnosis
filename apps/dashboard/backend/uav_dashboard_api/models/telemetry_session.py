@@ -72,7 +72,7 @@ class TelemetrySession(db.Model):
     __tablename__ = 'telemetry_sessions'
 
     id = db.Column(db.String(20), primary_key=True, comment='会话ID: TS-XXXXXX')
-    drone_id = db.Column(db.String(20), db.ForeignKey('drones.id'), nullable=True, comment='关联无人机')
+    drone_id = db.Column(db.String(20), comment='关联无人机ID')
     session_type = db.Column(db.String(20), nullable=False, default='simulation', comment='类型: simulation/real')
     scenario_backend = db.Column(db.String(32), nullable=True, comment='场景后端: px4/replay')
     schema_version = db.Column(db.String(32), nullable=True, comment='遥测 schema 版本')

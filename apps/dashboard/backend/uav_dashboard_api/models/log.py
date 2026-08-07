@@ -7,7 +7,7 @@ class Log(db.Model):
     __tablename__ = 'logs'
 
     id = db.Column(db.String(20), primary_key=True, comment='日志ID')
-    drone_id = db.Column(db.String(20), db.ForeignKey('drones.id'), comment='无人机ID')
+    drone_id = db.Column(db.String(20), comment='无人机ID')
     type = db.Column(db.String(20), nullable=False, comment='日志类型: flight/fault/maintenance/system')
     content = db.Column(db.Text, nullable=False, comment='日志内容')
     operator = db.Column(db.String(50), comment='操作人')

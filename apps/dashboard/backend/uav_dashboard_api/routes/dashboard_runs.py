@@ -14,12 +14,12 @@ from uav_dashboard_api.routes.dashboard_asset_input import (
     _get_or_create_session_asset,
     _resolved_csv_path,
 )
-from uav_dashboard_api.services.bridge import run_offline_5class
+from uav_dashboard_api.services.bridge import run_offline_multiclass
 from uav_dashboard_api.services.diagnosis_contract import build_diagnosis_payload
 from uav_dashboard_api.services.model_registry import list_registered_models, resolve_registered_model
 from uav_dashboard_api.services.severity_recommendation import evaluate_severity_and_recommendations
 from uav_dashboard_api.services.task_manager import mark_run_progress, submit_background_run
-from uav_dashboard_api.utils.jwt_utils import token_required
+from uav_dashboard_api.utils.jwt_utils import token_required, is_admin
 
 
 OFFLINE_MULTICLASS_TASK = "offline_multiclass"
@@ -27,7 +27,7 @@ OFFLINE_MULTICLASS_TASK = "offline_multiclass"
 def _is_offline_multiclass_task(task: str | None) -> bool:
     return str(task).strip() == OFFLINE_MULTICLASS_TASK
 
-def _offline_5class_worker(run_id: int, asset_id: int, model_name: str):
+def _offline_multiclass_worker(run_id: int, asset_id: int, model_name: str):
     asset = db.session.get(Asset, asset_id)
     if asset is None:
         raise RuntimeError("资产不存在")
@@ -46,7 +46,7 @@ def _offline_5class_worker(run_id: int, asset_id: int, model_name: str):
     run_dir.mkdir(parents=True, exist_ok=True)
     output_json = run_dir / "result.json"
 
-    prediction = run_offline_5class(
+    prediction = run_offline_multiclass(
         csv_path=csv_path,
         model_dir=str(model_dir),
         output_json=str(output_json),
@@ -191,7 +191,7 @@ def create_run(current_user):
     submit_background_run(
         current_app._get_current_object(),
         run.id,
-        _offline_5class_worker,
+        _offline_multiclass_worker,
         asset.id,
         model_name,
     )
@@ -205,6 +205,8 @@ def create_run(current_user):
 
 def list_runs(current_user):
     query = RunRecord.query
+    if not is_admin(current_user):
+        query = query.filter(RunRecord.created_by == current_user.id)
     task = request.args.get("task")
     status = request.args.get("status")
     limit = request.args.get("limit", default=50, type=int)
@@ -226,11 +228,15 @@ def get_run(current_user, run_id: int):
     run = db.session.get(RunRecord, run_id)
     if run is None:
         return jsonify({"success": False, "message": "任务不存在"}), 404
+    if not is_admin(current_user) and run.created_by != getattr(current_user, 'id', None):
+        return jsonify({"success": False, "message": "任务不存在"}), 404
     return jsonify({"success": True, "data": run.to_dict()})
 
 def get_run_result(current_user, run_id: int):
     run = db.session.get(RunRecord, run_id)
     if run is None:
+        return jsonify({"success": False, "message": "任务不存在"}), 404
+    if not is_admin(current_user) and run.created_by != getattr(current_user, 'id', None):
         return jsonify({"success": False, "message": "任务不存在"}), 404
     if run.status != "success":
         return jsonify(

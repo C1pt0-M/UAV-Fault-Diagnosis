@@ -27,19 +27,18 @@
           <div class="diagnosis-result__confidence">
             <span>{{ diagnosisCopy.confidenceLabel }}</span>
             <strong>{{ confidenceText }}</strong>
-            <small>主分类置信度</small>
           </div>
         </div>
 
         <div class="diagnosis-meta-grid">
-          <article
+          <div
             v-for="item in resultMetaItems"
             :key="item.label"
             class="diagnosis-meta-card"
           >
             <span>{{ item.label }}</span>
             <strong :title="String(item.value)">{{ item.value }}</strong>
-          </article>
+          </div>
         </div>
 
         <div class="diagnosis-primary-actions">
@@ -59,19 +58,15 @@
           </el-button>
           <el-button
             v-else
-            type="success"
-            plain
+            type="primary"
             @click="$emit('open-reports-center')"
           >
-            {{ diagnosisCopy.reportReadyButton }}
-          </el-button>
-          <el-button plain @click="$emit('open-reports-center')">
             {{ diagnosisCopy.reportCenterButton }}
           </el-button>
           <el-button
+            v-if="latestReportId"
             type="warning"
             plain
-            :disabled="!latestReportId"
             @click="$emit('open-ai-assistant')"
           >
             {{ diagnosisCopy.aiActionButton }}
@@ -83,11 +78,10 @@
             <div class="diagnosis-subpanel__title">{{ diagnosisCopy.probabilityTitle }}</div>
             <div v-if="probabilityRows.length" class="probability-list">
               <div
-                v-for="(row, index) in probabilityRows.slice(0, 5)"
+                v-for="(row, index) in probabilityRows"
                 :key="row.label"
                 class="probability-row"
               >
-                <span class="probability-row__rank">{{ index + 1 }}</span>
                 <span class="probability-row__label" :title="row.label">{{ row.label }}</span>
                 <div class="probability-row__track">
                   <div
@@ -100,15 +94,6 @@
               </div>
             </div>
             <el-empty v-else :description="diagnosisCopy.emptyProbability" :image-size="52" />
-          </section>
-
-          <section class="diagnosis-subpanel diagnosis-subpanel--risk">
-            <div class="diagnosis-subpanel__title">风险等级</div>
-            <div class="risk-meter" :class="`risk-meter--${riskLevel.tone}`">
-              <strong>{{ confidenceText }}</strong>
-              <span>{{ riskLevel.label }}</span>
-            </div>
-            <p>{{ riskLevel.description }}</p>
           </section>
         </div>
 
@@ -132,27 +117,10 @@
 
       <section v-else class="diagnosis-ready">
         <div class="diagnosis-ready__header">
-          <div>
-            <span class="diagnosis-result__eyebrow">待开始</span>
-            <h3>诊断准备状态</h3>
-            <p>当前尚未提交诊断任务；完成输入配置后，系统会生成故障结论、证据摘要与报告出口。</p>
-          </div>
+          <span class="diagnosis-result__eyebrow">待开始</span>
+          <h3>等待诊断任务</h3>
+          <p>选择日志资产并启动诊断后，这里将展示故障类别、置信度和类别概率。</p>
         </div>
-
-        <div class="diagnosis-ready__grid">
-          <article
-            v-for="item in preparationItems"
-            :key="item.label"
-            class="diagnosis-ready__item"
-          >
-            <span class="status-dot" :class="`status-dot--${item.tone}`"></span>
-            <div>
-              <strong>{{ item.label }}</strong>
-              <small>{{ item.value }}</small>
-            </div>
-          </article>
-        </div>
-
       </section>
     </div>
   </section>
@@ -182,12 +150,6 @@ const props = defineProps({
 defineEmits(['create-report', 'open-reports-center', 'open-ai-assistant'])
 
 const labelMeta = computed(() => getDiagnosisLabelMeta(props.resultData?.prediction?.label))
-const preparationItems = [
-  { label: '待选择资产', value: '日志资产未锁定', tone: 'offline' },
-  { label: '待启动任务', value: '离线诊断未提交', tone: 'active' },
-  { label: '报告待生成', value: '结果完成后开放', tone: 'pending' },
-  { label: 'AI 解读待解锁', value: '生成报告后可用', tone: 'offline' }
-]
 const riskBadgeClass = computed(() => {
   if (props.stage.key === 'error') return 'status-badge--danger'
   if (props.riskLevel.tone === 'danger') return 'status-badge--danger'
@@ -210,10 +172,8 @@ const riskBadgeClass = computed(() => {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 160px;
   gap: var(--space-md);
-  padding: 16px;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius-md);
-  background: var(--bg-panel-raised);
+  padding: 4px 0 18px;
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .diagnosis-result__eyebrow {
@@ -281,8 +241,7 @@ const riskBadgeClass = computed(() => {
   border-left: 1px solid var(--line-soft);
 }
 
-.diagnosis-result__confidence span,
-.diagnosis-result__confidence small {
+.diagnosis-result__confidence span {
   color: var(--text-tertiary);
 }
 
@@ -295,11 +254,6 @@ const riskBadgeClass = computed(() => {
   font-family: var(--font-mono);
 }
 
-.diagnosis-result__confidence small {
-  display: block;
-  margin-top: 8px;
-}
-
 .diagnosis-ready {
   display: flex;
   flex-direction: column;
@@ -307,10 +261,7 @@ const riskBadgeClass = computed(() => {
 }
 
 .diagnosis-ready__header {
-  padding: 16px;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius-md);
-  background: var(--bg-panel-raised);
+  padding: 12px 0;
 }
 
 .diagnosis-ready__header h3 {
@@ -326,38 +277,9 @@ const riskBadgeClass = computed(() => {
   line-height: 1.7;
 }
 
-.diagnosis-ready__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.diagnosis-ready__item {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  min-width: 0;
-  padding: 12px;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius-md);
-  background: var(--bg-panel);
-}
-
-.diagnosis-ready__item strong {
-  display: block;
-  color: var(--text-primary);
-  font-size: 13px;
-}
-
-.diagnosis-ready__item small {
-  display: block;
-  margin-top: 3px;
-  color: var(--text-tertiary);
-  font-size: 12px;
-}
-
 .diagnosis-ready--error .diagnosis-ready__header {
-  border-color: rgba(239, 68, 68, 0.24);
+  padding: 14px;
+  border-left: 3px solid var(--status-danger);
   background: var(--status-danger-soft);
 }
 
@@ -385,31 +307,26 @@ const riskBadgeClass = computed(() => {
 }
 
 .diagnosis-meta-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: var(--space-md);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 12px;
 }
 
 .diagnosis-meta-card {
   min-width: 0;
-  padding: 10px;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius-md);
-  background: var(--bg-panel);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
 }
 
 .diagnosis-meta-card span {
-  display: block;
   color: var(--text-tertiary);
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 12px;
 }
 
 .diagnosis-meta-card strong {
-  display: block;
   min-width: 0;
-  margin-top: 6px;
   color: var(--text-primary);
   font-size: 12px;
   white-space: nowrap;
@@ -421,25 +338,19 @@ const riskBadgeClass = computed(() => {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   margin-top: var(--space-md);
   padding-bottom: var(--space-md);
   border-bottom: 1px solid var(--line-soft);
 }
 
 .diagnosis-result__lower {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(160px, 0.8fr);
-  gap: var(--space-md);
   margin-top: var(--space-md);
 }
 
 .diagnosis-subpanel {
   min-width: 0;
-  padding: 14px;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius-md);
-  background: var(--bg-panel);
+  padding: 0;
 }
 
 .diagnosis-subpanel__title {
@@ -457,24 +368,11 @@ const riskBadgeClass = computed(() => {
 
 .probability-row {
   display: grid;
-  grid-template-columns: 20px minmax(90px, 1fr) minmax(100px, 1.2fr) 58px;
+  grid-template-columns: minmax(100px, 0.8fr) minmax(160px, 1.8fr) 58px;
   gap: 8px;
   align-items: center;
   color: var(--text-secondary);
   font-size: 12px;
-}
-
-.probability-row__rank {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background: var(--brand-soft);
-  color: var(--brand-strong);
-  font-size: 10px;
-  font-weight: 900;
 }
 
 .probability-row__label {
@@ -507,48 +405,9 @@ const riskBadgeClass = computed(() => {
   text-align: right;
 }
 
-.risk-meter {
-  display: grid;
-  place-items: center;
-  width: 112px;
-  height: 112px;
-  margin: 4px auto 12px;
-  border-radius: 999px;
-  border: 10px solid var(--brand-soft);
-}
-
-.risk-meter--danger {
-  border-color: var(--status-danger);
-}
-
-.risk-meter--warn {
-  border-color: var(--status-warn);
-}
-
-.risk-meter strong {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 22px;
-  color: var(--text-primary);
-}
-
-.risk-meter span {
-  display: block;
-  color: var(--text-tertiary);
-  font-size: 12px;
-}
-
-.diagnosis-subpanel--risk p {
-  margin: 0;
-  color: var(--text-secondary);
-  line-height: 1.7;
-  font-size: 12px;
-}
-
 @media (max-width: 760px) {
   .diagnosis-result__hero,
-  .diagnosis-result__lower,
-  .diagnosis-meta-grid {
+  .diagnosis-result__lower {
     grid-template-columns: 1fr;
   }
 
@@ -559,8 +418,8 @@ const riskBadgeClass = computed(() => {
     border-top: 1px solid var(--line-soft);
   }
 
-  .diagnosis-ready__grid {
-    grid-template-columns: 1fr;
+  .probability-row {
+    grid-template-columns: minmax(88px, 1fr) minmax(80px, 1.4fr) 54px;
   }
 }
 </style>

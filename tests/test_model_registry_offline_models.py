@@ -81,8 +81,15 @@ def test_model_registry_includes_external_metrics_and_new_architectures(tmp_path
     assert top["metrics_external"]["balanced_accuracy"] == 0.76
 
 
-def test_offline5_infer_supports_new_transfer3_model_names() -> None:
-    script_path = PROJECT_ROOT / "apps" / "dashboard" / "backend" / "scripts" / "offline5_infer.py"
+def test_offline_multiclass_infer_supports_transfer3_model_names() -> None:
+    script_path = (
+        PROJECT_ROOT
+        / "apps"
+        / "dashboard"
+        / "backend"
+        / "scripts"
+        / "offline_multiclass_infer.py"
+    )
     tree = ast.parse(script_path.read_text(encoding="utf-8"))
 
     create_model = None
@@ -98,6 +105,22 @@ def test_offline5_infer_supports_new_transfer3_model_names() -> None:
     assert "lstm" in constants
 
 
+def test_offline_infer_prefers_selected_model_norm_stats() -> None:
+    script_path = (
+        PROJECT_ROOT
+        / "apps"
+        / "dashboard"
+        / "backend"
+        / "scripts"
+        / "offline_multiclass_infer.py"
+    )
+    source = script_path.read_text(encoding="utf-8")
+
+    model_stats_index = source.index("model_dir / 'norm_stats.json'")
+    configured_stats_index = source.index("Path(args.norm_stats) if args.norm_stats else None")
+    assert model_stats_index < configured_stats_index
+
+
 def test_model_registry_accepts_online_kg_mstca(tmp_path: Path) -> None:
     model_root = tmp_path / "models"
     model_dir = model_root / "online_detector_kg_mstca_rfly"
@@ -109,6 +132,7 @@ def test_model_registry_accepts_online_kg_mstca(tmp_path: Path) -> None:
         {
             "model": "kg_mstca",
             "task": "online_binary",
+            "in_channels": 31,
             "num_classes": 2,
             "label_names": ["normal", "fault"],
             "best_val_f1": 0.91,
@@ -127,6 +151,8 @@ def test_model_registry_accepts_online_kg_mstca(tmp_path: Path) -> None:
         model_dir / "norm_stats.json",
         {
             "columns": [f"feat_{i}" for i in range(31)],
+            "mean": [0.0] * 31,
+            "std": [1.0] * 31,
             "window_size": 150,
         },
     )

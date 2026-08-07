@@ -65,10 +65,10 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="类型" width="100">
+        <el-table-column label="类型" width="110">
           <template #default="{ row }">
-            <el-tag :type="row.kind === 'ulg' ? 'warning' : 'success'" effect="light" round size="small">
-              {{ String(row.kind || '').toUpperCase() }}
+            <el-tag :type="getAssetCategoryMeta(row).tag" effect="light" round size="small">
+              {{ getAssetCategoryMeta(row).label }}
             </el-tag>
           </template>
         </el-table-column>
@@ -129,7 +129,7 @@ import ElTag from 'element-plus/es/components/tag/index.mjs'
 import ElUpload from 'element-plus/es/components/upload/index.mjs'
 import { Files, Upload, Document, Box, Memo } from '@element-plus/icons-vue'
 import { computed } from 'vue'
-import { assetKindTabs, assetsCopy, createAssetActionItems, formatAssetSize } from '@/modules/assets/assetsView'
+import { assetKindTabs, assetsCopy, createAssetActionItems, formatAssetSize, getAssetCategoryMeta } from '@/modules/assets/assetsView'
 
 const props = defineProps({
   assets: { type: Array, default: () => [] },
@@ -193,7 +193,7 @@ function emitAssetAction(actionKey, row) {
 .header-info { display: flex; flex-direction: column; gap: 4px; }
 .header-title-row { display: flex; align-items: center; gap: 12px; }
 .header-icon { font-size: 20px; color: var(--brand); }
-.assets-actions { display: flex; align-items: center; gap: 24px; }
+.assets-actions { display: flex; align-items: center; justify-content: space-between; gap: 24px; width: 100%; }
 .kind-tabs {
   padding: 8px var(--space-md) 0;
   border-radius: var(--radius-md);

@@ -59,12 +59,12 @@ def auth_header(client):
     return {"Authorization": f"Bearer {token}"}
 
 
-def test_setup_status_remains_available_for_first_use_initialization(client):
+def test_setup_routes_are_disabled_when_setup_api_is_off(client):
     response = client.get("/api/setup/status")
-    assert response.status_code == 200
-    payload = response.get_json()["data"]
-    assert payload["is_installed"] is True
-    assert payload["needs_setup"] is False
+    assert response.status_code == 404
+
+    root_payload = client.get("/").get_json()
+    assert "setup" not in root_payload["endpoints"]
 
 
 def test_register_route_is_disabled_when_public_register_off(client):

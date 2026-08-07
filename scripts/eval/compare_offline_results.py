@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Compare offline (5-class) model results under assets/models/*/metrics_test.json.
+Compare historical offline multiclass model results under model result directories.
 
 Default behavior:
 - reads every assets/models/<dir>/metrics_test.json

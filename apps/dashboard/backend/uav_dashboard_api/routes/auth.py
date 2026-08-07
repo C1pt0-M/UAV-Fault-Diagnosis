@@ -173,7 +173,7 @@ def register():
             username=username,
             password=hash_password(password),
             real_name=sanitized_data['real_name'],
-            email=email,
+            email=email or None,
             phone=phone,
             department=sanitized_data['department'],
             role='user',
@@ -218,24 +218,39 @@ def get_profile(current_user):
 def update_profile(current_user):
     """更新用户信息"""
     try:
-        data = request.get_json(silent=True) or {}
+        data = request.get_json(silent=True)
+        if not isinstance(data, dict):
+            return jsonify({'success': False, 'message': '请求体必须是JSON对象'}), 400
 
-        # 更新字段
-        if 'real_name' in data:
-            current_user.real_name = data['real_name']
-        if 'email' in data:
-            current_user.email = data['email']
-        if 'phone' in data:
-            current_user.phone = data['phone']
-        if 'department' in data:
-            current_user.department = data['department']
-        if 'avatar' in data:
-            current_user.avatar = data['avatar']
+        email = data.get('email') if 'email' in data else None
+        phone = data.get('phone') if 'phone' in data else None
+        if email is not None:
+            is_valid, error_msg = Validators.validate_email(email)
+            if not is_valid:
+                return jsonify({'success': False, 'message': error_msg}), 400
+            existing_user = User.query.filter(
+                User.email == email,
+                User.id != current_user.id,
+            ).first()
+            if email and existing_user:
+                return jsonify({'success': False, 'message': '邮箱已被其他用户使用'}), 400
 
-        # 如果要更新密码
-        if 'password' in data and data['password']:
-            current_user.password = hash_password(data['password'])
+        if phone is not None:
+            is_valid, error_msg = Validators.validate_phone(phone)
+            if not is_valid:
+                return jsonify({'success': False, 'message': error_msg}), 400
 
+        sanitized_data = sanitize_input({
+            key: data[key]
+            for key in ('real_name', 'department', 'avatar')
+            if key in data
+        })
+        for key, value in sanitized_data.items():
+            setattr(current_user, key, value)
+        if email is not None:
+            current_user.email = email or None
+        if phone is not None:
+            current_user.phone = phone
         db.session.commit()
 
         return jsonify({

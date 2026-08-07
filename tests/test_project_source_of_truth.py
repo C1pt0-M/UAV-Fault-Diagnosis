@@ -97,6 +97,7 @@ def test_gitignore_does_not_hide_project_facts() -> None:
     assert "/tests/*" not in content
     assert "\nCONTEXT.md\n" not in f"\n{content}\n"
     assert "\nrequirements-autodl-train.txt\n" not in f"\n{content}\n"
+    assert "!docs/project_status_and_windows_migration.md" in content
 
 
 def test_removed_sim_factory_suite_is_explicitly_excluded() -> None:

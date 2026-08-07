@@ -314,7 +314,7 @@ export function useMonitoringDashboard() {
         icon: 'Timer'
       }
     ]
-    if (selectedBackend.value === 'rfly') {
+    if (false /* MEC 推理位置指标暂时隐藏 */ && selectedBackend.value === 'rfly') {
       cards.push({
         label: '推理位置',
         value: inferenceLocationLabel.value,
@@ -375,7 +375,9 @@ export function useMonitoringDashboard() {
 
   async function loadReplayAssets() {
     const response = await assetApi.list('all')
-    replayAssets.value = (response.data || []).filter((item) => ['csv', 'ulg'].includes(item.kind))
+    replayAssets.value = (response.data || []).filter(
+      (item) => ['csv', 'ulg'].includes(item.source_category)
+    )
   }
 
   async function loadRflyDiagnostics() {
@@ -461,7 +463,7 @@ export function useMonitoringDashboard() {
         await telemetryApi.startCollection({
           drone_id: 'DRONE-001',
           session_type: 'simulation',
-          sim_time: selectedBackend.value === 'replay' ? 0 : selectedDuration.value,
+          sim_time: selectedBackend.value === 'px4' ? selectedDuration.value : 0,
           backend: selectedBackend.value,
           replay_path: selectedBackend.value === 'replay'
             ? replayAsset?.meta?.prepared_csv_path || replayAsset?.stored_path

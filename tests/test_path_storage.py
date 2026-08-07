@@ -139,7 +139,6 @@ def test_model_to_dict_hides_server_paths_by_default():
             model_name="offline-model",
             prediction_label="motor",
             confidence=0.9,
-            pdf_path="runtime://reports/demo.pdf",
         )
 
         assert "stored_path" not in asset.to_dict()

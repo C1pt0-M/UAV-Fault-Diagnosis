@@ -5,6 +5,7 @@ import uuid
 from pathlib import Path
 
 from flask import current_app, jsonify, request, send_file
+from sqlalchemy import or_
 from werkzeug.utils import secure_filename
 
 from uav_dashboard_api import db
@@ -17,15 +18,17 @@ from uav_dashboard_api.routes.dashboard_asset_input import (
 )
 from uav_dashboard_api.services.bridge import run_ulg_to_csv
 from uav_dashboard_api.services.task_manager import mark_run_progress, submit_background_run
-from uav_dashboard_api.utils.jwt_utils import token_required
+from uav_dashboard_api.utils.jwt_utils import token_required, is_admin
 from uav_dashboard_api.utils.path_store import resolve_local_path, serialize_local_path
 
 
 ALLOWED_EXTS = {".ulg": "ulg", ".csv": "csv"}
 
-def _get_asset_or_404(asset_id: int):
+def _get_asset_or_404(asset_id: int, user=None):
     asset = db.session.get(Asset, asset_id)
     if asset is None:
+        return None, (jsonify({"success": False, "message": "资产不存在"}), 404)
+    if user is not None and not is_admin(user) and asset.created_by != getattr(user, 'id', None):
         return None, (jsonify({"success": False, "message": "资产不存在"}), 404)
     return asset, None
 
@@ -79,8 +82,8 @@ def upload_asset(current_user):
     if not file or not file.filename:
         return jsonify({"success": False, "message": "未选择文件"}), 400
 
-    filename = secure_filename(file.filename) or file.filename
-    ext = Path(filename).suffix.lower()
+    original_filename = Path(file.filename).name
+    ext = Path(original_filename).suffix.lower()
     kind = ALLOWED_EXTS.get(ext)
     if kind is None:
         return jsonify({"success": False, "message": "仅支持 .ulg 或 .csv 文件"}), 400
@@ -88,41 +91,46 @@ def upload_asset(current_user):
     save_dir = Path(current_app.config["UPLOAD_DIR"]) / kind
     save_dir.mkdir(parents=True, exist_ok=True)
 
+    safe_stem = secure_filename(Path(original_filename).stem) or "asset"
     stored_name = (
-        f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid.uuid4().hex[:8]}_{filename}"
+        f"{datetime.now().strftime('%Y%m%d%H%M%S')}_"
+        f"{uuid.uuid4().hex[:8]}_{safe_stem}{ext}"
     )
     stored_path = save_dir / stored_name
-    file.save(stored_path)
+    try:
+        file.save(stored_path)
+        sha256 = _sha256_file(stored_path)
 
-    sha256 = _sha256_file(stored_path)
+        existing_asset = Asset.query.filter_by(sha256=sha256).first()
+        if existing_asset:
+            stored_path.unlink(missing_ok=True)
+            return jsonify(
+                {
+                    "success": False,
+                    "message": "文件已存在(文件指纹雷同)，跳过上传",
+                    "data": _asset_payload_with_quality(existing_asset),
+                }
+            ), 409
 
-    # Check for duplicates using SHA256
-    existing_asset = Asset.query.filter_by(sha256=sha256).first()
-    if existing_asset:
-        stored_path.unlink()
-        return jsonify(
-            {
-                "success": False,
-                "message": "文件已存在(文件指纹雷同)，跳过上传",
-                "data": _asset_payload_with_quality(existing_asset),
-            }
-        ), 409
-
-    asset = Asset(
-        filename=file.filename,
-        kind=kind,
-        stored_path=serialize_local_path(stored_path, current_app.config),
-        size_bytes=stored_path.stat().st_size,
-        sha256=sha256,
-        created_by=getattr(current_user, "id", None),
-    )
-    meta = {}
-    if kind == "csv":
-        meta["prepared_csv_path"] = str(stored_path)
-        meta.update(_build_csv_quality_meta(stored_path))
-    asset.set_meta(meta)
-    db.session.add(asset)
-    db.session.commit()
+        asset = Asset(
+            filename=original_filename,
+            kind=kind,
+            stored_path=serialize_local_path(stored_path, current_app.config),
+            size_bytes=stored_path.stat().st_size,
+            sha256=sha256,
+            created_by=getattr(current_user, "id", None),
+        )
+        meta = {}
+        if kind == "csv":
+            meta["prepared_csv_path"] = str(stored_path)
+            meta.update(_build_csv_quality_meta(stored_path))
+        asset.set_meta(meta)
+        db.session.add(asset)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        stored_path.unlink(missing_ok=True)
+        raise
 
     return jsonify(
         {
@@ -135,8 +143,22 @@ def upload_asset(current_user):
 def list_assets(current_user):
     kind = request.args.get("kind", "all")
     query = Asset.query
-    if kind in ("ulg", "csv"):
-        query = query.filter_by(kind=kind)
+    if kind == "ts":
+        query = query.filter(
+            Asset.meta_json.like('%"source_type": "telemetry_session"%')
+        )
+    elif kind == "csv":
+        query = query.filter(
+            Asset.kind == "csv",
+            or_(
+                Asset.meta_json.is_(None),
+                ~Asset.meta_json.like('%"source_type": "telemetry_session"%'),
+            ),
+        )
+    elif kind == "ulg":
+        query = query.filter_by(kind="ulg")
+    if not is_admin(current_user):
+        query = query.filter(Asset.created_by == current_user.id)
     assets = query.order_by(Asset.created_at.desc()).all()
     return jsonify(
         {
@@ -149,13 +171,13 @@ def list_assets(current_user):
     )
 
 def get_asset(current_user, asset_id: int):
-    asset, error = _get_asset_or_404(asset_id)
+    asset, error = _get_asset_or_404(asset_id, current_user)
     if error:
         return error
     return jsonify({"success": True, "data": _asset_payload_with_quality(asset)})
 
 def download_asset(current_user, asset_id: int):
-    asset, error = _get_asset_or_404(asset_id)
+    asset, error = _get_asset_or_404(asset_id, current_user)
     if error:
         return error
     file_path = Path(resolve_local_path(asset.stored_path, current_app.config))
@@ -164,7 +186,7 @@ def download_asset(current_user, asset_id: int):
     return send_file(file_path, as_attachment=True, download_name=asset.filename)
 
 def delete_asset(current_user, asset_id: int):
-    asset, error = _get_asset_or_404(asset_id)
+    asset, error = _get_asset_or_404(asset_id, current_user)
     if error:
         return error
 

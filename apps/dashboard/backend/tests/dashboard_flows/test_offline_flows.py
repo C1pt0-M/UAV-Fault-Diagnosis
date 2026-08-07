@@ -16,6 +16,52 @@ from uav_dashboard_api.models.run_record import RunRecord
 from uav_dashboard_api.models.telemetry_session import TelemetryFaultEvent, TelemetrySession
 from uav_dashboard_api.utils.path_store import resolve_local_path
 
+def test_asset_upload_uses_safe_storage_name_and_preserves_display_name(
+    app,
+    client,
+    auth_header,
+):
+    upload = client.post(
+        "/api/assets/upload",
+        headers=auth_header,
+        data={"file": (io.BytesIO(b"time_s,roll\n0,0\n"), "飞行 记录.csv")},
+    )
+
+    assert upload.status_code == 201
+    payload = upload.get_json()["data"]
+    assert payload["filename"] == "飞行 记录.csv"
+    with app.app_context():
+        asset = db.session.get(Asset, payload["id"])
+        stored_path = Path(resolve_local_path(asset.stored_path, app.config))
+        assert stored_path.parent == Path(app.config["UPLOAD_DIR"]) / "csv"
+        assert stored_path.suffix == ".csv"
+        assert "/" not in stored_path.name
+        assert "\\" not in stored_path.name
+
+
+def test_asset_upload_cleans_file_when_database_commit_fails(
+    app,
+    client,
+    auth_header,
+    monkeypatch,
+):
+    from uav_dashboard_api.routes import dashboard_assets
+
+    def fail_commit():
+        raise RuntimeError("database unavailable")
+
+    monkeypatch.setattr(dashboard_assets.db.session, "commit", fail_commit)
+    response = client.post(
+        "/api/assets/upload",
+        headers=auth_header,
+        data={"file": (io.BytesIO(b"time_s,roll\n0,0\n"), "failed.csv")},
+    )
+
+    assert response.status_code == 500
+    upload_dir = Path(app.config["UPLOAD_DIR"]) / "csv"
+    assert list(upload_dir.glob("*failed.csv")) == []
+
+
 def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypatch):
     from uav_dashboard_api.routes import dashboard_assets, dashboard_runs
 
@@ -304,7 +350,7 @@ def test_offline_run_accepts_telemetry_session_bridge(
     assert submit_calls == [
         (
             payload["id"],
-            "_offline_5class_worker",
+            "_offline_multiclass_worker",
             (payload["asset_id"], "lstm"),
             {},
         )

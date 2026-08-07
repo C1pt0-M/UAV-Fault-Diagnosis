@@ -25,7 +25,7 @@ from uav_dashboard_api.config import TestingConfig
 from uav_dashboard_api.models.asset import Asset
 from uav_dashboard_api.models.run_record import RunRecord
 from uav_dashboard_api.models.user import User
-from uav_dashboard_api.services.bridge import run_offline_5class
+from uav_dashboard_api.services.bridge import run_offline_multiclass
 from uav_dashboard_api.services.diagnosis_contract import build_diagnosis_payload
 from uav_dashboard_api.services.diagnosis_report import create_or_get_diagnosis_report
 from uav_dashboard_api.services.model_registry import resolve_registered_model
@@ -158,7 +158,7 @@ def main() -> int:
         output_json = run_dir / "result.json"
 
         print("\n=== 执行离线推理 ===")
-        prediction = run_offline_5class(
+        prediction = run_offline_multiclass(
             csv_path=str(stored),
             model_dir=model_meta["path"],
             output_json=str(output_json),

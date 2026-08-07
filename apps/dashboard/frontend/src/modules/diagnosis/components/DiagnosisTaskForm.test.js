@@ -1,10 +1,10 @@
-import { shallowMount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 
 import DiagnosisTaskForm from './DiagnosisTaskForm.vue'
 
 function mountTaskForm(overrides = {}) {
-  return shallowMount(DiagnosisTaskForm, {
+  return mount(DiagnosisTaskForm, {
     props: {
       assets: [
         {
@@ -19,22 +19,12 @@ function mountTaskForm(overrides = {}) {
         }
       ],
       assetSummaryItems: [
-        { label: '文件类型', value: 'CSV' },
-        { label: '文件大小', value: '1.2 MB' },
+        { label: '类型', value: 'CSV' },
+        { label: '大小', value: '1.2 MB' },
         { label: '字段完整性', value: '96%' },
         { label: '特征覆盖率', value: '89%' }
       ],
-      modelSummaryItems: [
-        { label: '模型族', value: 'CNN-LSTM' },
-        { label: '模型原始 ID', value: 'transfer3_cnnlstm_normalproto' },
-        { label: '输入特征', value: 256 },
-        { label: 'Macro F1', value: '86.00%' }
-      ],
-      flowSteps: [
-        { label: '数据加载', time: '10:22:14', status: 'ok' },
-        { label: '特征处理', time: '10:23:31', status: 'ok' },
-        { label: '模型推理', time: '待执行', status: 'offline' }
-      ],
+      modelContextText: '正常 / 电机故障 / 传感器故障 · 31 项输入特征',
       running: false,
       stage: {
         key: 'idle',
@@ -47,32 +37,37 @@ function mountTaskForm(overrides = {}) {
   })
 }
 
-describe('DiagnosisTaskForm industrial task launcher', () => {
-  it('renders compact diagnosis parameters with readable model name and raw id', () => {
+describe('DiagnosisTaskForm focused task launcher', () => {
+  it('renders diagnosis inputs without internal model metrics', () => {
     const wrapper = mountTaskForm()
 
-    expect(wrapper.findAll('.diagnosis-param-card')).toHaveLength(8)
-    expect(wrapper.findAll('.diagnosis-flow__step')).toHaveLength(3)
-    expect(wrapper.text()).toContain('可用资产')
-    expect(wrapper.text()).toContain('1')
-    expect(wrapper.text()).toContain('日志概览')
-    expect(wrapper.text()).toContain('模型概览')
-    expect(wrapper.text()).toContain('CNN-LSTM')
-    expect(wrapper.text()).toContain('transfer3_cnnlstm_normalproto')
+    expect(wrapper.text()).toContain('离线诊断')
+    expect(wrapper.text()).toContain('正常 / 电机故障 / 传感器故障')
+    expect(wrapper.text()).toContain('31 项输入特征')
+    expect(wrapper.text()).not.toContain('模型概览')
+    expect(wrapper.text()).not.toContain('模型原始 ID')
+    expect(wrapper.text()).not.toContain('Macro F1')
+    expect(wrapper.findAll('.diagnosis-param-card')).toHaveLength(0)
   })
 
-  it('does not render raw model id when no model is selected', () => {
+  it('does not render model context when no model is selected', () => {
     const wrapper = mountTaskForm({
       selectedModel: '',
-      modelSummaryItems: [
-        { label: '模型族', value: '尚未选择模型' },
-        { label: '模型原始 ID', value: '待选择' },
-        { label: '输入特征', value: '暂无' },
-        { label: 'Macro F1', value: '暂无' }
-      ]
+      modelContextText: ''
     })
 
-    expect(wrapper.text()).toContain('尚未选择模型')
+    expect(wrapper.find('.diagnosis-model-context').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('transfer3_cnnlstm_normalproto')
+  })
+
+  it('shows a compact running state without internal step timestamps', () => {
+    const wrapper = mountTaskForm({
+      running: true,
+      stage: { key: 'running', label: '诊断进行中' }
+    })
+
+    expect(wrapper.text()).toContain('正在分析日志')
+    expect(wrapper.text()).not.toContain('报告生成')
+    expect(wrapper.findAll('.diagnosis-flow__step')).toHaveLength(0)
   })
 })

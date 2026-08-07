@@ -41,7 +41,9 @@ export function useDiagnosisWorkspace() {
   }))
   const selectedAssetName = computed(() => {
     const asset = assets.value.find((item) => item.id === selectedAssetId.value)
-    return asset?.filename || diagnosisCopy.unselectedAsset
+    if (asset?.filename) return asset.filename
+    if (activeSessionId.value) return `实时监测会话 ${activeSessionId.value}`
+    return diagnosisCopy.unselectedAsset
   })
   const selectedModelName = computed(() => formatDiagnosisModelName(selectedModel.value || diagnosisCopy.unselectedModel))
   const probabilityRows = computed(() => {
@@ -84,38 +86,33 @@ export function useDiagnosisWorkspace() {
     return currentRun.value?.updated_at || currentRun.value?.finished_at || currentRun.value?.created_at || '暂无'
   })
   const resultMetaItems = computed(() => [
-    { label: '诊断完成时间', value: currentRun.value?.finished_at || currentRun.value?.updated_at || '暂无' },
-    { label: '分析窗口', value: activeSessionId.value ? `会话 ${activeSessionId.value}` : '完整日志' },
-    { label: '来源资产', value: selectedAssetName.value },
-    { label: '任务 ID', value: currentRun.value?.id ? `DG-${currentRun.value.id}` : '暂无' }
+    { label: '诊断来源', value: resolveDiagnosisSourceName() },
+    { label: '完成时间', value: currentRun.value?.finished_at || currentRun.value?.updated_at || '暂无' }
   ])
   const assetSummaryItems = computed(() => {
     const asset = selectedAsset.value
+    if (!asset) return []
     const meta = asset?.meta || {}
-    return [
-      { label: '文件类型', value: asset?.kind ? String(asset.kind).toUpperCase() : '待选择' },
-      { label: '文件大小', value: formatBytes(asset?.size_bytes) },
-      { label: '字段完整性', value: meta.field_completeness || meta.input_completeness || '暂无' },
-      { label: '特征覆盖率', value: meta.feature_coverage || meta.coverage || '暂无' }
+    const items = [
+      { label: '类型', value: asset?.kind ? String(asset.kind).toUpperCase() : '未知' },
+      { label: '大小', value: formatBytes(asset?.size_bytes) }
     ]
+    const completeness = meta.field_completeness || meta.input_completeness
+    const coverage = meta.feature_coverage || meta.coverage
+    if (completeness) items.push({ label: '字段完整性', value: completeness })
+    if (coverage) items.push({ label: '特征覆盖率', value: coverage })
+    return items
   })
-  const modelSummaryItems = computed(() => {
+  const modelContextText = computed(() => {
     const model = selectedModelMeta.value
-    const qualityMetric = resolveModelQualityMetric(model)
-    return [
-      { label: '模型族', value: formatDiagnosisModelName(model?.display_name || model?.name || selectedModel.value) },
-      { label: '模型原始 ID', value: model?.name || selectedModel.value || '待选择' },
-      { label: '输入特征', value: model?.feature_count || model?.metadata?.feature_count || '暂无' },
-      { label: qualityMetric.label, value: qualityMetric.value }
-    ]
+    if (!model) return ''
+    const labelNames = Array.isArray(model.label_names) ? model.label_names : []
+    const labelText = labelNames.length
+      ? labelNames.map(formatTaskLabel).join(' / ')
+      : '离线故障分类'
+    const featureCount = model.feature_count || model.metadata?.feature_count
+    return featureCount ? `${labelText} · ${featureCount} 项输入特征` : labelText
   })
-  const flowSteps = computed(() => [
-    { label: '数据加载', time: currentRun.value?.created_at || '待开始', status: currentRun.value ? 'ok' : 'offline' },
-    { label: '特征处理', time: currentRun.value?.started_at || '待执行', status: currentRun.value ? 'ok' : 'offline' },
-    { label: '模型推理', time: resultData.value ? latestUpdatedText.value : '待执行', status: resultData.value ? 'ok' : (running.value ? 'active' : 'offline') },
-    { label: '结果整理', time: resultData.value ? latestUpdatedText.value : '待完成', status: resultData.value ? 'ok' : 'offline' },
-    { label: '报告生成', time: latestReportId.value ? `#${latestReportId.value}` : '待生成', status: latestReportId.value ? 'ok' : 'offline' }
-  ])
   const evidenceRows = computed(() => buildTraceableEvidenceRows({
     resultData: resultData.value,
     probabilityRows: probabilityRows.value,
@@ -148,26 +145,23 @@ export function useDiagnosisWorkspace() {
     return `${(bytes / 1024 / 1024).toFixed(1)} MB`
   }
 
-  function formatMetricPercent(value) {
-    const numberValue = Number(value)
-    if (!Number.isFinite(numberValue)) return '暂无'
-    const percent = Math.abs(numberValue) <= 1 ? numberValue * 100 : numberValue
-    return `${percent.toFixed(2)}%`
+  function formatTaskLabel(value) {
+    const labels = {
+      normal: '正常',
+      motor: '电机故障',
+      motor_failure: '电机故障',
+      sensor: '传感器故障'
+    }
+    return labels[String(value || '').toLowerCase()] || String(value || '')
   }
 
-  function resolveModelQualityMetric(model) {
-    const metrics = model?.metrics || {}
-    const externalMetrics = model?.metrics_external || {}
-    const candidates = [
-      ['Macro F1', metrics.macro_f1],
-      ['Accuracy', metrics.accuracy],
-      ['Weighted F1', metrics.weighted_f1],
-      ['Macro F1', externalMetrics.macro_f1],
-      ['Accuracy', externalMetrics.accuracy]
-    ]
-    const matched = candidates.find(([, value]) => Number.isFinite(Number(value)))
-    if (!matched) return { label: 'Macro F1', value: '暂无' }
-    return { label: matched[0], value: formatMetricPercent(matched[1]) }
+  function resolveDiagnosisSourceName() {
+    const runAssetId = currentRun.value?.asset_id
+    const runAsset = assets.value.find((item) => String(item.id) === String(runAssetId || ''))
+    if (runAsset?.filename) return runAsset.filename
+    const sessionId = currentRun.value?.session_id || activeSessionId.value
+    if (sessionId) return `实时监测会话 ${sessionId}`
+    return selectedAssetName.value
   }
 
   function stopPolling() {
@@ -380,12 +374,11 @@ export function useDiagnosisWorkspace() {
     evidenceRows,
     explanationSummary,
     filteredRecentReports,
-    flowSteps,
     latestReportId,
     latestUpdatedText,
     loadMeta,
     models,
-    modelSummaryItems,
+    modelContextText,
     openRunResult,
     openReportAssistant,
     openReportsCenter,

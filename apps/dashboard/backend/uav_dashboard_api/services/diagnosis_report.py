@@ -868,7 +868,6 @@ def create_or_get_diagnosis_report(
         model_name=model_name,
         prediction_label=prediction_label,
         confidence=confidence,
-        pdf_path="",
         created_by=created_by,
     )
     report.set_probs(probs)

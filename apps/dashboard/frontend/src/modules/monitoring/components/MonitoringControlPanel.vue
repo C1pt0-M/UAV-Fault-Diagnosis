@@ -55,7 +55,7 @@
             </el-select>
           </label>
 
-          <label v-if="selectedBackend !== 'replay'" class="monitoring-field">
+          <label v-if="selectedBackend === 'px4'" class="monitoring-field">
             <span>采集时长</span>
             <el-select v-model="selectedDuration" class="monitoring-control monitoring-control--duration">
               <el-option
@@ -67,7 +67,7 @@
             </el-select>
           </label>
 
-          <label v-if="selectedBackend === 'rfly'" class="monitoring-field">
+          <label v-if="false /* MEC 推理位置暂时隐藏 */" class="monitoring-field">
             <span>{{ monitoringCopy.rflyInferenceLocationLabel }}</span>
             <el-select
               v-model="rflyInferenceLocation"

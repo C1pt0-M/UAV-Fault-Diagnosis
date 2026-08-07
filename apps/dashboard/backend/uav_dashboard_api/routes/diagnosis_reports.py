@@ -4,7 +4,7 @@ from uav_dashboard_api import db
 from uav_dashboard_api.models.diagnosis_report import DiagnosisReport
 from uav_dashboard_api.models.run_record import RunRecord
 from uav_dashboard_api.services.diagnosis_report import create_or_get_diagnosis_report
-from uav_dashboard_api.utils.jwt_utils import token_required
+from uav_dashboard_api.utils.jwt_utils import token_required, is_admin
 
 bp = Blueprint('diagnosis_reports', __name__)
 
@@ -57,6 +57,8 @@ def list_diagnosis_reports(current_user):
     label = request.args.get('label', default='', type=str).strip()
 
     query = DiagnosisReport.query
+    if not is_admin(current_user):
+        query = query.filter(DiagnosisReport.created_by == current_user.id)
     if asset_id:
         query = query.filter_by(asset_id=asset_id)
     if label:
@@ -85,6 +87,8 @@ def get_diagnosis_report(current_user, report_id: int):
     report = db.session.get(DiagnosisReport, report_id)
     if report is None:
         return jsonify({'success': False, 'message': '报告不存在'}), 404
+    if not is_admin(current_user) and report.created_by != getattr(current_user, 'id', None):
+        return jsonify({'success': False, 'message': '报告不存在'}), 404
     return jsonify({'success': True, 'data': report.to_dict()})
 
 
@@ -93,6 +97,8 @@ def get_diagnosis_report(current_user, report_id: int):
 def delete_diagnosis_report(current_user, report_id: int):
     report = db.session.get(DiagnosisReport, report_id)
     if report is None:
+        return jsonify({'success': False, 'message': '报告不存在'}), 404
+    if not is_admin(current_user) and report.created_by != getattr(current_user, 'id', None):
         return jsonify({'success': False, 'message': '报告不存在'}), 404
 
     db.session.delete(report)

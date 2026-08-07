@@ -102,6 +102,11 @@ class JWTUtils:
             raise Exception(f'token验证失败: {str(e)}')
 
 
+def is_admin(user) -> bool:
+    """判断用户是否管理员（管理员可查看所有资源）。"""
+    return getattr(user, 'role', '') == 'admin'
+
+
 def token_required(f):
     """
     JWT认证装饰器

@@ -6,13 +6,46 @@ from uav_dashboard_api.routes.auth import hash_password
 from uav_dashboard_api.utils.jwt_utils import token_required, admin_required
 from uav_dashboard_api.utils.logger import get_logger
 from uav_dashboard_api.utils.error_logger import error_logger
-from datetime import datetime
+from uav_dashboard_api.utils.validators import Validators, sanitize_input
 
 bp = Blueprint('users', __name__)
 logger = get_logger(__name__)
+VALID_ROLES = {'admin', 'user'}
+VALID_STATUSES = {'active', 'inactive'}
+
+
+def _json_object():
+    data = request.get_json(silent=True)
+    return data if isinstance(data, dict) else None
+
+
+def _validate_user_fields(data, *, require_credentials=False):
+    if data is None:
+        return '请求体必须是JSON对象'
+    if require_credentials and (not data.get('username') or not data.get('password')):
+        return '用户名和密码不能为空'
+
+    validators = (
+        ('username', Validators.validate_username),
+        ('password', Validators.validate_password),
+        ('email', Validators.validate_email),
+        ('phone', Validators.validate_phone),
+    )
+    for field, validator in validators:
+        if field not in data or (field == 'password' and not data[field]):
+            continue
+        is_valid, error_msg = validator(data[field])
+        if not is_valid:
+            return error_msg
+    if 'role' in data and data['role'] not in VALID_ROLES:
+        return '无效的用户角色'
+    if 'status' in data and data['status'] not in VALID_STATUSES:
+        return '无效的用户状态'
+    return None
 
 @bp.route('/', methods=['GET'])
 @token_required
+@admin_required
 def get_users(current_user):
     """获取用户列表"""
     try:
@@ -62,6 +95,7 @@ def get_users(current_user):
 
 @bp.route('/<int:user_id>', methods=['GET'])
 @token_required
+@admin_required
 def get_user(current_user, user_id):
     """获取用户详情"""
     try:
@@ -83,11 +117,10 @@ def get_user(current_user, user_id):
 def create_user(current_user):
     """创建用户"""
     try:
-        data = request.get_json()
-
-        # 验证必填字段
-        if not data.get('username') or not data.get('password'):
-            return jsonify({'success': False, 'message': '用户名和密码不能为空'}), 400
+        data = _json_object()
+        validation_error = _validate_user_fields(data, require_credentials=True)
+        if validation_error:
+            return jsonify({'success': False, 'message': validation_error}), 400
 
         # 检查用户名是否已存在
         if User.query.filter_by(username=data['username']).first():
@@ -97,17 +130,20 @@ def create_user(current_user):
         if data.get('email') and User.query.filter_by(email=data['email']).first():
             return jsonify({'success': False, 'message': '邮箱已被注册'}), 400
 
-        # 创建用户
+        sanitized = sanitize_input({
+            key: data.get(key, '')
+            for key in ('real_name', 'department', 'avatar')
+        })
         user = User(
             username=data['username'],
             password=hash_password(data['password']),
-            real_name=data.get('real_name', ''),
-            email=data.get('email', ''),
+            real_name=sanitized['real_name'],
+            email=data.get('email') or None,
             phone=data.get('phone', ''),
-            department=data.get('department', ''),
+            department=sanitized['department'],
             role=data.get('role', 'user'),
             status=data.get('status', 'active'),
-            avatar=data.get('avatar', '')
+            avatar=sanitized['avatar']
         )
 
         db.session.add(user)
@@ -133,11 +169,23 @@ def update_user(current_user, user_id):
         if not user:
             return jsonify({'success': False, 'message': '用户不存在'}), 404
 
-        data = request.get_json()
+        data = _json_object()
+        validation_error = _validate_user_fields(data)
+        if validation_error:
+            return jsonify({'success': False, 'message': validation_error}), 400
+        if user.role == 'admin' and (
+            data.get('role', 'admin') != 'admin'
+            or data.get('status', 'active') != 'active'
+        ):
+            return jsonify({'success': False, 'message': '不能降级或禁用管理员账号'}), 403
 
-        # 更新字段
-        if 'real_name' in data:
-            user.real_name = data['real_name']
+        sanitized = sanitize_input({
+            key: data[key]
+            for key in ('real_name', 'department', 'avatar')
+            if key in data
+        })
+        if 'real_name' in sanitized:
+            user.real_name = sanitized['real_name']
         if 'email' in data:
             # 检查邮箱是否已被其他用户使用
             existing_user = User.query.filter(
@@ -146,17 +194,17 @@ def update_user(current_user, user_id):
             ).first()
             if existing_user:
                 return jsonify({'success': False, 'message': '邮箱已被其他用户使用'}), 400
-            user.email = data['email']
+            user.email = data['email'] or None
         if 'phone' in data:
             user.phone = data['phone']
-        if 'department' in data:
-            user.department = data['department']
+        if 'department' in sanitized:
+            user.department = sanitized['department']
         if 'role' in data:
             user.role = data['role']
         if 'status' in data:
             user.status = data['status']
-        if 'avatar' in data:
-            user.avatar = data['avatar']
+        if 'avatar' in sanitized:
+            user.avatar = sanitized['avatar']
 
         # 如果要更新密码
         if 'password' in data and data['password']:
@@ -202,6 +250,7 @@ def delete_user(current_user, user_id):
 
 @bp.route('/stats', methods=['GET'])
 @token_required
+@admin_required
 def get_user_stats(current_user):
     """获取用户统计信息"""
     try:
@@ -235,11 +284,14 @@ def reset_user_password(current_user, user_id):
         if not user:
             return jsonify({'success': False, 'message': '用户不存在'}), 404
 
-        data = request.get_json()
+        data = _json_object()
+        if data is None:
+            return jsonify({'success': False, 'message': '请求体必须是JSON对象'}), 400
         new_password = data.get('new_password')
 
-        if not new_password:
-            return jsonify({'success': False, 'message': '新密码不能为空'}), 400
+        is_valid, error_msg = Validators.validate_password(new_password)
+        if not is_valid:
+            return jsonify({'success': False, 'message': error_msg}), 400
 
         # 更新密码
         user.password = hash_password(new_password)
@@ -313,7 +365,9 @@ def toggle_user_status(current_user, user_id):
 def batch_delete_users(current_user):
     """批量删除用户"""
     try:
-        data = request.get_json()
+        data = _json_object()
+        if data is None:
+            return jsonify({'success': False, 'message': '请求体必须是JSON对象'}), 400
         user_ids = data.get('user_ids', [])
 
         if not user_ids:
@@ -367,7 +421,9 @@ def batch_delete_users(current_user):
 def batch_update_status(current_user):
     """批量更新用户状态"""
     try:
-        data = request.get_json()
+        data = _json_object()
+        if data is None:
+            return jsonify({'success': False, 'message': '请求体必须是JSON对象'}), 400
         user_ids = data.get('user_ids', [])
         new_status = data.get('status')
 
@@ -438,11 +494,18 @@ def get_profile(current_user):
 def update_profile(current_user):
     """更新当前用户信息"""
     try:
-        data = request.get_json()
+        data = _json_object()
+        validation_error = _validate_user_fields(data)
+        if validation_error:
+            return jsonify({'success': False, 'message': validation_error}), 400
 
-        # 更新允许用户自己修改的字段
-        if 'real_name' in data:
-            current_user.real_name = data['real_name']
+        sanitized = sanitize_input({
+            key: data[key]
+            for key in ('real_name', 'department', 'avatar')
+            if key in data
+        })
+        if 'real_name' in sanitized:
+            current_user.real_name = sanitized['real_name']
         if 'email' in data:
             # 检查邮箱是否已被其他用户使用
             existing_user = User.query.filter(
@@ -451,13 +514,13 @@ def update_profile(current_user):
             ).first()
             if existing_user:
                 return jsonify({'success': False, 'message': '邮箱已被其他用户使用'}), 400
-            current_user.email = data['email']
+            current_user.email = data['email'] or None
         if 'phone' in data:
             current_user.phone = data['phone']
-        if 'department' in data:
-            current_user.department = data['department']
-        if 'avatar' in data:
-            current_user.avatar = data['avatar']
+        if 'department' in sanitized:
+            current_user.department = sanitized['department']
+        if 'avatar' in sanitized:
+            current_user.avatar = sanitized['avatar']
 
         db.session.commit()
 
@@ -479,12 +542,17 @@ def update_profile(current_user):
 def change_password(current_user):
     """修改密码"""
     try:
-        data = request.get_json()
+        data = _json_object()
+        if data is None:
+            return jsonify({'success': False, 'message': '请求体必须是JSON对象'}), 400
         old_password = data.get('old_password')
         new_password = data.get('new_password')
 
         if not old_password or not new_password:
             return jsonify({'success': False, 'message': '旧密码和新密码不能为空'}), 400
+        is_valid, error_msg = Validators.validate_password(new_password)
+        if not is_valid:
+            return jsonify({'success': False, 'message': error_msg}), 400
 
         # 验证旧密码
         from uav_dashboard_api.routes.auth import verify_password

@@ -44,6 +44,9 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start_dashboard_backend.ps1
 
 ## 关键配置
 
+- `APP_ENV=development|production|testing`：选择实际加载的配置 Profile。
+- `ENABLE_SETUP_API=True|False`：控制 `/api/setup/*` 是否注册；首次初始化后应关闭。
+- `ENABLE_PUBLIC_REGISTER=False`：V1.0 默认采用管理员控制的账号访问，不开放公开注册。
 - `MODEL_ROOT=assets/models`
 - `OFFLINE_NORM_STATS=assets/models/transfer3_cnnlstm_normalproto/norm_stats.json`
 - `AI_KNOWLEDGE_DIR=knowledge_base`
@@ -101,3 +104,6 @@ cd D:\UAV-Fault-Diagnosis
 重点看 `input_contract_detection_blocked`、`full_file_top_z`、`max_window_top_z_feature`。起飞前地面静止窗口属于当前训练集未覆盖的 operating envelope，后端会通过 input contract 暂停检测，不把这类窗口送入模型。
 
 本地 `.env`、`runtime/`、`logs/`、`.venv/` 均不应提交。
+
+首次部署建议：复制 `.env.example`，保持 `ENABLE_SETUP_API=True` 完成管理员初始化，
+随后改为 `False` 并重启后端。生产模式不会再静默使用 development 配置。

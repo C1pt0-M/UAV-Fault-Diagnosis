@@ -45,6 +45,22 @@ Python 依赖和 pytest discovery 已统一到根 `pyproject.toml`，本地和 C
 .\apps\dashboard\backend\.venv\Scripts\python.exe .\scripts\verify.py
 ```
 
+## 配置 Profile
+
+后端通过 `APP_ENV` 选择 `development`、`production` 或 `testing` Profile，
+`create_app()` 不再固定加载基础配置类。未知 Profile 会直接报错。
+
+`ENABLE_SETUP_API` 现在实际控制 setup Blueprint 是否注册；生产部署首次初始化完成后应关闭。
+`ENABLE_PUBLIC_REGISTER` 默认关闭，符合管理员控制账号访问的 V1.0 产品边界。
+
+离线推理活动入口统一命名为 `offline_multiclass`：
+
+- bridge：`run_offline_multiclass`
+- worker：`_offline_multiclass_worker`
+- script：`apps/dashboard/backend/scripts/offline_multiclass_infer.py`
+
+历史任务值 `offline_5class` 仅在模型 registry 中作为旧资产兼容别名保留，不作为新任务写入。
+
 ## Remaining Refactors
 
-`telemetry_manager.py` 与 `ai_assistant.py` 的后续深 Module 治理独立进行；`uav_fault.models` 继续作为稳定 package Interface。
+`telemetry_manager.py`、`telemetry_backends.py` 与 `ai_assistant.py` 的后续深 Module 治理独立进行；`uav_fault.models` 继续作为稳定 package Interface。

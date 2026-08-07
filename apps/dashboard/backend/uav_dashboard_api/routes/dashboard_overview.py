@@ -13,10 +13,27 @@ from uav_dashboard_api.services.model_registry import (
     list_registered_models,
     resolve_registered_model,
 )
-from uav_dashboard_api.utils.jwt_utils import token_required
+from uav_dashboard_api.utils.jwt_utils import token_required, is_admin
 
 
 OFFLINE_MULTICLASS_TASK = "offline_multiclass"
+
+def _owned_filters(user, column):
+    return [] if is_admin(user) else [column == getattr(user, 'id', None)]
+
+
+def _session_owned_filters(user):
+    return [] if is_admin(user) else [TelemetrySession.created_by == str(getattr(user, 'id', None))]
+
+
+def _fault_events_scoped(user):
+    query = TelemetryFaultEvent.query
+    if not is_admin(user):
+        query = query.join(
+            TelemetrySession,
+            TelemetrySession.id == TelemetryFaultEvent.session_id,
+        ).filter(TelemetrySession.created_by == str(getattr(user, 'id', None)))
+    return query
 
 def _round_or_none(value, digits: int = 2):
     try:
@@ -76,25 +93,26 @@ def _severity_bucket(value: str | dict | None) -> str:
         return "low"
     return "unknown"
 
-def _asset_summary(kind_counts: dict) -> dict:
+def _asset_summary(kind_counts: dict, user) -> dict:
     csv_total = int(kind_counts.get("csv", 0))
     ulg_total = int(kind_counts.get("ulg", 0))
     prepared_ulg = 0
-    for asset in Asset.query.filter_by(kind="ulg").all():
+    ulg_assets = Asset.query.filter_by(kind="ulg").filter(*_owned_filters(user, Asset.created_by)).all()
+    for asset in ulg_assets:
         if asset.is_prepared:
             prepared_ulg += 1
     return {
-        "total": int(Asset.query.count()),
+        "total": int(Asset.query.filter(*_owned_filters(user, Asset.created_by)).count()),
         "csv_total": csv_total,
         "ulg_total": ulg_total,
         "prepared_ulg_total": prepared_ulg,
         "diagnosable_total": csv_total + prepared_ulg,
     }
 
-def _task_summary(run_counts: dict, recent_runs: list[RunRecord]) -> dict:
+def _task_summary(run_counts: dict, recent_runs: list[RunRecord], user) -> dict:
     today = datetime.now().date()
     today_diagnosis_total = 0
-    for run in RunRecord.query.filter_by(task=OFFLINE_MULTICLASS_TASK).all():
+    for run in RunRecord.query.filter_by(task=OFFLINE_MULTICLASS_TASK).filter(*_owned_filters(user, RunRecord.created_by)).all():
         if run.created_at and run.created_at.date() == today:
             today_diagnosis_total += 1
     return {
@@ -107,8 +125,8 @@ def _task_summary(run_counts: dict, recent_runs: list[RunRecord]) -> dict:
         "recent": [item.to_dict() for item in recent_runs],
     }
 
-def _fault_summary() -> dict:
-    reports = DiagnosisReport.query.order_by(DiagnosisReport.created_at.desc()).all()
+def _fault_summary(user) -> dict:
+    reports = DiagnosisReport.query.order_by(DiagnosisReport.created_at.desc()).filter(*_owned_filters(user, DiagnosisReport.created_by)).all()
     counts: dict[str, int] = {}
     confidence_sum = 0.0
     confidence_count = 0
@@ -149,8 +167,8 @@ def _event_message(event: TelemetryFaultEvent) -> str:
     label = diagnosis.get("label") or "fault"
     return f"{_label_text(label)}告警"
 
-def _warning_summary() -> dict:
-    events = TelemetryFaultEvent.query.order_by(TelemetryFaultEvent.created_at.desc()).all()
+def _warning_summary(user) -> dict:
+    events = _fault_events_scoped(user).order_by(TelemetryFaultEvent.created_at.desc()).all()
     severity_counts = {"high": 0, "medium": 0, "low": 0, "unknown": 0}
     recent = []
     for event in events:
@@ -181,10 +199,10 @@ def _risk_value_from_report(report: DiagnosisReport) -> float:
         return round(max(0.0, 1.0 - confidence), 3)
     return round(confidence, 3)
 
-def _risk_trend() -> dict:
+def _risk_trend(user) -> dict:
     since = datetime.now() - timedelta(hours=24)
     points = []
-    for report in DiagnosisReport.query.filter(DiagnosisReport.created_at >= since).all():
+    for report in DiagnosisReport.query.filter(DiagnosisReport.created_at >= since).filter(*_owned_filters(user, DiagnosisReport.created_by)).all():
         points.append(
             {
                 "time": report.created_at.strftime("%m-%d %H:%M") if report.created_at else "-",
@@ -193,7 +211,7 @@ def _risk_trend() -> dict:
                 "label": _label_text(report.prediction_label),
             }
         )
-    for event in TelemetryFaultEvent.query.filter(TelemetryFaultEvent.created_at >= since).all():
+    for event in _fault_events_scoped(user).filter(TelemetryFaultEvent.created_at >= since).all():
         points.append(
             {
                 "time": event.created_at.strftime("%m-%d %H:%M") if event.created_at else "-",
@@ -267,13 +285,17 @@ def _runtime_telemetry_status() -> dict:
     except Exception:
         return {}
 
-def _field_contract(runtime_status: dict) -> dict:
+def _field_contract(runtime_status: dict, user) -> dict:
     coverage = runtime_status.get("feature_coverage")
     source = "当前输入"
     schema_version = runtime_status.get("schema_version")
 
     if not coverage:
-        latest_session = TelemetrySession.query.order_by(TelemetrySession.created_at.desc()).first()
+        latest_session = (
+            TelemetrySession.query.order_by(TelemetrySession.created_at.desc())
+            .filter(*_session_owned_filters(user))
+            .first()
+        )
         if latest_session is not None:
             meta = latest_session.get_meta()
             coverage = meta.get("feature_coverage") or meta.get("coverage")
@@ -317,8 +339,12 @@ def _field_contract(runtime_status: dict) -> dict:
         "reason": "coverage_available",
     }
 
-def _telemetry_summary(runtime_status: dict) -> dict:
-    latest_session = TelemetrySession.query.order_by(TelemetrySession.created_at.desc()).first()
+def _telemetry_summary(runtime_status: dict, user) -> dict:
+    latest_session = (
+        TelemetrySession.query.order_by(TelemetrySession.created_at.desc())
+        .filter(*_session_owned_filters(user))
+        .first()
+    )
     current_session_id = runtime_status.get("current_session_id")
     return {
         "current_session_id": current_session_id,
@@ -332,9 +358,9 @@ def _telemetry_summary(runtime_status: dict) -> dict:
         "warning_stage": runtime_status.get("warning_stage"),
     }
 
-def _recent_evidence() -> list[dict]:
+def _recent_evidence(user) -> list[dict]:
     evidence_items = []
-    events = TelemetryFaultEvent.query.order_by(TelemetryFaultEvent.created_at.desc()).limit(5).all()
+    events = _fault_events_scoped(user).order_by(TelemetryFaultEvent.created_at.desc()).limit(5).all()
     for event in events:
         diagnosis = event.get_diagnosis()
         for item in (diagnosis.get("evidence_summary") or {}).get("top_evidence") or []:
@@ -349,7 +375,7 @@ def _recent_evidence() -> list[dict]:
             if len(evidence_items) >= 5:
                 return evidence_items
 
-    runs = RunRecord.query.order_by(RunRecord.created_at.desc()).limit(10).all()
+    runs = RunRecord.query.order_by(RunRecord.created_at.desc()).filter(*_owned_filters(user, RunRecord.created_by)).limit(10).all()
     for run in runs:
         result = run.get_result() or {}
         diagnosis = result.get("diagnosis") or {}
@@ -366,13 +392,20 @@ def _recent_evidence() -> list[dict]:
                 return evidence_items
     return evidence_items
 
-def _similar_reports(dominant_label: str | None) -> list[dict]:
+def _similar_reports(dominant_label: str | None, user) -> list[dict]:
     query = DiagnosisReport.query
+    if not is_admin(user):
+        query = query.filter(DiagnosisReport.created_by == getattr(user, 'id', None))
     if dominant_label:
         query = query.filter(DiagnosisReport.prediction_label == dominant_label)
     reports = query.order_by(DiagnosisReport.created_at.desc()).limit(3).all()
     if not reports and dominant_label:
-        reports = DiagnosisReport.query.order_by(DiagnosisReport.created_at.desc()).limit(3).all()
+        reports = (
+            DiagnosisReport.query.order_by(DiagnosisReport.created_at.desc())
+            .filter(*_owned_filters(user, DiagnosisReport.created_by))
+            .limit(3)
+            .all()
+        )
     items = []
     for report in reports:
         items.append(
@@ -388,14 +421,23 @@ def _similar_reports(dominant_label: str | None) -> list[dict]:
 
 def get_overview(current_user):
     kind_counts = dict(
-        db.session.query(Asset.kind, db.func.count(Asset.id)).group_by(Asset.kind).all()
+        db.session.query(Asset.kind, db.func.count(Asset.id))
+        .filter(*_owned_filters(current_user, Asset.created_by))
+        .group_by(Asset.kind)
+        .all()
     )
     run_counts = dict(
         db.session.query(RunRecord.status, db.func.count(RunRecord.id))
+        .filter(*_owned_filters(current_user, RunRecord.created_by))
         .group_by(RunRecord.status)
         .all()
     )
-    recent_runs = RunRecord.query.order_by(RunRecord.created_at.desc()).limit(10).all()
+    recent_runs = (
+        RunRecord.query.order_by(RunRecord.created_at.desc())
+        .filter(*_owned_filters(current_user, RunRecord.created_by))
+        .limit(10)
+        .all()
+    )
 
     # 统计成功任务的预测故障类型
     fault_counts = {
@@ -407,7 +449,7 @@ def get_overview(current_user):
     successful_runs = RunRecord.query.filter(
         RunRecord.status == "success",
         RunRecord.task == OFFLINE_MULTICLASS_TASK,
-    ).all()
+    ).filter(*_owned_filters(current_user, RunRecord.created_by)).all()
     for run in successful_runs:
         result = run.get_result()
         if isinstance(result, dict) and "prediction" in result:
@@ -416,21 +458,21 @@ def get_overview(current_user):
                 fault_counts[label] += 1
 
     runtime_status = _runtime_telemetry_status()
-    asset_summary = _asset_summary(kind_counts)
-    task_summary = _task_summary(run_counts, recent_runs)
-    warning_summary = _warning_summary()
-    fault_summary = _fault_summary()
+    asset_summary = _asset_summary(kind_counts, current_user)
+    task_summary = _task_summary(run_counts, recent_runs, current_user)
+    warning_summary = _warning_summary(current_user)
+    fault_summary = _fault_summary(current_user)
 
     return jsonify(
         {
             "success": True,
             "data": {
-                "assets_total": int(Asset.query.count()),
+                "assets_total": int(Asset.query.filter(*_owned_filters(current_user, Asset.created_by)).count()),
                 "assets_by_kind": {
                     "ulg": int(kind_counts.get("ulg", 0)),
                     "csv": int(kind_counts.get("csv", 0)),
                 },
-                "runs_total": int(RunRecord.query.count()),
+                "runs_total": int(RunRecord.query.filter(*_owned_filters(current_user, RunRecord.created_by)).count()),
                 "runs_by_status": {
                     "queued": int(run_counts.get("queued", 0)),
                     "running": int(run_counts.get("running", 0)),
@@ -443,12 +485,12 @@ def get_overview(current_user):
                 "task_summary": task_summary,
                 "warning_summary": warning_summary,
                 "fault_summary": fault_summary,
-                "risk_trend": _risk_trend(),
+                "risk_trend": _risk_trend(current_user),
                 "model_summary": _model_summary(),
-                "field_contract": _field_contract(runtime_status),
-                "telemetry_summary": _telemetry_summary(runtime_status),
-                "recent_evidence": _recent_evidence(),
-                "similar_reports": _similar_reports(fault_summary.get("dominant_label")),
+                "field_contract": _field_contract(runtime_status, current_user),
+                "telemetry_summary": _telemetry_summary(runtime_status, current_user),
+                "recent_evidence": _recent_evidence(current_user),
+                "similar_reports": _similar_reports(fault_summary.get("dominant_label"), current_user),
             },
         }
     )

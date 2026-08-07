@@ -86,8 +86,8 @@ export const diagnosisCopy = {
   linkedSessionLabel: '承接会话',
   unselectedAsset: '尚未选择资产',
   unselectedModel: '尚未选择模型',
-  formTitle: '任务发起 / 输入配置',
-  formDescription: '锁定日志资产与诊断模型后，即可启动离线故障分类任务。',
+  formTitle: '离线诊断',
+  formDescription: '选择日志资产与诊断模型，启动三分类故障诊断。',
   assetLabel: '日志资产',
   assetPlaceholder: '请选择日志资产',
   modelLabel: '诊断模型',
@@ -99,7 +99,7 @@ export const diagnosisCopy = {
   statusTitle: '任务流程',
   statusDescription: '展示数据加载、特征处理、模型推理、结果整理与报告生成状态。',
   resultTitle: '诊断结果',
-  resultDescription: '集中展示故障结论、置信度、风险等级、概率分布与报告出口。',
+  resultDescription: '查看本次诊断结论与类别概率，并生成诊断报告。',
   explanationTitle: '规则解释 / 诊断摘要',
   explanationDescription: '基于诊断结果摘要、概率分布、会话承接与规则模板生成可追溯解释。',
   evidenceTitle: '可追溯证据 TOP5',
@@ -115,14 +115,14 @@ export const diagnosisCopy = {
   statusLabel: '状态',
   createdAtLabel: '创建时间',
   updatedAtLabel: '更新时间',
-  predictionLabel: '当前故障类别',
-  confidenceLabel: '结果置信度',
+  predictionLabel: '诊断结论',
+  confidenceLabel: '诊断置信度',
   reportButton: '生成报告',
   reportLoadingButton: '正在生成报告',
   reportReadyButton: '报告已生成',
   reportCenterButton: '查看报告',
   aiActionButton: 'AI 解读',
-  probabilityTitle: 'Top-K 概率分布',
+  probabilityTitle: '类别概率',
   createRunFailed: '诊断任务创建失败',
   runExecutionFailed: '诊断任务执行失败',
   reportCreated: '诊断报告已生成',
@@ -243,7 +243,7 @@ export function buildTraceableEvidenceRows({
     rows.push({
       rank: index + 1,
       name: `${row.label} 概率 ${row.probability}`,
-      source: 'Top-K 概率',
+      source: '类别概率',
       window: activeSessionId ? `会话 ${activeSessionId}` : '当前任务',
       note: '规则参考：用于说明模型输出排序，不代表真实特征贡献算法。',
       tone: index === 0 ? 'danger' : 'active'
@@ -277,7 +277,7 @@ export function buildRuleExplanationRows({
   if (topRow) {
     rows.push({
       title: '规则 1',
-      detail: `Top-1 预测类别为 ${topRow.label}，概率为 ${topRow.probability}，作为主要诊断结论参考。`,
+      detail: `最高概率类别为 ${topRow.label}，概率为 ${topRow.probability}，作为主要诊断结论参考。`,
       status: 'ok'
     })
   }

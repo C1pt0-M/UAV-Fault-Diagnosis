@@ -1,12 +1,21 @@
 export const assetKindTabs = [
   { label: '全部资产', value: 'all' },
-  { label: 'ULG 日志', value: 'ulg' },
-  { label: 'CSV 数据', value: 'csv' }
+  { label: 'TS 会话', value: 'ts' },
+  { label: 'CSV 数据', value: 'csv' },
+  { label: 'ULG 日志', value: 'ulg' }
 ]
+
+export function getAssetCategoryMeta(row = {}) {
+  const category = String(row.source_category || '').toLowerCase()
+  if (category === 'ts') return { label: 'TS 会话', tag: 'primary' }
+  if (category === 'ulg') return { label: 'ULG', tag: 'warning' }
+  if (category === 'csv') return { label: 'CSV', tag: 'success' }
+  return { label: String(row.kind || '').toUpperCase(), tag: 'info' }
+}
 
 export const assetsCopy = {
   title: '日志资产管理',
-  description: '集中管理 ULG / CSV 资产，支持在线回放、诊断分析与报告追踪。',
+  description: '集中管理 TS 会话 / ULG / CSV 资产，支持在线回放、诊断分析与报告追踪。',
   uploadButton: '上传新资产',
   reportsCenterAction: '前往报告中心',
   emptyText: '暂无日志资产，请点击上方按钮开始上传',

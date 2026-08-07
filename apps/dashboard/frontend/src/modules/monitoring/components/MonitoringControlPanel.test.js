@@ -73,8 +73,7 @@ describe('MonitoringControlPanel telemetry console', () => {
     })
 
     expect(wrapper.find('[data-test="rfly-diagnostics-panel"]').exists()).toBe(true)
-    expect(wrapper.find('[data-test="rfly-inference-location"]').exists()).toBe(true)
-    expect(wrapper.text()).toContain('推理位置')
+    expect(wrapper.find('[data-test="rfly-inference-location"]').exists()).toBe(false)
     expect(wrapper.text()).toContain('RflySim 配置诊断')
     expect(wrapper.text()).toContain('PX4MavCtrlV4.py 未配置')
     expect(wrapper.find('[data-test="start-collection"]').attributes('disabled')).toBeDefined()

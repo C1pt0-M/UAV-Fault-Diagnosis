@@ -130,7 +130,7 @@ def test_create_or_get_diagnosis_report_writes_readable_summary_without_pdf(app,
         assert "mission_report.csv" in summary["traceability"]["input_csv"]
         assert summary["report_confidence"]["level"] in {"high", "medium", "low", "unknown"}
         assert summary["review"]["status"] == "pending"
-        assert report.pdf_path == ""
+        assert not hasattr(report, "pdf_path")
         assert "pdf_path" not in report.to_dict()
 
 
@@ -196,7 +196,6 @@ def _create_legacy_report(app, user_id: int, *, summary: dict, label: str = "mot
         model_name="legacy-model",
         prediction_label=label,
         confidence=0.81,
-        pdf_path="",
         created_by=user_id,
     )
     report.set_summary(summary)
