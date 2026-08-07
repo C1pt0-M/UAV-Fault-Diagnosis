@@ -8,16 +8,9 @@ from typing import Any
 
 
 SUPPORTED_OFFLINE_ARCHITECTURES = {
-    "lstm",
-    "transformer",
-    "textcnn",
-    "cnn_lstm",
-    "cnn_lstm_v2",
     "cnn_lstm_v2_normalproto",
-    "cnn_lstm_v2_dg",
-    "bilstm_normalproto",
 }
-SUPPORTED_ONLINE_ARCHITECTURES = {"bilstm", "cnn1d", "transformer", "mstca", "kg_mstca"}
+SUPPORTED_ONLINE_ARCHITECTURES = {"cnn1d", "mstca", "kg_mstca"}
 OFFLINE_MULTICLASS_TASK = "offline_multiclass"
 LEGACY_OFFLINE_MULTICLASS_TASK = "offline_5class"
 OFFLINE_MULTICLASS_TASK_ALIASES = {

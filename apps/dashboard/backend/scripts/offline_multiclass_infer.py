@@ -46,60 +46,8 @@ def add_import_paths(repo_root: Path):
 
 
 def create_model(model_name: str, in_channels: int, num_classes: int):
-    from cnn.cnn_lstm import CNNLSTMClassifier
-    from cnn.cnn_lstm_v2 import CNNLSTMv2Classifier
     from cnn.cnn_lstm_v2_normalproto import CNNLSTMv2NormalProtoClassifier
-    from cnn.lstm import BiLSTMClassifier
-    from cnn.textcnn import TextCNN1d
-    from cnn.transformer import TransformerClassifier
 
-    if model_name == 'lstm':
-        return BiLSTMClassifier(
-            in_channels=in_channels,
-            hidden_size=128,
-            num_layers=2,
-            num_classes=num_classes,
-            dropout=0.3,
-        )
-    if model_name == 'transformer':
-        return TransformerClassifier(
-            in_channels=in_channels,
-            d_model=128,
-            nhead=4,
-            num_layers=4,
-            num_classes=num_classes,
-            patch_size=8,
-            dropout=0.2,
-        )
-    if model_name == 'textcnn':
-        return TextCNN1d(
-            in_channels=in_channels,
-            num_classes=num_classes,
-            num_filters=128,
-            kernel_sizes=(3, 5, 7, 11, 21),
-            dropout=0.3,
-        )
-    if model_name == 'cnn_lstm':
-        return CNNLSTMClassifier(
-            in_channels=in_channels,
-            cnn_channels=(64, 128, 128),
-            lstm_hidden=128,
-            lstm_layers=2,
-            num_classes=num_classes,
-            dropout=0.3,
-        )
-    if model_name == 'cnn_lstm_v2':
-        return CNNLSTMv2Classifier(
-            in_channels=in_channels,
-            num_classes=num_classes,
-            target_steps=512,
-            raw_proj_dim=32,
-            branch_channels=32,
-            cnn_out_channels=128,
-            lstm_hidden=128,
-            lstm_layers=2,
-            dropout=0.3,
-        )
     if model_name == 'cnn_lstm_v2_normalproto':
         return CNNLSTMv2NormalProtoClassifier(
             in_channels=in_channels,

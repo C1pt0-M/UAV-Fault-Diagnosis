@@ -87,7 +87,7 @@ def app(tmp_path: Path, monkeypatch):
     runtime_dir = tmp_path / "runtime"
     model_root.mkdir()
     _create_model(
-        model_root, "lstm", {"model": "lstm", "in_channels": 48, "num_classes": 4}
+        model_root, "lstm", {"model": "cnn_lstm_v2_normalproto", "in_channels": 31, "num_classes": 3, "label_names": ["normal", "motor", "sensor"]}
     )
 
     class LocalTestingConfig(TestingConfig):

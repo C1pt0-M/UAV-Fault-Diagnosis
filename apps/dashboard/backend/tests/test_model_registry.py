@@ -47,10 +47,12 @@ def model_root(tmp_path: Path) -> Path:
         model_root,
         "lstm",
         config={
-            "model": "lstm",
+            "model": "cnn_lstm_v2_normalproto",
+            "architecture": "cnn_lstm_v2_normalproto",
             "in_channels": 43,
-            "num_classes": 5,
+            "num_classes": 3,
             "best_val_f1": 0.91,
+            "label_names": ["normal", "motor", "sensor"],
         },
         metrics={"macro_f1": 0.88, "accuracy": 0.9, "weighted_f1": 0.89},
     )

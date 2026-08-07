@@ -18,15 +18,7 @@ def test_model_registry_includes_external_metrics_and_new_architectures(tmp_path
     model_root = tmp_path / "models"
 
     for name, model_name, architecture, macro_test, macro_external in [
-        ("transfer3_bilstm_fewshot", "lstm", "lstm", 0.97, 0.75),
-        ("transfer3_cnnlstm_v2_fewshot", "cnn_lstm_v2", "cnn_lstm_v2", 0.99, 0.757),
-        (
-            "transfer3_cnnlstm_v2_normalproto",
-            "cnn_lstm_v2_normalproto",
-            "cnn_lstm_v2_normalproto",
-            0.987,
-            0.784,
-        ),
+        ("transfer3_cnnlstm_v2_normalproto", "cnn_lstm_v2_normalproto", "cnn_lstm_v2_normalproto", 0.987, 0.784),
     ]:
         model_dir = model_root / name
         model_dir.mkdir(parents=True)
@@ -70,8 +62,6 @@ def test_model_registry_includes_external_metrics_and_new_architectures(tmp_path
         capability="offline_detection",
     )
     names = [item["name"] for item in models]
-    assert "transfer3_bilstm_fewshot" in names
-    assert "transfer3_cnnlstm_v2_fewshot" in names
     assert "transfer3_cnnlstm_v2_normalproto" in names
 
     top = next(item for item in models if item["name"] == "transfer3_cnnlstm_v2_normalproto")
@@ -100,9 +90,7 @@ def test_offline_multiclass_infer_supports_transfer3_model_names() -> None:
     assert create_model is not None
 
     constants = {node.value for node in ast.walk(create_model) if isinstance(node, ast.Constant)}
-    assert "cnn_lstm_v2" in constants
     assert "cnn_lstm_v2_normalproto" in constants
-    assert "lstm" in constants
 
 
 def test_offline_infer_prefers_selected_model_norm_stats() -> None:
