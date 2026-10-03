@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import torch
 
+from uav_fault.models.cnn.lstm import RFLY_SEQ_COLUMNS_V1
 from uav_fault.models.train_online_detector import train
 
 
@@ -31,7 +32,10 @@ class Args:
 
 def _make_cache(cache_dir: Path):
     cache_dir.mkdir(parents=True, exist_ok=True)
-    columns = [f'feat_{i}' for i in range(31)]
+    # Canonical channel names: validate_cache_contract checks the columns against
+    # the declared feature_schema, because a cache with invented names would feed
+    # all-zero channels to the model at runtime.
+    columns = list(RFLY_SEQ_COLUMNS_V1)
     norm_stats = {
         'mean': [0.0] * len(columns),
         'std': [1.0] * len(columns),

@@ -20,6 +20,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from uav_fault.models.cnn.focal_loss import FocalLoss
 from uav_fault.models.cnn.lstm import (
+    RFLY_SEQ_SCHEMAS,
     OnlineBiLSTM,
     OnlineCNN1D,
     OnlineKGMSTCA,
@@ -120,7 +121,6 @@ def validate_cache_contract(cache_dir: Path) -> dict:
         "target_hz": 50.0,
         "window_size": 150,
         "stride": 10,
-        "feature_schema": "rfly_seq_columns_v1",
     }
     for key, expected in expected_cfg.items():
         actual = stats.get(key)
@@ -128,11 +128,21 @@ def validate_cache_contract(cache_dir: Path) -> dict:
             raise ValueError(
                 f"norm_stats.json contract mismatch: {key}={actual!r}, expected {expected!r}"
             )
-    if len(columns) != 31:
-        # The online path still uses the 31-channel RFLY_SEQ_COLUMNS_V1 runtime
-        # schema; the 26-channel feature contract v1 is the offline path.
+
+    # The declared feature_schema names the exact channel list, and the columns must
+    # reproduce it in order. This replaces a plain length check, so a cache built on
+    # the wrong schema fails here instead of silently mis-indexing channels at runtime.
+    schema_name = stats.get("feature_schema")
+    schema_columns = RFLY_SEQ_SCHEMAS.get(schema_name)
+    if schema_columns is None:
         raise ValueError(
-            f"norm_stats.json contract mismatch: columns={len(columns)}, expected 31"
+            f"norm_stats.json unknown feature_schema {schema_name!r}; "
+            f"expected one of {sorted(RFLY_SEQ_SCHEMAS)}"
+        )
+    if list(columns) != list(schema_columns):
+        raise ValueError(
+            f"norm_stats.json columns do not match feature_schema {schema_name!r} "
+            f"({len(columns)} columns given, expected {len(schema_columns)})"
         )
 
     for split_name in ("train", "val", "test"):

@@ -14,6 +14,7 @@
     result = detector.predict(window)  # window: list[dict], len >= 150
 """
 
+import inspect
 import json
 import sys
 from pathlib import Path
@@ -106,13 +107,18 @@ class FaultDetector:
             )
 
         # 构建并加载模型（结构需与训练端一致）
-        self.model = model_cls(
+        model_kwargs = dict(
             in_channels=self.config["in_channels"],
             hidden_size=self.config["hidden_size"],
             num_layers=self.config["num_layers"],
             num_classes=self.config["num_classes"],
             dropout=self.config.get("dropout", 0.2),
         )
+        # 按通道名索引的架构（KG-MSTCA）需要知道当前 schema，才能同时支持
+        # 31 通道的 rfly_seq_columns_v1 和 26 通道的 rfly_seq_columns_v2。
+        if "columns" in inspect.signature(model_cls).parameters:
+            model_kwargs["columns"] = list(self.columns)
+        self.model = model_cls(**model_kwargs)
         try:
             state_dict = torch.load(
                 model_dir / "best.pt", map_location=self.device, weights_only=True
