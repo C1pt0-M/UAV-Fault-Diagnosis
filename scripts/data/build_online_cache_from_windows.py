@@ -260,6 +260,24 @@ def resample_uniform(
     return out
 
 
+def airborne_mask(matrix: np.ndarray, columns: list[str], margin_m: float = 0.5) -> np.ndarray:
+    """Which frames are actually flying.
+
+    The recordings are takeoff-hover-land: ~17% of the recorded time is on the ground
+    with the motors idling. Ground windows must not be labelled "normal flight", and
+    the last airborne moments carry the landing impact (acc_z spikes to 40-60 m/s2).
+
+    Altitude is the reliable discriminator. Motor PWM is not: the first segment sits at
+    PWM ~1300 while still at ground level, so a PWM threshold misses it.
+    """
+    if "baro_alt_relative" not in columns:
+        return np.ones(len(matrix), dtype=bool)
+    alt = matrix[:, columns.index("baro_alt_relative")]
+    if not np.isfinite(alt).any():
+        return np.ones(len(matrix), dtype=bool)
+    return alt > (np.nanmin(alt) + margin_m)
+
+
 def build_extra_normal_windows(
     directory: Path,
     glob: str,
@@ -269,22 +287,42 @@ def build_extra_normal_windows(
     stride: int,
     max_per_file: int,
     resample_hz: float,
-) -> tuple[torch.Tensor, list[str]]:
-    """Windows for the RflySim live normal sessions; all labelled normal."""
-    files = sorted(directory.glob(glob))
+    exclude_ground: bool = True,
+    airborne_fraction: float = 0.95,
+    files: list[Path] | None = None,
+) -> tuple[torch.Tensor, list[str], dict]:
+    """Windows for the RflySim live normal sessions; all labelled normal.
+
+    Returns (windows, used files, per-file window counts). Pass `files` to restrict the
+    set, which is how the held-out sessions are built separately from the training ones.
+    """
+    if files is None:
+        files = sorted(directory.glob(glob))
+    empty = torch.zeros((0, len(columns), window_size), dtype=torch.float32)
     if not files:
-        return torch.zeros((0, len(columns), window_size), dtype=torch.float32), []
+        return empty, [], {}
 
     batches: list[np.ndarray] = []
     used: list[str] = []
+    counts: dict[str, int] = {}
+    dropped_ground = 0
     for path in files:
         matrix, times = read_live_session(path, columns)
         if resample_hz > 0:
             matrix = resample_uniform(matrix, times, resample_hz)
-        spans = [
-            (start, start + window_size)
-            for start in range(0, len(matrix) - window_size + 1, stride)
-        ]
+        flying = (
+            airborne_mask(matrix, columns)
+            if exclude_ground
+            else np.ones(len(matrix), dtype=bool)
+        )
+
+        spans = []
+        for start in range(0, len(matrix) - window_size + 1, stride):
+            end = start + window_size
+            if exclude_ground and flying[start:end].mean() < airborne_fraction:
+                dropped_ground += 1
+                continue
+            spans.append((start, end))
         if max_per_file > 0 and len(spans) > max_per_file:
             picks = np.unique(
                 np.linspace(0, len(spans) - 1, max_per_file).round().astype(int)
@@ -295,10 +333,42 @@ def build_extra_normal_windows(
             continue
         batches.append(window_batch(matrix, columns, spans))
         used.append(path.name)
+        counts[path.name] = len(spans)
 
+    info = {
+        "files": len(used),
+        "windows": int(sum(counts.values())),
+        "ground_windows_dropped": dropped_ground,
+        "per_file": counts,
+    }
     if not batches:
-        return torch.zeros((0, len(columns), window_size), dtype=torch.float32), []
-    return torch.from_numpy(np.concatenate(batches, axis=0)), used
+        return empty, [], info
+    return torch.from_numpy(np.concatenate(batches, axis=0)), used, info
+
+
+def maneuver_of(name: str) -> str:
+    """nf_rflysim_hover_5m_01.csv -> hover"""
+    parts = Path(name).stem.split("_")
+    return parts[2] if len(parts) > 2 else "unknown"
+
+
+def split_holdout(files: list[str], per_maneuver: int) -> tuple[list[str], list[str]]:
+    """Hold out `per_maneuver` sessions from each maneuver for honest evaluation.
+
+    Without this, checking that the 40 sessions no longer trigger alarms measures
+    training-set performance: they were all in the train split.
+    """
+    if per_maneuver <= 0:
+        return files, []
+    groups: dict[str, list[str]] = {}
+    for name in files:
+        groups.setdefault(maneuver_of(name), []).append(name)
+    train, holdout = [], []
+    for _, names in sorted(groups.items()):
+        names = sorted(names)
+        holdout.extend(names[:per_maneuver])
+        train.extend(names[per_maneuver:])
+    return sorted(train), sorted(holdout)
 
 
 def main() -> int:
@@ -325,6 +395,30 @@ def main() -> int:
         help="matches the historical extra_normal_max_windows_per_file",
     )
     parser.add_argument("--extra-normal-stride", type=int, default=30)
+    parser.add_argument(
+        "--extra-normal-holdout-per-maneuver",
+        type=int,
+        default=2,
+        help=(
+            "sessions per maneuver reserved for evaluation (written to "
+            "live_holdout.pt, never trained on). 0 disables the holdout, which makes "
+            "the false-alarm check circular."
+        ),
+    )
+    parser.add_argument(
+        "--extra-normal-keep-ground",
+        action="store_true",
+        help=(
+            "keep ground windows (motors idling, aircraft on the ground). Off by "
+            "default: ~17%% of each recording is ground time and is not normal flight."
+        ),
+    )
+    parser.add_argument(
+        "--extra-normal-airborne-fraction",
+        type=float,
+        default=0.95,
+        help="minimum fraction of a window that must be airborne to keep it",
+    )
     parser.add_argument(
         "--extra-normal-resample-hz",
         type=float,
@@ -401,32 +495,91 @@ def main() -> int:
 
         if split == "train" and args.extra_normal_dir:
             extra_dir = Path(args.extra_normal_dir)
-            extra_x, used_files = build_extra_normal_windows(
-                extra_dir,
-                args.extra_normal_glob,
-                columns,
+            all_sessions = sorted(extra_dir.glob(args.extra_normal_glob))
+            train_files, holdout_files = split_holdout(
+                [p.name for p in all_sessions],
+                args.extra_normal_holdout_per_maneuver,
+            )
+            by_name = {p.name: p for p in all_sessions}
+            common = dict(
                 window_size=150,
                 stride=args.extra_normal_stride,
                 max_per_file=args.extra_normal_max_windows_per_file,
                 resample_hz=args.extra_normal_resample_hz,
+                exclude_ground=not args.extra_normal_keep_ground,
+                airborne_fraction=args.extra_normal_airborne_fraction,
             )
+            extra_x, used_files, extra_info = build_extra_normal_windows(
+                extra_dir,
+                args.extra_normal_glob,
+                columns,
+                files=[by_name[name] for name in train_files if name in by_name],
+                **common,
+            )
+
             if extra_x.shape[0]:
                 x = torch.cat([x, extra_x], dim=0)
                 y = torch.cat([y, torch.zeros(extra_x.shape[0], dtype=torch.int64)])
                 info["manifest_windows"] = info["windows"]
                 info["windows"] = int(x.shape[0])
-                info["extra_normal_files"] = len(used_files)
-                info["extra_normal_windows"] = int(extra_x.shape[0])
                 info["extra_normal_dir"] = str(extra_dir)
+                info["extra_normal"] = {
+                    "windows": int(extra_x.shape[0]),
+                    "files": extra_info["files"],
+                    "ground_windows_dropped": extra_info["ground_windows_dropped"],
+                    "holdout_files": len(holdout_files),
+                }
                 info["normal"] = int((y == 0).sum())
                 info["fault"] = int((y == 1).sum())
                 info["fault_ratio"] = float((y == 1).float().mean())
                 print(
-                    f"  + {extra_x.shape[0]} windows from "
-                    f"{len(used_files)} RflySim live normal sessions"
+                    f"  + {extra_x.shape[0]} live normal windows from "
+                    f"{extra_info['files']} sessions "
+                    f"({extra_info['ground_windows_dropped']} dropped as ground)"
                 )
             else:
                 print(f"  no extra normals found in {extra_dir}")
+
+            # Held-out live sessions: written separately so the false-alarm check runs
+            # on sessions the model never saw.
+            if holdout_files:
+                hold_x, hold_used, hold_info = build_extra_normal_windows(
+                    extra_dir,
+                    args.extra_normal_glob,
+                    columns,
+                    files=[by_name[name] for name in holdout_files if name in by_name],
+                    **common,
+                )
+                if hold_x.shape[0]:
+                    # Per-window maneuver labels, so the acceptance report can be broken
+                    # down by flight profile. per_file preserves file iteration order.
+                    groups: list[str] = []
+                    for name, count in hold_info["per_file"].items():
+                        groups.extend([maneuver_of(name)] * count)
+                    torch.save(
+                        {
+                            "x": hold_x,
+                            "y": torch.zeros(hold_x.shape[0], dtype=torch.int64),
+                            "groups": groups,
+                        },
+                        output_dir / "live_holdout.pt",
+                    )
+                    by_maneuver: dict[str, int] = {}
+                    for name, count in hold_info["per_file"].items():
+                        key = maneuver_of(name)
+                        by_maneuver[key] = by_maneuver.get(key, 0) + count
+                    summary["live_holdout"] = {
+                        "windows": int(hold_x.shape[0]),
+                        "files": hold_info["files"],
+                        "file_names": sorted(hold_used),
+                        "by_maneuver": by_maneuver,
+                        "ground_windows_dropped": hold_info["ground_windows_dropped"],
+                        "label": "all normal (live RflySim sessions)",
+                    }
+                    print(
+                        f"  holdout: {hold_x.shape[0]} windows from "
+                        f"{hold_info['files']} sessions -> live_holdout.pt"
+                    )
 
         torch.save({"x": x, "y": y}, output_dir / filename)
         summary[split] = info
@@ -469,6 +622,9 @@ def main() -> int:
                 "extra_normal_glob": args.extra_normal_glob,
                 "extra_normal_stride_frames": args.extra_normal_stride,
                 "extra_normal_resample_hz": args.extra_normal_resample_hz,
+                "extra_normal_exclude_ground": not args.extra_normal_keep_ground,
+                "extra_normal_airborne_fraction": args.extra_normal_airborne_fraction,
+                "extra_normal_holdout_per_maneuver": args.extra_normal_holdout_per_maneuver,
                 "extra_normal_max_windows_per_file": args.extra_normal_max_windows_per_file,
                 "extra_normal_split": "train",
                 "columns": columns,
@@ -491,6 +647,8 @@ def main() -> int:
     print("ONLINE CACHE BUILT")
     print("=" * 66)
     for split, info in summary.items():
+        if split not in SPLIT_TO_FILE:
+            continue
         print(
             f"  {split:16s} windows={info['windows']:7d}  cases={info['cases']:5d}  "
             f"normal={info['normal']:7d}  fault={info['fault']:7d}  "
