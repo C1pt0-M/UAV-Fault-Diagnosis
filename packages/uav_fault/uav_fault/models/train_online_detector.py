@@ -120,7 +120,6 @@ def validate_cache_contract(cache_dir: Path) -> dict:
     expected_cfg = {
         "target_hz": 50.0,
         "window_size": 150,
-        "stride": 10,
     }
     for key, expected in expected_cfg.items():
         actual = stats.get(key)
@@ -128,6 +127,13 @@ def validate_cache_contract(cache_dir: Path) -> dict:
             raise ValueError(
                 f"norm_stats.json contract mismatch: {key}={actual!r}, expected {expected!r}"
             )
+
+    # stride is sampling provenance, not a data invariant: no consumer reads it, and a
+    # cache derived from a differently-strided source is perfectly valid. Require that
+    # it is declared and sane rather than pinning one magic value.
+    stride = stats.get("stride")
+    if not isinstance(stride, int) or isinstance(stride, bool) or stride <= 0:
+        raise ValueError(f"norm_stats.json invalid stride={stride!r}, expected a positive int")
 
     # The declared feature_schema names the exact channel list, and the columns must
     # reproduce it in order. This replaces a plain length check, so a cache built on

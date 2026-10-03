@@ -1,0 +1,344 @@
+"""Build the online binary detection cache from the 26-channel window manifest.
+
+Replaces the old path (build_online_cache.py -> build_sequence_cache.SEQ_COLUMNS),
+which carried its own hard-coded 31-channel list and a separate case-level selection.
+Here the window manifest is the single source of truth, so the online and offline
+tasks are guaranteed to share one feature set, one split discipline and one set of
+train-only normalisation statistics.
+
+Task: binary. normal -> 0, motor|sensor -> 1. Open-set fault windows
+(level2_label == unknown) are excluded, because the online detector is a closed-set
+normal/fault discriminator.
+
+Labels are taken from the manifest's *window-level* level2_label, which already
+handles fault onset: pre-fault windows inside a fault case are labelled normal.
+
+Splits map straight onto the manifest:
+    train          -> train.pt
+    val            -> val.pt
+    test           -> test.pt
+    external_test  -> real_holdout_test.pt      (Real; the honest deployment test)
+
+train_online_detector.py detects real_holdout_test.pt automatically and reports it as
+the external test.
+
+Output layout (default D:\\UAV-Data\\online_cache_v2):
+    train.pt / val.pt / test.pt / real_holdout_test.pt   {'x': (N, 26, 150), 'y': (N,)}
+    norm_stats.json                                      train-only stats, schema v2
+    build_summary.json                                   provenance and counts
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import torch
+
+REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from rfly_feature_contract import (  # noqa: E402
+    contract_columns,
+    load_contract,
+    read_case_features,
+    window_batch,
+)
+
+DEFAULT_MANIFEST = Path(r"D:\UAV-Data\window_manifest_v1\window_manifest.csv")
+DEFAULT_NORM_STATS = Path(r"D:\UAV-Data\window_manifest_v1\norm_stats_train_v1.json")
+DEFAULT_OUTPUT = Path(r"D:\UAV-Data\online_cache_v2")
+
+MANIFEST_COLUMNS = [
+    "case_uid",
+    "domain",
+    "split",
+    "level2_label",
+    "window_usage",
+    "phase",
+    "window_start_row",
+    "window_end_row",
+    "source_csv",
+]
+
+SPLIT_TO_FILE = {
+    "train": "train.pt",
+    "val": "val.pt",
+    "test": "test.pt",
+    "external_test": "real_holdout_test.pt",
+}
+
+NORMAL_LABEL = "normal"
+FAULT_LABELS = {"motor", "sensor"}
+
+CHUNK_ROWS = 500_000
+
+
+def load_closed_set_windows(manifest_path: Path) -> pd.DataFrame:
+    """Read only the closed-set normal/fault windows of the window manifest."""
+    keep: list[pd.DataFrame] = []
+    reader = pd.read_csv(
+        manifest_path,
+        usecols=MANIFEST_COLUMNS,
+        dtype={
+            "case_uid": "string",
+            "domain": "category",
+            "split": "category",
+            "level2_label": "category",
+            "window_usage": "category",
+            "phase": "category",
+            "source_csv": "string",
+        },
+        chunksize=CHUNK_ROWS,
+        low_memory=False,
+    )
+    for chunk in reader:
+        mask = chunk["level2_label"].isin([NORMAL_LABEL, *FAULT_LABELS]) & chunk[
+            "split"
+        ].isin(list(SPLIT_TO_FILE))
+        if mask.any():
+            keep.append(chunk.loc[mask].copy())
+    if not keep:
+        raise RuntimeError("no closed-set windows found in the window manifest")
+    return pd.concat(keep, ignore_index=True)
+
+
+def subsample_per_case(frame: pd.DataFrame, max_per_case: int) -> pd.DataFrame:
+    """Evenly thin each case's windows so the phase mix survives the cap.
+
+    Windows come out of the manifest in time order per case, so taking an even stride
+    keeps pre-fault, transition and stable-fault windows rather than only the first N.
+    """
+    if max_per_case <= 0:
+        return frame
+    out = []
+    for _, group in frame.groupby("case_uid", observed=True, sort=False):
+        ordered = group.sort_values("window_start_row")
+        if len(ordered) <= max_per_case:
+            out.append(ordered)
+            continue
+        picks = np.unique(
+            np.linspace(0, len(ordered) - 1, max_per_case).round().astype(int)
+        )
+        out.append(ordered.iloc[picks])
+    return pd.concat(out, ignore_index=True) if out else frame.iloc[:0]
+
+
+def build_split(
+    frame: pd.DataFrame,
+    contract: dict,
+    columns: list[str],
+    *,
+    verbose: bool,
+) -> tuple[torch.Tensor, torch.Tensor, dict]:
+    """Materialise one split as (x, y) tensors plus a provenance summary."""
+    by_case = frame.groupby("case_uid", observed=True, sort=False)
+    xs: list[np.ndarray] = []
+    ys: list[int] = []
+    domains: dict[str, int] = defaultdict(int)
+    phases: dict[str, int] = defaultdict(int)
+    skipped = 0
+
+    for case_uid, group in by_case:
+        source = Path(str(group["source_csv"].iloc[0]))
+        domain = str(group["domain"].iloc[0])
+        if not source.exists():
+            skipped += 1
+            if verbose:
+                print(f"  MISSING {source}")
+            continue
+        try:
+            matrix, actual_columns = read_case_features(source, domain, contract)
+        except Exception as exc:
+            skipped += 1
+            if verbose:
+                print(f"  FAILED {source.name}: {exc}")
+            continue
+        if actual_columns != columns:
+            raise RuntimeError(f"contract column order changed for {source.name}")
+
+        spans: list[tuple[int, int]] = []
+        labels: list[int] = []
+        for _, row in group.iterrows():
+            start = int(row["window_start_row"])
+            end = int(row["window_end_row"])
+            if start < 0 or end > len(matrix):
+                continue
+            spans.append((start, end))
+            labels.append(0 if row["level2_label"] == NORMAL_LABEL else 1)
+        if not spans:
+            continue
+
+        xs.append(window_batch(matrix, columns, spans))
+        ys.extend(labels)
+        domains[domain] += len(spans)
+        for phase, count in group["phase"].value_counts().items():
+            phases[str(phase)] += int(count)
+
+    if not xs:
+        return (
+            torch.zeros((0, len(columns), 150), dtype=torch.float32),
+            torch.zeros((0,), dtype=torch.int64),
+            {"windows": 0, "cases": 0, "skipped_cases": skipped},
+        )
+
+    x = torch.from_numpy(np.concatenate(xs, axis=0))
+    y = torch.tensor(ys, dtype=torch.int64)
+    summary = {
+        "windows": int(x.shape[0]),
+        "cases": int(len(xs)),
+        "skipped_cases": skipped,
+        "normal": int((y == 0).sum()),
+        "fault": int((y == 1).sum()),
+        "fault_ratio": float((y == 1).float().mean()) if len(y) else 0.0,
+        "by_domain": dict(domains),
+        "by_phase": dict(phases),
+    }
+    return x, y, summary
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--manifest", default=str(DEFAULT_MANIFEST))
+    parser.add_argument("--norm-stats", default=str(DEFAULT_NORM_STATS))
+    parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT))
+    parser.add_argument(
+        "--max-windows-per-case",
+        type=int,
+        default=64,
+        help="0 keeps every closed-set window (tens of GB); 64 keeps the cache ~GB",
+    )
+    parser.add_argument(
+        "--splits",
+        default=",".join(SPLIT_TO_FILE),
+        help="comma-separated subset to rebuild, e.g. external_test",
+    )
+    parser.add_argument("--dry-run", action="store_true", help="plan only, write nothing")
+    args = parser.parse_args()
+    wanted = [name.strip() for name in args.splits.split(",") if name.strip()]
+    unknown = [name for name in wanted if name not in SPLIT_TO_FILE]
+    if unknown:
+        parser.error(f"unknown splits {unknown}; choose from {sorted(SPLIT_TO_FILE)}")
+
+    contract = load_contract()
+    columns = contract_columns(contract)
+
+    norm_stats = json.loads(Path(args.norm_stats).read_text(encoding="utf-8"))
+    if list(norm_stats["columns"]) != columns:
+        raise ValueError(
+            "norm stats columns do not match the feature contract; "
+            f"stats={len(norm_stats['columns'])} contract={len(columns)}"
+        )
+
+    print(f"contract columns : {len(columns)}")
+    print(f"window manifest  : {args.manifest}")
+    manifest = load_closed_set_windows(Path(args.manifest))
+    print(f"closed-set windows: {len(manifest)}")
+    print(f"split distribution: {manifest['split'].value_counts().to_dict()}")
+
+    manifest = subsample_per_case(manifest, args.max_windows_per_case)
+    print(f"after per-case cap ({args.max_windows_per_case}): {len(manifest)}")
+
+    if args.dry_run:
+        print("\n[dry-run] per-split plan:")
+        for split in SPLIT_TO_FILE:
+            part = manifest[manifest["split"] == split]
+            counts = part["level2_label"].value_counts().to_dict()
+            print(
+                f"  {split:14s} windows={len(part):7d} "
+                f"cases={part['case_uid'].nunique():5d} labels={counts}"
+            )
+        return 0
+
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Merge with an existing summary so a long build can be run split by split.
+    summary_path = output_dir / "build_summary.json"
+    summary: dict[str, dict] = {}
+    if summary_path.exists():
+        try:
+            previous = json.loads(summary_path.read_text(encoding="utf-8"))
+            summary.update(previous.get("splits", {}))
+        except (json.JSONDecodeError, OSError):
+            pass
+    for split, filename in SPLIT_TO_FILE.items():
+        if split not in wanted:
+            continue
+        part = manifest[manifest["split"] == split]
+        if part.empty:
+            print(f"\n[{split}] no windows, skipped")
+            continue
+        print(f"\n[{split}] {len(part)} windows over {part['case_uid'].nunique()} cases")
+        x, y, info = build_split(part, contract, columns, verbose=True)
+        torch.save({"x": x, "y": y}, output_dir / filename)
+        summary[split] = info
+        print(
+            f"  -> {filename}  x={tuple(x.shape)} "
+            f"normal={info['normal']} fault={info['fault']} "
+            f"({info['fault_ratio'] * 100:.1f}% fault)"
+        )
+
+    # Normalisation statistics are reused verbatim: they were fitted on train windows
+    # only, which is exactly what the online cache needs.
+    stats = {
+        "columns": columns,
+        "mean": list(norm_stats["mean"]),
+        "std": list(norm_stats["std"]),
+        "window_size": 150,
+        "target_hz": 50.0,
+        "stride": int(norm_stats.get("stride", 5)),
+        "feature_schema": "rfly_seq_columns_v2",
+        "protocol_name": "rflymad_online_binary_v2",
+        "label_space": "normal_fault",
+        "source_fault_classes": sorted(FAULT_LABELS),
+        "source_norm_stats": str(args.norm_stats),
+        "sampling": {
+            "mode": "even_per_case",
+            "max_windows_per_case": args.max_windows_per_case,
+            "manifest_stride_frames": int(norm_stats.get("stride", 5)),
+        },
+    }
+    (output_dir / "norm_stats.json").write_text(
+        json.dumps(stats, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    summary_path.write_text(
+        json.dumps(
+            {
+                "schema_version": "online_cache_v2",
+                "manifest": str(args.manifest),
+                "max_windows_per_case": args.max_windows_per_case,
+                "columns": columns,
+                "splits": summary,
+                "notes": (
+                    "Derived from the 26-channel window manifest. Window-level labels: "
+                    "normal->0, motor|sensor->1, open-set (unknown) excluded. "
+                    "Pre-fault windows inside fault cases stay labelled normal."
+                ),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    print("\n" + "=" * 66)
+    print("ONLINE CACHE BUILT")
+    print("=" * 66)
+    for split, info in summary.items():
+        print(
+            f"  {split:16s} windows={info['windows']:7d}  cases={info['cases']:5d}  "
+            f"normal={info['normal']:7d}  fault={info['fault']:7d}  "
+            f"skipped={info['skipped_cases']}"
+        )
+    print(f"\nSaved to: {output_dir}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
