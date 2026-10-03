@@ -69,9 +69,11 @@
 
         <section v-show="activeTab === 'ai'" class="settings-section">
           <h2 class="settings-section__title">AI 接入配置</h2>
+
+          <h3 class="settings-config-title">AI 助手模型</h3>
           <div class="page-panel settings-panel">
             <p class="form-hint settings-intro">
-              诊断模型由模型资产清单统一管理，并在诊断中心或实时监测页面选择；此处只配置 AI 助手使用的大语言模型。
+              仅用于 AI 助手的对话与报告解读，不会作为知识库 Embedding 配置使用。
             </p>
 
             <div class="form-grid">
@@ -129,8 +131,64 @@
             </div>
 
             <div class="form-actions form-actions--footer">
-              <el-button @click="testAiConfig" :loading="aiConfigTesting">测试连接</el-button>
-              <el-button type="primary" @click="saveAiConfig" :loading="aiConfigSaving">保存配置</el-button>
+              <el-button @click="testAiConfig" :loading="aiConfigTesting">测试 AI 助手</el-button>
+              <el-button type="primary" @click="saveAiConfig" :loading="aiConfigSaving">保存 AI 助手配置</el-button>
+            </div>
+          </div>
+
+          <h3 class="settings-config-title settings-config-title--spaced">知识库检索与 Embedding</h3>
+          <div class="page-panel settings-panel">
+            <p class="form-hint settings-intro">
+              独立配置知识库向量接口。Hybrid 和 Semantic 模式要求地址、密钥与模型均配置完整。
+            </p>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>检索模式 (RAG Mode)</label>
+                <select v-model="embeddingConfig.ragMode" class="styled-select">
+                  <option value="bm25">BM25 关键词检索</option>
+                  <option value="hybrid">Hybrid 混合检索</option>
+                  <option value="semantic">Semantic 向量检索</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Embedding 模型</label>
+                <input
+                  v-model="embeddingConfig.model"
+                  type="text"
+                  class="styled-input"
+                  placeholder="Qwen/Qwen3-Embedding-8B"
+                />
+              </div>
+            </div>
+
+            <div class="form-group form-group--spaced">
+              <label>Embedding 请求地址</label>
+              <input
+                v-model="embeddingConfig.endpoint"
+                type="text"
+                class="styled-input"
+                placeholder="https://api.siliconflow.cn/v1"
+              />
+              <p class="form-hint">填写 OpenAI-compatible Base URL，后端会调用其 /embeddings 接口。</p>
+            </div>
+
+            <div class="form-group form-group--spaced">
+              <label>Embedding API 密钥</label>
+              <input
+                v-model="embeddingConfig.apiKey"
+                type="password"
+                class="styled-input"
+                :placeholder="embeddingKeyStatus.set ? '已配置，留空不修改' : 'sk-...'"
+              />
+              <p v-if="!embeddingKeyStatus.set" class="form-hint">该密钥独立保存，不会复用 AI 助手密钥。</p>
+              <p v-else class="form-hint">已配置：{{ embeddingKeyStatus.preview || '******' }}，留空保存时不会覆盖。</p>
+            </div>
+
+            <div class="form-actions form-actions--footer">
+              <el-button @click="testEmbeddingConfig" :loading="embeddingConfigTesting">测试 Embedding</el-button>
+              <el-button type="primary" @click="saveEmbeddingConfig" :loading="embeddingConfigSaving">保存 Embedding 配置</el-button>
             </div>
           </div>
         </section>
@@ -183,12 +241,25 @@ const aiConfig = ref({
   llmApiKey: ''
 })
 
+const embeddingConfig = ref({
+  endpoint: '',
+  model: '',
+  apiKey: '',
+  ragMode: 'bm25'
+})
+
 const aiKeyStatus = ref({
+  set: false,
+  preview: ''
+})
+const embeddingKeyStatus = ref({
   set: false,
   preview: ''
 })
 const aiConfigSaving = ref(false)
 const aiConfigTesting = ref(false)
+const embeddingConfigSaving = ref(false)
+const embeddingConfigTesting = ref(false)
 
 function normalizeProvider(provider) {
   const value = String(provider || '').trim()
@@ -202,15 +273,31 @@ function normalizeProvider(provider) {
   return 'custom'
 }
 
-function applyBackendAiSettings(data = {}) {
+function applyBackendLlmSettings(data = {}) {
   aiConfig.value.llmProvider = normalizeProvider(data.provider)
-  aiConfig.value.llmEndpoint = data.base_url || aiConfig.value.llmEndpoint
-  aiConfig.value.llmModel = data.model || aiConfig.value.llmModel
+  aiConfig.value.llmEndpoint = data.base_url || ''
+  aiConfig.value.llmModel = data.model || ''
   aiConfig.value.llmApiKey = ''
   aiKeyStatus.value = {
     set: Boolean(data.api_key_set),
     preview: data.api_key_preview || ''
   }
+}
+
+function applyBackendEmbeddingSettings(data = {}) {
+  embeddingConfig.value.endpoint = data.embedding_base_url || ''
+  embeddingConfig.value.model = data.embedding_model || ''
+  embeddingConfig.value.apiKey = ''
+  embeddingConfig.value.ragMode = data.rag_mode || 'bm25'
+  embeddingKeyStatus.value = {
+    set: Boolean(data.embedding_api_key_set),
+    preview: data.embedding_api_key_preview || ''
+  }
+}
+
+function applyBackendAiSettings(data = {}) {
+  applyBackendLlmSettings(data)
+  applyBackendEmbeddingSettings(data)
 }
 
 function buildAiSettingsPayload() {
@@ -230,6 +317,19 @@ function buildAiSettingsPayload() {
   return payload
 }
 
+function buildEmbeddingSettingsPayload() {
+  const payload = {
+    embedding_base_url: embeddingConfig.value.endpoint.trim(),
+    embedding_model: embeddingConfig.value.model.trim(),
+    rag_mode: embeddingConfig.value.ragMode
+  }
+  const apiKey = embeddingConfig.value.apiKey.trim()
+  if (apiKey) {
+    payload.embedding_api_key = apiKey
+  }
+  return payload
+}
+
 onMounted(async () => {
   try {
     const response = await settingsApi.getAiSettings()
@@ -243,12 +343,25 @@ async function saveAiConfig() {
   aiConfigSaving.value = true
   try {
     const response = await settingsApi.updateAiSettings(buildAiSettingsPayload())
-    applyBackendAiSettings(response.data || {})
-    ElMessage.success('AI 配置已保存，新会话将立即生效')
+    applyBackendLlmSettings(response.data || {})
+    ElMessage.success('AI 助手配置已保存，新会话将立即生效')
   } catch (error) {
-    ElMessage.error(error.message || 'AI 配置保存失败')
+    ElMessage.error(error.message || 'AI 助手配置保存失败')
   } finally {
     aiConfigSaving.value = false
+  }
+}
+
+async function saveEmbeddingConfig() {
+  embeddingConfigSaving.value = true
+  try {
+    const response = await settingsApi.updateAiSettings(buildEmbeddingSettingsPayload())
+    applyBackendEmbeddingSettings(response.data || {})
+    ElMessage.success('Embedding 配置已保存，请重建知识库索引')
+  } catch (error) {
+    ElMessage.error(error.message || 'Embedding 配置保存失败')
+  } finally {
+    embeddingConfigSaving.value = false
   }
 }
 
@@ -258,14 +371,31 @@ async function testAiConfig() {
     const response = await settingsApi.testAiSettings(buildAiSettingsPayload())
     const result = response.data || {}
     if (result.ok) {
-      ElMessage.success(`AI 连接测试成功：${result.provider || '-'} / ${result.model || '-'}`)
+      ElMessage.success(`AI 助手连接测试成功：${result.provider || '-'} / ${result.model || '-'}`)
     } else {
-      ElMessage.error(result.message || 'AI 连接测试失败')
+      ElMessage.error(result.message || 'AI 助手连接测试失败')
     }
   } catch (error) {
-    ElMessage.error(error.message || 'AI 连接测试失败')
+    ElMessage.error(error.message || 'AI 助手连接测试失败')
   } finally {
     aiConfigTesting.value = false
+  }
+}
+
+async function testEmbeddingConfig() {
+  embeddingConfigTesting.value = true
+  try {
+    const response = await settingsApi.testEmbeddingSettings(buildEmbeddingSettingsPayload())
+    const result = response.data || {}
+    if (result.ok) {
+      ElMessage.success(`Embedding 连接测试成功：${result.provider || '-'} / ${result.model || '-'}`)
+    } else {
+      ElMessage.error(result.message || 'Embedding 连接测试失败')
+    }
+  } catch (error) {
+    ElMessage.error(error.message || 'Embedding 连接测试失败')
+  } finally {
+    embeddingConfigTesting.value = false
   }
 }
 </script>
@@ -315,6 +445,17 @@ async function testAiConfig() {
   margin: 0 0 var(--space-md);
   font-size: 16px;
   font-weight: 600;
+}
+
+.settings-config-title {
+  margin: 0 0 var(--space-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.settings-config-title--spaced {
+  margin-top: var(--space-xl);
 }
 
 .settings-panel {

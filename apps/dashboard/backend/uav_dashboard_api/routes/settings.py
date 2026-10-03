@@ -70,3 +70,37 @@ def test_ai_settings(current_user):
             },
         }
     )
+
+
+@bp.route("/ai/test-embedding", methods=["POST"])
+@token_required
+@admin_required
+def test_embedding_settings(current_user):
+    payload = request.get_json(silent=True) or {}
+    effective_config = ai_settings_service.effective_config(current_app.config, payload)
+    provider = OpenAICompatibleProvider(effective_config)
+    try:
+        result = provider.embed_texts(["Embedding connection test."])
+    except AIProviderError as exc:
+        return jsonify(
+            {
+                "success": True,
+                "data": {
+                    "ok": False,
+                    "message": ai_settings_service.redact_secrets(
+                        str(exc), current_app.config, payload
+                    ),
+                },
+            }
+        )
+
+    return jsonify(
+        {
+            "success": True,
+            "data": {
+                "ok": True,
+                "provider": result.get("provider", provider.provider_name),
+                "model": result.get("model", provider.embedding_model),
+            },
+        }
+    )

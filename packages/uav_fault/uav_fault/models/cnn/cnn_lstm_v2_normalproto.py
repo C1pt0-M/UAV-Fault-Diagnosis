@@ -12,7 +12,7 @@ from .cnn_lstm_v2 import CNNLSTMv2Classifier
 class CNNLSTMv2NormalProtoClassifier(nn.Module):
     def __init__(
         self,
-        in_channels: int = 31,
+        in_channels: int = 26,
         num_classes: int = 3,
         target_steps: int = 512,
         raw_proj_dim: int = 32,

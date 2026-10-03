@@ -128,9 +128,9 @@ def validate_cache_contract(cache_dir: Path) -> dict:
             raise ValueError(
                 f"norm_stats.json contract mismatch: {key}={actual!r}, expected {expected!r}"
             )
-    if len(columns) != 31:
+    if len(columns) != 26:
         raise ValueError(
-            f"norm_stats.json contract mismatch: columns={len(columns)}, expected 31"
+            f"norm_stats.json contract mismatch: columns={len(columns)}, expected 26"
         )
 
     for split_name in ("train", "val", "test"):

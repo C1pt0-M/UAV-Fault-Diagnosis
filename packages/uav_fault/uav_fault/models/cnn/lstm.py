@@ -49,7 +49,7 @@ RFLY_SEQ_INDEX = {name: idx for idx, name in enumerate(RFLY_SEQ_COLUMNS_V1)}
 class BiLSTMClassifier(nn.Module):
     def __init__(
         self,
-        in_channels: int = 23,
+        in_channels: int = 26,
         hidden_size: int = 128,
         num_layers: int = 2,
         num_classes: int = 5,
@@ -88,7 +88,7 @@ class BiLSTMClassifier(nn.Module):
 class OnlineBiLSTM(nn.Module):
     def __init__(
         self,
-        in_channels: int = 20,
+        in_channels: int = 26,
         hidden_size: int = 64,
         num_layers: int = 1,
         num_classes: int = 2,
@@ -126,7 +126,7 @@ class OnlineBiLSTM(nn.Module):
 class OnlineCNN1D(nn.Module):
     def __init__(
         self,
-        in_channels: int = 33,
+        in_channels: int = 26,
         hidden_size: int = 64,
         num_layers: int = 1,
         num_classes: int = 2,
@@ -233,7 +233,7 @@ class _MSTCAFeatureEncoder(nn.Module):
 class OnlineMSTCA(nn.Module):
     def __init__(
         self,
-        in_channels: int = 33,
+        in_channels: int = 26,
         hidden_size: int = 64,
         num_layers: int = 1,
         num_classes: int = 2,
@@ -256,7 +256,7 @@ class OnlineMSTCA(nn.Module):
 class OnlineKGMSTCA(nn.Module):
     def __init__(
         self,
-        in_channels: int = 31,
+        in_channels: int = 26,
         hidden_size: int = 64,
         num_layers: int = 1,
         num_classes: int = 2,
@@ -361,7 +361,7 @@ class OnlineKGMSTCA(nn.Module):
 class OnlineTransformer(nn.Module):
     def __init__(
         self,
-        in_channels: int = 33,
+        in_channels: int = 26,
         hidden_size: int = 64,
         num_layers: int = 2,
         num_classes: int = 2,

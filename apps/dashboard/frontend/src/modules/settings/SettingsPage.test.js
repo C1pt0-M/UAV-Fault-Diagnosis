@@ -8,7 +8,8 @@ const authApiMock = vi.hoisted(() => ({
 const settingsApiMock = vi.hoisted(() => ({
   getAiSettings: vi.fn(),
   updateAiSettings: vi.fn(),
-  testAiSettings: vi.fn()
+  testAiSettings: vi.fn(),
+  testEmbeddingSettings: vi.fn()
 }))
 const messageMock = vi.hoisted(() => ({
   success: vi.fn(),
@@ -47,6 +48,7 @@ describe('SettingsPage AI settings', () => {
     settingsApiMock.getAiSettings.mockReset()
     settingsApiMock.updateAiSettings.mockReset()
     settingsApiMock.testAiSettings.mockReset()
+    settingsApiMock.testEmbeddingSettings.mockReset()
     messageMock.success.mockReset()
     messageMock.error.mockReset()
     messageMock.warning.mockReset()
@@ -58,7 +60,12 @@ describe('SettingsPage AI settings', () => {
         base_url: 'https://runtime.example/v1',
         model: 'deepseek-chat',
         api_key_set: true,
-        api_key_preview: 'runt...-key'
+        api_key_preview: 'runt...-key',
+        embedding_base_url: 'https://embedding.example/v1',
+        embedding_model: 'embedding-model',
+        embedding_api_key_set: true,
+        embedding_api_key_preview: 'embe...-key',
+        rag_mode: 'hybrid'
       }
     })
   })
@@ -80,7 +87,12 @@ describe('SettingsPage AI settings', () => {
     expect(wrapper.vm.aiConfig.llmEndpoint).toBe('https://runtime.example/v1')
     expect(wrapper.vm.aiConfig.llmModel).toBe('deepseek-chat')
     expect(wrapper.vm.aiConfig.llmApiKey).toBe('')
+    expect(wrapper.vm.embeddingConfig.endpoint).toBe('https://embedding.example/v1')
+    expect(wrapper.vm.embeddingConfig.model).toBe('embedding-model')
+    expect(wrapper.vm.embeddingConfig.ragMode).toBe('hybrid')
+    expect(wrapper.vm.embeddingConfig.apiKey).toBe('')
     expect(wrapper.text()).toContain('runt...-key')
+    expect(wrapper.text()).toContain('embe...-key')
   })
 
   it('saves AI settings to backend and does not write ai-settings localStorage', async () => {
@@ -113,6 +125,37 @@ describe('SettingsPage AI settings', () => {
     expect(messageMock.success).toHaveBeenCalled()
   })
 
+  it('saves explicit Embedding settings independently from AI assistant settings', async () => {
+    settingsApiMock.updateAiSettings.mockResolvedValue({
+      data: {
+        embedding_base_url: 'https://saved-embedding.example/v1',
+        embedding_model: 'saved-embedding-model',
+        embedding_api_key_set: true,
+        embedding_api_key_preview: 'save...-key',
+        rag_mode: 'semantic'
+      }
+    })
+    const wrapper = mountSettingsPage()
+    await flushPromises()
+
+    wrapper.vm.embeddingConfig.endpoint = 'https://saved-embedding.example/v1'
+    wrapper.vm.embeddingConfig.model = 'saved-embedding-model'
+    wrapper.vm.embeddingConfig.apiKey = 'saved-embedding-secret'
+    wrapper.vm.embeddingConfig.ragMode = 'semantic'
+    await wrapper.vm.saveEmbeddingConfig()
+    await flushPromises()
+
+    expect(settingsApiMock.updateAiSettings).toHaveBeenCalledWith({
+      embedding_base_url: 'https://saved-embedding.example/v1',
+      embedding_model: 'saved-embedding-model',
+      embedding_api_key: 'saved-embedding-secret',
+      rag_mode: 'semantic'
+    })
+    expect(wrapper.vm.aiConfig.llmEndpoint).toBe('https://runtime.example/v1')
+    expect(wrapper.vm.embeddingConfig.apiKey).toBe('')
+    expect(wrapper.text()).toContain('save...-key')
+  })
+
   it('tests backend AI connection using current form values', async () => {
     settingsApiMock.testAiSettings.mockResolvedValue({
       data: { ok: true, provider: 'deepseek', model: 'deepseek-chat' }
@@ -129,6 +172,26 @@ describe('SettingsPage AI settings', () => {
       base_url: 'https://runtime.example/v1',
       model: 'deepseek-chat',
       api_key: 'candidate-secret'
+    })
+    expect(messageMock.success).toHaveBeenCalled()
+  })
+
+  it('tests Embedding connection using only Embedding form values', async () => {
+    settingsApiMock.testEmbeddingSettings.mockResolvedValue({
+      data: { ok: true, provider: 'openai_compatible', model: 'embedding-model' }
+    })
+    const wrapper = mountSettingsPage()
+    await flushPromises()
+
+    wrapper.vm.embeddingConfig.apiKey = 'embedding-candidate-secret'
+    await wrapper.vm.testEmbeddingConfig()
+    await flushPromises()
+
+    expect(settingsApiMock.testEmbeddingSettings).toHaveBeenCalledWith({
+      embedding_base_url: 'https://embedding.example/v1',
+      embedding_model: 'embedding-model',
+      embedding_api_key: 'embedding-candidate-secret',
+      rag_mode: 'hybrid'
     })
     expect(messageMock.success).toHaveBeenCalled()
   })

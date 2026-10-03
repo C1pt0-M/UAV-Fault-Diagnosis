@@ -9,5 +9,8 @@ export const settingsApi = {
   },
   testAiSettings(payload) {
     return request.post('/settings/ai/test', payload)
+  },
+  testEmbeddingSettings(payload) {
+    return request.post('/settings/ai/test-embedding', payload)
   }
 }

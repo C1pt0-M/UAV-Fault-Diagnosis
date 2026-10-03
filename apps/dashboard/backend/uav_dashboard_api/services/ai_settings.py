@@ -83,10 +83,10 @@ class AISettingsService:
             "api_key": api_key,
             "model": _clean_string(config.get("AI_MODEL", "")),
             "embedding_base_url": _clean_base_url(
-                config.get("AI_EMBEDDING_BASE_URL") or base_url
+                config.get("AI_EMBEDDING_BASE_URL", "")
             ),
             "embedding_api_key": _clean_string(
-                config.get("AI_EMBEDDING_API_KEY") or api_key
+                config.get("AI_EMBEDDING_API_KEY", "")
             ),
             "embedding_model": _clean_string(config.get("AI_EMBEDDING_MODEL", "")),
             "http_timeout": _safe_int(config.get("AI_HTTP_TIMEOUT"), 45),
@@ -121,21 +121,12 @@ class AISettingsService:
         )
         settings.update(runtime_settings)
 
-        if "base_url" in runtime_settings and "embedding_base_url" not in runtime_settings:
-            settings["embedding_base_url"] = settings["base_url"]
-        if "api_key" in runtime_settings and "embedding_api_key" not in runtime_settings:
-            settings["embedding_api_key"] = settings["api_key"]
-
         if candidate:
             candidate_settings = self._normalize_runtime_settings(candidate)
             for field, value in candidate_settings.items():
                 if field in SECRET_FIELDS and value == "":
                     continue
                 settings[field] = value
-            if "base_url" in candidate_settings and "embedding_base_url" not in candidate_settings:
-                settings["embedding_base_url"] = settings["base_url"]
-            if "api_key" in candidate_settings and "embedding_api_key" not in candidate_settings:
-                settings["embedding_api_key"] = settings["api_key"]
 
         return settings
 

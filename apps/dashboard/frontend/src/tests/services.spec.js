@@ -43,6 +43,7 @@ describe('shared services', () => {
     settingsApi.getAiSettings()
     settingsApi.updateAiSettings({ base_url: 'https://api.example/v1' })
     settingsApi.testAiSettings({ api_key: 'secret' })
+    settingsApi.testEmbeddingSettings({ embedding_api_key: 'embedding-secret' })
 
     expect(mocks.get).toHaveBeenCalledWith('/settings/ai')
     expect(mocks.put).toHaveBeenCalledWith('/settings/ai', {
@@ -50,6 +51,9 @@ describe('shared services', () => {
     })
     expect(mocks.post).toHaveBeenCalledWith('/settings/ai/test', {
       api_key: 'secret'
+    })
+    expect(mocks.post).toHaveBeenCalledWith('/settings/ai/test-embedding', {
+      embedding_api_key: 'embedding-secret'
     })
   })
 

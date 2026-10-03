@@ -1,0 +1,625 @@
+# Fault diagnosis of UAV sensors based on multi-auxiliary task learning with few samples
+
+Jie Fang $^{1}$ , Shaobo Li $^{2,3,*}$ , Yizong Zhang $^{4}$ , Deyong Xiao $^{1}$ , Yingzhou Li $^{3}$ and Qinsong Xu $^{3}$
+
+$^{1}$ Key Laboratory of Advanced Manufacturing Technology of the Ministry of Education, Guizhou University, Guiyang 550025, China $^{2}$ Guizhou Institute of Technology, Guiyang 550025, China
+
+$^{3}$ State Key Laboratory of Public Big Data, Guizhou University, Guiyang, Guizhou 550025, China
+
+$^{4}$ School of Mechanical Engineering, Guizhou University, Guiyang 550025, China
+
+\*Correspondence: lishaobo@gzu.edu.cn
+
+## Abstract
+
+Real-time monitoring of the health status of uncrewed aerial vehicle (UAV) sensor systems is essential for ensuring flight safety. Deep learning approaches can automatically identify complex failure patterns in high-dimensional data. These methods have become a research hotspot in this field. However, in practice, the scarcity of fault data limits the models' ability to extract and distinguish failure features. To break this bottleneck, we propose a multi-auxiliary task learning framework (MATL). Specifically, we first design an adaptive multi-channel filter that adaptively decomposes raw time-domain signals into multiple frequency bands to enhance input quality. MATL strengthens its fault distinction by constructing multiple virtual binary classification auxiliary tasks (ATs). Each task focuses on specific categories. A task-level attention mechanism dynamically adjusts the contribution of each AT to the primary task. This mechanism allows the model to emphasize fault-related features and improve final diagnostic accuracy. Experimental results demonstrate that MATL achieves an average accuracy improvement of 18.61% across multiple real-world flight datasets. This outperforms existing multi-task and single-task learning approaches. The model's single-sample diagnosis time is only 0.001162 seconds, which satisfies real-time requirements for UAVs. This short diagnosis time indicates strong engineering potential.
+
+Keywords: fault diagnosis, UAV sensors, few-sample, auxiliary tasks
+
+## 1. Introduction
+
+In recent years, uncrewed aerial vehicles (UAVs) have become essential tools in technical domains, valued for their flexibility, efficiency, and low manufacturing costs (Cao et al., 2025). However, the advanced multi-sensor systems of UAVs remain vulnerable to environmental stressors, raising both economic and safety concerns when failures occur (Ozkat, 2024). Therefore, precise fault diagnosis for UAV sensors is vital for operational reliability and system resilience.
+
+Standard sensor fault diagnosis methods primarily fall into three categories. Hardware redundancy-based approaches achieve fault takeover by backing up critical hardware. However, these methods are constrained by limitations in drone size and cost limitations, which prevent their widespread application (Guo et al., 2017). Model-based approaches, such as employing the discrete wavelet transform (DWT) for noise reduction and fault diagnosis of UAV vibration signals (Al-Haddad et al., n.d.), perform well when the model is accurate. However, system modelling is complex and prone to false positives or false negatives (Swain et al., 2024). Knowledge-based approaches exhibit limited capability in diagnosing novel faults due to their reliance on expert knowledge and experience (Zhang et al., 2024a).
+
+Deep learning (DL), with its formidable capabilities in feature extraction and pattern recognition (Park et al., 2024), has opened up new avenues of research for fault diagnosis in UAV sensors. For instance, Sadhu et al. (2020) proposed a CNN-LSTM hybrid architecture that has significantly enhanced both classification accuracy and hardware efficiency. Al-Haddad et al. (2024) achieved an accuracy exceeding 99% in drone propeller fault diagnosis by integrating non-traditional features with deep neural networks. Furthermore, Yao et al. (2024) combined causal learning with graph neural networks to enhance the generalizability of models in fault diagnosis. Although these studies have made significant contributions to the advancement of UAV sensor fault diagnosis technology, their success often relies on a large amount of labelled training data.
+
+For industrial machinery like bearings and rotating machinery, fault diagnosis can leverage long-term sensor deployment and artificially induced faults in controlled environments. This approach accumulates sample data ranging from $10^{4}$ to $10^{5}$ . Numerous scholars have achieved success using these open-source datasets. In contrast, the small-sample problem remains a prominent challenge in UAV fault diagnosis due to two primary issues: (1) When faults occur, UAVs often lose control or crash within an extremely short period of time. This results in a very brief duration for effective fault data recording, which is also often contaminated with significant noise and interference. (2) Considering the high cost of commercial UAVs and the restrictions of flight safety regulations, it is nearly impossible to obtain a sufficiently diverse set of fault data samples by intentionally inducing faults. Le et al. (2023) constructed a UAV fault data acquisition platform. However, the collected experimental data lasted only a few minutes and comprised fewer than a thousand data points. This volume is two to three orders of magnitude less than that of diagnostic datasets for components like bearings. These practical issues render UAV sensor fault diagnosis an incredibly challenging few-sample learning problem and highlight the limitations of current DL methods that rely on large-scale data training in real-world applications.
+
+To overcome the limitations of DL in few-sample fault diagnosis, researchers have proposed various solutions. In terms of data acquisition, Chen et al. (2017a, b) and Olyaei et al. (2018) have employed simulated faults to generate experimental data and validated their novel neural network-based UAV fault diagnosis methods using these simulated datasets. Their approaches all demonstrated the feasibility of using simulated data. While simulated data can effectively increase the number of samples, its drawback lies in the inability to truly reflect the complexities of real-world operating conditions. It also struggles to cope with the noise and variations in data encountered in actual fault scenarios. Some researchers have also collected real data through actual flights. For example, Yang et al. (2021) manually injected eight predefined fault codes into a P200 quadrotor UAV to collect real flight data. Du et al. (2022) used vibration signals, and Chen et al. (2024) used current signals instead of time-series signals, manually inducing faults to diagnose faults in the UAV's wings and motors. The limitation of these studies is that they focused only on blade damage of UAVs, whereas actual UAV faults also involve more complex integrated sensor systems.
+
+Data augmentation on limited data is one way to address the few-shot problem. Huang et al. (2021) employed the short-time Fourier transform to convert the time-domain fault dataset into time-frequency images to highlight subtle differences between actual values and bias drifts. Zhang et al. (2022a) proposed a method using multi-layer DWT analysis to obtain multi-resolution time-frequency instantaneous features. While such methods enable low-cost data augmentation, the diversity of the generated data is constrained by predefined rules, making it difficult to simulate complex real-world scenarios fully. This results in limited generalization capabilities of the model. For instance, the accuracy of the BGWCT-based method (Peng et al., 2025) decreased from $94.88\%$ to $78.62\%$ in cross-domain experiments.
+
+To enhance feature extraction and generalization capabilities, other scholars have focused on model architecture innovations. Li et al. (2024) proposed a few-shot transfer diagnosis strategy to achieve transfer detection of image sets and original text data. Al-Haddad & Jaber (2023) proposed a scheme based on multi-layer deep neural networks, aiming to improve the uncertainty of adaptive health monitoring systems in UAV sensor fault diagnosis under conditions of limited data. Zhang et al. (2023) proposed an intelligent UAV fault diagnosis framework based on a hybrid adversarial and maximum mean discrepancy domain adaptation network to reduce the differences in feature distributions between different domains.
+
+One of the original motivations for designing multi-task learning (MTL) was to address the small-sample problem (Zhang & Yang, 2021). By learning multiple related tasks in parallel within the same model and sharing representational features, it has emerged as an effective solution. Depending on the parameter sharing method, MTL employs two main mechanisms: hard sharing and soft sharing. The hard-sharing mechanism (Wang et al., 2023) enables all tasks to share the underlying network, with separation occurring only at the output layer. While structurally simple, it lacks flexibility. To achieve more flexible control over the degree of task-level feature sharing, researchers have proposed soft sharing mechanisms. Cross-Stitch Networks (Misra et al., 2016) introduce learnable linear combination units (cross-stitches) be tween feature maps in the network's intermediate layers. This design enables the automatic learning of optimal fusion ratios for activating features across different tasks, thereby realizing dynamic feature-level sharing. HDMTL (Zhang et al., 2024a) employs heterogeneous sub-networks (CNN and LSTM) to extract spatial and temporal features. It then utilizes adaptive shared units to achieve complementary integration of heterogeneous features within the task. These approaches have achieved significant progress at the feature-sharing level. However, most existing methods focus on optimizing internal feature representations across multiple independent tasks, failing to exploit the potential for dynamic task-level correlations fully.
+
+This study proposes a multi-auxiliary task learning (MATL) framework, inspired by the MTL paradigm, for drone sensor fault diagnosis under small-sample conditions. Its structure is illustrated in Figure 1. Unlike traditional MTL, which simultaneously handles multiple independent real tasks, MATL constitutes a structured virtual auxiliary task (AT) learning paradigm. Its core concept involves constructing a set of virtual binary classification ATs for the ultimate M-class fault classification task, thereby indirectly driving feature learning for the multi-classification task. Specifically, to address the issues of sensor signal coupling and dynamic noise interference in UAVs, we have designed an adaptive multi-channel filter (AMCF) to replace conventional fixed filter banks reliant on prior knowledge. The AMCF dynamically adjusts its frequency bands according to the actual signal characteristics, adaptively decomposing the raw time-domain signal into a series of feature-enhanced modal components. This adaptive process enhances the quality of feature extraction and fault identification. Secondly, the core innovation of this framework lies in the construction mechanism of ATs. For the primary task of classifying M types of faults, we establish M binary classification ATs. Each AT generates a dedicated virtual training set for a specific fault category, focusing solely on determining whether a sample belongs to that particular fault class. These tasks themselves hold no independent practical significance but serve as knowledge induction biases for the primary task. By sharing a foundational feature extraction network, they enhance the model's ability to learn discriminative features for that category, thereby improving its recognition performance across different fault modes. Finally, we introduced a task-level attention mechanism to achieve adaptive fusion of AT outputs. By calculating the contribution weights of each AT to the current sample, the model dynamically integrates their discriminative information to realize adaptive feature fusion and adjust the final fault classification decision.
+
+The proposed task-level attention mechanism fundamentally differs from existing attention-based MTL approaches (Xie et al., 2022; Wang et al., 2022), such as MTAGN. While these methods apply attention at the feature level, MTAL's task-level attention mechanism operates at the decision-making level of ATs. For each sample undergoing diagnosis, the task-level attention dynamically calculates weights for each AT's output. These weights reflect the confidence level of each AT's classification result for the current sample. This auxiliary-task-result-based characteristic enables the primary task to flexibly leverage the AT's classification rationale, thereby achieving more precise fault identification under data-scarce conditions.
+
+Compared with existing solutions, the innovations and contributions of this study can be summarized as follows:
+
+(1) A MALT framework has been proposed for small-sample fault diagnosis. By constructing independent binary classification ATs for each fault category and generating virtual training sets, this approach enhances the model's ability to learn discriminative features for each fault category.
+
+![](images/5a5030d7e1563b13b2c84d01d07f1f40e62a5e5767a1177369d2d8dd7cb18249.jpg)  
+Figure 1: Simplified framework of MTAL.
+
+(2) An AMCF has been designed to dynamically decompose and reconstruct multi-channel modal components, thereby suppressing noise interference and enhancing the quality of fault feature extraction.
+
+(3) A task-level attention mechanism has been devised to dynamically integrate discriminative information by calculating the contribution weights of each AT to the current sample, thereby achieving adaptive feature fusion and adjusting the final fault classification decision.
+
+(4) We conducted extensive experiments using multiple real-world flight cases, verifying that the proposed method can more effectively extract discriminative features from small samples, significantly enhancing the accuracy and robustness of fault diagnosis.
+
+## 2. Theoretical Foundation
+
+## 2.1. Multi-task learning
+
+MTL is a machine learning paradigm that improves model performance by training multiple related tasks concurrently. The core idea is to share knowledge among tasks. By leveraging relationships between tasks, MTL enhances the learning outcomes of each task. When humans learn new tasks, they often relate them to existing knowledge. They utilize knowledge transfer and experience sharing for mutual benefit and growth. This cross-task collaborative learning ability has inspired the exploration of the MTL paradigm in the field of artificial intelligence. MTL emulates this mechanism by employing a shared representation or parameters to handle multiple tasks at once. Given a set of tasks
+
+$T = \{T_{1}, T_{2}, \cdots, T_{m}\}$ , MTL constructs a framework with shared representations. This enables the model to automatically uncover latent relationships among tasks during parallel processing. Such an approach helps avoid overfitting issues common in single-task training and enhances the model's generalization ability. As a result, it improves the performance of each task $T_{i}$ (Zhang & Yang, 2021). This method offers significant advantages in practice, especially when tasks are correlated. Leveraging shared information enhances overall task performance.
+
+Multi-task supervised learning (MTSL) is an important branch of MTL. In this framework, each task within MTL is a traditional supervised learning task. Suppose we have multiple supervised learning tasks $T_{1}$ , $T_{2}$ , $\cdots$ , $T_{m}$ . Each task $T_{i}$ corresponds to a training dataset $D_{i} = \{x_{j}^{i}, y_{j}^{i}\}_{j=1}^{n_{i}}$ , where $x_{j}^{i} \in R^{d_{i}}$ is the jth data instance of task $T_{i}$ , and $y_{j}^{i}$ is its corresponding label. The goal of the task $T_{i}$ is to learn a mapping function $f_{i}(x)$ , such that for all j, $f_{i}(x_{j}^{i}) \approx y_{j}^{i}$ . When the label $y_{j}^{i}$ is discrete, the task is a classification problem (Zhang & Yang, 2018). In MTSL, the objective is to learn a shared parameterized model that performs well across all tasks. This process can be optimized through the objective function as shown in Equation 1:
+
+$$
+L _ {M T L} (\theta) = \sum_ {i = 1} ^ {m} \sigma_ {i} L _ {i} (f _ {\theta} (X _ {i}), Y _ {i}),\tag{1}
+$$
+
+where $L_{i}$ is the loss function for task $T_{i}$ , $\sigma_{i}$ is the task weight coefficient, and $X_{i}$ and $Y_{i}$ are the input and label of task $T_{i}$ , respectively. This formulation ensures that the learning objectives of multiple tasks can be optimized in parallel, thereby enabling knowledge sharing and task collaboration.
+
+![](images/5a516f74d66cd759851f2cac9f588585c8c848c9cbc1c3657721bab1b028d257.jpg)
+
+![](images/febae9255c911972f6107f1629c38558d258fef25b52afaa313ab5c616638052.jpg)  
+Figure 2: Distinction between the AT framework in general MTL (A) and that proposed in this paper (B).
+
+## 2.2. Relevance of auxiliary tasks in multi-task learning
+
+In the field of MTL, AT learning represents a specialized implementation (Gan et al., 2024). It enhances the learning capacity of the primary task by introducing multiple ATs that are knowledge-related to it. Unlike traditional MTL, ATs guide the model to learn more discriminative and robust features within a shared feature space by learning to predict intermediate variables or attributes closely related to the primary task (Shao et al., 2026). Typically, we represent the primary and ATs by imposing a matrix variate normal prior on the parameter matrix $W \sim MN(0, I, \Omega)$ , where $\Omega$ is the task covariance matrix that encodes the relationships between tasks (Zhang & Yeung, 2014). This approach learns the task covariance matrix $\Omega$ by introducing a regularization term $tr(W\Omega^{-1}W^T)$ , thereby capturing the correlations among tasks. These correlations can provide valuable insights for informed decision-making in the primary task.
+
+Unlike existing research, which incorporates multiple real-world tasks as ATs (Huang et al., 2025), where several ATs designed to independently predict different objectives coexist in parallel with the primary knowledge tracking task, all being objective tasks derived from real data, the MATL framework proposed herein employs a virtual AT construction mechanism. For the primary task (M-class fault classification), M binary classification ATs were constructed, each solely determining whether a sample belongs to a specific category. These ATs themselves possess no independent practical significance or annotation requirements; their sole purpose is to serve as a learning strategy. By decomposing complex decisions, they guide the shared feature extraction network to learn more discriminative features.
+
+Moreover, the relationship between existing ATs and the primary task realizes knowledge sharing by sharing some or all underlying parameters, with each AT possessing its own terminal output head, as illustrated in Figure 2A. Within the MATL framework, the outputs of all ATs undergo adaptive weighted fusion before being fed into the primary task, as illustrated in Figure 2B. This process provides the primary task with prior feature representations.
+
+## 3. Proposed Method
+
+In this section, we present the detailed architecture, training strategy, and fault diagnosis framework of the proposed MATL method. To capture more salient fault-related knowledge under limited samples, we design a diagnostic framework based on multi-AT learning, as shown in Figure 3. MATL consists of two main components: ATs and the primary task. The ATs aim to enhance the discriminability of features for each fault category. In contrast, the primary task implicitly assigns importance to the outputs of the ATs. This ensures effective feature recognition for fault diagnosis.
+
+## 3.1. Problem definition
+
+Assume a UAV sensor fault diagnosis task denoted as $\{T\}$ , with a training dataset $D_{train} = \{x_j, y_j\}_{j=1}^n$ . Here, $x_j$ represents a data instance of task T, and $y_j$ is its corresponding fault label. Since the sample size n is small, directly training a DL model may cause overfitting and limit the model's ability to generalize. To address this issue, this paper introduces an MATL mechanism. MATL enhances learning by introducing multiple ATs $\{T_i\}_{i=1}^m$ . Each AT $T_i$ is dedicated to a particular fault class in the set and generates a virtual training set $\tilde{D}_{train}^i$ by amplifying and extracting temporal features $X_t$ . If the original label $y_j$ is class $C_i$ , we set the sample's virtual label to "1"; otherwise, it is "0". Samples labelled "1" are oversampled, then combined with "0"-labelled samples to form $\tilde{D}_{train}^i$ . This label transformation converts the original multi-class problem into multiple binary classification tasks. Each virtual training set focuses on one fault class versus all others. When diagnosing, the primary task dynamically adjusts each AT's feature weight. This enables collaborative provision of rich information, reducing the difficulty of decision-making.
+
+## 3.2. Data processing
+
+In this section, we provide a brief description of the processing procedure for UAV sensor data.
+
+Using real barometer fault data under hover condition as an example, the continuous signal sampled at 50 Hz is first segmented into fixed-length samples of 100 data points each. This ensures consistency in sample size. To increase the number of samples with limited data, the multi-channel time-series data $X \in R^{L \times C}$ is segmented into a three-dimensional sample tensor $X \in R^{N \times C \times L}$ using a sliding window. Here, $N = \lfloor \frac{T-L}{\Delta t} \rfloor + 1$ is the total sample count, $\Delta t$ is the step size, L is the sample length, and C is the number of channels. Each tensor $X_{i}$ holds L data points from all nine channels, as shown in Figure 4.
+
+To eliminate dimensional anomalies among sensors, we normalize each sample $X_{i} \in R^{C \times L}$ . This process ensures all variables have a mean of 0 and a variance of 1, as shown in Figure 5. For each channel j in every sample, we perform the normalization independently. Let $X_{i}'(j, t)$ denote the original value at time point t in channel j of sample i, and let $\mu_{i,j}$ and $\sigma_{i,j}$ be the mean and standard deviation of channel j in sample i, respectively. We add a small constant $\epsilon$ to avoid division by zero. We compute the normalized value using Equation 2:
+
+![](images/ad07c86322c113c6f3852677845be0c92879ba2a9b87e01a2208c9b31e055171.jpg)  
+Figure 3: The MATL detailed framework.
+
+$$
+X _ {i} (j, t) = \frac {X _ {i} ^ {\prime} (j , t) - \mu_ {i , j}}{\sigma_ {i , j} + \epsilon} (\epsilon = 1 0 ^ {- 8}),\tag{2}
+$$
+
+$$
+\mu_ {i, j} = \frac {1}{1 0 0} \sum_ {t = 1} ^ {1 0 0} X _ {i} (j, t),\tag{3}
+$$
+
+$$
+\sigma_ {i, j} = \sqrt {\frac {1}{1 0 0} \sum_ {t = 1} ^ {1 0 0} \left(X _ {i} (j , t) - \mu_ {i , j}\right) ^ {2}}.\tag{4}
+$$
+
+Finally, to enhance the signal's representational capacity for features, we design an AMCF specifically for UAV sensors. This design is inspired by (Liu et al., 2025). By adaptively decomposing the raw time-domain signal into multiple frequency bands, AMCF provides higher-quality input data for subsequent feature extraction and model training.
+
+The core of AMCF is to use band-pass filters with adjustable bandwidths to filter the time-domain data of each input channel. This decomposes signals into features across frequency bands using convolution. For each signal channel, AMCF uses K learnable filters, each with two tunable parameters: centre frequency $\omega_{c}$ and bandwidth $\Delta\omega$ . These parameters are optimized via backpropagation with the sigmoid function. This enhances the filter's ability to adapt to the signal. The filtered signals, now containing features from different bands, are concatenated along the channel dimension to form a high-dimensional tensor. For input $x \in R^{N \times C \times L}$ , we design K AMCFs, $\{h_{1}, h_{2}, \cdots, h_{K}\}$ , for each channel c. These filters decompose the signal through discrete convolution. The output of the kth filter for channel c is $u_{c,k} \in R^{N \times L}$ , leading to a final output tensor $U \in R^{N \times C \times K \times L}$ . Figure 6 illustrates the output for each channel, and Figure 7 shows the concatenated result. We compute $u_{c,k}(n)$ via convolution in
+
+![](images/0cd72261439595e68ad9932c5cd68f2d7a23e9cb22c10bcdb2c7b5458e72810f.jpg)  
+Figure 4: Data partitioning.
+
+Equation 5:
+
+$$
+u _ {c, k} (n) = \sum_ {t = 0} ^ {L - 1} h _ {k} (t) x _ {c} (n - t + \tau),\tag{5}
+$$
+
+where $h_{k}(t)$ represents the filter coefficients of the kth filter, and $\tau = L/2$ denotes the time shift.
+
+In AMCF, we obtain the coefficients $h_{k}(t)$ of each filter by applying a window function to an ideal band-pass filter. The impulse response of the ideal filter, denoted as $h_{idea}(t)$ , is generated by the difference of two sine functions (Rui et al., 2024), expressed as in Equation 6:
+
+$$
+h _ {\mathrm{idealk}} (t) = \frac {\sin (\lambda_ {t} (2 \omega_ {c k} + \Delta \omega_ {k})) - \sin (\lambda_ {t} (2 \omega_ {c k} - \Delta \omega_ {k}))}{\lambda \pi},\tag{6}
+$$
+
+$$
+\Delta \omega_ {k} = \frac {\pi}{2} \sigma (b _ {\mathrm{raw}}),\tag{7}
+$$
+
+where $\lambda_{t}=\frac{2n-L+1}{4}$ is the normalized time-shift variable, and $\sigma(\cdot)$ denotes the Sigmoid function. To ensure that the filter coefficients are of finite length and causal, the ideal filter response is multiplied by a window function $\omega(t)$ , $h_{k}$ , as illustrated in Equation 8:
+
+$$
+h _ {k} (t) = h _ {i d e a} (t) \cdot \omega (t),\tag{8}
+$$
+
+$$
+\omega (t) = 0. 5 \left(1 - \cos \left(\frac {2 \pi t}{L - 1}\right)\right).\tag{9}
+$$
+
+## 3.3. Multi-auxiliary task mechanism
+
+To enhance the model's ability to represent fault features of different classes and reduce interference between classes in the global multi-classification task, this study proposes a MATLAB mechanism. The main idea is to break the complex multi-classification task into several binary classification ATs. Each AT focuses on identifying the feature pattern of a particular fault class. This approach creates a set of class-aware feature extractors and discriminators.
+
+The MATL mechanism comprises multiple ATs. Each AT consists of three components: an auxiliary data generator (ADG), a multi-scale feature extractor (MSFE), and a multi-scale binary classifier (MSBC). Each AT is independently trained for a specific fault class, sharing the same structure but using independent parameters, and contributes to the model's feature representation capability from multiple dimensions.
+
+## 3.3.1. Auxiliary task generation
+
+In the MATL framework, to enhance each AT's discriminative power for a specific fault class, we employ an ADG to construct a separate virtual training set for each fault category. We use each virtual training set to train a binary classification AT that discriminates whether a sample belongs to the currently targeted category. This strategy achieves greater focus on feature learning for specific categories during model training by reconstructing labels and sample distributions. Specifically, we assign a multi-class label $y_{i} \in \{0, 1, \cdots, M - 1\}$ to each sample in the original training set, where M is the total number of classes. By relabelling, we convert the original training set into a collection of virtual training sets $\tilde{D}_{train} = \{\tilde{D}_{0}, \cdots, \tilde{D}_{m}, \cdots, \tilde{D}_{M-1}\}$ . Each virtual set $\tilde{D}_{m}$ is oriented towards a particular class $m \in \{0, 1, \cdots, M - 1\}$ . In each virtual training set, the sample labels no longer indicate the original classes; instead, they are converted into binary labels based on whether the sample belongs to class m. The first step in constructing a virtual training set is the reassignment of virtual labels. We define the virtual label $\tilde{y}_{i}$ using Equation 10:
+
+![](images/312e690fe116a2e17c22ec00b65fddc703448db94f4476360c0f6a37f5a5041b.jpg)  
+Figure 5: Data normalization.
+
+![](images/d290bda5fddecb1eb84af9000e9fed8834706705b688d00ef10b138f518b4e01.jpg)  
+Figure 6: The output result of the nine-channel.
+
+$$
+\tilde {y} _ {i} = \left\{ \begin{array}{l l} 0 & i f y _ {i} \neq m \\ 1 & i f y _ {i} = m \end{array} \right.,\tag{10}
+$$
+
+where $\tilde{y}_{i}=1$ indicates that the sample belongs to the current target class m, and $\tilde{y}_{i}=0$ indicates that it belongs to any other class. All samples are uniformly relabelled with these virtual labels, forming an initial pseudo-labelled dataset.
+
+To enhance the AT's discriminative ability for the current target class $m$ , we have incorporated a sample balancing strategy when constructing the virtual training set. Given that the original dataset may exhibit sample imbalance across different categories, directly training on relabelled samples could lead to model bias towards the majority class. Therefore, we have oversampled the target category (i.e. samples where $\tilde{y}_i = 1$ ). Specifically, for all filtered samples $u_i$ with target category $m$ , we replicate each sample in category $m$ $r$ times (where $r$ is a preset replication factor) while keeping its virtual label as 1.
+
+![](images/bd61a7916aa0e82324a50fc0f4e946476bcf58e87b3ec3229c43586658f1e3c3.jpg)  
+Figure 7: Concatenated output.
+
+We can express their sample count as shown in Equation 11:
+
+$$
+n _ {m} = \sum_ {i = 1} ^ {n} [ y _ {i} = m ],\tag{11}
+$$
+
+Finally, after reassigning virtual labels to all samples, we concatenate them to form the final virtual training set $\tilde{D}_{m}$ expressed as Equation 12:
+
+$$
+\tilde {D} _ {m} = \left\{(u _ {i}, 0) \mid y _ {i} \neq m \right\} _ {i = 1} ^ {n _ {y _ {i}} \neq m} \cup \left\{\left(u _ {j}, 1\right) \mid y _ {j} = m \right\} _ {j = 1} ^ {r \cdot n _ {m}},\tag{12}
+$$
+
+where $n_{y_{i}\neq m}$ denotes the total number of samples not belonging to category m, r represents the number of replicates, and $r \cdot n_{m} = n_{y_{i}\neq m}$ to achieve sample balance.
+
+The virtual training set comprises two parts. the first part consists of all training samples with reassigned virtual labels, and the second part contains the augmented set of target-class samples (with labels fixed as 1). Ultimately, we assign a binary label to each sample in the virtual training set $\tilde{D}_{train}^{m}$ , indicating whether it belongs to class m. This virtual training set is then fed into the corresponding auxiliary-task learner $AT_{i}$ as the input for $AT T_{i}$ . This process enables the separation of features between the target class and all non-target classes.
+
+## 3.3.2. Auxiliary task learning process
+
+To achieve multi-task collaboration, we assign an independent AT to each true class. Each AT comprises its own ADG, MSFE, and MSBC modules. Every AT is dedicated to training on the discrimination task of its corresponding class, thereby enabling the model to perform fine-grained feature differentiation at the class level. Although all ATs share the same network architecture and parameter configuration, they are trained independently on their respective virtual training sets, allowing each to learn the features required for its specific task.
+
+After duplication and concatenation in the ADG module, the original input samples become augmented data $u \in R^{N \times (C \times K) \times L}$ , where N is the number of samples, C is the number of channels, K is the number of filters, and L is the signal length. To further enhance feature disentanglement, the augmented signal is decomposed into $C \times K$ single-channel sequences. Each sequence is then fed into an independent MSFE module. This structure enables parallel feature modelling at both channel and filter levels.
+
+Inside each MSFE module, we use two parallel convolutional branches to extract local and global temporal information, respectively. Branch 1 applies a standard 1D convolution, followed by batch normalization, a ReLU activation, and max-pooling. This branch captures short-term local patterns. Branch 2 uses dilated convolution to enlarge the receptive field. We combine this with adaptive max pooling, ensuring that output features maintain consistent dimensions. The outputs of both branches are concatenated along the channel dimension. They pass through a fusion convolution and global average pooling, producing a channel-independent feature vector $f_{i} \in R^{16}$ .
+
+It is worth noting that the original input signal is split into multiple single-channel sequences. Each is fed into a unique MSFE module within each AT. These modules work independently and are distinct from one another. As a result, each AT has $C \times K$ independent MSFE modules, and each extracts a 16-dimensional feature vector. All these vectors are concatenated along the sample dimension to form a high-dimensional feature matrix F, given in Equation 13:
+
+$$
+F = c a t \left[ f _ {1} \parallel f _ {2} \parallel \dots \parallel f _ {C \times K} \right] \in \mathbb {R} ^ {N \times (1 6 \times C \times K)}.\tag{13}
+$$
+
+This high-dimensional feature matrix is the input to the MSBC. It then enters a linear discrimination module for binary classification. The MSBC is a shallow classifier composed of fully connected layers. The goal is to distinguish whether a sample belongs to a specific class. By mapping input features F into two dimensions, the MSBC generates a probability prediction for each sample, indicating its likelihood of belonging to the target class of the AT, as in Equation 15:
+
+$$
+\left[ \begin{array}{c c} Z _ {0} ^ {(0)} & Z _ {1} ^ {(0)} \\ \vdots & \vdots \\ Z _ {0} ^ {(N - 1)} & Z _ {1} ^ {(N - 1)} \end{array} \right] = \left[ \begin{array}{c c c} F _ {0} ^ {(0)} & \ldots & F _ {1 6 \times C \times K - 1} ^ {(0)} \\ \vdots & \ddots & \vdots \\ F _ {0} ^ {(N - 1)} & \ldots & F _ {1 6 \times C \times K - 1} ^ {(N - 1)} \end{array} \right] \cdot \left[ \begin{array}{c c} w _ {0, 0} & w _ {1, 0} \\ w _ {0, 1} & w _ {1, 1} \\ \vdots & \vdots \\ \vdots & \vdots \\ w _ {0, 1 6 \times C \times K - 1} & w _ {1, 1 6 \times C \times K - 1} \end{array} \right]
+$$
+
+$$
+\begin{array}{c} + \left[ \begin{array}{c c} b _ {0} & b _ {1} \\ \vdots & \vdots \\ b _ {0} & b _ {1} \end{array} \right], \\ P = S o f t m a x (W _ {0} \cdot F _ {0} + b _ {0}), \end{array}\tag{14}
+$$
+
+(15)
+
+where $W_{0}$ and $b_{0}$ are the weight matrix and bias of the fully connected layer. Softmax represents the Softmax activation function. P is the probability. Each AT module trains independently on its own AT. This allows it to learn decision boundaries for its specific class. The decoupled approach helps improve the overall model's sensitivity in recognizing the feature distributions of different classes.
+
+## 3.4. Primary-task learning based on auxiliary-task feature fusion
+
+Within the MATL framework, multiple independent ATs refine fault signal feature discrimination at each category level. Each task learns discriminative features for a signal category. Independent learning alone is insufficient for global fault diagnosis. To improve classification, we introduce a central task learner (CTL) for feature fusion. The process uses a task-level attention mechanism to assign importance weights for each task based on the specific fault sample.
+
+The core objective of CTL is to evaluate each class-specific feature's importance for the current sample. It also preserves the discriminative power of each AT. By fusing multi-source information, CTL creates a unified feature representation that maps the high-dimensional feature space to the final class prediction. This enhances the global classifier's capacity for representing complex patterns. For each sample, the ith AT produces a high-dimensional feature vector $F_{i}(n) \in R^{D}$ . This vector indicates the feature performance of sample n in that task. For all M classes, sample n obtains a feature set $\{F_{1}(n), F_{2}(n), \cdots, F_{M}(n)\}$ . Since different samples may focus on different tasks, we first mean-pool the output feature vectors for each task. This step compresses information by the dimensions, yielding a compact global description. We express the resulting global representation summary for AT i on sample n as shown in Equation 16:
+
+$$
+g _ {i} (n) = \frac {1}{D} \sum_ {i = 1} ^ {D} F _ {i}.\tag{16}
+$$
+
+To assess the importance of different tasks for the current sample, we use a task-level attention mechanism. This mechanism learns the contribution weights of each auxiliary feature to global classification. To compute these weights, each AT's global summary vector $g_{i}(n)$ is fed into an attention module. The module consists of a two-layer perceptron with fully connected layers. The model generates a score $s_{i}(n)$ for each task through a nonlinear mapping, as defined in Equation 17. This process simulates a semantic mechanism that evaluates task importance. It helps the model learn which auxiliary-task outputs best represent dominant class-specific features for the sample:
+
+$$
+s _ {i} (n) = W _ {2} \cdot \mathrm{ReLU} (W _ {1} \cdot g _ {i} (n) + b _ {1}) + b _ {2},\tag{17}
+$$
+
+where $W_{1}, b_{1}$ , and $W_{2}, b_{2}$ are the weights and biases for the first and second layers of the attention module. The ReLU activation function is employed.
+
+Subsequently, the scores $s_{i}(n)$ for all tasks are adjusted with the Softmax function to get the attention weight $\alpha_{i}(n)$ for each task. This weight quantifies the contribution of task i to the classification decision for sample n:
+
+$$
+\alpha_ {i} (n) = \frac {\exp \left(s _ {n} ^ {(i)}\right)}{\sum_ {k = 1} ^ {M} \exp \left(s _ {n} ^ {(i)}\right)}, \sum_ {i = 1} ^ {M} \alpha_ {i} (n) = 1.\tag{18}
+$$
+
+Adding attention weights gives the model stronger dynamic adaptability. The model can automatically emphasize relevant task information according to the sample's feature characteristics and suppress interference from redundant tasks. This forms a robust multi-source fusion mechanism. Using the task-level attention mechanism, we obtain the attention weights for each task by weight $\alpha_{i}(n)$ . We then use these weights to perform weighted fusion on all AT's feature representations, generating the final joint feature vector $V(n)$ for sample n, as expressed in Equation 19:
+
+$$
+\mathrm{V} = \sum_ {m = 1} ^ {M} \alpha_ {i} (n) \odot F _ {i} (n),\tag{19}
+$$
+
+where $\odot$ denotes element-wise weighted multiplication, ensuring the model captures the salient dimensions of each task at the feature level.
+
+Through weighted fusion, the model integrates features from each AT into a unified feature vector $V \in R^{N \times D}$ . This vector is the input to the overall task learner. In multi-classification, CTL uses two linear mappings to compress the high-dimensional feature to the output dimension. It generates a predicted class for each sample across all fault categories. The first fully connected layer reduces the dimension from D to 64. The second maps this to an output space of M classes to generate predicted scores. The argmax function then selects the category with the maximum score, shown in Equation 20:
+
+$$
+\hat {Y} = \arg \max \left(\left(V \cdot W _ {3} ^ {\top} + b _ {3} ^ {\top}\right) \cdot W _ {4} ^ {\top} + b _ {4} ^ {\top}\right),\tag{20}
+$$
+
+where $W_{3}$ , $b_{3}$ and $W_{4}$ , $b_{4}$ are the weights and biases for the first and second fully connected layers of the overall task learner, while Y represents the final output fault category.
+
+The primary-task learning process aggregates discriminative features from multiple ATs. The model uses dynamic weight adjustment through the attention mechanism. Feature fusion and the attention mechanisms enhance classification performance and robustness. This is particularly useful when addressing complex fault diagnosis challenges. Additionally, the modular design allows the model to adjust and optimize its learning strategy. It can tackle issues like distribution drift and class imbalance fault diagnosis scenarios, leading to efficient and accurate results.
+
+## 3.5. Task optimization
+
+To enable the ATs to acquire more discriminative fault-sensitive features and allow the CTL to integrate these features for multiclass classification, we propose the following optimization procedure.
+
+UAV sensor signals often include many redundant features linked to normal operating conditions. To keep critical fault features and improve model interpretability, we introduce an $L_{1}$ regularization term, shown in Equation 21:
+
+$$
+L _ {1} (f) = \sum_ {i = 1} ^ {C \times K} | f _ {i} |.\tag{21}
+$$
+
+Secondly, because UAV sensor fault samples are scarce, the model tends to memorise noise instead of genuine fault patterns. This behaviour leads to a high risk of overfitting. To constrain feature weights $F_{i}$ and improve robustness to subtle faults, we introduce an $L_{2}$ regularization term, as shown in Equation 22:
+
+$$
+L _ {2} (f) = \sum_ {i = 1} ^ {C \times K} f _ {i} ^ {2}.\tag{22}
+$$
+
+For each AT, the loss functions for all ATs are processed by jointly introducing the Focal Loss to obtain the total loss for the ATs, as shown in Equation 23:
+
+$$
+L _ {F} = - \frac {1}{N} \sum_ {i = 1} ^ {N} \alpha_ {i} \left[ \tilde {y} _ {i} (1 - p _ {i}) ^ {\gamma} \log (p _ {i}) + (1 - \tilde {y} _ {i}) p _ {i} ^ {\gamma} \log (1 - p _ {i})) \right],\tag{23}
+$$
+
+where $L_{F}$ denotes the primary loss across all ATs after processing via Focal Loss, N represents the number of samples, $\alpha_{i}$ signifies the category weight, P denotes the model's predicted positive class probability, and $\gamma$ denotes the focal function.
+
+Finally, we obtain the total loss $L_{t}$ from Equation 24 by combining the joint loss $L_{F}$ , $L_{1}$ regularization, and $L_{2}$ regularization:
+
+$$
+L _ {t} = L _ {F} + \lambda_ {1} L _ {1} (f) + \lambda_ {2} L _ {2} (f).\tag{24}
+$$
+
+![](images/fa12b39f7c5ca4d18fbea2a8e52967d4fe8883e2f5e98a6a11324ba13eafd010.jpg)  
+Figure 8: Data acquisition systems.
+
+Next, the model performs backpropagation to compute the gradient of the total loss $L_{t}$ using Equation 25:
+
+$$
+\nabla_ {w _ {i}} L _ {\mathrm{t}} = \nabla_ {w _ {i}} L _ {\mathrm{F}} + \lambda_ {1} \nabla_ {w _ {i}} L _ {1} + \lambda_ {2} \nabla_ {w _ {i}} L _ {2}.\tag{25}
+$$
+
+We employ the Adam optimizer (Zhang et al., 2026). For each learnable parameter $w_{i}$ , the update rule according to Equation 26 is given by
+
+$$
+\begin{array}{r} w _ {i} = w _ {i} - \eta \frac {\hat {m} _ {t}}{\sqrt {\hat {v} _ {t} + \epsilon}}, \\ \hat {m} _ {t} = \frac {m _ {t}}{1 - \beta_ {1} ^ {t}}, \\ \hat {v} _ {t} = \frac {v _ {t}}{1 - \beta_ {2} ^ {t}}, \\ m _ {t} = \beta_ {1} m _ {t - 1} + (1 - \beta_ {1}) \nabla_ {w _ {i}} L _ {t}, \\ v _ {t} = \beta_ {2} v _ {t - 1} + (1 - \beta_ {2}) (\nabla_ {w _ {i}} L _ {t}) ^ {2}, \end{array}\tag{26}
+$$
+
+where $m_{t}$ and $v_{t}$ are the first- and second-moment estimates of the gradient, $\beta_{i}$ are the decay rates, and $\eta$ is the learning rate.
+
+For the CTL, we compute the overall loss of the primary task learner using the cross-entropy loss (Zhang et al., 2022b), which implicitly focuses on the actual class through the class index $y_{m}$ . The loss function for the primary task is
+
+$$
+L _ {\mathrm{ce}} = - \frac {1}{N} \sum_ {i = 1} ^ {N} \log \left(p _ {i, y _ {i}}\right),\tag{27}
+$$
+
+where $p_{i,y_{i}}$ is the predicted probability of the true class $y_{i}$ for sample i.
+
+Each row of $W_{3}$ corresponds to a 64-dimensional output neuron, and its magnitude determines the weight of the data in V for that neuron. $W_{4}$ controls the contribution of the 64-dimensional feature $\hat{Z}$ to the final classification $\hat{Y}$ . Using the chain rule, we backpropagate gradients to adjust the values in the primary task learner of the fully connected layers $W_{3}$ and $W_{4}$ , thereby implicitly assigning weights to these layers. We then perform the parameter
+
+update as
+
+$$
+\begin{array}{r} W _ {3} ^ {(t + 1)} = W _ {3} ^ {(t)} - \eta \frac {\hat {m} _ {t} ^ {W _ {3}}}{\sqrt {\hat {v} _ {t} ^ {W _ {3}}} + \epsilon}, \\ W _ {4} ^ {(t + 1)} = W _ {4} ^ {(t)} - \eta \frac {\hat {m} _ {t} ^ {W _ {4}}}{\sqrt {\hat {v} _ {t} ^ {W _ {4}}} + \epsilon}. \end{array}\tag{28}
+$$
+
+## 4. Experimental Results and Discussion
+
+In this section, we evaluate the effectiveness of our proposed method from various perspectives and verify the results through experiments.
+
+## 4.1. Experimental data introduction
+
+## 4.1.1. Dataset introduction
+
+The experiment utilizes the real-world fault case dataset RflyMAD (Le et al., 2023), collected using the experimental system shown in Figure 8. This dataset includes real flight data under five flight states and covers a sufficient variety of fault types. These data demonstrate high reliability. Each dataset records 51 variables. We selected nine: $\omega_{x}$ , $\omega_{y}$ , $\omega_{z}$ , $a_{x}$ , $a_{y}$ , $a_{z}$ , $v_{x}$ , $v_{y}$ , $v_{z}$ . Where $\omega$ represents the gyroscope angular velocity along the corresponding axis, $a$ denotes the linear acceleration along the corresponding axis, and $v$ indicates the velocity along the corresponding axis.
+
+The dataset consists of data from five fault types and one standard type obtained under real flight conditions. Table 1 provides a detailed description of the dataset.
+
+## 4.1.2. Experimental environment and details
+
+We conducted the experiments on a GeForce RTX 1650 Ti GPU with CUDA 11.6 and Torch 1.4.0. The platform used was Windows 10, Python 3.9, and PyTorch 1.11.
+
+Table 1: Details of the dataset.
+
+<table><tr><td>Dataset type</td><td>Sample size</td><td>Fault type</td><td>Label</td></tr><tr><td>Real-hover</td><td>1571</td><td>Accelerometer</td><td>1</td></tr><tr><td>Real-waypoint</td><td>1946</td><td>Barometer</td><td>2</td></tr><tr><td>Real-velocity</td><td>1104</td><td>GPS</td><td>3</td></tr><tr><td>Real-circling</td><td>2162</td><td>Gyroscope</td><td>4</td></tr><tr><td>Real-acceleration</td><td>1249</td><td>Magnetometer</td><td>5</td></tr><tr><td></td><td></td><td>No fault</td><td>0</td></tr></table>
+
+Table 2: Information on various methods.
+
+<table><tr><td>Methods</td><td>Function</td></tr><tr><td>DRSN</td><td>Residual network specifically designed to enhance the ability to identify features in high-noise vibration signals.</td></tr><tr><td>LiConvFormer</td><td>A diagnostic framework based on separable multi-scale convolution and broadcast self-attention mechanisms.</td></tr><tr><td>MTAGN</td><td>A novel multi-task attention-guided network</td></tr><tr><td>Cross-Stitch</td><td>A well-known MTL approach for spatio-temporal feature sharing.</td></tr><tr><td>NDDR</td><td>A convolutional neural network employing hierarchical feature fusion for MTL.</td></tr><tr><td>HDMTL</td><td>A framework for deep MTL on isomorphic data utilizing complementary spatio-temporal feature knowledge.</td></tr><tr><td>ASN</td><td>A few-shot method specifically designed to address fault diagnosis in UAVs under small-sample conditions.</td></tr></table>
+
+We evaluated model performance using the test accuracy and its standard deviation. Test accuracy is calculated as the ratio of correctly predicted samples to the total number of samples. This metric reflects the overall performance of the model. The calculation refers to Equations 29–30:
+
+$$
+\text {Test Accuracy} = \frac {A}{T} \times 100 \%,\tag{29}
+$$
+
+$$
+\sigma = \sqrt {\frac {1}{N} \sum_ {i = 1} ^ {N} \left(x _ {i} - \mu\right) ^ {2}},\tag{30}
+$$
+
+where A is the number of correctly predicted samples, T is the total number of samples in the test set, N is the number of training runs, $x_{i}$ is the test accuracy of the i-th run, and $\mu$ is the mean test accuracy.
+
+To comprehensively evaluate the performance of the multi-auxiliary-task model, we select several advanced intelligent diagnosis models for comparison, including single-task learning methods such as DRSN (Zhao et al., 2019) and LiConvFormer (Yan et al., 2024), as well as MTL methods like Cross-Stitch (Misra et al., 2016), NDDR (Gao et al., 2019), HDMTL (Zhang et al., 2024b), and ASN (Xiong et al., 2023), with their specific details outlined in Table 2.
+
+## 4.2. Fault diagnosis results under few-sample conditions
+
+UAV sensor fault diagnosis is a few-sample problem in real scenarios. To follow to the “N-way K-shot” evaluation protocol in small-sample learning (Xiong et al., 2023) evaluation protocol for few-shot learning, this paper uses a six-way classification task for few-shot learning. Each class has five samples (five-shot). Thirty genuine samples from the pre-processed dataset are randomly chosen for training. The remaining samples are used for test samples. To ensure the reliability of the results, we repeated each experiment five times and averaged the results. Figure 9 illustrates the classification results for various methods across five real-world datasets.
+
+Based on the experimental results, we can draw the following conclusions: the average classification accuracy of the seven comparison methods across the five flight states was 42.45%, 44.03%, 49.46%, 54.32%, 51.13%, 52.45%, and 51.56%. MTL methods demonstrated more satisfactory performance than single-task learning methods on the five datasets. The most significant difference was observed in the waypoint state.
+
+The single-task learning mechanisms of DRSN and LiConvFormer fail to overcome data scarcity with only 30 samples. As a result, these deep networks are prone to overfitting and deliver the poorest overall performance. MTL methods, such as MTAGN, Cross-stitch, and HDMTL, address the few-shot issue by sharing parameters, demonstrating the power of knowledge transfer from similar tasks. However, their weighted summation of features provides only a coarse-grained approach. This approach has limits and leads to performance bottlenecks. The ASN model is designed for small-sample problems and outperforms both generalized MTL and single-task learning models by using its N-way K-shot diagnosis mechanism. In contrast, MATLAB uses a task-level attention mechanism that adjusts weights in a fine-grained and dynamic manner. This enables the model to amplify relevant fault features, helping it adapt to complex conditions. For instance, during “Real-acceleration” states, the attention mechanism amplifies fault features linked to the accelerometer and gyroscope.
+
+We further validated the aforementioned analytical findings through t-SNE visualization. Figure 10 shows the feature distribution results for different methods in the UAV hover fault diagnosis task. In the figure, feature clusters produced by LiConvFormer, NDDR, and ASN are scattered with blurry class boundaries. This result indicates poor feature visualization performance. DRSN, MTAGN, and Cross-Stitch exhibit some clustering and recognize a few classes, performing better than that of LiConvFormer. However, their overall class differentiation is still lacking and is unable to address fault diagnosis in complex conditions effectively.
+
+MATL and HDMTL stand out by distinguishing classes effectively, particularly in forming clear clusters for C1 and C6. MATL demonstrates more distinct clustering effects for all class features, with a more reasonable overall distribution. These results confirm the strong performance of its multi-AT framework and task-level attention mechanism. However, all methods still confuse fault types 2–4 and cannot fully separate them. This outcome shows that MATL needs further optimization for specific fault types.
+
+## 4.3. Experimental results with different training sample sizes
+
+The number of training samples is crucial for DL performance. In this section, we vary the training set size from sparse to ample to test MATL's performance limits. We check if the dynamic feature allocation remains effective as fault data diversity increases. We set training samples to 60, 90, 120, 180, 240, 300, 600, and 900, with test sample logic as in Section 4.2. Tables 3–7 show the diagnostic results of eight models, including MATL, on five real-world datasets: Real-hover, Real-waypoint, Real-velocity, Real-circling, and Real-acceleration.
+
+![](images/f61ba53dda09eb3721e40d351f13c5acf37c0c42ebe9e4b67d5781a36f65adb3.jpg)
+
+<table><tr><td></td><td>Real hover</td><td>Real waypoint</td><td>Real velocity</td><td>Real circling</td><td>acceleration</td><td>Average</td></tr><tr><td>LiConvFormer</td><td>43.75%</td><td>23.51%</td><td>42.88%</td><td>36.86%</td><td>65.24%</td><td>42.45%</td></tr><tr><td>DRSN</td><td>52.80%</td><td>20.10%</td><td>43.20%</td><td>43.02%</td><td>61.03%</td><td>44.03%</td></tr><tr><td>MTAGN</td><td>54.30%</td><td>29.15%</td><td>54.94%</td><td>32.80%</td><td>76.11%</td><td>49.46%</td></tr><tr><td>HDMTL</td><td>54.30%</td><td>48.22%</td><td>64.55%</td><td>42.41%</td><td>62.14%</td><td>54.32%</td></tr><tr><td>NDDR</td><td>45.60%</td><td>42.58%</td><td>66.15%</td><td>48.52%</td><td>52.78%</td><td>51.13%</td></tr><tr><td>Cross-stitch</td><td>48.02%</td><td>46.57%</td><td>55.49%</td><td>43.66%</td><td>68.49%</td><td>52.45%</td></tr><tr><td>ASN</td><td>40.54%</td><td>43.33%</td><td>61.91%</td><td>45.17%</td><td>66.87%</td><td>51.56%</td></tr><tr><td>MATL</td><td>61.39%</td><td>46.59%</td><td>66.93%</td><td>47.54%</td><td>82.86%</td><td>61.06%</td></tr></table>
+
+Figure 9: The identification results for all methods under 30 samples.
+
+The diagnostic results from the five tables reveal a trend. As the number of training samples increases, the performance differences between models become more pronounced. On the Realhover, Real-speed, Real-hovering, and Real-acceleration datasets, HDMTL leverages its multi-task feature fusion module to extract and share spatio-temporal feature information. This allows it to achieve favourable results. However, its relatively simple shared model architecture limits its performance with small samples. In such cases, MATL performs better. MTL approaches such as MTAGN, Cross-stitch, and NDDR mitigate the few-shot problem through parameter sharing. However, significant differences among tasks can readily cause feature conflicts, which constrain their generalization capabilities. The issue becomes particularly pronounced during actual drone flight operations. The diversity and noise in few-shot data make the shared features of multi-task models susceptible to interference, compromising diagnostic efficacy. DRSN and LiConvFormer perform well with high sample counts. However, they lack a positive transfer mechanism between tasks in small-sample conditions and cannot share valuable information easily. ASN is specifically designed for the few-shot problem. It effectively mitigates the small-sample issue through its N-way K-shot mechanism, which fixes the number of samples per category when data is scarce. However, its performance does not significantly improve under large-sample conditions. This limitation arises because the number of samples per category remains fixed at five during testing, preventing the model from fully leveraging additional data for optimization when sufficient data is available.
+
+In comparison, the MATL model consistently achieves the best performance across all tasks and sample settings. It demonstrates excellent stability and generalization. Even with small sample sizes such as 60 or 90, MATL maintains high accuracy and significantly outperforms the comparison approaches. MATL also identifies fault characteristics more clearly through its multi-AT framework and task-level attention mechanism. This enables the model to achieve over 95% accuracy with minimal samples. This advantage makes it highly suitable for scenarios like drones, which require rapid adaptation to state changes and real-time diagnosis. We will detail its rapid diagnostic capabilities in Section 4.4. MATL also exhibits the smallest performance variation across different tasks and maintains a highly consistent performance trend. This consistency is crucial for fault detection by UAVs in diverse operational scenarios.
+
+To further evaluate the safety performance of the MATL model, we present confusion matrices for 30 samples (82.68%) and 900 samples (99.89%) under the Real-acceleration condition, as shown in Figure 11. As evident from Figure 11A and B, despite some inter-category confusion in the MATL model when only 30 training samples were available, categories C4 and C5 were correctly classified. The results demonstrate that the ATs framework enhances the model's overall sensitivity to fault features. Moreover, with sufficient samples (900), the task attention mechanism precisely balances contributions from each AT, yielding a confusion matrix with an exact primary diagonal distribution. The comparison demonstrates that the model not only achieves high accuracy but also significantly reduces the risk of misclassifications.
+
+## 4.4. Real-time analysis
+
+During drone flight operations, sensor fault signals exhibit rapid variability and high-frequency characteristics. Consequently, the real-time performance of fault diagnosis models is critical for drone deployment. This section evaluates the efficiency of various comparative methods and the MATL model in real-time fault diagnosis by demonstrating the number of parameters for each approach and the processing time per sample. The superior efficiency of MATL, in terms of lower parameter count and faster processing, further validates its effectiveness in drone applications.
+
+From the results in Table 8, we can observe that model complexity does not correlate directly with inference time. For instance, the DRSN model has the highest number of parameters (54032235) yet achieved the second-fastest inference time at 0.010898 seconds. Conversely, the ASN model with the fewest parameters (37 897) recorded the longest inference time (0.014024 seconds), ranking first. This inverse relationship indicates that diagnostic time is influenced not only by parameter scale but also closely correlates with practical computational characteristics such as model architecture and computational complexity.
+
+A  
+![](images/946d2048b92948e250a20604ec0f89ee06a9785048626ad7224cad1d721b0149.jpg)  
+B
+
+![](images/98db4027726757dd826b628bf02c487a9e04faa33b9500d6789923ffc1d3b29d.jpg)
+
+C  
+![](images/a02ff56a29c00fdd50fb2b78f839d935705a0a528137aa0bab2b04032197982d.jpg)  
+D
+
+![](images/81ff8002c2c0aa3f6494f87b2ec20ce9280fd1065877a601c5fb7387273f8ebd.jpg)
+
+E  
+![](images/95387ec9091158b71972be3b0fc84d04b6f813f85670fada62e5702b499f8da5.jpg)
+
+F  
+![](images/a22fb0f18b4f03a4ad5a9657b20626de56cad37ff5d2b65c2c4e4a8b3130ce2d.jpg)
+
+G  
+![](images/c7daeba89c3ec2ce21b935979a96ef1f9b767a2d2aaa4ce8ea10ac21cdf8c11f.jpg)
+
+H  
+![](images/84e690f4fd48c09161244f314c69b62524003c5738b174dd948ff5f143da13cd.jpg)  
+Figure 10: Distribution of features in the last network layer under hover state: (A) DNSR, (B) LiConvFormer, (C) MTAGN, (D) Cross-Stitch, (E) HDMTL, (F) NDDR, (G) ASN, and (H) MTAL.
+
+Compared to various benchmark methods, MATL ranks fifth in terms of parameter count across all evaluations, yet its per-sample diagnostic time (0.001162 seconds) ranks seventh. Its performance in real-time capability is notably superior, with efficiency sufficient to support the high-frequency sampling demands of drone sensors operating at 50Hz (0.02-second sampling intervals). This efficient performance demonstrates that MATLAB, while maintaining low parameter complexity, effectively distributes computational load from the primary classification task through its multi-virtual AT collaborative inference mechanism, thereby achieving efficient real-time fault diagnosis.
+
+Table 3: FD accuracy (%) at different training sample sizes (Real-hover).
+
+<table><tr><td rowspan="2">Methods</td><td colspan="8">Sample size</td></tr><tr><td>60</td><td>90</td><td>120</td><td>180</td><td>240</td><td>300</td><td>600</td><td>900</td></tr><tr><td>LiConvFormer</td><td>46.62</td><td>54.74</td><td>55.67</td><td>63.13</td><td>66.06</td><td>77.33</td><td>79.30</td><td>93.69</td></tr><tr><td>DRSN</td><td>61.15</td><td>72.83</td><td>75.28</td><td>80.01</td><td>85.82</td><td>89.45</td><td>96.41</td><td>97.29</td></tr><tr><td>MTAGN</td><td>59.63</td><td>62.58</td><td>66.94</td><td>71.57</td><td>75.24</td><td>81.18</td><td>89.15</td><td>95.85</td></tr><tr><td>NDDR</td><td>46.02</td><td>48.40</td><td>53.12</td><td>56.63</td><td>66.59</td><td>70.57</td><td>81.54</td><td>92.40</td></tr><tr><td>Cross-stitch</td><td>52.56</td><td>54.78</td><td>57.15</td><td>61.34</td><td>63.38</td><td>68.37</td><td>85.36</td><td>89.76</td></tr><tr><td>HDMTL</td><td>54.48</td><td>56.39</td><td>57.70</td><td>61.84</td><td>68.56</td><td>76.83</td><td>89.52</td><td>94.74</td></tr><tr><td>ASN</td><td>48.40</td><td>47.24</td><td>51.76</td><td>52.78</td><td>52.48</td><td>57.10</td><td>57.62</td><td>60.14</td></tr><tr><td>MATL</td><td>66.74</td><td>74.72</td><td>80.52</td><td>82.32</td><td>85.92</td><td>90.05</td><td>97.92</td><td>99.09</td></tr></table>
+
+Table 4: FD accuracy (%) at different training sample sizes (Real-waypoint).
+
+<table><tr><td rowspan="2">Methods</td><td colspan="8">Sample size</td></tr><tr><td>60</td><td>90</td><td>120</td><td>180</td><td>240</td><td>300</td><td>600</td><td>900</td></tr><tr><td>LiConvFormer</td><td>27.25</td><td>31.00</td><td>35.53</td><td>42.31</td><td>47.53</td><td>55.90</td><td>71.23</td><td>85.14</td></tr><tr><td>DRSN</td><td>32.18</td><td>36.77</td><td>44.14</td><td>48.85</td><td>54.48</td><td>56.28</td><td>67.22</td><td>78.47</td></tr><tr><td>MTAGN</td><td>39.33</td><td>46.53</td><td>50.30</td><td>56.52</td><td>60.32</td><td>64.24</td><td>78.70</td><td>92.69</td></tr><tr><td>NDDR</td><td>45.98</td><td>49.43</td><td>53.02</td><td>56.50</td><td>60.81</td><td>62.44</td><td>67.71</td><td>74.36</td></tr><tr><td>Cross-stitch</td><td>42.85</td><td>49.12</td><td>53.02</td><td>57.80</td><td>59.59</td><td>61.66</td><td>72.64</td><td>76.21</td></tr><tr><td>HDMTL</td><td>46.75</td><td>50.45</td><td>57.24</td><td>61.98</td><td>63.64</td><td>67.16</td><td>71.81</td><td>78.71</td></tr><tr><td>ASN</td><td>49.18</td><td>52.22</td><td>48.49</td><td>49.35</td><td>50.35</td><td>53.22</td><td>56.67</td><td>58.83</td></tr><tr><td>MATL</td><td>51.53</td><td>54.24</td><td>59.33</td><td>65.74</td><td>68.33</td><td>72.30</td><td>86.77</td><td>94.29</td></tr></table>
+
+Table 5: FD accuracy (%) at different training sample sizes (Real-velocity).
+
+<table><tr><td rowspan="2">Methods</td><td colspan="8">Sample size</td></tr><tr><td>60</td><td>90</td><td>120</td><td>180</td><td>240</td><td>300</td><td>600</td><td>900</td></tr><tr><td>LiConvFormer</td><td>47.70</td><td>57.63</td><td>64.57</td><td>69.53</td><td>83.91</td><td>87.31</td><td>90.36</td><td>94.02</td></tr><tr><td>DRSN</td><td>49.59</td><td>54.31</td><td>57.76</td><td>64.39</td><td>67.41</td><td>73.01</td><td>79.96</td><td>97.75</td></tr><tr><td>MTAGN</td><td>55.63</td><td>63.09</td><td>69.28</td><td>75.77</td><td>76.83</td><td>81.65</td><td>90.47</td><td>94.14</td></tr><tr><td>NDDR</td><td>66.02</td><td>68.87</td><td>72.29</td><td>75.27</td><td>77.38</td><td>78.73</td><td>85.16</td><td>91.20</td></tr><tr><td>Cross-stitch</td><td>64.84</td><td>71.28</td><td>73.93</td><td>81.64</td><td>84.44</td><td>89.27</td><td>96.87</td><td>98.15</td></tr><tr><td>HDMTL</td><td>68.95</td><td>71.35</td><td>76.07</td><td>84.07</td><td>87.35</td><td>89.49</td><td>95.67</td><td>98.67</td></tr><tr><td>ASN</td><td>61.67</td><td>68.87</td><td>72.03</td><td>71.99</td><td>73.60</td><td>75.06</td><td>74.65</td><td>77.96</td></tr><tr><td>MATL</td><td>71.89</td><td>78.01</td><td>87.70</td><td>93.94</td><td>95.83</td><td>96.83</td><td>99.21</td><td>99.54</td></tr></table>
+
+Table 6: FD accuracy (%) at different training sample sizes (Real-circling).
+
+<table><tr><td rowspan="2">Methods</td><td colspan="8">Sample size</td></tr><tr><td>60</td><td>90</td><td>120</td><td>180</td><td>240</td><td>300</td><td>600</td><td>900</td></tr><tr><td>LiConvFormer</td><td>39.83</td><td>41.13</td><td>48.13</td><td>57.19</td><td>64.55</td><td>73.86</td><td>78.47</td><td>88.34</td></tr><tr><td>DRSN</td><td>44.60</td><td>46.91</td><td>49.88</td><td>52.28</td><td>58.26</td><td>68.31</td><td>76.57</td><td>87.78</td></tr><tr><td>MTAGN</td><td>34.99</td><td>36.29</td><td>44.01</td><td>52.53</td><td>57.98</td><td>58.87</td><td>69.45</td><td>82.30</td></tr><tr><td>NDDR</td><td>46.35</td><td>49.82</td><td>53.36</td><td>55.19</td><td>59.07</td><td>62.82</td><td>67.08</td><td>87.25</td></tr><tr><td>Cross-stitch</td><td>51.47</td><td>54.56</td><td>57.43</td><td>62.04</td><td>65.03</td><td>69.74</td><td>73.40</td><td>89.81</td></tr><tr><td>HDMTL</td><td>49.69</td><td>55.32</td><td>58.35</td><td>68.75</td><td>72.92</td><td>84.09</td><td>90.16</td><td>92.05</td></tr><tr><td>ASN</td><td>47.08</td><td>49.70</td><td>51.42</td><td>56.42</td><td>55.47</td><td>59.15</td><td>60.82</td><td>65.91</td></tr><tr><td>MATL</td><td>51.15</td><td>56.08</td><td>64.71</td><td>68.47</td><td>74.25</td><td>78.75</td><td>88.86</td><td>95.93</td></tr></table>
+
+## 4.5. Ablation experiment
+
+In this section, we conducted ablation experiments to validate the effectiveness of our proposed AMCF and AT work in few-shot fault diagnosis. We designed several comparative experiments with different configurations and directly measured the impact of each component on performance. Table 9, 10 lists the specific experimental settings and experimental results.
+
+Table 7: FD accuracy (%) at different training sample sizes (Real-acceleration).
+
+<table><tr><td rowspan="2">Methods</td><td colspan="8">Sample size</td></tr><tr><td>60</td><td>90</td><td>120</td><td>180</td><td>240</td><td>300</td><td>600</td><td>900</td></tr><tr><td>LiConvFormer</td><td>66.83</td><td>71.38</td><td>79.57</td><td>85.67</td><td>92.67</td><td>95.37</td><td>97.22</td><td>98.10</td></tr><tr><td>DRSN</td><td>63.50</td><td>65.47</td><td>76.99</td><td>83.33</td><td>84.43</td><td>90.61</td><td>91.97</td><td>99.14</td></tr><tr><td>MTAGN</td><td>79.60</td><td>81.14</td><td>84.42</td><td>89.03</td><td>91.90</td><td>95.61</td><td>96.06</td><td>98.26</td></tr><tr><td>NDDR</td><td>64.25</td><td>76.65</td><td>77.94</td><td>79.79</td><td>81.74</td><td>83.84</td><td>89.41</td><td>92.88</td></tr><tr><td>Cross-stitch</td><td>67.33</td><td>74.09</td><td>76.88</td><td>82.32</td><td>93.01</td><td>94.65</td><td>96.02</td><td>97.44</td></tr><tr><td>HDMTL</td><td>62.33</td><td>74.19</td><td>76.23</td><td>73.41</td><td>87.89</td><td>90.31</td><td>94.59</td><td>96.47</td></tr><tr><td>ASN</td><td>68.37</td><td>70.01</td><td>68.90</td><td>69.29</td><td>70.60</td><td>66.98</td><td>72.87</td><td>76.37</td></tr><tr><td>MATL</td><td>87.86</td><td>92.38</td><td>94.65</td><td>97.80</td><td>98.61</td><td>99.53</td><td>99.70</td><td>99.89</td></tr></table>
+
+A  
+![](images/08e88e321e31cba41f4eaf41da391c923dfe4295b2502043bc2e8cab8ad32b8e.jpg)
+
+B  
+![](images/e51b1718e05ee0bd095b9ff5a9df267e1d3cee6a9da1557651dd3491e33f97cd.jpg)  
+Figure 11: Confusion matrices for MATL under Real-acceleration conditions with varying numbers of training samples. (A) 30 samples and (B) 900 samples.
+
+Table 8: Real-time analysis results.
+
+<table><tr><td>Methods</td><td>Parameters</td><td>Ranking</td><td>Time consumed (seconds)</td><td>Ranking</td></tr><tr><td>LiConvFormer</td><td>326 617</td><td>7</td><td>0.001 042</td><td>8</td></tr><tr><td>DRSN</td><td>54 032 235</td><td>1</td><td>0.010 898</td><td>2</td></tr><tr><td>MTAGN</td><td>687 999</td><td>6</td><td>0.001 945</td><td>6</td></tr><tr><td>NDDR</td><td>4 355 306</td><td>3</td><td>0.005 298</td><td>5</td></tr><tr><td>Cross-stitch</td><td>2 975 478</td><td>4</td><td>0.005 467</td><td>4</td></tr><tr><td>HDMTL</td><td>12 854 762</td><td>2</td><td>0.008 745</td><td>3</td></tr><tr><td>ASN</td><td>37 897</td><td>8</td><td>0.014 024</td><td>1</td></tr><tr><td>MATL</td><td>1 064 319</td><td>5</td><td>0.001 162</td><td>7</td></tr></table>
+
+By comparing experimental results from the no-AT, half-AT, and MATL configurations, we observed that the no-AT configuration exhibits the poorest performance. When partial ATs were included (half-AT), average accuracy improved by 5.06%. The performance difference illustrates that partial ATs can enhance model performance by providing additional supervisory signals. Furthermore, the full MATL architecture displayed significantly better performance than the half-AT setting, with a notable 27.41% improvement under Real-velocity conditions. The comparison demonstrates that a comprehensive AT framework provides more holistic and complementary discriminative information, and omitting any component reduces model performance. Additionally, comparison of the frozen dynamic parameter group with MATL reveals that the task-level attention mechanism dynamically assigns contribution weights to each AT for the current sample, enabling more precise feature fusion and discrimination and improving the utilization of auxiliary features by the model.
+
+Table 9: Detailed rules of ablation experiments.
+
+<table><tr><td>Variant model</td><td>Remarks</td></tr><tr><td>No AT</td><td>Directly tackling multi-classification tasks is equivalent to single-task learning.</td></tr><tr><td>Half-ATs</td><td>Employing only three ATs for a multi-classification task.</td></tr><tr><td>FDP</td><td>A complete AT system, but with its dynamic parameters frozen (refer to Equations (17), (18) and (20))</td></tr><tr><td>No AMCF</td><td>No multi-channel filtering shall be applied to the initial data.</td></tr><tr><td>L-MATL</td><td>Employing the Laplace wavelet transform instead of multi-channel filters</td></tr><tr><td>MATL</td><td>Incorporates comprehensive data processing operations, AT learning systems, and dynamically adjusts task-level attention.</td></tr></table>
+
+Compared to models employing Laplace wavelet transforms and no AMCF operations, MATL demonstrates significant advantages under small sample sizes. The Laplace wavelet transform lacks flexibility due to its fixed basis functions and frequency bands, rendering it inadequate for extracting sufficiently discriminative features when processing drone flight faults. Conversely, AMCF employs multi-channel filtering and adaptive bandwidth design to adjust frequency bands according to actual signal characteristics dynamically, enabling higher-quality feature extraction. It demonstrates particular advantages in capturing high-frequency transient signals and dynamically varying signals. For instance, under the Real-velocity operating condition, its performance surpasses the Laplace wavelet transform by 24.58%.
+
+Table 10: Ablation experiment results.
+
+<table><tr><td rowspan="2">Variant model</td><td colspan="6">Task</td></tr><tr><td>Real-hover</td><td>Real-waypoint</td><td>Real-velocity</td><td>Real-circling</td><td>Real-acceleration</td><td>Average</td></tr><tr><td>No AT</td><td>49.48%</td><td>32.50%</td><td>41.90%</td><td>33.24%</td><td>61.33%</td><td>43.69%</td></tr><tr><td>Half-ATs</td><td>51.57%</td><td>35.99%</td><td>39.52%</td><td>38.91%</td><td>77.78%</td><td>48.75%</td></tr><tr><td>FDP</td><td>52.84%</td><td>38.23%</td><td>50.09%</td><td>40.21%</td><td>77.40%</td><td>51.75%</td></tr><tr><td>No AMCF</td><td>51.79%</td><td>41.53%</td><td>59.34%</td><td>42.85%</td><td>76.09%</td><td>54.32%</td></tr><tr><td>L-MATL</td><td>43.75%</td><td>38.59%</td><td>42.35%</td><td>36.85%</td><td>68.09%</td><td>45.93%</td></tr><tr><td>MATL</td><td>61.39%</td><td>46.59%</td><td>66.93%</td><td>47.54%</td><td>82.86%</td><td>61.06%</td></tr></table>
+
+![](images/27924c9dea33dcf803b1b809ab5fac36794ffa1bbd950f887b05abee3b7309e8.jpg)  
+Figure 12: Results of different Pre-training Epochs.
+
+## 4.6. Impact of pre-training epochs
+
+To further investigate the impact of AT pre-training on the primary task's performance, we designed a comparative experiment with varying numbers of pre-training epochs, ranging from 0 to 90, across ten groups. We repeated each experiment five times and calculated the average results. Figure 12 shows the experimental results.
+
+As shown in Figure 12, the pre-training of ATs has a significant impact on the model's ability to discriminate features. Models without pre-training generally perform worse than those with pre-training across most states.
+
+Specifically, for the Real-hover, Real-velocity, and Real-acceleration tasks, the ATs achieve optimal discriminative ability at 50 pre-training epochs. The Real-waypoint and Real-circling tasks reach optimal performance at 30 pre-training epochs. This indicates that the features learned by the ATs from the virtual training set vary significantly under different flight conditions. Signals for hovering and speed tasks are more susceptible to airflow disturbances and adjustments in UAV attitude. As a result, these tasks produce complex frequency-domain features. Therefore, more pre-training iterations are thus required to extract stable features effectively.
+
+In contrast, tasks such as waypoint navigation and circling exhibit greater stability with simpler frequency-domain features, achieving optimal results with fewer pre-training iterations. The overall accuracy trend shown in the figure exhibits an initial rise followed by a subsequent decline, suggesting that there is an optimal level of pre-training sufficiency. Too few pre-training epochs fail to allow the ATs to extract high-quality frequency-domain features. At the same time, too many epochs lead to overfitting of the training set features by the ATs.
+
+## 4.7. Dynamic adjustment visualization
+
+Through the previous experiments, we have verified that the design of multiple ATs is effective for fault diagnosis. To clearly observe how MATL dynamically adjusts the contribution of ATs to the final classification, we take the Real-hover flight state as an example. We visualize the influence of ATs on the 10th sample under 30 training samples, as shown in Figure 13.
+
+Since the multi-class classifier is a fully connected network, its internal weights implicitly encode the weight distribution across each feature dimension. To analyse the importance of each AT, we extract the weight matrix of the first fully connected layer in the classifier. We then partition this matrix into blocks corresponding to the feature blocks of each AT. We then compute the L2 norm of the weights in each block and use this value as the importance score for the corresponding AT.
+
+By examining Figure 13A, we observe that the L2 norm weights of feature blocks corresponding to each AT in the final classifier's classification task for sample 10 are relatively close (all approximately 0.32). This indicates that during training, the model did not heavily rely on any single AT but instead absorbed feature information extracted from all ATs in a balanced manner. This demonstrates the structural completeness and complementarity of the AT system. Furthermore, the multi-classifier's tendency to synthesize information from multiple sources during decision-making. This highlights the effectiveness of the fusion mechanism.
+
+Combined with expert confidence analysis in Figure 13B, it is evident that AT 1 exhibits significantly higher confidence in classifying the current sample (Sample 10) as “positive”. This indicates its substantial discriminative certainty for this sample. However, the final classifier did not rely solely on this high-confidence AT. Instead, it integrated features from other low-confidence ATs. This strategy indicates that the model values high-confidence signals while also incorporating diverse features to enhance decision robustness and adaptability.
+
+A  
+![](images/e9afd6f349604d94ab5bfa4411d57df8d3afc59fc1dcf4c79c64049a2f288e61.jpg)
+
+B  
+![](images/504ab1ac14c57d5db3f841cd6b8424041f83fcf10669907b9f09cd56db075311.jpg)
+
+C  
+![](images/5142f6de875a4809514dafb411aad34beff5213f19d12f2d40a026fa6197e6b2.jpg)
+
+D  
+![](images/39e62315939ed6ef412287d8e9617ac9702f07f822df2655c75f2e2aa06ca0aa.jpg)  
+Figure 13: Dynamic adjustment visualization results of the 10th sample. (A) L2 norm of the importance of AT features in the final classifier. (B) AT feature importance and confidence. (C) AT feature cosine similarity. (D) Final classification probability for Sample 10.
+
+Figure 13C illustrates the cosine similarity between the output features of each AT on the current sample (Sample 10). The values are uniformly distributed between 0.4 and 0.5, indicating that while the ATs exhibit specific differences in feature representation, they can extract complementary discriminative feature information to enhance the model's representational capacity for multi-classification tasks.
+
+The distribution probability chart in Figure 13D indicates that the model classifies Sample 10 into Category 1 with high confidence (0.78). This probability is significantly higher than in other categories. This classification result aligns with the high-confidence direction of AT1, although it is not entirely dominated by it. This balanced approach demonstrates that the model incorporates the discerning judgements of high-confidence experts while also refining and supporting decisions through auxiliary features provided by the remaining experts, thereby generating a more comprehensive classification outcome.
+
+## 5. Conclusion
+
+This study addresses the challenges of fault diagnosis for UAV sensors in small-sample environments. We innovatively propose a MATL framework, which significantly enhances diagnostic accuracy and practicality.
+
+The primary contributions include: Firstly, designing an AMCF to process time-domain data from each input signal channel, effectively extracting discriminative frequency-domain features associated with faults. Secondly, we introduce an innovative multi-AT mechanism. By constructing virtual binary classification tasks for each fault category and generating virtual training sets, the mechanism enhances the model's ability to distinguish fault features. Furthermore, a task-level attention mechanism is proposed, dynamically adjusting AT weights based on sample differences to achieve adaptive feature fusion and refine the final fault classification decision. Finally, we systematically validated the performance advantages of the proposed method across multiple real-world flight datasets. Experiments demonstrate that MATLAB achieves significantly higher accuracy than existing methods under small-sample conditions, while completing single-sample diagnostics in merely 0.001162 seconds. This systematic validation fully satisfies the engineering requirements for real-time fault diagnosis in UAV systems.
+
+Overall, our study enriches the development of MTL in the field of few-sample fault diagnosis. However, this study retains several limitations. For instance, integrating causal inference mechanisms enhanced the model's ability to recognize fine-grained features for specific fault types (e.g., barometers, GPS systems). Cross-scenario and cross-aircraft validation tests are required to assess the model's generalisability and stability across diverse environments and novel UAV platforms. From an industrial application perspective, future work may focus on encapsulating it as a lightweight embedded diagnostic module.
+
+## Conflicts of interest
+
+The authors declare no conflict of interest.
+
+## Author contributions
+
+Jie Fang: Investigation, Methodology, Software, Visualization, Writing – original draft, Shaobo Li: Funding acquisition, Supervision, Yizong Zhang: Conceptualization, Methodology, Writing – original draft, Deyong Xiao: Writing – review & editing, Resources, Yingzhou Li: Visualization, Supervision, Qinsong Xu: Investigation, Validation.
+
+## Funding
+
+This work was supported by the General Projects of National Natural Science Foundation of China (no. 52275480) and Guizhou Provincial Science and Technology Programme Projects (no. QKHJC-ZK [2024] YB019).
+
+## Acknowledgments
+
+We sincerely thank everyone who supported us in the preparation of this manuscript.
+
+## Reference
+
+Al-Haddad, L. A., Giernacki, W., Basem, A., Khan, Z. H., Jaber, A. A., & Al-Haddad, S. A. (2024). UAV propeller fault diagnosis using deep learning of non-traditional $\chi^{2}$ -selected Taguchi method-tested Lempel–Ziv complexity and Teager–Kaiser energy features. Scientific Reports, 14, 18599. https://doi.org/10.1038/s41598-024-69462-9.
+
+Al-Haddad, L. A., Giernacki, W., Shandookh, A. A., Jaber, A. A., & Puchalski, R. (2024). Vibration signal processing for multirotor uavs fault diagnosis: Filtering or multiresolution analysis?. Eks-ploat. Niezawodn, 26, 176318. https://doi.org/10.17531/ein/176318
+
+Al-Haddad, L. A., & Jaber, A. A. (2023). An intelligent fault diagnosis approach for multirotor UAVs based on deep neural network of multi-resolution transform features. Drones, 7, 82. https://doi.org/10.3390/drones7020082.
+
+Cao, J., Wang, Y., Li, K., Zhu, Y., & Sun, Q. (2025). Multi-UAV adaptive cooperative coverage search method based on area dynamic sensing. Journal of Computational Design and Engineering, 12, 77–93. https://doi.org/10.1093/jcde/qwaf031.
+
+Chen, G., Li, S., He, Q., Zhou, P., Zhang, Q., Yang, G., & Lv, D. (2024). Fault diagnosis of drone motors driven by current signal data with few samples. Measurement Science and Technology, 35, 086202. https://doi.org/10.1088/1361-6501/ad3d00.
+
+Chen, Y., Hu, X., Zhang, Q., & Zhang, C. (2017a). Research on multiclassification method of UAV sensor fault based on wavelet entropy and AFWA-BP neural network. 32nd Youth Academic Annual Conference of Chinese Association of Automation (YAC), 837–842. https://doi.org/10.1109/YAC.2017.7967526
+
+Chen, Y., Zhang, C., Zhang, Q., & Hu, X. (2017). UAV fault detection based on GA-BP neural network. 32nd Youth Academic Annual Conference of Chinese Association of Automation (YAC), 806–811. https://doi.org/10.1109/YAC.2017.7967520
+
+Du, C., Zhang, X., Zhong, R., Li, F., Yu, F., Rong, Y., & Gong, Y. (2022). Unmanned aerial vehicle rotor fault diagnosis based on interval sampling reconstruction of vibration signals and a one-dimensional convolutional neural network deep learning
+
+method. Measurement Science and Technology, 33, 065003. https://doi.org/10.1088/1361-6501/ac491e.
+
+Gan, H., Fu, L., Zhou, R., Gan, W., Wang, F., Wu, X., Yang, Z., & Huang, Z. (2024). WAL-Net: Weakly supervised auxiliary task learning network for carotid plaques classification.. Engineering Applications of Artificial Intelligence, 137, 109144. https://doi.org/10.1016/j.engappai.2024.109144.
+
+Gao, Y., Ma, J., Zhao, M., Liu, W., & Yuille, A. L. (2019). NDDR-CNN: Layerwise Feature Fusing in Multi-Task CNNs by Neural Discriminative Dimensionality Reduction. IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 3200–3209. https://doi.org/10.1109/CVPR.2019.00332
+
+Guo, D., Zhong, M., & Zhou, D. (2017). Multisensor data-fusion-based approach to airspeed measurement fault detection for unmanned aerial vehicles. IEEE Transactions on Instrumentation and Measurement, 67, 317–327. https://doi.org/10.1109/TIM.2017.2735663.
+
+Huang, J., Li, M., Zhang, Y., Mu, L., Ao, Z., & Gong, H. (2021). Fault Detection and Classification for Sensor Faults of UAV by Deep Learning and Time-Frequency Analysis. 40th Chinese Control Conference (CCC), 4420–4424. https://doi.org/10.23919/CCC52363.2021.9550141
+
+Huang, X., Li, Y., Xia, X., Zhao, R., & Ju, S. (2025). Auxiliary task enhanced multi-concept fusion attentive knowledge tracking. Expert Systems with Applications, 288, 128066. https://doi.org/10.1016/j.eswa.2025.128066.
+
+Le, X., Jin, B., Cui, G., Dai, X., & Quan, Q. (2023). RflyMAD: A dataset for multicopter fault detection and health assessment. The International Journal of Robotics Research, 02783649241305153.
+
+Li, S., Liu, Z., Yan, Y., Han, K., Han, Y., Miao, X., Cheng, Z., & Ma, S. (2024). Research on a small-sample fault diagnosis method for UAV engines based on an MSSST and ACS-BPNN optimized deep convolutional network. Processes, 12, 367. https://doi.org/10.3390/pr12020367.
+
+Liu, R., Ding, X., Liu, S., Zheng, H., Xu, Y., & Shao, Y. (2025). Knowledge-informed FIR-based cross-category filtering framework for interpretable machinery fault diagnosis under small samples. Reliability Engineering & System Safety, 254, 110610. https://doi.org/10.1016/j.ress.2024.110610.
+
+Misra, I., Shrivastava, A., Gupta, A., & Hebert, M. (2016). Cross-stitch networks for multi-task learning. IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 3994–4003. https://doi.org/10.1109/CVPR.2016.433
+
+Olyaei, M. H., Jalali, H., Noori, A., & Eghbal, N. (2018). Fault Detection and Identification on UAV System with CITFA Algorithm Based on Deep Learning. Iranian Conference on Electrical Engineering (ICEE), 988–993. https://doi.org/10.1109/ICEE.2018.8472529
+
+Ozkat, E. C. (2024). Vibration data-driven anomaly detection in UAVs: A deep learning approach. Engineering Science and Technology, an International Journal, 54, 101702. https://doi.org/10.1016/j.jestch.2024.101702.
+
+Park, J., Yoo, J., Kim, T., Kim, M., Park, J., Ha, J. M., & Youn, B. D. (2024). Fault frequency band segmentation and domain adaptation with fault simulated signal for fault diagnosis of rolling element bearings. Journal of Computational Design and Engineering, 12, 34–52. https://doi.org/10.1093/jcde/qwae105.
+
+Peng, H., Mao, Z., & Jiang, B. (2025). Bayesian Graph Wavelet Convolution Transformer-Based Transfer Learning for Fault Diagnosis of UAV Swarm System Under Variable Operating Conditions. IEEE Transactions on Aerospace and Electronic Systems, 61, 10306–10321. https://doi.org/10.1109/TAES.2025.3560608.
+
+Rui, L., Ding, X., Wu, S., Wu, Q., & Shao, Y. (2024). Signal processing collaborated with deep learning: An interpretable FIRNet
+
+for industrial intelligent diagnosis. Mechanical Systems and Signal Processing, 212, 111314. https://doi.org/10.1016/j.ymssp.2024.111314.
+
+Sadhu, V., Zonouz, S., & Pompili, D. (2020). On-board deep-learning-based unmanned aerial vehicle fault cause detection and identification. 5255–5261.
+
+Shao, H., Pan, Y., Wang, Y., & Zhang, Y. (2026). Modality fusion using auxiliary tasks for dementia detection. Computer Speech & Language, 95, 101814. https://doi.org/10.1016/j.csl.2025.101814.
+
+Swain, S., Khilar, P. M., Senapati, B. R., & Swain, R. R. (2024). Comprehensive fault diagnosis in UAV-assisted sensor networks: A three-phase automated approach. Computer Communications, 219, 76–91. https://doi.org/10.1016/j.comcom.2024.03.002.
+
+Wang, H., Jin, X., Du, Y., Zhang, N., & Hao, H. (2023). Adaptive hard parameter sharing method based on multi-task deep learning. Mathematics, 11, 4639. https://doi.org/10.3390/math11224639.
+
+Wang, H., Liu, Z., Peng, D., Yang, M., & Qin, Y. (2022). Feature-level attention-guided multitask CNN for fault diagnosis and working conditions identification of rolling bearing. IEEE Transactions on Neural Networks and Learning Systems, 33, 4757–4769. https://doi.org/10.1109/TNNLS.2021.3060494.
+
+Xie, Z., Chen, J., Feng, Y., Zhang, K., & Zhou, Z. (2022). End to end multitask learning with attention for multi-objective fault diagnosis under small sample. Journal of Manufacturing Systems, 62, 301–316. https://doi.org/10.1016/j.jmsy.2021.12.003.
+
+Xiong, P., Li, Z., Li, Y., Huang, S., Liu, C., & Gu, F. (2023). Fault diagnosis of uav based on adaptive siamese network with limited data. IEEE Transactions on Instrumentation and Measurement, 72, 1–11. https://doi.org/10.1109/TIM.2023.3301898.
+
+Yan, S., Shao, H., Wang, J., Zheng, X., & Liu, B. (2024). LiConvFormer: A lightweight fault diagnosis framework using separable multiscale convolution and broadcast self-attention. Expert Systems with Applications, 237, 121338. https://doi.org/10.1016/j.eswa.2023.121338.
+
+Yang, P., Wen, C., Geng, H., & Liu, P. (2021). Intelligent fault diagnosis method for blade damage of quad-rotor UAV based on stacked pruning sparse denoising autoencoder and convolutional neural network. Machines, 9, Article 12. https://doi.org/10.3390/machines9120360.
+
+Yao, J., Li, W., Zheng, Z., & Jia, X. (2024). CLGNN: UAV Fault Diagnosis via Causal Learning and Graph Neural Network. International Joint
+
+Conference on Neural Networks (IJCNN), 1–8. https://doi.org/10.1109/IJCNN60899.2024.10651352
+
+Zhang, S., Qu, N., Zheng, T., & Hu, C. (2022a). Series arc fault detection based on wavelet compression reconstruction data enhancement and deep residual network. IEEE Transactions on Instrumentation and Measurement, 71, 1–9.
+
+Zhang, Y., Li, S., Gu, Y., He, Q., Zhou, P., & Zhang, A. (2026). UAV fault diagnosis based on collaborative sharing of generic and task-oriented features. Expert Systems with Applications, 296, 128940. https://doi.org/10.1016/j.eswa.2025.128940.
+
+Zhang, Y., Li, S., He, Q., Zhang, A., Li, C., & Liao, Z. (2023). An intelligent fault detection framework for FW-UAV based on hybrid deep domain adaptation networks and the hampel filter. International Journal of Intelligent Systems, 2023, 6608967. https://doi.org/10.1155/2023/6608967.
+
+Zhang, Y., Li, S., Yang, L., Zhu, Y., Liao, Z., Wang, Y., Li, C., & Wang, H. (2024a). FW-UAV fault diagnosis based on multi-level task knowledge supplement network under small samples. IEEE Transactions on Instrumentation and Measurement, 73, 1–14. https://doi.org/10.1109/TIM.2024.3449957
+
+Zhang, Y., Li, S., Zhang, A., & An, X. (2024b). FW-UAV fault diagnosis based on knowledge complementary network under small sample. Mechanical Systems and Signal Processing, 215, 111418. https://doi.org/10.1016/j.ymssp.2024.111418.
+
+Zhang, Y., Li, S., Zhang, A., Li, C., & Qiu, L. (2022b). A Novel Bearing Fault Diagnosis Method Based on Few-Shot Transfer Learning across Different Datasets. Entropy, 24, 1295. https://doi.org/10.3390/e24091295.
+
+Zhang, Y., & Yang, Q. (2018). An overview of multi-task learning. National Science Review, 5, 30–43. https://doi.org/10.1093/nsr/nwx105.
+
+Zhang, Y., & Yang, Q. (2021). A survey on multi-task learning. IEEE Transactions on Knowledge and Data Engineering, 34, 5586–5609. https://doi.org/10.1109/TKDE.2021.3070203.
+
+Zhang, Y., & Yeung, D.-Y. (2014). A regularization approach to learning task relationships in multitask learning. ACM Transactions on Knowledge Discovery from Data (TKDD), 8, 1–31. https://doi.org/10.1145/2538028.
+
+Zhao, M., Zhong, S., Fu, X., Tang, B., & Pecht, M. (2019). Deep residual shrinkage networks for fault diagnosis. IEEE Transactions on Industrial Informatics, 16, 4681–4690. https://doi.org/10.1109/TII.2019.2943898.

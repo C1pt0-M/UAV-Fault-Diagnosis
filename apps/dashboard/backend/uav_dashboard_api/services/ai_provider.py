@@ -16,10 +16,10 @@ class OpenAICompatibleProvider:
         self.api_key = str(config.get('AI_API_KEY', '')).strip()
         self.model = str(config.get('AI_MODEL', '')).strip()
         self.embedding_base_url = str(
-            config.get('AI_EMBEDDING_BASE_URL') or self.base_url
+            config.get('AI_EMBEDDING_BASE_URL', '')
         ).rstrip('/')
         self.embedding_api_key = str(
-            config.get('AI_EMBEDDING_API_KEY') or self.api_key
+            config.get('AI_EMBEDDING_API_KEY', '')
         ).strip()
         self.embedding_model = str(config.get('AI_EMBEDDING_MODEL', '')).strip()
         self.timeout = int(config.get('AI_HTTP_TIMEOUT', 45))
