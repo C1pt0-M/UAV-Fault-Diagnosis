@@ -1,10 +1,11 @@
 import math
 
-from uav_fault.data.build_sequence_cache import SEQ_COLUMNS
 from uav_fault.telemetry.schema_adapter import (
+    ACTIVE_FEATURE_SCHEMA,
     CANONICAL_SCHEMA_VERSION,
-    assess_canonical_input_contract,
+    SEQ_COLUMNS,
     adapt_px4_live_frame,
+    assess_canonical_input_contract,
     canonicalize_rfly_frame,
 )
 
@@ -19,6 +20,8 @@ def test_canonicalize_rfly_frame_returns_full_canonical_columns_with_defaults():
     })
 
     assert CANONICAL_SCHEMA_VERSION == 'rfly_seq_v1'
+    assert ACTIVE_FEATURE_SCHEMA == 'rfly_seq_columns_v2'
+    assert len(SEQ_COLUMNS) == 26
     assert all(column in canonical for column in SEQ_COLUMNS)
     assert canonical['actuator_out_1'] == 0.2
     assert canonical['actuator_out_2'] == 0.0
@@ -105,10 +108,14 @@ def test_adapt_px4_live_frame_returns_full_canonical_columns_and_derived_values(
     assert canonical['seq'] == 7
     assert canonical['actuator_out_1'] == 0.1
     assert canonical['actuator_out_4'] == 0.4
-    assert canonical['baro_alt'] == 0.0
+    # baro_alt_relative 在单帧阶段拿绝对高度；本帧没有气压输入，所以为 0。
+    assert canonical['baro_alt_relative'] == 0.0
     assert canonical['acc_norm'] == 5.0
-    assert canonical['actuator_mean'] == 0.125
-    assert math.isclose(canonical['actuator_effort'], 0.025, rel_tol=1e-6)
+    # 26 通道 schema 已剔除 PWM 聚合量。
+    assert 'actuator_mean' not in SEQ_COLUMNS
+    assert 'actuator_effort' not in SEQ_COLUMNS
+    assert 'actuator_mean' not in canonical
+    assert 'actuator_effort' not in canonical
 
 
 def test_adapt_px4_live_frame_prefers_actuator_outputs_over_normalized_motors():

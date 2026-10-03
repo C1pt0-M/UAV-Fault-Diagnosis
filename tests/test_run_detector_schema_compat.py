@@ -54,4 +54,7 @@ def test_run_csv_mode_canonicalizes_new_processed_csv_before_inference(tmp_path:
     assert first_row["att_q_w"] == 1.0
     assert first_row["vel_x"] == 0.3
     assert first_row["mag_z"] == 0.03
-    assert "actuator_mean" in first_row
+    # 运行时 schema 已切到 26 通道：baro_alt_relative 携带绝对高度，
+    # PWM 聚合量（actuator_mean 等）不再产出。
+    assert first_row["baro_alt_relative"] == 15.2
+    assert "actuator_mean" not in first_row

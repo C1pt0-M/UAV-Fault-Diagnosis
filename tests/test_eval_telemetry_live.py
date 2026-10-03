@@ -90,7 +90,7 @@ def test_records_for_backend_px4_uses_px4_adapter_contract():
 
     assert len(records) == 1
     assert records[0]["actuator_out_1"] == 0.1
-    assert records[0]["actuator_mean"] > 0.0
+    assert records[0]["acc_norm"] >= 0.0
     assert "motor1" not in records[0]
 
 
@@ -111,7 +111,7 @@ def test_records_for_backend_replay_keeps_rfly_canonicalization_path():
 
     assert len(records) == 1
     assert records[0]["actuator_out_1"] == 0.25
-    assert "actuator_mean" in records[0]
+    assert "acc_norm" in records[0]
 
 
 def test_input_contract_columns_flags_zero_critical_signals():

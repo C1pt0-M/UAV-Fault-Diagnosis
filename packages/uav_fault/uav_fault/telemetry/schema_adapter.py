@@ -1,11 +1,25 @@
 from __future__ import annotations
 
 import math
+import os
 from typing import Any
 
 import numpy as np
 
-from uav_fault.data.build_sequence_cache import SEQ_COLUMN_ALIASES, SEQ_COLUMNS
+from uav_fault.data.build_sequence_cache import SEQ_COLUMN_ALIASES
+from uav_fault.models.cnn.lstm import RFLY_SEQ_SCHEMAS
+
+# ── 运行时特征 schema ──
+# rfly_seq_columns_v2（26 通道）与离线特征合同一致，使离线与在线共用同一套特征；
+# rfly_seq_columns_v1（31 通道）保留作为兜底，assets/models 下的旧模型仍在用它。
+DEFAULT_FEATURE_SCHEMA = "rfly_seq_columns_v2"
+ACTIVE_FEATURE_SCHEMA = os.environ.get("UAV_ONLINE_FEATURE_SCHEMA", DEFAULT_FEATURE_SCHEMA)
+if ACTIVE_FEATURE_SCHEMA not in RFLY_SEQ_SCHEMAS:
+    raise ValueError(
+        f"unknown UAV_ONLINE_FEATURE_SCHEMA={ACTIVE_FEATURE_SCHEMA!r}; "
+        f"expected one of {sorted(RFLY_SEQ_SCHEMAS)}"
+    )
+SEQ_COLUMNS = list(RFLY_SEQ_SCHEMAS[ACTIVE_FEATURE_SCHEMA])
 
 CANONICAL_SCHEMA_VERSION = "rfly_seq_v1"
 ACTUATOR_COLUMNS = [
@@ -20,6 +34,11 @@ ACTUATOR_OUTPUT_COLUMNS = (
 )
 BASE_COLUMNS = [name for name, _ in SEQ_COLUMN_ALIASES]
 DERIVED_COLUMNS = [name for name in SEQ_COLUMNS if name not in BASE_COLUMNS]
+
+# 这些列在单帧阶段只是另一个列的搬运（单帧没有窗口概念），窗口级减法由
+# FaultDetector._build_feature_matrix 完成。
+WINDOW_RELATIVE_SOURCES = {"baro_alt_relative": "baro_alt"}
+
 PX4_MAP = {
     "actuator_ctrl_1": "actuator_ctrl_1", "actuator_ctrl_2": "actuator_ctrl_2", "actuator_ctrl_3": "actuator_ctrl_3", "actuator_ctrl_4": "actuator_ctrl_4",
     "gyro_x": "gyro_x", "gyro_y": "gyro_y", "gyro_z": "gyro_z",
@@ -212,19 +231,30 @@ def normalize_time_columns(df):
 
 
 def _apply_derived(out: dict[str, Any], source_map: dict[str, str]) -> tuple[dict[str, Any], dict[str, list[str]]]:
-    values = [float(_safe_float(out.get(name)) or 0.0) for name in ACTUATOR_COLUMNS]
-    mean = float(np.mean(values)) if values else 0.0
-    std = float(np.std(values)) if values else 0.0
     ax = float(_safe_float(out.get("accel_x")) or 0.0)
     ay = float(_safe_float(out.get("accel_y")) or 0.0)
     az = float(_safe_float(out.get("accel_z")) or 0.0)
     acc_norm = float(np.sqrt(ax * ax + ay * ay + az * az))
-    out.update({
-        "actuator_mean": mean,
-        "actuator_std": std,
-        "acc_norm": acc_norm,
-        "actuator_effort": float(mean / max(acc_norm, 0.1)),
-    })
+    derived: dict[str, float] = {"acc_norm": acc_norm}
+
+    # 31 通道 schema 还存 PWM 聚合量；26 通道把它们当作环境指纹剔除了，
+    # 所以只计算当前 schema 真正声明的派生列。
+    if any(
+        name in SEQ_COLUMNS
+        for name in ("actuator_mean", "actuator_std", "actuator_effort")
+    ):
+        values = [float(_safe_float(out.get(name)) or 0.0) for name in ACTUATOR_COLUMNS]
+        mean = float(np.mean(values)) if values else 0.0
+        derived["actuator_mean"] = mean
+        derived["actuator_std"] = float(np.std(values)) if values else 0.0
+        derived["actuator_effort"] = float(mean / max(acc_norm, 0.1))
+
+    # 窗口相对列：此处存绝对值，窗口级减法在推理引擎里做。
+    for target, source in WINDOW_RELATIVE_SOURCES.items():
+        if target in SEQ_COLUMNS:
+            derived[target] = float(_safe_float(out.get(source)) or 0.0)
+
+    out.update(derived)
     for column in SEQ_COLUMNS:
         value = _safe_float(out.get(column))
         out[column] = float(value) if value is not None else 0.0

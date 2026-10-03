@@ -33,13 +33,15 @@ def _load_runtime_dependencies() -> None:
     if SEQ_COLUMNS and adapt_px4_live_frame is not None and normalize_time_columns is not None:
         return
 
-    from uav_fault.data.build_sequence_cache import SEQ_COLUMNS as sequence_columns
+    # 用运行时适配器当前生效的 schema（现在是与离线特征合同一致的 26 通道），
+    # 否则覆盖率表会列出适配器已经不产出的列（如 actuator_mean）。
     from uav_fault.telemetry.schema_adapter import (
+        SEQ_COLUMNS as active_columns,
         adapt_px4_live_frame as adapt_frame,
         normalize_time_columns as normalize_time,
     )
 
-    SEQ_COLUMNS = list(sequence_columns)
+    SEQ_COLUMNS = list(active_columns)
     adapt_px4_live_frame = adapt_frame
     normalize_time_columns = normalize_time
 

@@ -41,6 +41,13 @@ except ModuleNotFoundError:
 
 LABEL_NAMES = ["normal", "fault"]
 
+# 绝对气压高度的候选字段，按优先级排列。列表同时充当两个方向（baro_alt 与
+# baro_alt_relative）的回退链，这样部署中的旧模型和新的 26 通道模型都能取到值。
+_BARO_ALIASES = {
+    "baro_alt_relative": ("baro_alt_relative", "baro_alt", "baro_alt_meter", "pos_z"),
+    "baro_alt": ("baro_alt", "baro_alt_relative", "baro_alt_meter", "pos_z"),
+}
+
 
 def _safe_float(x) -> float | None:
     try:
@@ -155,6 +162,18 @@ class FaultDetector:
                 sparse_state[col_name] = float(v)
             return float(v)
 
+        # ── 窗口相对列的别名解析 ──
+        # 帧本身没有窗口概念：这里只取绝对气压高度，减窗口起点在
+        # _build_feature_matrix 里做。两个方向都做别名，这样无论运行在
+        # 26 通道还是 31 通道 schema 下，旧模型都能拿到绝对高度。
+        for canonical, sources in _BARO_ALIASES.items():
+            if col_name == canonical:
+                for source in sources:
+                    value = _safe_float(row.get(source))
+                    if value is not None:
+                        return float(value)
+                return 0.0
+
         # ── 派生列：若线上未提供则补算 ──
         actuator_cols = [
             "actuator_ctrl_1",
@@ -237,6 +256,11 @@ class FaultDetector:
         for t, row in enumerate(records):
             for c, col_name in enumerate(self.columns):
                 data[t, c] = self._get_value(row, col_name, sparse_state=sparse_state)
+        if "baro_alt_relative" in self.columns:
+            # 与离线特征合同一致（window_relative_subtract_first）：减去窗口起点，
+            # 使跨域时的高度基线一致。
+            baro_idx = self.columns.index("baro_alt_relative")
+            data[:, baro_idx] = data[:, baro_idx] - data[0, baro_idx]
         if self.exclude_indices:
             data[:, self.exclude_indices] = 0.0
         return np.nan_to_num(data, nan=0.0, posinf=0.0, neginf=0.0)

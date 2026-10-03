@@ -85,11 +85,13 @@ def test_phase_a_input_gate_writes_expected_outputs(tmp_path):
     actuator_out_1 = next(
         row for row in coverage_rows if row["feature"] == "actuator_out_1"
     )
-    actuator_mean = next(
-        row for row in coverage_rows if row["feature"] == "actuator_mean"
+    acc_norm = next(
+        row for row in coverage_rows if row["feature"] == "acc_norm"
     )
     assert int(actuator_out_1["mapped_count"]) == 160
-    assert int(actuator_mean["derived_count"]) == 160
+    assert int(acc_norm["derived_count"]) == 160
+    # 被剔除的环境相关列不再出现在覆盖率表里。
+    assert "actuator_mean" not in {row["feature"] for row in coverage_rows}
 
     with open(risk_path, "r", encoding="utf-8", newline="") as f:
         risk_rows = list(csv.DictReader(f))
