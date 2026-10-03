@@ -2,24 +2,45 @@
 
 Outputs (all under D:\\UAV-Data\\experiments\\topology_graph):
 
-  adjacency_normal_mean.npy   26x26  mean Pearson correlation over normal train windows
-  adjacency_normal_std.npy    26x26  per-edge std of the same (edge-level reference scale)
-  adjacency_normal_count.npy  26x26  how many windows contributed to each edge
-  adjacency_physical.npy      26x26  physical prior edges (domain knowledge)
-  adjacency_fused.npy         26x26  normalised combination of the two
-  edge_table.csv              edge list with data-driven value, std and prior flag
-  feature_names.json          canonical channel order
-  summary.json                provenance: split, domains, cases, windows
+  adjacency_normal_mean.npy        26x26  mean Pearson correlation over normal train windows
+  adjacency_normal_std.npy         26x26  per-edge std of the same (edge-level reference scale)
+  adjacency_normal_count.npy       26x26  how many windows contributed to each edge
+  adjacency_hover_observable.npy   26x26  prior edges that ARE measurable in hover
+  adjacency_hover_silent.npy       26x26  prior edges that are NOT measurable in hover
+  adjacency_physical.npy           26x26  union of the two prior sets
+  adjacency_fused.npy              26x26  normalised combination of data structure and prior
+  edge_table.csv                   edge list with measured value, std and prior membership
+  feature_names.json               canonical channel order
+  summary.json                     provenance + prior-vs-data validation
+
+Why two prior sets
+------------------
+Both sets are couplings that quadrotor dynamics says must exist. The difference is
+only whether a hover flight gives you anything to measure them with:
+
+  hover_observable  the quantities keep moving in hover (commands, motor outputs, body
+                    rates), so the coupling shows up in a 3 s correlation window.
+                    Measured mean |corr| = 0.36, 88% of pairs above 0.15.
+
+  hover_silent      physically real but the flight regime hides them. Attitude,
+                    velocity and altitude are nearly constant while hovering, so there
+                    is no variance to correlate: gyro_x <-> att_q_x measures 0.021.
+                    Measured mean |corr| = 0.05.
+
+Why the prior is split rather than merged: see scripts/experiments/analyze_tier_activation.py.
+The hover_silent couplings are the ones that actually change when a fault occurs
+(motor 1.91x, sensor 0.97x of their normal jitter) while the hover_observable ones
+barely move (motor 1.08x, sensor 0.40x). A graph weighted purely by normal-flight
+coupling strength would therefore down-weight exactly the edges that carry the fault
+signal.
 
 Design notes
 ------------
 The pilot (topology_change_pilot.py) showed:
   * motor faults  -> large GLOBAL change in the dependency structure (d = 1.27)
   * sensor faults -> GLOBAL change indistinguishable from normal jitter (d = -0.05),
-                     but SPARSE LOCAL edges change a lot (up to 145x)
-Therefore the graph is built from NORMAL flight only, and the model must be able to
-detect *local edge* deviation rather than rely on a global summary. Keeping the
-per-edge std is what makes that possible.
+                     but SPARSE LOCAL edges change a lot (accel_x <-> att_q_w 145x)
+So the model must be able to read *local edge* deviation, not just a global summary.
 
 Pearson correlation is invariant to the constant shift introduced by window-relative
 altitude preprocessing, so the raw altitude column is fine here.
@@ -68,7 +89,7 @@ MANIFEST_COLUMNS = [
 ]
 
 # ---------------------------------------------------------------------------
-# Physical prior edges.
+# Prior edges: couplings that ARE measurable while hovering.
 #
 # The first version of this list paired ctrl_i with out_i one-to-one. Normal-flight
 # data rejected that: the off-diagonal ctrl/out correlations are STRONGER than the
@@ -83,13 +104,8 @@ MANIFEST_COLUMNS = [
 #   ctrl_4 x accel_z  -0.433 and x acc_norm +0.446: thrust drives vertical acceleration
 #   mag x quaternion  mag_x<->att_q_y -0.553, mag_y<->att_q_x +0.394, mag_z<->att_q_y +0.493
 #   out x out         +0.22 .. +0.41: rotors couple through the airframe
-#
-# Tier 1: physically expected AND observable while hovering (this graph).
-# Tier 2: physically real but dormant in hover, because attitude is nearly constant
-#         so quaternion correlations vanish (gyro<->att_q_x was 0.021). Kept separate
-#         because faults excite exactly these modes.
 # ---------------------------------------------------------------------------
-PHYSICAL_EDGES_TIER1: dict[str, list[tuple[str, str]]] = {
+HOVER_OBSERVABLE_EDGES: dict[str, list[tuple[str, str]]] = {
     # roll/pitch/yaw command -> corresponding body rate
     "rate_command_to_rate": [
         ("actuator_ctrl_1", "gyro_x"),
@@ -130,11 +146,13 @@ PHYSICAL_EDGES_TIER1: dict[str, list[tuple[str, str]]] = {
     ],
 }
 
-# Physically real, but not observable in a hover window: attitude barely changes,
-# so a correlation over 3 s is dominated by noise. They should become informative
-# once a fault excites the rate/attitude modes.
-PHYSICAL_EDGES_TIER2: dict[str, list[tuple[str, str]]] = {
-    # body rates integrate into attitude
+# ---------------------------------------------------------------------------
+# Prior edges: physically real but NOT measurable while hovering, because the
+# quantities involved barely change. These are the ones a fault wakes up, so the
+# model must watch them rather than down-weight them.
+# ---------------------------------------------------------------------------
+HOVER_SILENT_EDGES: dict[str, list[tuple[str, str]]] = {
+    # body rates integrate into attitude (attitude is ~constant in hover)
     "rate_to_attitude": [
         (f"gyro_{g}", f"att_q_{q}")
         for g, q in (("x", "x"), ("y", "y"), ("z", "z"), ("z", "w"))
@@ -212,7 +230,7 @@ def select_normal_cases(pool: pd.DataFrame, seed: int) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True) if frames else pool.iloc[:0]
 
 
-def build_physical_adjacency(
+def build_prior_adjacency(
     names: list[str], groups: dict[str, list[tuple[str, str]]]
 ) -> tuple[np.ndarray, dict[str, int]]:
     index = {name: i for i, name in enumerate(names)}
@@ -222,7 +240,7 @@ def build_physical_adjacency(
         added = 0
         for left, right in edges:
             if left not in index or right not in index:
-                raise KeyError(f"unknown channel in physical edge: {left} - {right}")
+                raise KeyError(f"unknown channel in prior edge: {left} - {right}")
             i, j = index[left], index[right]
             adjacency[i, j] = 1.0
             adjacency[j, i] = 1.0
@@ -232,20 +250,21 @@ def build_physical_adjacency(
 
 
 def prior_vs_data_report(
-    edge_table: pd.DataFrame, tier1_pairs: set[frozenset], tier2_pairs: set[frozenset]
+    edge_table: pd.DataFrame,
+    observable_pairs: set[frozenset],
+    silent_pairs: set[frozenset],
 ) -> dict:
-    """Quantify how well the prior lines up with the measured normal-flight structure."""
-    pairs_of = lambda frame: [
-        frozenset((row["left"], row["right"])) for _, row in frame.iterrows()
+    """Quantify how well each prior set lines up with the measured normal structure."""
+    edge_pairs = [
+        frozenset((row["left"], row["right"])) for _, row in edge_table.iterrows()
     ]
-    edge_pairs = pairs_of(edge_table)
     rows = []
-    for name, pairs in (("tier1", tier1_pairs), ("tier2", tier2_pairs)):
+    for label, pairs in (("hover_observable", observable_pairs), ("hover_silent", silent_pairs)):
         mask = [p in pairs for p in edge_pairs]
         subset = edge_table[mask]
         rows.append(
             {
-                "tier": name,
+                "group": label,
                 "pairs": int(len(subset)),
                 "mean_abs_corr": float(subset["data_abs_mean"].mean()),
                 "median_abs_corr": float(subset["data_abs_mean"].median()),
@@ -253,11 +272,11 @@ def prior_vs_data_report(
                 "frac_above_0.30": float((subset["data_abs_mean"] > 0.30).mean()),
             }
         )
-    known = tier1_pairs | tier2_pairs
+    known = observable_pairs | silent_pairs
     outside = edge_table[[p not in known for p in edge_pairs]]
     rows.append(
         {
-            "tier": "not_in_prior",
+            "group": "not_in_prior",
             "pairs": int(len(outside)),
             "mean_abs_corr": float(outside["data_abs_mean"].mean()),
             "median_abs_corr": float(outside["data_abs_mean"].median()),
@@ -269,9 +288,16 @@ def prior_vs_data_report(
     ranked = edge_table.sort_values("data_abs_mean", ascending=False).reset_index(drop=True)
     topk = {}
     for k in (20, 40, 80, 100):
-        hits = sum(1 for p in pairs_of(ranked.head(k)) if p in tier1_pairs)
-        topk[f"top{k}_tier1_hits"] = int(hits)
-    return {"tiers": rows, "topk_overlap": topk}
+        hits = sum(
+            1
+            for p in (
+                frozenset((row["left"], row["right"]))
+                for _, row in ranked.head(k).iterrows()
+            )
+            if p in observable_pairs
+        )
+        topk[f"top{k}_hover_observable_hits"] = int(hits)
+    return {"groups": rows, "topk_overlap": topk}
 
 
 def main() -> int:
@@ -332,11 +358,11 @@ def main() -> int:
     np.fill_diagonal(mean, 1.0)
     np.fill_diagonal(std, 0.0)
 
-    physical_t1, tier1_groups = build_physical_adjacency(names, PHYSICAL_EDGES_TIER1)
-    physical_t2, tier2_groups = build_physical_adjacency(names, PHYSICAL_EDGES_TIER2)
-    physical = np.clip(physical_t1 + physical_t2, 0.0, 1.0)
+    observable, observable_groups = build_prior_adjacency(names, HOVER_OBSERVABLE_EDGES)
+    silent, silent_groups = build_prior_adjacency(names, HOVER_SILENT_EDGES)
+    physical = np.clip(observable + silent, 0.0, 1.0)
 
-    # Fused adjacency: data-driven magnitude gated by physical prior, normalised to [0, 1].
+    # Fused adjacency: data-driven magnitude gated by prior membership, normalised to [0, 1].
     abs_mean = np.abs(mean)
     data_norm = abs_mean / max(abs_mean.max(), 1e-12)
     prior_gate = 0.5 + 0.5 * physical  # prior edges get a boost, others are kept
@@ -347,8 +373,8 @@ def main() -> int:
     np.save(OUTPUT_DIR / "adjacency_normal_mean.npy", mean)
     np.save(OUTPUT_DIR / "adjacency_normal_std.npy", std)
     np.save(OUTPUT_DIR / "adjacency_normal_count.npy", counts)
-    np.save(OUTPUT_DIR / "adjacency_physical_tier1.npy", physical_t1)
-    np.save(OUTPUT_DIR / "adjacency_physical_tier2.npy", physical_t2)
+    np.save(OUTPUT_DIR / "adjacency_hover_observable.npy", observable)
+    np.save(OUTPUT_DIR / "adjacency_hover_silent.npy", silent)
     np.save(OUTPUT_DIR / "adjacency_physical.npy", physical)
     np.save(OUTPUT_DIR / "adjacency_fused.npy", fused)
     (OUTPUT_DIR / "feature_names.json").write_text(
@@ -369,24 +395,21 @@ def main() -> int:
                     "data_abs_mean": float(abs(mean[i, j])),
                     "data_std": float(std[i, j]),
                     "n_windows": float(counts[i, j]),
-                    "physical_tier1": float(physical_t1[i, j]),
-                    "physical_tier2": float(physical_t2[i, j]),
-                    "physical_prior": float(physical[i, j]),
+                    "hover_observable": float(observable[i, j]),
+                    "hover_silent": float(silent[i, j]),
+                    "in_prior": float(physical[i, j]),
                     "fused": float(fused[i, j]),
                 }
             )
     edge_table = pd.DataFrame(rows).sort_values("data_abs_mean", ascending=False)
     edge_table.to_csv(OUTPUT_DIR / "edge_table.csv", index=False)
 
-    tier1_pairs = {
-        frozenset(p) for edges in PHYSICAL_EDGES_TIER1.values() for p in edges
+    observable_pairs = {
+        frozenset(p) for edges in HOVER_OBSERVABLE_EDGES.values() for p in edges
     }
-    tier2_pairs = {
-        frozenset(p) for edges in PHYSICAL_EDGES_TIER2.values() for p in edges
-    }
-    prior_report = prior_vs_data_report(edge_table, tier1_pairs, tier2_pairs)
+    silent_pairs = {frozenset(p) for edges in HOVER_SILENT_EDGES.values() for p in edges}
+    report = prior_vs_data_report(edge_table, observable_pairs, silent_pairs)
 
-    top = edge_table.head(12)
     print("\n" + "=" * 68)
     print("TOPOLOGY GRAPH BUILT")
     print("=" * 68)
@@ -395,21 +418,21 @@ def main() -> int:
     print(f"  windows used    : {total_windows}")
     print(f"  channels        : {n}")
     print(f"  edges (pairs)   : {n * (n - 1) // 2}")
-    print("\n  Tier 1 prior groups (physically expected AND hover-observable):")
-    for group, count in tier1_groups.items():
+    print("\n  hover_observable groups (measurable during hover):")
+    for group, count in observable_groups.items():
         print(f"    {group:32s} {count}")
-    print(f"    -> tier1 pairs total: {int(physical_t1.sum() // 2)}")
-    print("\n  Tier 2 prior groups (physically real, dormant in hover):")
-    for group, count in tier2_groups.items():
+    print(f"    -> pairs total: {int(observable.sum() // 2)}")
+    print("\n  hover_silent groups (physically real, hidden by the hover regime):")
+    for group, count in silent_groups.items():
         print(f"    {group:32s} {count}")
-    print(f"    -> tier2 pairs total: {int(physical_t2.sum() // 2)}")
+    print(f"    -> pairs total: {int(silent.sum() // 2)}")
     print("\n  Strongest data-driven couplings (|corr| on normal flight):")
-    for _, row in top.iterrows():
+    for _, row in edge_table.head(12).iterrows():
         mark = ""
-        if row["physical_tier1"]:
-            mark = " [tier1]"
-        elif row["physical_tier2"]:
-            mark = " [tier2]"
+        if row["hover_observable"]:
+            mark = " [hover_observable]"
+        elif row["hover_silent"]:
+            mark = " [hover_silent]"
         print(
             f"    {row['left']:20s} <-> {row['right']:20s} "
             f"corr={row['data_mean']:+.3f} std={row['data_std']:.3f}{mark}"
@@ -418,14 +441,14 @@ def main() -> int:
     print("\n" + "-" * 68)
     print("PRIOR vs MEASURED STRUCTURE")
     print("-" * 68)
-    for row in prior_report["tiers"]:
+    for row in report["groups"]:
         print(
-            f"  {row['tier']:12s} pairs={row['pairs']:4d}  "
+            f"  {row['group']:16s} pairs={row['pairs']:4d}  "
             f"mean|corr|={row['mean_abs_corr']:.4f}  "
             f">0.15: {row['frac_above_0.15'] * 100:5.1f}%  "
             f">0.30: {row['frac_above_0.30'] * 100:5.1f}%"
         )
-    print("  top-K overlap (tier1 hits):", prior_report["topk_overlap"])
+    print("  top-K overlap (hover_observable hits):", report["topk_overlap"])
 
     summary = {
         "schema_version": "topology_graph_v1",
@@ -442,11 +465,14 @@ def main() -> int:
         "cases_processed": len(by_source) - skipped,
         "cases_skipped": skipped,
         "windows_used": total_windows,
-        "physical_prior_pairs": int(physical.sum() // 2),
-        "physical_prior_tier1_pairs": int(physical_t1.sum() // 2),
-        "physical_prior_tier2_pairs": int(physical_t2.sum() // 2),
-        "physical_edge_groups": {"tier1": tier1_groups, "tier2": tier2_groups},
-        "prior_vs_data": prior_report,
+        "hover_observable_pairs": int(observable.sum() // 2),
+        "hover_silent_pairs": int(silent.sum() // 2),
+        "prior_pairs_total": int(physical.sum() // 2),
+        "prior_edge_groups": {
+            "hover_observable": observable_groups,
+            "hover_silent": silent_groups,
+        },
+        "prior_vs_data": report,
         "mean_abs_correlation": float(np.abs(mean - np.eye(n)).mean()),
         "strongest_edge": {
             "left": str(edge_table.iloc[0]["left"]),
@@ -455,7 +481,8 @@ def main() -> int:
         },
         "note": (
             "Graph is a NORMAL-flight reference. Sensor faults leave the global "
-            "structure unchanged, so the model must use edge-level deviation."
+            "structure unchanged, and the couplings that move under fault are the "
+            "hover_silent ones, so the model must read edge-level deviation."
         ),
     }
     (OUTPUT_DIR / "summary.json").write_text(

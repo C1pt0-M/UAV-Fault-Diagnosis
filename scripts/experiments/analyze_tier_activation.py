@@ -8,9 +8,10 @@ Uses the Delta_A matrices already produced by topology_change_pilot.py
 (A_post - A_pre around fault onset; for normal cases two adjacent windows).
 
 Result (SIL train, 50 cases per class):
-  tier-1 (hover-observable) barely moves under motor fault (1.08x normal jitter)
-  and even shrinks under sensor fault (0.40x).
-  tier-2 (hover-silent) moves the most (motor 1.91x, sensor 0.97x).
+  hover_observable (measurable during hover) barely moves under motor fault
+  (1.08x normal jitter) and even shrinks under sensor fault (0.40x).
+  hover_silent (hidden by the hover regime) moves the most
+  (motor 1.91x, sensor 0.97x).
 The couplings that are loud during normal flight are therefore NOT the ones that
 announce a fault; the fault manifests in the normally quiet couplings.
 """
@@ -23,20 +24,20 @@ import numpy as np
 
 PILOT_DIR = Path(r"D:\UAV-Data\experiments\topology_change_pilot")
 GRAPH_DIR = Path(r"D:\UAV-Data\experiments\topology_graph")
-OUTPUT_PATH = GRAPH_DIR / "tier_activation.json"
+OUTPUT_PATH = GRAPH_DIR / "edge_activation.json"
 
 
 def main() -> int:
     names = json.loads((GRAPH_DIR / "feature_names.json").read_text(encoding="utf-8"))
-    tier1 = np.load(GRAPH_DIR / "adjacency_physical_tier1.npy")
-    tier2 = np.load(GRAPH_DIR / "adjacency_physical_tier2.npy")
+    observable = np.load(GRAPH_DIR / "adjacency_hover_observable.npy")
+    silent = np.load(GRAPH_DIR / "adjacency_hover_silent.npy")
 
     n = len(names)
     iu = np.triu_indices(n, k=1)
     masks = {
-        "tier1_hover_observable": tier1[iu] > 0,
-        "tier2_hover_silent": tier2[iu] > 0,
-        "not_in_prior": ~((tier1[iu] > 0) | (tier2[iu] > 0)),
+        "hover_observable": observable[iu] > 0,
+        "hover_silent": silent[iu] > 0,
+        "not_in_prior": ~((observable[iu] > 0) | (silent[iu] > 0)),
     }
 
     delta = {
@@ -107,7 +108,7 @@ def main() -> int:
     OUTPUT_PATH.write_text(
         json.dumps(
             {
-                "schema_version": "tier_activation_v1",
+                "schema_version": "edge_activation_v1",
                 "pilot_dir": str(PILOT_DIR),
                 "groups": report,
                 "wake_up": wake,
