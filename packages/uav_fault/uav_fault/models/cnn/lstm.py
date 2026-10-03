@@ -3,6 +3,22 @@ Online fault detection model family.
 
 This module keeps the online architectures used by both training and runtime
 in one place so the detector can load exactly the same model definitions.
+
+Channel schemas -- the online and offline paths are NOT on the same feature set:
+
+  RFLY_SEQ_COLUMNS_V1 (this module, 31 channels)
+      The ONLINE runtime schema, fed by the RflySim/PX4 live bridge. It still
+      carries baro_temp, baro_pressure, actuator_mean, actuator_std,
+      actuator_effort and absolute baro_alt, i.e. exactly the fields the offline
+      feature contract v1 dropped. Online models are therefore 31-channel until
+      the runtime schema itself migrates.
+
+  feature contract v1 (D:\\UAV-Data\\feature_contract_v1.json, 26 channels)
+      The OFFLINE schema used by the window manifest and norm stats. It drops
+      the five environment-dependent channels above and renames baro_alt to
+      baro_alt_relative.
+
+So: online architectures default to 31, offline architectures default to 26.
 """
 
 from __future__ import annotations
@@ -88,7 +104,7 @@ class BiLSTMClassifier(nn.Module):
 class OnlineBiLSTM(nn.Module):
     def __init__(
         self,
-        in_channels: int = 26,
+        in_channels: int = 31,
         hidden_size: int = 64,
         num_layers: int = 1,
         num_classes: int = 2,
@@ -126,7 +142,7 @@ class OnlineBiLSTM(nn.Module):
 class OnlineCNN1D(nn.Module):
     def __init__(
         self,
-        in_channels: int = 26,
+        in_channels: int = 31,
         hidden_size: int = 64,
         num_layers: int = 1,
         num_classes: int = 2,
@@ -233,7 +249,7 @@ class _MSTCAFeatureEncoder(nn.Module):
 class OnlineMSTCA(nn.Module):
     def __init__(
         self,
-        in_channels: int = 26,
+        in_channels: int = 31,
         hidden_size: int = 64,
         num_layers: int = 1,
         num_classes: int = 2,
@@ -256,7 +272,7 @@ class OnlineMSTCA(nn.Module):
 class OnlineKGMSTCA(nn.Module):
     def __init__(
         self,
-        in_channels: int = 26,
+        in_channels: int = 31,
         hidden_size: int = 64,
         num_layers: int = 1,
         num_classes: int = 2,
@@ -361,7 +377,7 @@ class OnlineKGMSTCA(nn.Module):
 class OnlineTransformer(nn.Module):
     def __init__(
         self,
-        in_channels: int = 26,
+        in_channels: int = 31,
         hidden_size: int = 64,
         num_layers: int = 2,
         num_classes: int = 2,

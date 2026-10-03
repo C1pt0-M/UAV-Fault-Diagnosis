@@ -128,9 +128,11 @@ def validate_cache_contract(cache_dir: Path) -> dict:
             raise ValueError(
                 f"norm_stats.json contract mismatch: {key}={actual!r}, expected {expected!r}"
             )
-    if len(columns) != 26:
+    if len(columns) != 31:
+        # The online path still uses the 31-channel RFLY_SEQ_COLUMNS_V1 runtime
+        # schema; the 26-channel feature contract v1 is the offline path.
         raise ValueError(
-            f"norm_stats.json contract mismatch: columns={len(columns)}, expected 26"
+            f"norm_stats.json contract mismatch: columns={len(columns)}, expected 31"
         )
 
     for split_name in ("train", "val", "test"):
