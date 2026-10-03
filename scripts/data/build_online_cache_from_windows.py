@@ -211,8 +211,8 @@ def build_split(
     return x, y, summary
 
 
-def read_live_session(path: Path, columns: list[str]) -> np.ndarray:
-    """Read a live-link recording into the 26 contract columns.
+def read_live_session(path: Path, columns: list[str]) -> tuple[np.ndarray, np.ndarray]:
+    """Read a live-link recording into the 26 contract columns, plus its timestamps.
 
     Live recordings already use the bridge's canonical naming (motor1..4,
     baro_alt_meter, roll/pitch/yaw in radians, actuator_out_1..4 as PWM), so they go
@@ -224,7 +224,40 @@ def read_live_session(path: Path, columns: list[str]) -> np.ndarray:
     for i, record in enumerate(frame.to_dict(orient="records")):
         canonical, _ = canonicalize_rfly_frame(record)
         matrix[i] = [canonical[name] for name in columns]
-    return matrix
+    times = pd.to_numeric(frame.get("time_s"), errors="coerce").to_numpy(dtype=np.float64)
+    return matrix, times
+
+
+def resample_uniform(
+    matrix: np.ndarray, times: np.ndarray, target_hz: float
+) -> np.ndarray:
+    """Put a jittery live recording on a uniform timeline.
+
+    The recordings are not uniformly sampled: ~70% of frames are 15.9 ms apart and
+    ~28% are 30.4 ms apart (63 Hz and 33 Hz alternating), averaging 49.9 Hz. Without
+    resampling a 150-sample window spans anywhere from 2.4 s to 4.5 s, while a training
+    window is exactly 3 s. Interpolating onto a 50 Hz grid restores that equivalence.
+    """
+    finite = np.isfinite(times)
+    if finite.sum() < 2:
+        return matrix
+    times = times[finite]
+    matrix = matrix[finite]
+    order = np.argsort(times)
+    times, matrix = times[order], matrix[order]
+    keep = np.concatenate(([True], np.diff(times) > 0))
+    times, matrix = times[keep], matrix[keep]
+    if len(times) < 2:
+        return matrix
+
+    count = int(np.floor((times[-1] - times[0]) * target_hz)) + 1
+    if count < 2:
+        return matrix
+    grid = times[0] + np.arange(count) / target_hz
+    out = np.empty((count, matrix.shape[1]), dtype=np.float64)
+    for channel in range(matrix.shape[1]):
+        out[:, channel] = np.interp(grid, times, matrix[:, channel])
+    return out
 
 
 def build_extra_normal_windows(
@@ -235,6 +268,7 @@ def build_extra_normal_windows(
     window_size: int,
     stride: int,
     max_per_file: int,
+    resample_hz: float,
 ) -> tuple[torch.Tensor, list[str]]:
     """Windows for the RflySim live normal sessions; all labelled normal."""
     files = sorted(directory.glob(glob))
@@ -244,7 +278,9 @@ def build_extra_normal_windows(
     batches: list[np.ndarray] = []
     used: list[str] = []
     for path in files:
-        matrix = read_live_session(path, columns)
+        matrix, times = read_live_session(path, columns)
+        if resample_hz > 0:
+            matrix = resample_uniform(matrix, times, resample_hz)
         spans = [
             (start, start + window_size)
             for start in range(0, len(matrix) - window_size + 1, stride)
@@ -289,6 +325,16 @@ def main() -> int:
         help="matches the historical extra_normal_max_windows_per_file",
     )
     parser.add_argument("--extra-normal-stride", type=int, default=30)
+    parser.add_argument(
+        "--extra-normal-resample-hz",
+        type=float,
+        default=50.0,
+        help=(
+            "resample live recordings onto a uniform grid before windowing; 0 disables. "
+            "The recordings alternate between ~63 Hz and ~33 Hz, so without this a "
+            "150-sample window is not 3 s."
+        ),
+    )
     parser.add_argument(
         "--splits",
         default=",".join(SPLIT_TO_FILE),
@@ -362,6 +408,7 @@ def main() -> int:
                 window_size=150,
                 stride=args.extra_normal_stride,
                 max_per_file=args.extra_normal_max_windows_per_file,
+                resample_hz=args.extra_normal_resample_hz,
             )
             if extra_x.shape[0]:
                 x = torch.cat([x, extra_x], dim=0)
@@ -421,6 +468,7 @@ def main() -> int:
                 "extra_normal_dir": args.extra_normal_dir,
                 "extra_normal_glob": args.extra_normal_glob,
                 "extra_normal_stride_frames": args.extra_normal_stride,
+                "extra_normal_resample_hz": args.extra_normal_resample_hz,
                 "extra_normal_max_windows_per_file": args.extra_normal_max_windows_per_file,
                 "extra_normal_split": "train",
                 "columns": columns,
