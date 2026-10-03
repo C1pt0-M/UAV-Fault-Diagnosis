@@ -49,9 +49,19 @@ from rfly_feature_contract import (  # noqa: E402
     window_batch,
 )
 
+sys.path.insert(0, str(REPO / "packages" / "uav_fault"))
+from uav_fault.telemetry.schema_adapter import canonicalize_rfly_frame  # noqa: E402
+
 DEFAULT_MANIFEST = Path(r"D:\UAV-Data\window_manifest_v1\window_manifest.csv")
 DEFAULT_NORM_STATS = Path(r"D:\UAV-Data\window_manifest_v1\norm_stats_train_v1.json")
 DEFAULT_OUTPUT = Path(r"D:\UAV-Data\online_cache_v2")
+
+# The 40 verified RflySim live normal sessions (takeoff-hover-land, vertical, box,
+# mixed; quality_status=pass). They are the only samples from the live telemetry
+# distribution, and without them the live path reported fault_prob ~1 on normal
+# flights (see docs/autodl_rfly40_retrain.md, acceptance item 4).
+DEFAULT_EXTRA_NORMAL_DIR = Path(r"D:\UAV-Data(old)\extra_normals")
+EXTRA_NORMAL_GLOB = "nf_*.csv"
 
 MANIFEST_COLUMNS = [
     "case_uid",
@@ -201,6 +211,60 @@ def build_split(
     return x, y, summary
 
 
+def read_live_session(path: Path, columns: list[str]) -> np.ndarray:
+    """Read a live-link recording into the 26 contract columns.
+
+    Live recordings already use the bridge's canonical naming (motor1..4,
+    baro_alt_meter, roll/pitch/yaw in radians, actuator_out_1..4 as PWM), so they go
+    through the same adapter the live path uses. That is the point: these samples must
+    carry exactly the features the detector sees at inference time.
+    """
+    frame = pd.read_csv(path, low_memory=False)
+    matrix = np.empty((len(frame), len(columns)), dtype=np.float64)
+    for i, record in enumerate(frame.to_dict(orient="records")):
+        canonical, _ = canonicalize_rfly_frame(record)
+        matrix[i] = [canonical[name] for name in columns]
+    return matrix
+
+
+def build_extra_normal_windows(
+    directory: Path,
+    glob: str,
+    columns: list[str],
+    *,
+    window_size: int,
+    stride: int,
+    max_per_file: int,
+) -> tuple[torch.Tensor, list[str]]:
+    """Windows for the RflySim live normal sessions; all labelled normal."""
+    files = sorted(directory.glob(glob))
+    if not files:
+        return torch.zeros((0, len(columns), window_size), dtype=torch.float32), []
+
+    batches: list[np.ndarray] = []
+    used: list[str] = []
+    for path in files:
+        matrix = read_live_session(path, columns)
+        spans = [
+            (start, start + window_size)
+            for start in range(0, len(matrix) - window_size + 1, stride)
+        ]
+        if max_per_file > 0 and len(spans) > max_per_file:
+            picks = np.unique(
+                np.linspace(0, len(spans) - 1, max_per_file).round().astype(int)
+            )
+            spans = [spans[i] for i in picks]
+        if not spans:
+            print(f"  no usable windows in {path.name} ({len(matrix)} rows)")
+            continue
+        batches.append(window_batch(matrix, columns, spans))
+        used.append(path.name)
+
+    if not batches:
+        return torch.zeros((0, len(columns), window_size), dtype=torch.float32), []
+    return torch.from_numpy(np.concatenate(batches, axis=0)), used
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", default=str(DEFAULT_MANIFEST))
@@ -212,6 +276,19 @@ def main() -> int:
         default=64,
         help="0 keeps every closed-set window (tens of GB); 64 keeps the cache ~GB",
     )
+    parser.add_argument(
+        "--extra-normal-dir",
+        default=str(DEFAULT_EXTRA_NORMAL_DIR),
+        help="RflySim live normal sessions added to the train split; empty to skip",
+    )
+    parser.add_argument("--extra-normal-glob", default=EXTRA_NORMAL_GLOB)
+    parser.add_argument(
+        "--extra-normal-max-windows-per-file",
+        type=int,
+        default=128,
+        help="matches the historical extra_normal_max_windows_per_file",
+    )
+    parser.add_argument("--extra-normal-stride", type=int, default=30)
     parser.add_argument(
         "--splits",
         default=",".join(SPLIT_TO_FILE),
@@ -275,6 +352,35 @@ def main() -> int:
             continue
         print(f"\n[{split}] {len(part)} windows over {part['case_uid'].nunique()} cases")
         x, y, info = build_split(part, contract, columns, verbose=True)
+
+        if split == "train" and args.extra_normal_dir:
+            extra_dir = Path(args.extra_normal_dir)
+            extra_x, used_files = build_extra_normal_windows(
+                extra_dir,
+                args.extra_normal_glob,
+                columns,
+                window_size=150,
+                stride=args.extra_normal_stride,
+                max_per_file=args.extra_normal_max_windows_per_file,
+            )
+            if extra_x.shape[0]:
+                x = torch.cat([x, extra_x], dim=0)
+                y = torch.cat([y, torch.zeros(extra_x.shape[0], dtype=torch.int64)])
+                info["manifest_windows"] = info["windows"]
+                info["windows"] = int(x.shape[0])
+                info["extra_normal_files"] = len(used_files)
+                info["extra_normal_windows"] = int(extra_x.shape[0])
+                info["extra_normal_dir"] = str(extra_dir)
+                info["normal"] = int((y == 0).sum())
+                info["fault"] = int((y == 1).sum())
+                info["fault_ratio"] = float((y == 1).float().mean())
+                print(
+                    f"  + {extra_x.shape[0]} windows from "
+                    f"{len(used_files)} RflySim live normal sessions"
+                )
+            else:
+                print(f"  no extra normals found in {extra_dir}")
+
         torch.save({"x": x, "y": y}, output_dir / filename)
         summary[split] = info
         print(
@@ -312,12 +418,18 @@ def main() -> int:
                 "schema_version": "online_cache_v2",
                 "manifest": str(args.manifest),
                 "max_windows_per_case": args.max_windows_per_case,
+                "extra_normal_dir": args.extra_normal_dir,
+                "extra_normal_glob": args.extra_normal_glob,
+                "extra_normal_stride_frames": args.extra_normal_stride,
+                "extra_normal_max_windows_per_file": args.extra_normal_max_windows_per_file,
+                "extra_normal_split": "train",
                 "columns": columns,
                 "splits": summary,
                 "notes": (
                     "Derived from the 26-channel window manifest. Window-level labels: "
                     "normal->0, motor|sensor->1, open-set (unknown) excluded. "
-                    "Pre-fault windows inside fault cases stay labelled normal."
+                    "Pre-fault windows inside fault cases stay labelled normal. "
+                    "RflySim live normal sessions are appended to train only."
                 ),
             },
             ensure_ascii=False,
