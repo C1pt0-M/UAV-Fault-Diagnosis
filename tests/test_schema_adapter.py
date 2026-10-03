@@ -11,12 +11,14 @@ from uav_fault.telemetry.schema_adapter import (
 
 
 def test_canonicalize_rfly_frame_returns_full_canonical_columns_with_defaults():
+    # roll/pitch/yaw are radians on every live path (see
+    # tests/test_euler_quaternion_units.py).
     canonical, coverage = canonicalize_rfly_frame({
         'time_s': 1.25,
         '_actuator_outputs_0_output[0]': 0.2,
-        'roll': 10.0,
-        'pitch': -5.0,
-        'yaw': 90.0,
+        'roll': 0.1745,
+        'pitch': -0.0873,
+        'yaw': 1.5708,
     })
 
     assert CANONICAL_SCHEMA_VERSION == 'rfly_seq_v1'
@@ -151,9 +153,9 @@ def test_adapt_px4_live_frame_prefers_live_quaternion_magnetometer_and_baro_pres
         'mag_y': -0.02,
         'mag_z': 0.03,
         'baro_pressure_pa': 100100.0,
-        'roll': 5.0,
-        'pitch': 6.0,
-        'yaw': 7.0,
+        'roll': 0.0873,
+        'pitch': 0.1047,
+        'yaw': 0.1222,
     })
 
     assert canonical['att_q_w'] == 0.9

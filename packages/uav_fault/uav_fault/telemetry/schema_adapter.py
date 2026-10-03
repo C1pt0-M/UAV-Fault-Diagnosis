@@ -176,13 +176,22 @@ def assess_canonical_input_contract(
     }
 
 
-def _quat_from_euler(roll_deg: Any, pitch_deg: Any, yaw_deg: Any) -> tuple[float, float, float, float] | None:
-    roll = _safe_float(roll_deg)
-    pitch = _safe_float(pitch_deg)
-    yaw = _safe_float(yaw_deg)
+def _quat_from_euler(roll_rad: Any, pitch_rad: Any, yaw_rad: Any) -> tuple[float, float, float, float] | None:
+    """Quaternion from roll/pitch/yaw in RADIANS.
+
+    Every caller supplies radians, so there is no unit conversion here:
+      * subscriptions.subscribe_attitude already does math.radians(euler.roll_deg)
+      * the RflySim live recordings store radians (hover roll ~0.0036)
+      * feature_contract_v1 declares the RflySim source as derived_from_euler_rad
+      * rfly_bridge.rfly_live_bridge._quat_from_euler takes radians too
+    Applying math.radians here shrank att_q_x/y/z by ~57x on the live path, which
+    left three of the 26 channels effectively dead. Do not reintroduce it.
+    """
+    roll = _safe_float(roll_rad)
+    pitch = _safe_float(pitch_rad)
+    yaw = _safe_float(yaw_rad)
     if roll is None or pitch is None or yaw is None:
         return None
-    roll, pitch, yaw = map(math.radians, (roll, pitch, yaw))
     cr, sr = math.cos(roll / 2), math.sin(roll / 2)
     cp, sp = math.cos(pitch / 2), math.sin(pitch / 2)
     cy, sy = math.cos(yaw / 2), math.sin(yaw / 2)
