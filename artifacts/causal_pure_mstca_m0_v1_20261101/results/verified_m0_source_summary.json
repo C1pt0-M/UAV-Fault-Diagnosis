@@ -1,0 +1,63 @@
+{
+  "status": "PASS_BOTH_AUTHORIZED_M0_SOURCE_RUNS_VERIFIED",
+  "verified_at": "2026-11-01T17:13:21.156181+00:00",
+  "protocol_sha256": "6ef47aead15fea51e4c7d4b53289383ecd038d67b82e3cae8c07ddcd8b450fe6",
+  "seed": 42,
+  "rows": {
+    "uniform_replacement": {
+      "epochs": 65,
+      "best_epoch": 65,
+      "accuracy": 0.9697781619129934,
+      "macro_f1": 0.9697732825970833,
+      "fault_recall": 0.9787860931054803,
+      "normal_window_fpr": 0.03883878241262683,
+      "original_normal_window_fpr": 0.15005476451259583,
+      "inactive_in_fault_case_normal_fpr": 0.00030360531309297915,
+      "original_normal_hover_fpr": 0.45225464190981435,
+      "confusion_matrix": [
+        [
+          17051,
+          689
+        ],
+        [
+          360,
+          16610
+        ]
+      ],
+      "gradient_steps": 20605,
+      "best_checkpoint_sha256": "60143bd276cb62284a59a56821a0b32c0c2ac378d0e19e76b85e3d4f1fa31524",
+      "elapsed_s": 486.96667961776257
+    },
+    "balanced_source_normal": {
+      "epochs": 74,
+      "best_epoch": 73,
+      "accuracy": 0.9723710746182657,
+      "macro_f1": 0.9723526927486086,
+      "fault_recall": 0.9680612846199175,
+      "normal_window_fpr": 0.02350620067643743,
+      "original_normal_window_fpr": 0.08937568455640744,
+      "inactive_in_fault_case_normal_fpr": 0.000683111954459203,
+      "original_normal_hover_fpr": 0.35809018567639256,
+      "confusion_matrix": [
+        [
+          17323,
+          417
+        ],
+        [
+          542,
+          16428
+        ]
+      ],
+      "gradient_steps": 23458,
+      "best_checkpoint_sha256": "ac8596cd2e762a4b50845b79e312b1588e68956839a0e9c3573f88a05b5fc6cb",
+      "elapsed_s": 545.3060693591833
+    }
+  },
+  "same_initial_state": true,
+  "selection_schedule_and_predictions_recomputed": true,
+  "final_test_or_Real_evaluated": false,
+  "deployment_modified": false,
+  "unregistered_reruns": false,
+  "interpretation": "One seed; source-development only. No statistical significance or final-test/Real/deployment claim.",
+  "verifier_sha256": "1af4e6fb628cc95ad478507a2196b1347b2313004cd7a99ddabc75f688179d79"
+}

@@ -1,0 +1,67 @@
+{
+  "status": "COMPLETE_TWO_M0_TRAINING_RUNS_WITH_VERIFIED_LOCAL_RECOVERY",
+  "completed_at_utc": "2026-11-01T17:13:21.676966+00:00",
+  "recorded_at": "2026-11-01T17:23:34.918873+00:00",
+  "local_verification_sha256": "e954779efa5d79a233d20d3c49e967551bd2cbf18c2d8254c79b5717a4f1bf32",
+  "archive_sha256": "656d54b851859eb4a74cea88e4eabd83c85aa15abe4974859e9fce1214b4c660",
+  "arms": {
+    "uniform_replacement": {
+      "epochs": 65,
+      "best_epoch": 65,
+      "gradient_steps": 20605,
+      "accuracy": 0.9697781619129934,
+      "macro_f1": 0.9697732825970833,
+      "fault_recall": 0.9787860931054803,
+      "normal_fpr": 0.03883878241262683,
+      "normal_false_positives": 689,
+      "normal_windows": 17740,
+      "original_normal_fpr": 0.15005476451259583,
+      "original_normal_false_positives": 685,
+      "original_normal_windows": 4565,
+      "hover_fpr": 0.45225464190981435,
+      "hover_false_positives": 341,
+      "hover_windows": 754,
+      "confusion_matrix": [
+        [
+          17051,
+          689
+        ],
+        [
+          360,
+          16610
+        ]
+      ],
+      "elapsed_s": 486.96667961776257
+    },
+    "balanced_source_normal": {
+      "epochs": 74,
+      "best_epoch": 73,
+      "gradient_steps": 23458,
+      "accuracy": 0.9723710746182657,
+      "macro_f1": 0.9723526927486086,
+      "fault_recall": 0.9680612846199175,
+      "normal_fpr": 0.02350620067643743,
+      "normal_false_positives": 417,
+      "normal_windows": 17740,
+      "original_normal_fpr": 0.08937568455640744,
+      "original_normal_false_positives": 408,
+      "original_normal_windows": 4565,
+      "hover_fpr": 0.35809018567639256,
+      "hover_false_positives": 270,
+      "hover_windows": 754,
+      "confusion_matrix": [
+        [
+          17323,
+          417
+        ],
+        [
+          542,
+          16428
+        ]
+      ],
+      "elapsed_s": 545.3060693591833
+    }
+  },
+  "additional_training_or_final_test_Real": false,
+  "automatic_server_shutdown_or_git_push": false
+}

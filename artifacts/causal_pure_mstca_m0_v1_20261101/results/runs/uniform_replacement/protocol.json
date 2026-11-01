@@ -1,0 +1,238 @@
+{
+  "protocol_name": "causal_pure_mstca_m0_v1",
+  "status": "FROZEN_M0_PREPARATION_ONLY_NOT_AUTHORIZED_TO_LAUNCH",
+  "date": "2026-11-01",
+  "data_version": "rflymad_causal_publication_replay_v1",
+  "design_sha256": "7ab04a827c3ec2d1721721b55db31d38c53e5dcbb4abc9e98246ec139fbf32f8",
+  "purpose": "Pure26 MSTCA comparator; current request preparation only. Same source data, normalization, masks, budget, sampling and selection as historical long-budget two arms.",
+  "arms": [
+    "uniform_replacement",
+    "balanced_source_normal"
+  ],
+  "seeds": [
+    42
+  ],
+  "maximum_formal_jobs": 2,
+  "data": {
+    "columns": [
+      "actuator_ctrl_1",
+      "actuator_ctrl_2",
+      "actuator_ctrl_3",
+      "actuator_ctrl_4",
+      "actuator_out_1",
+      "actuator_out_2",
+      "actuator_out_3",
+      "actuator_out_4",
+      "gyro_x",
+      "gyro_y",
+      "gyro_z",
+      "accel_x",
+      "accel_y",
+      "accel_z",
+      "baro_alt_relative",
+      "att_q_w",
+      "att_q_x",
+      "att_q_y",
+      "att_q_z",
+      "vel_x",
+      "vel_y",
+      "vel_z",
+      "mag_x",
+      "mag_y",
+      "mag_z",
+      "acc_norm"
+    ],
+    "train_windows": 162069,
+    "val_windows": 34710,
+    "train_cases": 2570,
+    "val_cases": 552,
+    "train_original_denominator": 168800,
+    "val_original_denominator": 35520,
+    "legacy_suffix_included": false,
+    "source_split_and_pair_membership_unchanged": true
+  },
+  "data_identities": {
+    "build_manifest.json": "250a246f48eec5141fca2a2c6f9fa8d99d8dc08572b075fe2d99027883eb1773",
+    "input_contract.json": "3ed8b8cd4008384109629dc4c8308839620e170286345e752b227495f4597945",
+    "norm_stats.json": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+    "train_cache_complete.json": "bfce0a9ae3cb0fa0953425caa03a9337053c5c1e0d0f6a2fe920ed54bca192da",
+    "val_cache_complete.json": "1423cb199cbe92add62912f76b585600f8a4b9b2d85e0cc8c87b6a81f004cb82",
+    "cache/train.pt": "d4c3c2c741c67d224547cf604087f45fa4ed371197129fd026ecf475d4de428d",
+    "cache/val.pt": "1cb842b81ef7c8c8f00708add6404b96191d50b97b83aa76f26e27aadedf411f",
+    "ledgers/train_included_windows.csv": "0c491c2ede34534eaba020ae5a9d09257fedb692519863f325c6b0dfeb4afecb",
+    "ledgers/val_included_windows.csv": "8b966bc5bfe74a26bd7614ab44c2e8b581b5cc6f66d0f55ea6f545cb253c16d6"
+  },
+  "code_identities": {
+    "scripts/research/train_causal_source_v1.py": "5ff7d43bcf1b0118154b32511c085839de300f25b7c267d5aafed9bf8f088e62",
+    "scripts/research/smoke_normal_source_sampling.py": "bca9d170fd967284d6ea914c4fb3ae459e9fc13aaf0005f06f2fe5307e54968c",
+    "scripts/research/train_source_normal_sampling.py": "ec26de4cda06ed3feb2360fc42a8469a2146950cdbd95201551fad20c4a5e4e2",
+    "scripts/research/run_normal_adaptation_v1.py": "932d6b57189c76c6bd3738bf19d65648d9809081794da3309dd1942bc48d29e4",
+    "scripts/research/run_normal_replay_v1.py": "86995e1f972f1cc418091ff4e0bcd4311fe4d79947ca946a4b8410cd2b98cafc",
+    "packages/uav_fault/uav_fault/models/cnn/lstm.py": "c01d5c1c37175f2bcbac2654d2bec43898d814073d465122afe515a825bcb369",
+    "packages/uav_fault/uav_fault/models/cnn/focal_loss.py": "8fb99a31dd838bafdbad20591313d7bef6766b5b6b64cc73cda8620ed0b3771a",
+    "packages/uav_fault/uav_fault/models/train_online_detector.py": "aa4d64f6c79a8b568e8a5f3f79953dd9572d9d074b7f7ee7d699d4894e5eddc3",
+    "packages/uav_fault/uav_fault/data/causal_cache.py": "c60774c78609381dac87ce264dc837fcc0ad414be767c0ad67ff19849c5e2a05",
+    "scripts/research/train_causal_mstca_m0.py": "5b14a00a0dc83e37d39d9c9524133fdd5cba53963f3dfbe77a48a79dae73c9cf",
+    "packages/uav_fault/uav_fault/model_contract.py": "8980d99a9a6a61876d71db8d2e2103b436f886dc8f8162d1bda85b96e58be017",
+    "packages/uav_fault/uav_fault/causal_input.py": "9c875d6aed2ac04b410afb564e3309b3be84f9578d354e3790fcf6c985320408"
+  },
+  "sampling": {
+    "sampler": "WeightedRandomSampler",
+    "replacement": true,
+    "draws_per_epoch": 162069,
+    "uniform": "Each qualified train window weight1",
+    "balanced": "Recompute from eligible current labels/families; original normal and inactive-in-fault-case normal receive half of total current normal mass each, fault weight1",
+    "normal_counts": {
+      "original_normal_case": 21145,
+      "normal_part_of_fault_case": 61906
+    },
+    "fault_windows": 79018,
+    "invariants": "Both arms same expected normal/fault probability, total mass and original eligible population; no class-balanced loss or old suffix",
+    "sampler_seed_offset": 11,
+    "loader_seed_offset": 101
+  },
+  "loss": {
+    "name": "FocalLoss",
+    "gamma": 2.0,
+    "alpha": null,
+    "class_weights": [
+      1.0,
+      1.0
+    ],
+    "reason": "Sampler isolates normal-origin mass; no additional class-weight adjustment"
+  },
+  "model": {
+    "implementation": "OnlineMSTCA",
+    "honest_description": "Pure existing MSTCA encoder and binary head; exact26-channel causal sequence only",
+    "in_channels": 26,
+    "relation_features_used": false,
+    "kinematic_residuals_used": false,
+    "pretrained_checkpoint": null,
+    "architectural_changes": "Use existing OnlineMSTCA; no new encoder implementation."
+  },
+  "training": {
+    "hidden_size": 64,
+    "num_layers": 1,
+    "dropout": 0.2,
+    "parameters": 105938,
+    "max_epochs": 100,
+    "batch_size": 512,
+    "cpu_threads": 4,
+    "optimizer": "AdamW",
+    "lr": 0.0003,
+    "weight_decay": 0.0001,
+    "loss_gamma": 2.0,
+    "loss_alpha": null,
+    "gradient_clip": 1.0,
+    "augmentation": false,
+    "mixed_precision": false,
+    "warmup_epochs": 5,
+    "min_lr": 1e-06,
+    "schedule": "Existing get_warmup_cosine_lr zero-based epoch, fixed100 epoch horizon",
+    "initialization": "Explicit common raw_encoder->encoder and head mapping from frozen untrained seed42 historical initial.pt; whole models differ. Same M0 state for both arms. No trained weights.",
+    "formal_device": "cuda:0 required, never silently fall back or allocate GPU",
+    "draws_per_epoch": 162069,
+    "num_workers": 0
+  },
+  "validation": {
+    "population": "All34710 current qualified source val, never sampled/reweighted for formal run",
+    "batch_size": 512,
+    "prediction_rule": "argmax binary logits, fixed fault threshold0.5, no threshold sweep",
+    "checkpoint": "Strict maximum overall source val Macro-F1; earliest exact tie wins; save any strict improvement",
+    "early_stop": {
+      "min_epochs": 30,
+      "patience": 20,
+      "significant_delta": 0.002,
+      "rule": "Reuse selection_step separate significant_reference; strict improvements always checkpoint, patience counts only from min_epochs"
+    },
+    "stratified_reports": [
+      "overall",
+      "normal_origin",
+      "normal_by_status",
+      "original_normal_by_status incl hover",
+      "fault_by_case_class"
+    ],
+    "selection_not_from": [
+      "internal_test",
+      "Real",
+      "hover FPR",
+      "best seed"
+    ],
+    "interpretation": "Source-development only; one seed is not statistical proof; report both arms without discarding lower arm"
+  },
+  "cpu_check": {
+    "epochs": 2,
+    "draws_per_epoch": 128,
+    "batch_size": 32,
+    "val_windows_per_case": 2,
+    "validation_batch_size": 128,
+    "purpose": "Actual tiny source-only optimizer execution check, not formal retraining/performance"
+  },
+  "formal_environment": {
+    "torch": "2.5.1+cu124",
+    "numpy": "2.1.3",
+    "torch_cuda": "12.4"
+  },
+  "persistence": "Fresh output directories only; never overwrite old protocols/runs. No optimizer updates during preflight. Explicit per-arm formal authorization and registered CUDA environment required.",
+  "compute": {
+    "requested_ssh_alias": "autodl_UAV2",
+    "current_authorization": "Prepare only; do not launch formal training yet",
+    "remote_preflight_status": "BLOCKED_SSH_AUTHENTICATION_REJECTED",
+    "formal_environment_unverified": true,
+    "no_environment_changes_or_automatic_installations": true,
+    "run_requires_explicit_confirmation_flag": true
+  },
+  "forbidden": [
+    "reading internal test cache",
+    "reading Real or test ledgers/tensors for model selection",
+    "old data hash bypass",
+    "automatic extra seeds",
+    "automatic deployment",
+    "reporting CPU-check validation as model performance",
+    "Changing source input age thresholds, labels, split, normalization, members or sampling budget",
+    "M0 relation features/residual channels or legacy31 inputs",
+    "Launching formal jobs during this preparation request"
+  ],
+  "execution_revision": {
+    "name": "linux_path_only_r1",
+    "original_protocol_sha256": "565e34af65bcb01bade26f58ad4dacf4288901c247622d052f36ede9454252a5",
+    "reason": "Recorded Windows cache_file paths relocated by basename under explicit root/cache. Same cache hashes/content, version/role/mask/containment validation retained. No training, sampler, selection, seeds or data changes.",
+    "changed_code": {
+      "packages/uav_fault/uav_fault/data/causal_cache.py": {
+        "before": "d2446e8bc36dcd0fd337084b6d4bd991f457069869295e1310dc2c11cad49ef0",
+        "after": "c60774c78609381dac87ce264dc837fcc0ad414be767c0ad67ff19849c5e2a05"
+      }
+    },
+    "created_at": "2026-10-31T19:09:13.818544+00:00"
+  },
+  "experiment_id": "causal_pure_mstca_m0_v1",
+  "budget_revision": {
+    "baseline_protocol_sha256": "40cf51c9c711f06f1b35117f04b7d02fa7b6fd6c8b2a0606822c992320f8a9c0",
+    "execution_base": "Keep original Linux-compatible frozen code/data; new config only, never edit old protocol or old runs.",
+    "change_paths": [
+      "training.max_epochs",
+      "training.warmup_epochs",
+      "training.schedule",
+      "validation.early_stop.min_epochs",
+      "validation.early_stop.patience"
+    ]
+  },
+  "baseline": {
+    "protocol_path": "artifacts/causal_source_longbudget_v1_20261101/corrected_longbudget_protocol.json",
+    "protocol_sha256": "2d92fc2ffa2dc28050000721e44fb5509a45e67eae9269ede59df4d557757acd",
+    "historical_model": "OnlineKGMSTCA",
+    "historical_parameters": 156491,
+    "current_model": "OnlineMSTCA",
+    "no_historical_files_modified": true
+  },
+  "initialization_anchor": {
+    "source_path_for_preparation": "artifacts/causal_source_longbudget_v1_20261101/results/runs/uniform_replacement/initial.pt",
+    "sha256": "b666b8a28129319f0b58e1c62ab7fa0e8698d61ec6aa32243824cda243f3e956",
+    "state_digest": "7772ccc1a20ce8b6d97c7ce83fc4927a8ff9a5dc7bef17038ca767806e561c55",
+    "m0_mapped_state_digest": "a68551099cba00575f1eec6edc31ccf47b39ca8e0fa204ae2fe065d3400be646",
+    "kind": "Archived random untrained initialization; not best.pt or trained model",
+    "mapping": "raw_encoder.* -> encoder.*; head.* -> head.*; no relation/gate/proj keys loaded",
+    "formal_fresh_seed_reproduction_required": true
+  },
+  "preparation_created_at": "2026-11-01T15:56:02.136049+00:00"
+}

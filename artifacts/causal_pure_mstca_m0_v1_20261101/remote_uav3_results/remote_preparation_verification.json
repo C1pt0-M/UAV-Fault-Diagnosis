@@ -1,0 +1,51 @@
+{
+  "status": "PASS_REMOTE_M0_PREPARATION_ONLY_AWAITING_TRAINING_AUTHORIZATION",
+  "checked_at": "2026-11-01T16:47:58.567911+00:00",
+  "ssh_alias": "autodl_UAV3",
+  "remote_root": "/root/autodl-tmp/causal_pure_mstca_m0_v1_20261102",
+  "protocol_sha256": "6ef47aead15fea51e4c7d4b53289383ecd038d67b82e3cae8c07ddcd8b450fe6",
+  "environment": {
+    "python": "3.12.3 | packaged by Anaconda, Inc. | (main, May  6 2024, 19:46:43) [GCC 11.2.0]",
+    "torch": "2.5.1+cu124",
+    "numpy": "2.1.3",
+    "cuda_available": true,
+    "torch_cuda": "12.4"
+  },
+  "train_windows": 162069,
+  "val_windows": 34710,
+  "parameters": 105938,
+  "common_state_tensors": 41,
+  "initialization": {
+    "anchor_sha256": "b666b8a28129319f0b58e1c62ab7fa0e8698d61ec6aa32243824cda243f3e956",
+    "anchor_state_digest": "7772ccc1a20ce8b6d97c7ce83fc4927a8ff9a5dc7bef17038ca767806e561c55",
+    "m0_initial_state_digest": "a68551099cba00575f1eec6edc31ccf47b39ca8e0fa204ae2fe065d3400be646",
+    "common_encoder_and_head_exact_anchor_match": true,
+    "legacy_fresh_seed_reproduction_checked_in_matching_environment": true,
+    "local_environment_matches_formal": true,
+    "common_state_tensors": 41,
+    "parameters": 105938,
+    "whole_models_identical": false,
+    "trained_checkpoint_used": false
+  },
+  "case_and_pair_isolation_pass": true,
+  "all_frozen_code_pins_pass": true,
+  "two_M0_arms_start_exactly_equal": true,
+  "synthetic_cpu_forward_shape": [
+    2,
+    2
+  ],
+  "synthetic_forward_state_unchanged": true,
+  "legacy_relation_feature_function_called": false,
+  "preparation_guard_rejects_formal_run": true,
+  "pytest_installed": false,
+  "remote_pytest_result": "NOT_RUN_MISSING_DEPENDENCY; earlier invocation reported no module named pytest",
+  "remote_independent_assertions_pass": true,
+  "no_dependencies_installed": true,
+  "optimizer_updates": 0,
+  "real_sample_model_inference": false,
+  "test_or_Real_read": false,
+  "training_started": false,
+  "old_experiments_modified": false,
+  "frozen_protocol_compute_note": "Original autodl_UAV2/authentication status retained as preparation history; execution uses autodl_UAV3.",
+  "raw_preflight_status_note": "Pinned trainer uses PASS_LOCAL... status label on all hosts; this receipt independently identifies matching remote environment."
+}

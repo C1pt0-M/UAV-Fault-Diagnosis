@@ -1,0 +1,88 @@
+{
+  "status": "PASS_LOCAL_INDEPENDENT_M0_RESULTS_VERIFICATION",
+  "verified_at": "2026-11-01T17:23:08.983577+00:00",
+  "arms": {
+    "uniform_replacement": {
+      "epochs": 65,
+      "best_epoch": 65,
+      "gradient_steps": 20605,
+      "accuracy": 0.9697781619129934,
+      "macro_f1": 0.9697732825970833,
+      "fault_recall": 0.9787860931054803,
+      "normal_fpr": 0.03883878241262683,
+      "normal_false_positives": 689,
+      "normal_windows": 17740,
+      "original_normal_fpr": 0.15005476451259583,
+      "original_normal_false_positives": 685,
+      "original_normal_windows": 4565,
+      "hover_fpr": 0.45225464190981435,
+      "hover_false_positives": 341,
+      "hover_windows": 754,
+      "confusion_matrix": [
+        [
+          17051,
+          689
+        ],
+        [
+          360,
+          16610
+        ]
+      ],
+      "elapsed_s": 486.96667961776257
+    },
+    "balanced_source_normal": {
+      "epochs": 74,
+      "best_epoch": 73,
+      "gradient_steps": 23458,
+      "accuracy": 0.9723710746182657,
+      "macro_f1": 0.9723526927486086,
+      "fault_recall": 0.9680612846199175,
+      "normal_fpr": 0.02350620067643743,
+      "normal_false_positives": 417,
+      "normal_windows": 17740,
+      "original_normal_fpr": 0.08937568455640744,
+      "original_normal_false_positives": 408,
+      "original_normal_windows": 4565,
+      "hover_fpr": 0.35809018567639256,
+      "hover_false_positives": 270,
+      "hover_windows": 754,
+      "confusion_matrix": [
+        [
+          17323,
+          417
+        ],
+        [
+          542,
+          16428
+        ]
+      ],
+      "elapsed_s": 545.3060693591833
+    }
+  },
+  "epochs_recomputed": 139,
+  "all34710_predictions_per_arm_indices_labels_and_metrics_recomputed": true,
+  "schedule_and_strict_best_early_stopping_recomputed": true,
+  "all41_common_initial_tensors_exact_archived_random_anchor": true,
+  "same_M0_initial_state_both_arms": true,
+  "historical_old9_comparison_fixed05_same_sampling": {
+    "uniform_replacement": {
+      "historical_old9_macro_f1": 0.9750677419908667,
+      "M0_minus_old9_macro_f1": -0.005294459393783368,
+      "historical_old9_fault_recall": 0.9752504419563937,
+      "M0_minus_old9_fault_recall": 0.003535651149086605,
+      "historical_old9_hover_fpr": 0.356763925729443,
+      "M0_minus_old9_hover_fpr": 0.09549071618037136
+    },
+    "balanced_source_normal": {
+      "historical_old9_macro_f1": 0.969227596875599,
+      "M0_minus_old9_macro_f1": 0.0031250958730095757,
+      "historical_old9_fault_recall": 0.9582793164407778,
+      "M0_minus_old9_fault_recall": 0.009781968179139677,
+      "historical_old9_hover_fpr": 0.27586206896551724,
+      "M0_minus_old9_hover_fpr": 0.08222811671087532
+    }
+  },
+  "no_new_training_or_model_inference": true,
+  "no_final_test_or_Real_read": true,
+  "scope": "Single seed source validation, no statistical significance, no matched-recall feature selection claim. Same max budget and stopping policy; realized stopping epochs differ."
+}
