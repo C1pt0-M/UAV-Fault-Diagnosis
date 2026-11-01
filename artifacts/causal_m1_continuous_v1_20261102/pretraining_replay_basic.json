@@ -1,0 +1,673 @@
+{
+  "status": "PASS_PRETRAINING_CONTINUOUS_REPLAY_BASIC_CHECK",
+  "checked_at": "2026-11-01T19:09:52.303193+00:00",
+  "plan_sha256": "026bf88bd7c39d66cd3285ff27d01b130ca88faeec42bf6432de327912c695f4",
+  "cases": [
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_21_1019000020",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "gtd_events": [],
+      "command_events": [],
+      "raw_ulog_sha256": "c28a474dc0bf11054fada94564722479c1c189d37af085afb1cb8f99744f886a",
+      "raw_gtd_sha256": "51351bc7e3a80810d8806479a8d08488d1c7933820b1b1d60a17b50f0414783c",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": null,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "94a886c59d48f8fb9a76c78bf07ff8c1dc4515456e4b71881d362b372998e3b4",
+      "cold_M0_first_eligible_s": 19.392,
+      "cold_M1_first_eligible_s": 21.572,
+      "extra_cold_start_s": 2.1799999999999997,
+      "ongoing_history_M1_first_eligible_s": 21.572,
+      "residual_compute_ms": {
+        "count": 2205,
+        "median": 0.5679,
+        "p90": 0.6712800000000001,
+        "max": 1.7627
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": false,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_27_1019000026",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "gtd_events": [],
+      "command_events": [],
+      "raw_ulog_sha256": "d29e7b9366c94a7c15d6d49130fb318fda21be2eaa56844df114a5ef5a54f78b",
+      "raw_gtd_sha256": "3befab312417dc5e70d5c6ed760f35ebe5993fdaf475a54764184596b4d26c26",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": null,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "c280a0a2395d63c9cd3496f800c98733dc488199cd7a28ad0675acf78999c66c",
+      "cold_M0_first_eligible_s": 19.428,
+      "cold_M1_first_eligible_s": 21.588,
+      "extra_cold_start_s": 2.16,
+      "ongoing_history_M1_first_eligible_s": 21.588,
+      "residual_compute_ms": {
+        "count": 2493,
+        "median": 0.5366,
+        "p90": 0.65378,
+        "max": 1.7473
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": false,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_29_1019000028",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "gtd_events": [],
+      "command_events": [],
+      "raw_ulog_sha256": "b8d4bbca502fb8f3fb8e62675fa77de61cdf62b7068f2deebbd8e107b76d9a88",
+      "raw_gtd_sha256": "1b71e4f6289d624a8ea8e25d94235f503a9416a849108eac8f9cd5ecfe20cf38",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": null,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "33fe3d8b6931f2db0a5952f01de1cc857251fde8b20a9ceb2cb2aac854be9a2f",
+      "cold_M0_first_eligible_s": 19.337,
+      "cold_M1_first_eligible_s": 21.497,
+      "extra_cold_start_s": 2.16,
+      "ongoing_history_M1_first_eligible_s": 21.497,
+      "residual_compute_ms": {
+        "count": 2587,
+        "median": 0.5364,
+        "p90": 0.65734,
+        "max": 1.8802
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": false,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "SIL/hover/motor/TestCase_114_1000000113",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "motor",
+      "gtd_events": [
+        {
+          "start_s": 37.17,
+          "end_s": null,
+          "last_observed_s": 97.19
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 37.202,
+          "end_s": null,
+          "last_observed_s": 112.543
+        }
+      ],
+      "raw_ulog_sha256": "ce0a52b3424812b98cc61ca7650493d532296774c522816c4d55038fcb5d7612",
+      "raw_gtd_sha256": "b8a88125ab2296ae61361baf4a23a0b3ea9a624ddfb2919ea56293762c79227e",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.031999999999996476,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "63eaadfdbc09e7a611ffeb55e0732d332a163131b5c96edf1b03dbcaf833252e",
+      "cold_M0_first_eligible_s": 20.706,
+      "cold_M1_first_eligible_s": 23.326,
+      "extra_cold_start_s": 2.620000000000001,
+      "ongoing_history_M1_first_eligible_s": 23.326,
+      "residual_compute_ms": {
+        "count": 3974,
+        "median": 0.5372,
+        "p90": 0.6488700000000003,
+        "max": 2.0203
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "SIL/hover/accelerometer/TestCase_14_1002000013",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "accelerometer",
+      "gtd_events": [
+        {
+          "start_s": 37.409,
+          "end_s": null,
+          "last_observed_s": 62.425
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 37.457,
+          "end_s": null,
+          "last_observed_s": 73.445
+        }
+      ],
+      "raw_ulog_sha256": "0da5ec2853f85891845735fb4c1136ee07f3d5a43c1933b1c05b609802d9b735",
+      "raw_gtd_sha256": "1605aaced5958156c67aee13ad69044f063673db09d350c994b955627dbdaeff",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.04800000000000182,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "4c93296ac734c2113ef70dbae2e2ea46075f096855ee34e1b7eb9013249fb21c",
+      "cold_M0_first_eligible_s": 20.96,
+      "cold_M1_first_eligible_s": 23.54,
+      "extra_cold_start_s": 2.5799999999999983,
+      "ongoing_history_M1_first_eligible_s": 23.54,
+      "residual_compute_ms": {
+        "count": 2222,
+        "median": 0.5391,
+        "p90": 0.63949,
+        "max": 2.0147
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "SIL/hover/gyroscope/TestCase_11_1003000010",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "gyroscope",
+      "gtd_events": [
+        {
+          "start_s": 37.177,
+          "end_s": null,
+          "last_observed_s": 62.2
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 37.211,
+          "end_s": null,
+          "last_observed_s": 73.131
+        }
+      ],
+      "raw_ulog_sha256": "ffc8dcaad18936248197462ac576af13c32cdd383d4c497f42ee085de0f9b34d",
+      "raw_gtd_sha256": "44de8c295050163c3ba3707abdff17ead75000b4562d4473d7a2f76b4e3d810b",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.03399999999999892,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "aaa135157a44f6b7dd87fd2b8aaa162dd1f50f879c47d5201874201de4074aee",
+      "cold_M0_first_eligible_s": 20.699,
+      "cold_M1_first_eligible_s": 23.339,
+      "extra_cold_start_s": 2.639999999999997,
+      "ongoing_history_M1_first_eligible_s": 23.339,
+      "residual_compute_ms": {
+        "count": 2225,
+        "median": 0.5372,
+        "p90": 0.6421600000000001,
+        "max": 1.7521
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "SIL/hover/barometer/TestCase_12_1004000011",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "barometer",
+      "gtd_events": [
+        {
+          "start_s": 37.627,
+          "end_s": null,
+          "last_observed_s": 62.644
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 37.667,
+          "end_s": null,
+          "last_observed_s": 73.595
+        }
+      ],
+      "raw_ulog_sha256": "a905f189b1be0cc491fe67b34440adccdb9bff4f2b8c425c6102761552f861e2",
+      "raw_gtd_sha256": "feffec1b563fa20cf33214c75cb5d5d1d146a93285dd70622c25aa06478ef79d",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.03999999999999915,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "08a96c4068d3b1cb25f7f57404893afe33ec6c55ef2f3e85203a9c6cb381711d",
+      "cold_M0_first_eligible_s": 21.156,
+      "cold_M1_first_eligible_s": 23.756,
+      "extra_cold_start_s": 2.6000000000000014,
+      "ongoing_history_M1_first_eligible_s": 23.756,
+      "residual_compute_ms": {
+        "count": 2224,
+        "median": 0.5377,
+        "p90": 0.65254,
+        "max": 1.7452
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "SIL/hover/magnetometer/TestCase_11_1005000010",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "magnetometer",
+      "gtd_events": [
+        {
+          "start_s": 37.156,
+          "end_s": null,
+          "last_observed_s": 62.195
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 37.188,
+          "end_s": null,
+          "last_observed_s": 73.048
+        }
+      ],
+      "raw_ulog_sha256": "70fbcb566c4a42d4771ee40bb26900af7936206bab945b5659b8c42dc2b5b653",
+      "raw_gtd_sha256": "c8cb36041952493c446fc54ad39f01ca7158ab33ee3ccc4714929ed6ce9aab3a",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.03200000000000358,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "fe681d2f361b665217db7da5a4f930fe7e62a75283c47209398f4a5b2584dff9",
+      "cold_M0_first_eligible_s": 20.715,
+      "cold_M1_first_eligible_s": 23.355,
+      "extra_cold_start_s": 2.6400000000000006,
+      "ongoing_history_M1_first_eligible_s": 23.355,
+      "residual_compute_ms": {
+        "count": 2223,
+        "median": 0.5306,
+        "p90": 0.65548,
+        "max": 1.531
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "SIL/hover/GPS/TestCase_10_1006000009",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "GPS",
+      "gtd_events": [
+        {
+          "start_s": 36.936,
+          "end_s": null,
+          "last_observed_s": 61.976
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 37.064,
+          "end_s": null,
+          "last_observed_s": 72.772
+        }
+      ],
+      "raw_ulog_sha256": "07ed26a5687cf77667a36f80e40a8316db299a8bd3b7d7c5b0daeb401a651187",
+      "raw_gtd_sha256": "cf47dd90ec01d73b887c3a266d4830feca1143d90e5f3937c697971714f9efbb",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.1280000000000001,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "fe151c3e333d54a7a138d79d33012fc336139f695e64ffe7fe6b60420a5796a6",
+      "cold_M0_first_eligible_s": 20.468,
+      "cold_M1_first_eligible_s": 23.068,
+      "extra_cold_start_s": 2.6000000000000014,
+      "ongoing_history_M1_first_eligible_s": 23.068,
+      "residual_compute_ms": {
+        "count": 2225,
+        "median": 0.5316,
+        "p90": 0.6355400000000001,
+        "max": 1.8813
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_21_2019000020",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "gtd_events": [],
+      "command_events": [],
+      "raw_ulog_sha256": "addde7b01d65d2533d1c837ccb698459863c4882fee15cb80b98cf98c4cb9085",
+      "raw_gtd_sha256": "ebe01956ba75d45fb1d60971b84957337d4a226899e19be6df5573462aa8d0b2",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": null,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "07e190d17614feb1ae66c00ab710b2835d856cea9bec4f99806e422b4cd80b4e",
+      "cold_M0_first_eligible_s": 2367.238067,
+      "cold_M1_first_eligible_s": 2369.658067,
+      "extra_cold_start_s": 2.4200000000000728,
+      "ongoing_history_M1_first_eligible_s": 2369.658067,
+      "residual_compute_ms": {
+        "count": 2252,
+        "median": 0.5965,
+        "p90": 0.70628,
+        "max": 2.0988
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": false,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_27_2019000026",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "gtd_events": [],
+      "command_events": [],
+      "raw_ulog_sha256": "37e94dd11082a978f2590fb7a472a3aa4090c904442814de894f614f59a8baad",
+      "raw_gtd_sha256": "31b2c3c778d60ae6ca260267dc3668248cab7398b66cd09dc1d4c5d2262317fb",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": null,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "1ef25d41ae78ae1e9eebf9b3d8272f3539ffe1c6b336d30e5da42c4396ce9840",
+      "cold_M0_first_eligible_s": 40.768571,
+      "cold_M1_first_eligible_s": 42.828571,
+      "extra_cold_start_s": 2.059999999999995,
+      "ongoing_history_M1_first_eligible_s": 42.828571,
+      "residual_compute_ms": {
+        "count": 2450,
+        "median": 0.5897,
+        "p90": 0.7436699999999999,
+        "max": 2.2223
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": false,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_29_2019000028",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "gtd_events": [],
+      "command_events": [],
+      "raw_ulog_sha256": "028b73e1363931c538bf2ac3b1d39fcd5570f6f12f20c6403cf781b5df3a7870",
+      "raw_gtd_sha256": "1bcb86264a95ce2e90ac60b7debb01bdc51f245593df5e08729060dddfdb4b3e",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": null,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "62490588574a614b27c2e61a161f4ed4302bf9edae3aae39e366d74f8878ffb1",
+      "cold_M0_first_eligible_s": 40.752549,
+      "cold_M1_first_eligible_s": 42.792549,
+      "extra_cold_start_s": 2.039999999999999,
+      "ongoing_history_M1_first_eligible_s": 42.792549,
+      "residual_compute_ms": {
+        "count": 2545,
+        "median": 0.5929,
+        "p90": 0.7278399999999999,
+        "max": 1.8707
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": false,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "HIL/hover/motor/TestCase_114_2000000113",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "motor",
+      "gtd_events": [
+        {
+          "start_s": 53.395,
+          "end_s": null,
+          "last_observed_s": 113.414
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 53.449695,
+          "end_s": null,
+          "last_observed_s": 128.671223
+        }
+      ],
+      "raw_ulog_sha256": "666f14dfb9fd99bf3fbdeb9d8a2dc847ac5ea510bb09b9a13dac322f5dcd408d",
+      "raw_gtd_sha256": "72cd37a4e0debb70b0ecca8f4a4dd5942f4a174c1b177e1d66ac4e06b02ac0c5",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.054694999999995275,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "25717839cbc8bd051c92a94d50d61470c65f31de55e8820abb03b9fefb36dc5c",
+      "cold_M0_first_eligible_s": 38.603328,
+      "cold_M1_first_eligible_s": 40.903328,
+      "extra_cold_start_s": 2.3000000000000043,
+      "ongoing_history_M1_first_eligible_s": 40.903328,
+      "residual_compute_ms": {
+        "count": 3890,
+        "median": 0.60835,
+        "p90": 0.75123,
+        "max": 2.142
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "HIL/hover/accelerometer/TestCase_14_2002000013",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "accelerometer",
+      "gtd_events": [
+        {
+          "start_s": 169.505,
+          "end_s": null,
+          "last_observed_s": 194.526
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 169.544313,
+          "end_s": null,
+          "last_observed_s": 210.605669
+        }
+      ],
+      "raw_ulog_sha256": "384a285deedf7fddec896d94d92c57ffb512d581ff0ad8fe6e3284de44e57a15",
+      "raw_gtd_sha256": "8b7c97a5e6850484100b68bb202e9132d335a88e7873f814e6ca926952b4a0d1",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.039312999999992826,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "fc3283f757f244f08458ee9ac4f1f59a03ff0269f976c55de30149d2e4a14b41",
+      "cold_M0_first_eligible_s": 151.348928,
+      "cold_M1_first_eligible_s": 154.728928,
+      "extra_cold_start_s": 3.3799999999999955,
+      "ongoing_history_M1_first_eligible_s": 151.348928,
+      "residual_compute_ms": {
+        "count": 2308,
+        "median": 0.59425,
+        "p90": 0.7286300000000002,
+        "max": 1.999
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "HIL/hover/gyroscope/TestCase_11_2003000010",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "gyroscope",
+      "gtd_events": [
+        {
+          "start_s": 1266.555,
+          "end_s": null,
+          "last_observed_s": 1291.58
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 1266.653682,
+          "end_s": null,
+          "last_observed_s": 1307.898705
+        }
+      ],
+      "raw_ulog_sha256": "38e8bd87ee802c3d9c0dd99bd9f2a1da757816b27349d5c550d5605b39670398",
+      "raw_gtd_sha256": "e6e138e775aacc8cc68d1cf0fae272d0f393563fa2743c982682c9d2013fe549",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.09868199999982608,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "01e15e8730495c85616ab6bbafe33fa1e6cc203e8c0ea7752dae3e8cf2ac540d",
+      "cold_M0_first_eligible_s": 1247.944413,
+      "cold_M1_first_eligible_s": 1248.144413,
+      "extra_cold_start_s": 0.20000000000004547,
+      "ongoing_history_M1_first_eligible_s": 1247.944413,
+      "residual_compute_ms": {
+        "count": 2331,
+        "median": 0.6298,
+        "p90": 0.7753,
+        "max": 2.2166
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "HIL/hover/barometer/TestCase_12_2004000011",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "barometer",
+      "gtd_events": [
+        {
+          "start_s": 171.16,
+          "end_s": null,
+          "last_observed_s": 196.18
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 171.28007,
+          "end_s": null,
+          "last_observed_s": 212.906687
+        }
+      ],
+      "raw_ulog_sha256": "c47ced113969e38958928673c332da04008be20af0fc5d5487966e5d80dfa1e5",
+      "raw_gtd_sha256": "e5c322092aba9da41db8106f1c45fb272e134a744be034a283477dabc3880613",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.12006999999999834,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "ac8ec5e1c4f75832cbb8a7897ba4ed855c87a209846b368f4294f1cbae4419f9",
+      "cold_M0_first_eligible_s": 152.551846,
+      "cold_M1_first_eligible_s": 152.751846,
+      "extra_cold_start_s": 0.19999999999998863,
+      "ongoing_history_M1_first_eligible_s": 152.551846,
+      "residual_compute_ms": {
+        "count": 2330,
+        "median": 0.6623,
+        "p90": 0.7765299999999999,
+        "max": 1.9733
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "HIL/hover/magnetometer/TestCase_3_2005000002",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "magnetometer",
+      "gtd_events": [
+        {
+          "start_s": 415.018,
+          "end_s": null,
+          "last_observed_s": 440.059
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 415.117388,
+          "end_s": null,
+          "last_observed_s": 455.62808
+        }
+      ],
+      "raw_ulog_sha256": "3fb2c33cbe0ee00be3b7f35726f67f55ca16d15df6d9a9cea81a167e85744511",
+      "raw_gtd_sha256": "81a9e87d3fa9969536ff1f15fb08e55795a8db680f2cc290ea105c7f3cbd8033",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.09938800000003312,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "811a708915fbf8caf7a761712e57ddea66b74cbfd5e39e2bad1acb59df4c3816",
+      "cold_M0_first_eligible_s": 396.365771,
+      "cold_M1_first_eligible_s": 396.565771,
+      "extra_cold_start_s": 0.19999999999998863,
+      "ongoing_history_M1_first_eligible_s": 396.365771,
+      "residual_compute_ms": {
+        "count": 2333,
+        "median": 0.5976,
+        "p90": 0.7410000000000001,
+        "max": 2.3047
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    },
+    {
+      "case_uid": "HIL/hover/GPS/TestCase_10_2006000009",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "GPS",
+      "gtd_events": [
+        {
+          "start_s": 1164.564,
+          "end_s": null,
+          "last_observed_s": 1189.585
+        }
+      ],
+      "command_events": [
+        {
+          "start_s": 1164.65682,
+          "end_s": null,
+          "last_observed_s": 1205.702448
+        }
+      ],
+      "raw_ulog_sha256": "7e4a40570936cb6a87bfdb90b04864d65b286a1d1cb556334fe08f8043f125e1",
+      "raw_gtd_sha256": "509c736591c4e54a085d4ac8b189e2fc63404294f2d4f310d009b8a090463a3b",
+      "onset_basis": "Recorded GTD activation, not physical damage truth; distinct ULog command reference also reported",
+      "gtd_minus_command_s": -0.09281999999984691,
+      "onset_not_inferred_from_labels": true,
+      "sidecar_sha256": "8b5a33baa3ea249f387712495f6a63b7411007e3f0b63e62efe1394e6ded6755",
+      "cold_M0_first_eligible_s": 1145.935573,
+      "cold_M1_first_eligible_s": 1146.135573,
+      "extra_cold_start_s": 0.20000000000004547,
+      "ongoing_history_M1_first_eligible_s": 1145.935573,
+      "residual_compute_ms": {
+        "count": 2332,
+        "median": 0.60465,
+        "p90": 0.7356,
+        "max": 2.0121
+      },
+      "frames_exceeding20ms": 0,
+      "injection_reference_measurable": true,
+      "no_onset_inference_from_labels": true
+    }
+  ],
+  "CPU_synthetic_model_inference_ms_not_performance": {
+    "M0": {
+      "count": 50,
+      "median": 0.5133,
+      "p90": 0.55535,
+      "max": 0.8824
+    },
+    "M1": {
+      "count": 50,
+      "median": 0.6579999999999999,
+      "p90": 0.8430500000000001,
+      "max": 1.2592
+    }
+  },
+  "default_three_point_confirmation_and_final_flush_distinguished": true,
+  "cold_start_definition": "crop-as-service-start, with preceding source history not accessible before launch; ongoing uses established history; no per-window restarts",
+  "formal_GPU_training_or_test_Real": false,
+  "limitations": "These are basic source-development timing feasibility checks; final trained replay still required. No device/network/browser guarantee."
+}

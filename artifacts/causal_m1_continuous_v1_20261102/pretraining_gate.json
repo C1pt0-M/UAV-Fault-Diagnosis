@@ -1,0 +1,56 @@
+{
+  "status": "PASS_ALL_M1_PRETRAINING_GATES",
+  "created_at": "2026-11-01T19:15:03.565438+00:00",
+  "protocol_sha256": "6f48ef8ad0f36d83fe2e69898efb66730f05a9434d44fdd5180120ef0c7a7fd6",
+  "full_source_cases": 3135,
+  "exact_common_population": {
+    "train": 151833,
+    "val": 32381
+  },
+  "tests_passed": 100,
+  "prerequisites": {
+    "technical_review": "docs/research/2026-11-02/m1_streaming_technical_review_v1.md",
+    "full_feature_generation_and_all_mask_ID_normalization_independent_check": "5ba062aaaa12bc36c429c4341efcda65f837cc0cddd290c1ef73c452a742a29b",
+    "every_invalid_position_detailed_clock_reset_provenance": "9e04b6fd4389d5b5470507c865e66c00c48894a7c64f294422661643d42cf026",
+    "actual_data_CPU_training_each8_updates_no_performance_claim": "0ac5755f2077c166b1fb8fa0cc72625e2844a28de251ae3e91e4ad74e3090f8f",
+    "native_fixed18_cases_stream_replay": "c9c20f6ce0dbf7a20b7585335629c6694277708e90c13206376fee758eb6823e",
+    "actual_log_startup18cases": "17866615ab34e532bad28f2ca71bce6dc68dde9174a2f3033be6b06390ab8571"
+  },
+  "formal_jobs": [
+    {
+      "variant": "M0_matched",
+      "arm": "uniform_replacement"
+    },
+    {
+      "variant": "M1",
+      "arm": "uniform_replacement"
+    },
+    {
+      "variant": "M0_matched",
+      "arm": "balanced_source_normal"
+    },
+    {
+      "variant": "M1",
+      "arm": "balanced_source_normal"
+    }
+  ],
+  "maximum_formal_jobs": 4,
+  "seed": 42,
+  "horizon_us": 200000,
+  "window_frames": 150,
+  "coverage_review": {
+    "train_lost": 10236,
+    "val_lost": 2329,
+    "train_loss_fraction": 0.06315828443440756,
+    "val_loss_fraction": 0.06709881878421205,
+    "normal_windows_more_affected": true,
+    "barometer_directory_loss_approximately": ".123 train/.130 val",
+    "new_empty_cases": 4,
+    "retained_original_ID_ledger": true,
+    "decision": "Keep strict full150 validity with no relaxation; use identically matched populations for both variants. Disclose biased coverage, show full-original-M0 separately, never credit exclusions as model improvement. No new zero/mean filling, no140 fallback."
+  },
+  "initialization": "Arm-matched M0 pretrained best for both variants, exact common state; not from-scratch or new blind-val comparison.",
+  "user_authorization_basis": "Current task explicitly authorizes M1 two arms plus M0-matched two arms only if original population/time changes, after all listed pretraining gates pass.",
+  "no_threshold_tuning_or_new_spans": true,
+  "no_test_Real_or_old_assets_modified": true
+}

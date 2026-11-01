@@ -1,0 +1,661 @@
+{
+  "status": "COMPLETE_FULL_M1_FEATURES_AND_PRETRAIN_GATES",
+  "protocol_sha256": "6f48ef8ad0f36d83fe2e69898efb66730f05a9434d44fdd5180120ef0c7a7fd6",
+  "feature_manifest_sha256": "bda2169adaf48946e46596900a683388597079ee13e599b876d0f0fcde6f204e",
+  "independent": {
+    "status": "PASS_INDEPENDENT_FULL_CONTINUOUS_M1_FEATURES",
+    "feature_manifest_sha256": "bda2169adaf48946e46596900a683388597079ee13e599b876d0f0fcde6f204e",
+    "cases": 3135,
+    "all_window_IDs_masks_and_labels_verified": true,
+    "normal_fit_frame_contributions": 11205000,
+    "normal_fit_windows": 74700,
+    "independent_mean_max_error": 3.469446951953614e-18,
+    "independent_std_max_error": 1.249000902703301e-16,
+    "old_frozen_overlap_grid_points": 114099,
+    "old_formula_max_error": 0.0,
+    "bounded_native_stream_parity_cases": 4,
+    "dataset_first_middle_last_checks": 6,
+    "source_data_and_base_statistics_unchanged": true,
+    "formal_training_or_test_Real": false
+  },
+  "coverage": {
+    "train": {
+      "original_window_denominator": 168800,
+      "original_base_admitted": 162069,
+      "M1_common_eligible": 151833,
+      "newly_excluded": 10236,
+      "new_exclusion_fraction": 0.06315828443440756,
+      "all_admitted_IDs_preserved": false,
+      "reason_bit_combinations": {
+        "8": 10040,
+        "12": 47,
+        "4": 34,
+        "2": 95,
+        "10": 15,
+        "6": 3,
+        "14": 2
+      },
+      "by_domain_family": [
+        {
+          "domain": "HIL",
+          "case_level2_label": "motor",
+          "original_admitted": 40213,
+          "M1_eligible": 38492,
+          "excluded": 1721
+        },
+        {
+          "domain": "HIL",
+          "case_level2_label": "normal",
+          "original_admitted": 10525,
+          "M1_eligible": 9873,
+          "excluded": 652
+        },
+        {
+          "domain": "HIL",
+          "case_level2_label": "sensor",
+          "original_admitted": 29385,
+          "M1_eligible": 27715,
+          "excluded": 1670
+        },
+        {
+          "domain": "SIL",
+          "case_level2_label": "motor",
+          "original_admitted": 40759,
+          "M1_eligible": 37931,
+          "excluded": 2828
+        },
+        {
+          "domain": "SIL",
+          "case_level2_label": "normal",
+          "original_admitted": 10620,
+          "M1_eligible": 9757,
+          "excluded": 863
+        },
+        {
+          "domain": "SIL",
+          "case_level2_label": "sensor",
+          "original_admitted": 30567,
+          "M1_eligible": 28065,
+          "excluded": 2502
+        }
+      ],
+      "by_phase": [
+        {
+          "domain": "HIL",
+          "phase": "normal_flight",
+          "original_admitted": 12623,
+          "M1_eligible": 11775,
+          "excluded": 848
+        },
+        {
+          "domain": "HIL",
+          "phase": "pre_fault",
+          "original_admitted": 28838,
+          "M1_eligible": 25993,
+          "excluded": 2845
+        },
+        {
+          "domain": "HIL",
+          "phase": "stable_fault",
+          "original_admitted": 35663,
+          "M1_eligible": 35338,
+          "excluded": 325
+        },
+        {
+          "domain": "HIL",
+          "phase": "transition",
+          "original_admitted": 2999,
+          "M1_eligible": 2974,
+          "excluded": 25
+        },
+        {
+          "domain": "SIL",
+          "phase": "normal_flight",
+          "original_admitted": 10620,
+          "M1_eligible": 9757,
+          "excluded": 863
+        },
+        {
+          "domain": "SIL",
+          "phase": "pre_fault",
+          "original_admitted": 30970,
+          "M1_eligible": 27175,
+          "excluded": 3795
+        },
+        {
+          "domain": "SIL",
+          "phase": "stable_fault",
+          "original_admitted": 37496,
+          "M1_eligible": 36258,
+          "excluded": 1238
+        },
+        {
+          "domain": "SIL",
+          "phase": "transition",
+          "original_admitted": 2860,
+          "M1_eligible": 2563,
+          "excluded": 297
+        }
+      ],
+      "by_log_scenario": [
+        {
+          "domain": "HIL",
+          "flight_status": "acce",
+          "original_admitted": 7648,
+          "M1_eligible": 7195,
+          "excluded": 453
+        },
+        {
+          "domain": "HIL",
+          "flight_status": "circling",
+          "original_admitted": 18627,
+          "M1_eligible": 17863,
+          "excluded": 764
+        },
+        {
+          "domain": "HIL",
+          "flight_status": "dece",
+          "original_admitted": 7642,
+          "M1_eligible": 7162,
+          "excluded": 480
+        },
+        {
+          "domain": "HIL",
+          "flight_status": "hover",
+          "original_admitted": 17868,
+          "M1_eligible": 16647,
+          "excluded": 1221
+        },
+        {
+          "domain": "HIL",
+          "flight_status": "velocity",
+          "original_admitted": 9768,
+          "M1_eligible": 9279,
+          "excluded": 489
+        },
+        {
+          "domain": "HIL",
+          "flight_status": "waypoint",
+          "original_admitted": 18570,
+          "M1_eligible": 17934,
+          "excluded": 636
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "acce",
+          "original_admitted": 7792,
+          "M1_eligible": 7158,
+          "excluded": 634
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "circling",
+          "original_admitted": 19005,
+          "M1_eligible": 18051,
+          "excluded": 954
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "dece",
+          "original_admitted": 7550,
+          "M1_eligible": 6839,
+          "excluded": 711
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "hover",
+          "original_admitted": 18785,
+          "M1_eligible": 17206,
+          "excluded": 1579
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "velocity",
+          "original_admitted": 9821,
+          "M1_eligible": 9104,
+          "excluded": 717
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "waypoint",
+          "original_admitted": 18993,
+          "M1_eligible": 17395,
+          "excluded": 1598
+        }
+      ],
+      "by_fault_directory": [
+        {
+          "domain": "HIL",
+          "fault_directory": "GPS",
+          "original_admitted": 5987,
+          "M1_eligible": 5691,
+          "excluded": 296
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "accelerometer",
+          "original_admitted": 5957,
+          "M1_eligible": 5684,
+          "excluded": 273
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "barometer",
+          "original_admitted": 6171,
+          "M1_eligible": 5602,
+          "excluded": 569
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "gyroscope",
+          "original_admitted": 5996,
+          "M1_eligible": 5691,
+          "excluded": 305
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "magnetometer",
+          "original_admitted": 5274,
+          "M1_eligible": 5047,
+          "excluded": 227
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "motor",
+          "original_admitted": 40213,
+          "M1_eligible": 38492,
+          "excluded": 1721
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "no_fault",
+          "original_admitted": 10525,
+          "M1_eligible": 9873,
+          "excluded": 652
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "GPS",
+          "original_admitted": 6076,
+          "M1_eligible": 5761,
+          "excluded": 315
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "accelerometer",
+          "original_admitted": 6009,
+          "M1_eligible": 5365,
+          "excluded": 644
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "barometer",
+          "original_admitted": 6201,
+          "M1_eligible": 5251,
+          "excluded": 950
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "gyroscope",
+          "original_admitted": 6204,
+          "M1_eligible": 5894,
+          "excluded": 310
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "magnetometer",
+          "original_admitted": 6077,
+          "M1_eligible": 5794,
+          "excluded": 283
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "motor",
+          "original_admitted": 40759,
+          "M1_eligible": 37931,
+          "excluded": 2828
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "no_fault",
+          "original_admitted": 10620,
+          "M1_eligible": 9757,
+          "excluded": 863
+        }
+      ],
+      "by_label": [
+        {
+          "qualified_y": 0,
+          "original_admitted": 83051,
+          "M1_eligible": 74700,
+          "excluded": 8351
+        },
+        {
+          "qualified_y": 1,
+          "original_admitted": 79018,
+          "M1_eligible": 77133,
+          "excluded": 1885
+        }
+      ]
+    },
+    "val": {
+      "original_window_denominator": 35520,
+      "original_base_admitted": 34710,
+      "M1_common_eligible": 32381,
+      "newly_excluded": 2329,
+      "new_exclusion_fraction": 0.06709881878421205,
+      "all_admitted_IDs_preserved": false,
+      "reason_bit_combinations": {
+        "8": 2283,
+        "12": 10,
+        "4": 14,
+        "10": 4,
+        "2": 17,
+        "6": 1
+      },
+      "by_domain_family": [
+        {
+          "domain": "HIL",
+          "case_level2_label": "motor",
+          "original_admitted": 8713,
+          "M1_eligible": 8339,
+          "excluded": 374
+        },
+        {
+          "domain": "HIL",
+          "case_level2_label": "normal",
+          "original_admitted": 2264,
+          "M1_eligible": 2135,
+          "excluded": 129
+        },
+        {
+          "domain": "HIL",
+          "case_level2_label": "sensor",
+          "original_admitted": 6090,
+          "M1_eligible": 5734,
+          "excluded": 356
+        },
+        {
+          "domain": "SIL",
+          "case_level2_label": "motor",
+          "original_admitted": 8822,
+          "M1_eligible": 8106,
+          "excluded": 716
+        },
+        {
+          "domain": "SIL",
+          "case_level2_label": "normal",
+          "original_admitted": 2301,
+          "M1_eligible": 2129,
+          "excluded": 172
+        },
+        {
+          "domain": "SIL",
+          "case_level2_label": "sensor",
+          "original_admitted": 6520,
+          "M1_eligible": 5938,
+          "excluded": 582
+        }
+      ],
+      "by_phase": [
+        {
+          "domain": "HIL",
+          "phase": "normal_flight",
+          "original_admitted": 2712,
+          "M1_eligible": 2540,
+          "excluded": 172
+        },
+        {
+          "domain": "HIL",
+          "phase": "pre_fault",
+          "original_admitted": 6118,
+          "M1_eligible": 5507,
+          "excluded": 611
+        },
+        {
+          "domain": "HIL",
+          "phase": "stable_fault",
+          "original_admitted": 7615,
+          "M1_eligible": 7546,
+          "excluded": 69
+        },
+        {
+          "domain": "HIL",
+          "phase": "transition",
+          "original_admitted": 622,
+          "M1_eligible": 615,
+          "excluded": 7
+        },
+        {
+          "domain": "SIL",
+          "phase": "normal_flight",
+          "original_admitted": 2301,
+          "M1_eligible": 2129,
+          "excluded": 172
+        },
+        {
+          "domain": "SIL",
+          "phase": "pre_fault",
+          "original_admitted": 6609,
+          "M1_eligible": 5707,
+          "excluded": 902
+        },
+        {
+          "domain": "SIL",
+          "phase": "stable_fault",
+          "original_admitted": 8121,
+          "M1_eligible": 7785,
+          "excluded": 336
+        },
+        {
+          "domain": "SIL",
+          "phase": "transition",
+          "original_admitted": 612,
+          "M1_eligible": 552,
+          "excluded": 60
+        }
+      ],
+      "by_log_scenario": [
+        {
+          "domain": "HIL",
+          "flight_status": "acce",
+          "original_admitted": 1557,
+          "M1_eligible": 1476,
+          "excluded": 81
+        },
+        {
+          "domain": "HIL",
+          "flight_status": "circling",
+          "original_admitted": 3998,
+          "M1_eligible": 3828,
+          "excluded": 170
+        },
+        {
+          "domain": "HIL",
+          "flight_status": "dece",
+          "original_admitted": 1579,
+          "M1_eligible": 1480,
+          "excluded": 99
+        },
+        {
+          "domain": "HIL",
+          "flight_status": "hover",
+          "original_admitted": 3799,
+          "M1_eligible": 3545,
+          "excluded": 254
+        },
+        {
+          "domain": "HIL",
+          "flight_status": "velocity",
+          "original_admitted": 2143,
+          "M1_eligible": 2028,
+          "excluded": 115
+        },
+        {
+          "domain": "HIL",
+          "flight_status": "waypoint",
+          "original_admitted": 3991,
+          "M1_eligible": 3851,
+          "excluded": 140
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "acce",
+          "original_admitted": 1600,
+          "M1_eligible": 1479,
+          "excluded": 121
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "circling",
+          "original_admitted": 4092,
+          "M1_eligible": 3869,
+          "excluded": 223
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "dece",
+          "original_admitted": 1600,
+          "M1_eligible": 1455,
+          "excluded": 145
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "hover",
+          "original_admitted": 4093,
+          "M1_eligible": 3715,
+          "excluded": 378
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "velocity",
+          "original_admitted": 2165,
+          "M1_eligible": 1979,
+          "excluded": 186
+        },
+        {
+          "domain": "SIL",
+          "flight_status": "waypoint",
+          "original_admitted": 4093,
+          "M1_eligible": 3676,
+          "excluded": 417
+        }
+      ],
+      "by_fault_directory": [
+        {
+          "domain": "HIL",
+          "fault_directory": "GPS",
+          "original_admitted": 1128,
+          "M1_eligible": 1067,
+          "excluded": 61
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "accelerometer",
+          "original_admitted": 1127,
+          "M1_eligible": 1074,
+          "excluded": 53
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "barometer",
+          "original_admitted": 1177,
+          "M1_eligible": 1060,
+          "excluded": 117
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "gyroscope",
+          "original_admitted": 1448,
+          "M1_eligible": 1385,
+          "excluded": 63
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "magnetometer",
+          "original_admitted": 1210,
+          "M1_eligible": 1148,
+          "excluded": 62
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "motor",
+          "original_admitted": 8713,
+          "M1_eligible": 8339,
+          "excluded": 374
+        },
+        {
+          "domain": "HIL",
+          "fault_directory": "no_fault",
+          "original_admitted": 2264,
+          "M1_eligible": 2135,
+          "excluded": 129
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "GPS",
+          "original_admitted": 1150,
+          "M1_eligible": 1083,
+          "excluded": 67
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "accelerometer",
+          "original_admitted": 1150,
+          "M1_eligible": 972,
+          "excluded": 178
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "barometer",
+          "original_admitted": 1216,
+          "M1_eligible": 1023,
+          "excluded": 193
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "gyroscope",
+          "original_admitted": 1471,
+          "M1_eligible": 1396,
+          "excluded": 75
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "magnetometer",
+          "original_admitted": 1533,
+          "M1_eligible": 1464,
+          "excluded": 69
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "motor",
+          "original_admitted": 8822,
+          "M1_eligible": 8106,
+          "excluded": 716
+        },
+        {
+          "domain": "SIL",
+          "fault_directory": "no_fault",
+          "original_admitted": 2301,
+          "M1_eligible": 2129,
+          "excluded": 172
+        }
+      ],
+      "by_label": [
+        {
+          "qualified_y": 0,
+          "original_admitted": 17740,
+          "M1_eligible": 15883,
+          "excluded": 1857
+        },
+        {
+          "qualified_y": 1,
+          "original_admitted": 16970,
+          "M1_eligible": 16498,
+          "excluded": 472
+        }
+      ]
+    }
+  },
+  "training_NOT_started_yet": true
+}
