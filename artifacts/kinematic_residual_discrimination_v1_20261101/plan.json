@@ -1,0 +1,292 @@
+{
+  "experiment_id": "kinematic_residual_discrimination_v1",
+  "scope": "CPU-only bounded source train/val hover normal-stage stability and motor/sensor response. No model/classifier inference, training, GPU, final-test/Real, threshold tuning or dataset mutation.",
+  "selection_rule": "Before residual calculation: first3 lexicographic admitted original-normal hover cases per split x SIL/HIL. First1 lexicographic case having both admitted endpoint0/1 labels per split x domain x motor/accelerometer/gyroscope/barometer/magnetometer/GPS. No replacement after residual coverage or result inspection.",
+  "cases": [
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_10_1019000009",
+      "split": "train",
+      "domain": "SIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_11_1019000010",
+      "split": "train",
+      "domain": "SIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_12_1019000011",
+      "split": "train",
+      "domain": "SIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "SIL/hover/motor/TestCase_100_1000000099",
+      "split": "train",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "motor"
+    },
+    {
+      "case_uid": "SIL/hover/accelerometer/TestCase_10_1002000009",
+      "split": "train",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "accelerometer"
+    },
+    {
+      "case_uid": "SIL/hover/gyroscope/TestCase_127_1003000126",
+      "split": "train",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "gyroscope"
+    },
+    {
+      "case_uid": "SIL/hover/barometer/TestCase_10_1004000009",
+      "split": "train",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "barometer"
+    },
+    {
+      "case_uid": "SIL/hover/magnetometer/TestCase_127_1005000126",
+      "split": "train",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "magnetometer"
+    },
+    {
+      "case_uid": "SIL/hover/GPS/TestCase_11_1006000010",
+      "split": "train",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "GPS"
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_10_2019000009",
+      "split": "train",
+      "domain": "HIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_11_2019000010",
+      "split": "train",
+      "domain": "HIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_12_2019000011",
+      "split": "train",
+      "domain": "HIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "HIL/hover/motor/TestCase_100_2000000099",
+      "split": "train",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "motor"
+    },
+    {
+      "case_uid": "HIL/hover/accelerometer/TestCase_10_2002000009",
+      "split": "train",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "accelerometer"
+    },
+    {
+      "case_uid": "HIL/hover/gyroscope/TestCase_127_2003000126",
+      "split": "train",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "gyroscope"
+    },
+    {
+      "case_uid": "HIL/hover/barometer/TestCase_10_2004000009",
+      "split": "train",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "barometer"
+    },
+    {
+      "case_uid": "HIL/hover/magnetometer/TestCase_127_2005000126",
+      "split": "train",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "magnetometer"
+    },
+    {
+      "case_uid": "HIL/hover/GPS/TestCase_11_2006000010",
+      "split": "train",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "GPS"
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_21_1019000020",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_27_1019000026",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_29_1019000028",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "SIL/hover/motor/TestCase_114_1000000113",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "motor"
+    },
+    {
+      "case_uid": "SIL/hover/accelerometer/TestCase_14_1002000013",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "accelerometer"
+    },
+    {
+      "case_uid": "SIL/hover/gyroscope/TestCase_11_1003000010",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "gyroscope"
+    },
+    {
+      "case_uid": "SIL/hover/barometer/TestCase_12_1004000011",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "barometer"
+    },
+    {
+      "case_uid": "SIL/hover/magnetometer/TestCase_11_1005000010",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "magnetometer"
+    },
+    {
+      "case_uid": "SIL/hover/GPS/TestCase_10_1006000009",
+      "split": "val",
+      "domain": "SIL",
+      "kind": "fault",
+      "subtype": "GPS"
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_21_2019000020",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_27_2019000026",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_29_2019000028",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "normal",
+      "subtype": "no_fault"
+    },
+    {
+      "case_uid": "HIL/hover/motor/TestCase_114_2000000113",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "motor"
+    },
+    {
+      "case_uid": "HIL/hover/accelerometer/TestCase_14_2002000013",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "accelerometer"
+    },
+    {
+      "case_uid": "HIL/hover/gyroscope/TestCase_11_2003000010",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "gyroscope"
+    },
+    {
+      "case_uid": "HIL/hover/barometer/TestCase_12_2004000011",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "barometer"
+    },
+    {
+      "case_uid": "HIL/hover/magnetometer/TestCase_3_2005000002",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "magnetometer"
+    },
+    {
+      "case_uid": "HIL/hover/GPS/TestCase_10_2006000009",
+      "split": "val",
+      "domain": "HIL",
+      "kind": "fault",
+      "subtype": "GPS"
+    }
+  ],
+  "case_count": 36,
+  "normal_case_count": 12,
+  "fault_case_count": 24,
+  "mode": "hover only; conclusions must not be generalized to other flight modes or all faults. Some cases overlap earlier timing/normal diagnostics and all source-val has prior development exposure, not blind testing.",
+  "residual_definition": "Reuse validate_kinematic_residuals.py unchanged: fixed200000us horizon, actual native availability-segment ZOH integration, source-observation ages and reset masks, 1m+3rad outputs. Causal delivered-stream diagnostic, not synchronous sensor truth.",
+  "windows": "Original cap64 and original included source ledger identities only. Every window first10 frames excluded. For feature comparison require original150-frame input/supervision qualification plus all140 joint residual rows valid. Preserve all windows with reasons, never refill.",
+  "labels": "Keep original endpoint binary labels and qualify references. For response tests use only whole150-frame known-normal pre_fault windows and whole150-frame known-active fault windows; mixed-boundary and post_fault/control-normal phases retained but not folded into pre/post response.",
+  "stage": "window-end position relative to original crop rows, four fixed quarters. Compare first vs last quarter within normal cases, not claimed physical takeoff/landing.",
+  "legacy9": "Existing _relation_features calculations on the same current26-channel normalized window, with same frozen source norm and baro subtract-window-start. Deterministic feature computation only; no network forward/weights. Compare same retained140 positions.",
+  "features": [
+    "median signed r_h",
+    "median r_R_x",
+    "median r_R_y",
+    "median r_R_z",
+    "median abs(r_h)",
+    "median norm(r_R)",
+    "median of each existing9 heuristic channels"
+  ],
+  "normal_reference_scaling": "For descriptive unitless contrasts only, fit median/IQR from admitted selected SOURCE TRAIN ORIGINAL NORMAL windows; apply unchanged to source val. Record zero/near-zeroIQR as unavailable, not epsilon-inflated scores. Do not write model residual stats.",
+  "matching": "For each fault case, compare full-active windows with selected independent normal windows in same split/domain/hover/original-crop-quarter. Report per-quarter and per-case weighted AUC (larger predefined feature=>fault); do not optimize signs/thresholds or pick best feature. Matching is coarse and observational, not causal equivalence.",
+  "reports": [
+    "normal per-case early/late medians and P95, diagnostic IQR-standardized changes",
+    "new4 component and2 magnitude score distributions plus legacy9",
+    "per-fault-subtype pre/active changes and independent-normal matched AUC/counts",
+    "coverage/exclusions, reset counts, observation age/skew and per-case uncertainty limits"
+  ],
+  "reused_inputs": [
+    "D:/UAV-Data/causal_input_v1/ledgers/train_included_windows.csv",
+    "D:/UAV-Data/causal_input_v1/ledgers/val_included_windows.csv",
+    "D:/UAV-Data/causal_input_v1/norm_stats.json",
+    "D:/UAV-Data/causal_input_v1/input_contract.json"
+  ],
+  "stop_boundary": "Exactly selected36 cases. No resampling/horizon/age tuning, no model changes, no Real/internal-test, no graph model, no automatic git push. CPU duration measured, not promised10 seconds."
+}

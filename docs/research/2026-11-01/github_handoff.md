@@ -38,3 +38,14 @@
 数据根`D:/UAV-Data`不在Git仓库。GitHub提交不是完整数据／大模型备份；不承诺仅git clone即可在无外部数据或原GPU环境下复现所有实验。研究JSON中的历史绝对路径用于溯源，不是新机器自动可用的路径。
 
 本地验证结果及归档清单见同目录`github_submission_verification.md`。如历史冻结hash测试因当前安全门禁代码与旧协议不同而失败，应如实记录，不能改旧pin或跳过后声称全部通过。
+
+## 后续追加归档：预警语义、运动学残差与悬停阶段背景
+
+追加纳入以下已完成的CPU检查及必要轻量证据，未新增训练／GPU操作：
+
+- `model_warning_shortcut_claim_review.md`：预警分级、事件确认／输出与lead_time_s语义，合成复现不是正确性放行。
+- `kinematic_residual_validation_v1.md`：1＋3维运动学一致性的合成与12条正常锚点验证，异步时序及正常峰值限制。
+- `kinematic_residual_discrimination_v1.md`：固定36条hover正常／故障响应，新4维不支持直接替代旧9维。
+- `hover_slow_variable_review_v1.md`：无pos_xyz／时间／PID积分输入、逐窗气压相对化；当前证据更支持爬升／稳态背景混杂，但没有证明具体因果通道。
+
+本次重新执行81项相关测试均通过，预警语义合成检查通过；没有重新运行整个项目／前端或把历史冻结hash冲突说成已修。纳入逐窗派生特征CSV及JSON核验报告，原生日志、逐帧NPZ、模型权重仍不上传。派生文件亦不是原始传感器完整备份；现有核验脚本可能需要本地NPZ／D:/UAV-Data，不承诺仅GitHub文件即可执行全部原始数据复核。追加清单见`artifacts/research_followup_20261101/manifest.json`。
