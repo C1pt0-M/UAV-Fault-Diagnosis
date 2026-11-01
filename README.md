@@ -2,6 +2,12 @@
 
 基于 RflyMAD / RflySim 数据、在线遥测流和 Dashboard 的无人机故障检测与诊断项目。
 
+## 当前进度与文档入口
+
+**先看 [《项目进程与后续计划》](项目进程.md)**：当前方向、已完成与待办事项、数据划分边界，以及其他文档的用途都在这里。后续进展和方向变更优先更新该文档，不再另建并行总计划。本文继续用于安装、启动和仓库结构说明。
+
+2026-11-01 归档入口：[近期改动与历史MSTCA对比](docs/research/2026-11-01/github_handoff.md)、[提交前验证及已知失败](docs/research/2026-11-01/github_submission_verification.md)。源码、协议、原创报告和轻量证据纳入Git；原始数据、缓存、研究权重新增副本及第三方全文保留本地，不应把GitHub快照视为完整实验盘备份。
+
 当前仓库按 monorepo 方式组织，主要包含三条线：
 
 - 离线故障诊断：面向日志资产的多分类诊断任务。
@@ -107,7 +113,7 @@ python -m rfly_bridge --px4mavctrl D:\PX4PSP\RflySimAPIs\RflySimSDK\ctrl\PX4MavC
 
 如果本地 `.env` 仍配置 `MODEL_ROOT=models`，后端会在旧路径不存在且新路径存在时自动迁移到 `assets/models`。
 
-当前训练主线已整理到 `scripts/train_pipeline.py`，说明见 `docs/model_training_pipeline.md`。默认 dry-run 只打印命令，确认后再加 `--execute` 跑离线三分类和在线 Real3 二分类流水线。
+已有训练入口为 `scripts/train_pipeline.py`，操作参考见 `docs/model_training_pipeline.md`；默认 dry-run 只打印命令。该流水线仍包含旧 Real3 few-shot 协议，**不能直接视为本轮“目标域正常数据适配”的新实验方案**。执行训练前先核对 [项目进程](项目进程.md) 中的协议、数据和当前任务。
 
 ## 脚本入口
 

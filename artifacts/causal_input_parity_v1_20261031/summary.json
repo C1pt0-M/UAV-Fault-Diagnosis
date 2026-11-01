@@ -1,0 +1,33 @@
+{
+  "status": "PASS_SMALL_SCALE_CAUSAL_REPLAY_INPUT_PARITY_NOT_LIVE_CLEARANCE",
+  "completed_at": "2026-10-31T11:15:03.972913+00:00",
+  "fit_cases": 12,
+  "validation_cases": 4,
+  "all_canonical_rows": 42073,
+  "all_original_windows": 7943,
+  "valid_normalized_windows_exact_equal": 7729,
+  "ineligible_windows_retained": 214,
+  "source_indices_timestamps_ages_reasons_masks_equal": true,
+  "all_future_prefix_checks_passed": true,
+  "gap_examples_rejected_as_stale_without_deleting_rows": 2,
+  "max_age_us": {
+    "controls": 80000,
+    "outputs": 120000,
+    "gyro": 40000,
+    "accel": 40000,
+    "baro": 100000,
+    "attitude": 80000,
+    "velocity": 140000,
+    "mag": 60000
+  },
+  "script_sha256": "10a589bfbf32f3494d5600d778fc47ca2ebc323632938d140f0fcc685eec75f9",
+  "pipeline_sha256": "7e2e40b4ba867849ddbfb700fc48d3462ea24c6f0f0a185a5411e4ca19c74edb",
+  "policy_sha256": "815bc5cfd728069aba19fbeaa518d20e3ea7e76c3a42e9a6287325e99ed0509b",
+  "normalization_sha256": "a9148174f2e51354d1ba65cf21818d131931fb34c915e835816cf5e42fabcbcf",
+  "live_transport_tested": false,
+  "old_runtime_service_modified": false,
+  "training_run": false,
+  "model_forward_or_scores_used": false,
+  "original_dataset_or_cache_rebuilt": false,
+  "remaining": "Live per-topic observation/receive-clock provenance and adapter integration not validated; pilot budgets/stats not deployment or full-dataset training approval."
+}

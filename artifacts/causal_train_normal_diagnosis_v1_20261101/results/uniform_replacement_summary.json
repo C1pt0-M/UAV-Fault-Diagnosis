@@ -1,0 +1,270 @@
+{
+  "train": {
+    "all_normal": {
+      "windows": 83051,
+      "cases": 2570,
+      "false_positives": 3914,
+      "false_positive_rate": 0.047127668541016965
+    },
+    "original_normal": {
+      "windows": 21145,
+      "cases": 334,
+      "false_positives": 3865,
+      "false_positive_rate": 0.18278552849373375
+    },
+    "inactive_fault_case_normal": {
+      "windows": 61906,
+      "cases": 2236,
+      "false_positives": 49,
+      "false_positive_rate": 0.0007915226310858399
+    },
+    "original_normal_hover": {
+      "windows": 3513,
+      "cases": 56,
+      "false_positives": 1731,
+      "false_positive_rate": 0.4927412467976089
+    },
+    "hover_by_domain": {
+      "HIL": {
+        "windows": 1725,
+        "cases": 28,
+        "false_positives": 813,
+        "false_positive_rate": 0.47130434782608693
+      },
+      "SIL": {
+        "windows": 1788,
+        "cases": 28,
+        "false_positives": 918,
+        "false_positive_rate": 0.5134228187919463
+      }
+    },
+    "original_normal_by_mode": {
+      "acce": {
+        "windows": 3568,
+        "cases": 56,
+        "false_positives": 561,
+        "false_positive_rate": 0.15723094170403587
+      },
+      "circling": {
+        "windows": 3475,
+        "cases": 55,
+        "false_positives": 83,
+        "false_positive_rate": 0.023884892086330937
+      },
+      "dece": {
+        "windows": 3492,
+        "cases": 55,
+        "false_positives": 392,
+        "false_positive_rate": 0.11225658648339061
+      },
+      "hover": {
+        "windows": 3513,
+        "cases": 56,
+        "false_positives": 1731,
+        "false_positive_rate": 0.4927412467976089
+      },
+      "velocity": {
+        "windows": 3554,
+        "cases": 56,
+        "false_positives": 795,
+        "false_positive_rate": 0.2236916150815982
+      },
+      "waypoint": {
+        "windows": 3543,
+        "cases": 56,
+        "false_positives": 303,
+        "false_positive_rate": 0.0855207451312447
+      }
+    },
+    "normal_by_origin": {
+      "normal_part_of_fault_case": {
+        "windows": 61906,
+        "cases": 2236,
+        "false_positives": 49,
+        "false_positive_rate": 0.0007915226310858399
+      },
+      "original_normal_case": {
+        "windows": 21145,
+        "cases": 334,
+        "false_positives": 3865,
+        "false_positive_rate": 0.18278552849373375
+      }
+    },
+    "hover_by_original_crop_quarter": [
+      {
+        "crop_progress_quarter": 1,
+        "windows": 704,
+        "cases": 56,
+        "false_positives": 91,
+        "false_positive_rate": 0.12926136363636365
+      },
+      {
+        "crop_progress_quarter": 2,
+        "windows": 931,
+        "cases": 56,
+        "false_positives": 190,
+        "false_positive_rate": 0.20408163265306123
+      },
+      {
+        "crop_progress_quarter": 3,
+        "windows": 936,
+        "cases": 56,
+        "false_positives": 539,
+        "false_positive_rate": 0.5758547008547008
+      },
+      {
+        "crop_progress_quarter": 4,
+        "windows": 942,
+        "cases": 56,
+        "false_positives": 911,
+        "false_positive_rate": 0.9670912951167728
+      }
+    ],
+    "original_normal_cases_with_any_false_positive": 213,
+    "hover_cases_with_any_false_positive": 55,
+    "crop_quarters_are_physical_flight_phase": false,
+    "hover_false_positive_scores": {
+      "windows": 1731,
+      "median": 0.5895283818244934,
+      "min": 0.5006826519966125,
+      "max": 0.6807957291603088
+    }
+  },
+  "val": {
+    "all_normal": {
+      "windows": 17740,
+      "cases": 551,
+      "false_positives": 825,
+      "false_positive_rate": 0.04650507328072153
+    },
+    "original_normal": {
+      "windows": 4565,
+      "cases": 72,
+      "false_positives": 820,
+      "false_positive_rate": 0.1796276013143483
+    },
+    "inactive_fault_case_normal": {
+      "windows": 13175,
+      "cases": 479,
+      "false_positives": 5,
+      "false_positive_rate": 0.0003795066413662239
+    },
+    "original_normal_hover": {
+      "windows": 754,
+      "cases": 12,
+      "false_positives": 393,
+      "false_positive_rate": 0.5212201591511937
+    },
+    "hover_by_domain": {
+      "HIL": {
+        "windows": 370,
+        "cases": 6,
+        "false_positives": 192,
+        "false_positive_rate": 0.518918918918919
+      },
+      "SIL": {
+        "windows": 384,
+        "cases": 6,
+        "false_positives": 201,
+        "false_positive_rate": 0.5234375
+      }
+    },
+    "original_normal_by_mode": {
+      "acce": {
+        "windows": 757,
+        "cases": 12,
+        "false_positives": 139,
+        "false_positive_rate": 0.18361955085865259
+      },
+      "circling": {
+        "windows": 765,
+        "cases": 12,
+        "false_positives": 0,
+        "false_positive_rate": 0.0
+      },
+      "dece": {
+        "windows": 763,
+        "cases": 12,
+        "false_positives": 114,
+        "false_positive_rate": 0.14941022280471822
+      },
+      "hover": {
+        "windows": 754,
+        "cases": 12,
+        "false_positives": 393,
+        "false_positive_rate": 0.5212201591511937
+      },
+      "velocity": {
+        "windows": 768,
+        "cases": 12,
+        "false_positives": 124,
+        "false_positive_rate": 0.16145833333333334
+      },
+      "waypoint": {
+        "windows": 758,
+        "cases": 12,
+        "false_positives": 50,
+        "false_positive_rate": 0.06596306068601583
+      }
+    },
+    "normal_by_origin": {
+      "normal_part_of_fault_case": {
+        "windows": 13175,
+        "cases": 479,
+        "false_positives": 5,
+        "false_positive_rate": 0.0003795066413662239
+      },
+      "original_normal_case": {
+        "windows": 4565,
+        "cases": 72,
+        "false_positives": 820,
+        "false_positive_rate": 0.1796276013143483
+      }
+    },
+    "hover_by_original_crop_quarter": [
+      {
+        "crop_progress_quarter": 1,
+        "windows": 155,
+        "cases": 12,
+        "false_positives": 28,
+        "false_positive_rate": 0.18064516129032257
+      },
+      {
+        "crop_progress_quarter": 2,
+        "windows": 196,
+        "cases": 12,
+        "false_positives": 58,
+        "false_positive_rate": 0.29591836734693877
+      },
+      {
+        "crop_progress_quarter": 3,
+        "windows": 205,
+        "cases": 12,
+        "false_positives": 110,
+        "false_positive_rate": 0.5365853658536586
+      },
+      {
+        "crop_progress_quarter": 4,
+        "windows": 198,
+        "cases": 12,
+        "false_positives": 197,
+        "false_positive_rate": 0.9949494949494949
+      }
+    ],
+    "original_normal_cases_with_any_false_positive": 43,
+    "hover_cases_with_any_false_positive": 12,
+    "crop_quarters_are_physical_flight_phase": false,
+    "hover_false_positive_scores": {
+      "windows": 393,
+      "median": 0.5872372388839722,
+      "min": 0.501896321773529,
+      "max": 0.6374742388725281
+    }
+  },
+  "unchanged_state_digest": "da93a91ee10bb88e8d78e0d7521202969adfb6932b2fc022c59b4ed63e002c86",
+  "weights_and_BN_buffers_unchanged": true,
+  "checkpoint_sha256": "adc140ab4f3e59dac59b1a32583af2857b4666a1d26c04db0008258b323020fd",
+  "saved_val_probability_max_abs_difference": 0.0,
+  "saved_val_changed_predictions": 0,
+  "elapsed_s": 4.8206330593675375
+}

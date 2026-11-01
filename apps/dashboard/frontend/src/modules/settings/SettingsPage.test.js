@@ -36,6 +36,7 @@ vi.mock('@/shared/services', () => ({
 }))
 
 import SettingsPage from '@/modules/settings/SettingsPage.vue'
+import { applyRuntimeCapabilities } from '@/shared/state/runtimeCapabilities'
 
 function mountSettingsPage() {
   return mount(SettingsPage)
@@ -53,6 +54,7 @@ describe('SettingsPage AI settings', () => {
     messageMock.error.mockReset()
     messageMock.warning.mockReset()
     localStorage.clear()
+    applyRuntimeCapabilities({ ai: true, telemetry: true })
     localStorage.setItem('user', JSON.stringify({ username: 'admin', role: 'admin' }))
     settingsApiMock.getAiSettings.mockResolvedValue({
       data: {
@@ -174,6 +176,34 @@ describe('SettingsPage AI settings', () => {
       api_key: 'candidate-secret'
     })
     expect(messageMock.success).toHaveBeenCalled()
+  })
+
+  it.each(['disabled', 'non-admin'])('does not load or expose AI settings when %s', async (mode) => {
+    if (mode === 'disabled') applyRuntimeCapabilities({ ai: false })
+    else localStorage.setItem('user', JSON.stringify({ username: 'operator', role: 'user' }))
+    const wrapper = mountSettingsPage()
+    await flushPromises()
+    expect(settingsApiMock.getAiSettings).not.toHaveBeenCalled()
+    expect(wrapper.findAll('.settings-nav__item').map(item => item.text())).not.toContain('AI 接入')
+    expect(wrapper.findAll('input[type="password"]')).toHaveLength(0)
+    expect(wrapper.get('[role="status"]').text()).toContain('账号与外观设置仍可使用')
+    await wrapper.vm.saveAiConfig()
+    await wrapper.vm.saveEmbeddingConfig()
+    await wrapper.vm.testAiConfig()
+    await wrapper.vm.testEmbeddingConfig()
+    expect(settingsApiMock.updateAiSettings).not.toHaveBeenCalled()
+    expect(settingsApiMock.testAiSettings).not.toHaveBeenCalled()
+    expect(settingsApiMock.testEmbeddingSettings).not.toHaveBeenCalled()
+  })
+
+  it('returns to account settings if AI capability is revoked', async () => {
+    const wrapper = mountSettingsPage()
+    await flushPromises()
+    wrapper.vm.activeTab = 'ai'
+    applyRuntimeCapabilities({ ai: false })
+    await flushPromises()
+    expect(wrapper.vm.activeTab).toBe('account')
+    expect(wrapper.findAll('input[type="password"]')).toHaveLength(0)
   })
 
   it('tests Embedding connection using only Embedding form values', async () => {

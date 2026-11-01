@@ -1,0 +1,49 @@
+{
+  "cases_read": 484,
+  "diagnostic_complete": 484,
+  "issues": {},
+  "warnings": {},
+  "domains": {
+    "HIL": 484
+  },
+  "by_split": {
+    "train": {
+      "cases": 401,
+      "cases_with_label_disagreement": 265,
+      "raw_onset_after_crop_cases": 21,
+      "crop_event_classes": {
+        "contains_activation_transition_or_partial_coverage": 296,
+        "no_recorded_activation_in_covered_crop": 105
+      },
+      "selected_windows": 25664,
+      "endpoint_reference_covered_windows": 25664,
+      "full_reference_covered_windows": 25664,
+      "selected_label_disagreements": 1291,
+      "selected_old_fault_raw_normal": 946,
+      "selected_old_normal_raw_fault": 345,
+      "selected_gap_crossing_windows": 513
+    },
+    "val": {
+      "cases": 83,
+      "cases_with_label_disagreement": 54,
+      "raw_onset_after_crop_cases": 3,
+      "crop_event_classes": {
+        "contains_activation_transition_or_partial_coverage": 62,
+        "no_recorded_activation_in_covered_crop": 21
+      },
+      "selected_windows": 5312,
+      "endpoint_reference_covered_windows": 5312,
+      "full_reference_covered_windows": 5312,
+      "selected_label_disagreements": 189,
+      "selected_old_fault_raw_normal": 118,
+      "selected_old_normal_raw_fault": 71,
+      "selected_gap_crossing_windows": 98
+    }
+  },
+  "completed_at": "2026-10-31T04:33:15.730032+00:00",
+  "elapsed_s": 433.2813596999913,
+  "target_cases": 484,
+  "full_source_scope": false,
+  "all_cases_diagnostic_complete": true,
+  "meaning": "Completion means diagnostic reads succeeded, not data repaired or all windows quality-approved."
+}

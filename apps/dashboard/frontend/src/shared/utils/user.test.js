@@ -18,6 +18,7 @@ describe('clearStoredSession', () => {
 describe('storeSession', () => {
   it('stores token and user JSON in storage', () => {
     const storage = {
+      getItem: vi.fn().mockReturnValue(null),
       setItem: vi.fn()
     }
 

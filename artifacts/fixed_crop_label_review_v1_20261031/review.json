@@ -1,0 +1,84 @@
+{
+  "version": "fixed_crop_label_overlay_review_v1",
+  "created_at": "2026-10-31T06:54:03.691008+00:00",
+  "script_sha256": "b3600849f700e0fca5ea4f32b511b2fc641acc1d40acc436d1a6eddeafe7adf7",
+  "status": "reviewed_overlay_prepared__training_blocked",
+  "training_ready": false,
+  "scope": "No source writes, new feature tensors, normalization fit, model load, training or final-test access. Official crop and all cache indices unchanged.",
+  "required_before_training": [
+    "Approve separate handling of existing input gaps/all-channel validity; no arbitrary gap-based deletion.",
+    "Integrate an explicit pre-forward index view into a new versioned experiment, not the frozen original trainer.",
+    "Verify sampler, loss, validation, class weighting and early stopping all use eligible labels and identical old/new comparison coverage.",
+    "Retain 3680 historical RflySim suffix windows with original provenance; no fabricated per-case identities.",
+    "Retain continuous full-time replay for coverage and false alarms; this source-only cap64 overlay does not approve event/latency evaluation."
+  ],
+  "critical_review_fixes": [
+    "Loss-only masking is insufficient for BatchNorm: uncertain and known clock-review rows must be removed BEFORE training forward if no influence is intended.",
+    "Current FocalLoss gathers targets directly and rejects -1. Current metrics/sampling also require binary labels; no direct import of proposal.",
+    "Regenerate label-based origin metadata, weights and sampling probabilities; obsolete phase/fault_fraction/onset fields deliberately omitted.",
+    "Pre-forward candidates are NOT an input-quality pass. Source clock anomalies are conservatively held out at window-index level without deleting cases.",
+    "Historical RflySim suffix remains in full-cache index space; no claimed fresh quality audit.",
+    "Any old/new training comparison must use the same pre-forward mask and frozen train-only normalization; no filling masked indices or claiming same supervised sample count."
+  ],
+  "input_identities": {
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\fixed_crop_label_policy_proposal_20261031\\proposed_window_labels.csv": "48f82ff70181b8cbeb6aa498ff5d76b4545577fd7addf62d7c9a0e3f403e3473",
+    "D:\\UAV-Data\\splits\\rflymad_case_split_v2\\rflymad_case_level_split_manifest.csv": "272a91aeba5b563ebfa23fff8d295ac53372ccac391c835dccf2b5660d9d6ce5",
+    "D:\\UAV-Fault-Diagnosis\\configs\\experiments\\normal_source_sampling_train_v1.json": "088bbb0c1ce2d831321304322dab35491b2fdab1dab9fb05aef2dae85d1fcf23",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\source_event_boundaries_review_20261031\\all_selected_window_diagnostics.csv": "98581688c19503a734d4d07314fd2217a4593dd7b7e05522713e9f05df0c6781",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\fixed_crop_label_validation_20261031\\selected_window_comparison.csv": "e74f7b2e730e6c7120f3d80ba2f396fe10774dffa87a42248691f5f972ccf1e7",
+    "D:\\UAV-Data\\online_cache_v2\\norm_stats.json": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33",
+    "D:\\UAV-Data\\online_cache_v2\\train.pt": "f0992b19768575364f19378dd5109bcb640764035ecce4cc9d29132557a88d58",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\source_training_coverage_audit_20261030_r2\\train_source_window_links.csv": "e184e65ee588d051904b5f127ff508c972b1ae626ae8d651963bf5e9bdcc611f",
+    "D:\\UAV-Data\\online_cache_v2\\val.pt": "9a6063590b4b313c0d8df0dbc5213d88e3f5e078bb5be13c8054deb816ed2757",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\source_training_coverage_audit_20261030_r2\\val_source_window_links.csv": "5963804ae701d9aa6da2eeb3c6c4b491f5bd0e0e0c6863413244f2713f3f7ad0"
+  },
+  "splits": {
+    "train": {
+      "full_cache_windows": 168800,
+      "source_windows": 165120,
+      "historical_rflysim_suffix_windows": 3680,
+      "unknown_label_windows": 122,
+      "clock_review_windows": 128,
+      "pre_forward_candidate_windows": 168550,
+      "pre_forward_held_out_windows": 250,
+      "candidate_binary_relabels": 3149,
+      "candidate_label_counts": {
+        "0": 87656,
+        "1": 80894
+      },
+      "candidate_origin_counts": {
+        "fault_endpoint": 80894,
+        "normal_part_of_fault_case": 62600,
+        "original_normal_case": 21376,
+        "rflysim_normal": 3680
+      },
+      "source_gap_flag_windows_preserved": 1878,
+      "quality_gate_status": "pending__pre_forward_candidates_not_training_approval",
+      "metadata_sha256": "99d246a53d8171f1eecebbf82b9db9c4b20aaeb8b8642017a3c496affa85b203",
+      "overlay_sha256": "0e7c9868c16e76808b9ff9e12201a263b45d7e49fcb03397084b2f10dad0e49f"
+    },
+    "val": {
+      "full_cache_windows": 35520,
+      "source_windows": 35520,
+      "historical_rflysim_suffix_windows": 0,
+      "unknown_label_windows": 29,
+      "clock_review_windows": 64,
+      "pre_forward_candidate_windows": 35427,
+      "pre_forward_held_out_windows": 93,
+      "candidate_binary_relabels": 631,
+      "candidate_label_counts": {
+        "0": 18010,
+        "1": 17417
+      },
+      "candidate_origin_counts": {
+        "fault_endpoint": 17417,
+        "normal_part_of_fault_case": 13402,
+        "original_normal_case": 4608
+      },
+      "source_gap_flag_windows_preserved": 389,
+      "quality_gate_status": "pending__pre_forward_candidates_not_training_approval",
+      "metadata_sha256": "cf9fd677e0c801521018fd11ba75acb7eb7180c0e0f129d388e8e71093245891",
+      "overlay_sha256": "36108e29aedcd117112093aa9733d262eca66d73522b937ae87d9439c2b3ece8"
+    }
+  }
+}

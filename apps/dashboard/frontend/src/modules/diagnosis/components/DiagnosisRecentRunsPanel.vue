@@ -47,6 +47,7 @@
               查看报告
             </el-button>
             <el-button
+              v-if="runtimeCapabilities.ai"
               link
               type="warning"
               :disabled="!run.report_id"
@@ -66,6 +67,7 @@
 <script setup>
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import ElEmpty from 'element-plus/es/components/empty/index.mjs'
+import { runtimeCapabilities } from '@/shared/state/runtimeCapabilities'
 import { diagnosisCopy, formatPercentage, getDiagnosisLabelMeta } from '@/modules/diagnosis/diagnosisView'
 
 defineProps({

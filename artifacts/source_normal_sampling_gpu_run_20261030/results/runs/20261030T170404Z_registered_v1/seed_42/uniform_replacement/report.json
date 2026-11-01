@@ -1,0 +1,397 @@
+{
+  "status": "COMPLETED_FORMAL_SOURCE_TRAINING",
+  "protocol_name": "rflymad_source_normal_sampling_train_v1",
+  "protocol_sha256": "088bbb0c1ce2d831321304322dab35491b2fdab1dab9fb05aef2dae85d1fcf23",
+  "seed": 42,
+  "arm": "uniform_replacement",
+  "cpu_check": false,
+  "started_at": "2026-10-30T17:04:42.825904+00:00",
+  "environment": {
+    "python": "3.12.3 | packaged by Anaconda, Inc. | (main, May  6 2024, 19:46:43) [GCC 11.2.0]",
+    "torch": "2.5.1+cu124",
+    "numpy": "2.1.3",
+    "pandas": "2.3.1",
+    "torch_cuda": "12.4",
+    "cuda_available": true
+  },
+  "runner_sha256": "ec26de4cda06ed3feb2360fc42a8469a2146950cdbd95201551fad20c4a5e4e2",
+  "code_bundle_manifest_sha256": "facf2424f63007dbcac8034fb05ff07fb3a129d7a9ba2f9137c44b5999da3c4d",
+  "source_code": {
+    "model_sha256": "c01d5c1c37175f2bcbac2654d2bec43898d814073d465122afe515a825bcb369",
+    "loss_sha256": "8fb99a31dd838bafdbad20591313d7bef6766b5b6b64cc73cda8620ed0b3771a",
+    "model_contract_sha256": "8980d99a9a6a61876d71db8d2e2103b436f886dc8f8162d1bda85b96e58be017",
+    "sampling_helper_sha256": "bca9d170fd967284d6ea914c4fb3ae459e9fc13aaf0005f06f2fe5307e54968c",
+    "lr_helper_sha256": "0580a8106ca942edb6c91119ad65e2d064047b8fb32e1a9311c906fb628783f6"
+  },
+  "inputs": {
+    "audit_sha256": "3acdcf485810673a6ae1ecab77c2c13e76a538301d0fd2b19f42e8aeb403abda",
+    "train_links_sha256": "e184e65ee588d051904b5f127ff508c972b1ae626ae8d651963bf5e9bdcc611f",
+    "val_links_sha256": "5963804ae701d9aa6da2eeb3c6c4b491f5bd0e0e0c6863413244f2713f3f7ad0",
+    "train_cache_sha256": "f0992b19768575364f19378dd5109bcb640764035ecce4cc9d29132557a88d58",
+    "val_cache_sha256": "9a6063590b4b313c0d8df0dbc5213d88e3f5e078bb5be13c8054deb816ed2757",
+    "norm_sha256": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33",
+    "train_windows": 168800,
+    "train_source_prefix_windows": 165120,
+    "rflysim_normal_suffix_windows": 3680,
+    "val_windows": 35520,
+    "per_case_cap": 64,
+    "validation_cases": 555,
+    "feature_schema": "rfly_seq_columns_v2",
+    "window_size": 150,
+    "target_hz": 50.0
+  },
+  "sampling": {
+    "total_weight": 168800.0,
+    "normal_probability": 0.5155805687203792,
+    "fault_probability": 0.48441943127962084,
+    "origins": {
+      "fault_endpoint": {
+        "windows": 81770,
+        "probability": 0.48441943127962084
+      },
+      "normal_part_of_fault_case": {
+        "windows": 61974,
+        "probability": 0.3671445497630332
+      },
+      "original_normal_case": {
+        "windows": 21376,
+        "probability": 0.1266350710900474
+      },
+      "rflysim_normal": {
+        "windows": 3680,
+        "probability": 0.021800947867298578
+      }
+    }
+  },
+  "scope": "Source train/val only; no Real/final test reads or deployment. No optimizer/RNG resume.",
+  "gpu": "NVIDIA GeForce RTX 4090 D",
+  "initial_state_digest": "7772ccc1a20ce8b6d97c7ce83fc4927a8ff9a5dc7bef17038ca767806e561c55",
+  "device": "cuda:0",
+  "validation_windows": 35520,
+  "draws_per_epoch": 168800,
+  "batch_size": 512,
+  "maximum_epochs_this_execution": 100,
+  "formal_validation_complete": true,
+  "epochs_trained": 64,
+  "best_epoch": 60,
+  "checkpoint_reload_matches": true,
+  "best_checkpoint_sha256": "b5cb85587dbcb58f969f37f9c2030eca7eb704e46f87f8ddb481ad764883c4ec",
+  "source_validation": {
+    "overall": {
+      "windows": 35520,
+      "confusion_matrix": [
+        [
+          17237,
+          675
+        ],
+        [
+          824,
+          16784
+        ]
+      ],
+      "accuracy": 0.9577984234234235,
+      "macro_f1": 0.9577915582769339,
+      "fault_recall": 0.9532030895047705,
+      "normal_window_fpr": 0.03768423403305047
+    },
+    "normal_origin": {
+      "fault_endpoint": {
+        "windows": 17608,
+        "confusion_matrix": [
+          [
+            0,
+            0
+          ],
+          [
+            824,
+            16784
+          ]
+        ],
+        "accuracy": 0.9532030895047705,
+        "macro_f1": 0.4880204698767155,
+        "fault_recall": 0.9532030895047705,
+        "normal_window_fpr": null
+      },
+      "normal_part_of_fault_case": {
+        "windows": 13304,
+        "confusion_matrix": [
+          [
+            13209,
+            95
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.9928592904389657,
+        "macro_f1": 0.49820842605514276,
+        "fault_recall": null,
+        "normal_window_fpr": 0.007140709561034276
+      },
+      "original_normal_case": {
+        "windows": 4608,
+        "confusion_matrix": [
+          [
+            4028,
+            580
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.8741319444444444,
+        "macro_f1": 0.4664196387216304,
+        "fault_recall": null,
+        "normal_window_fpr": 0.12586805555555555
+      }
+    },
+    "normal_by_status": {
+      "acce": {
+        "windows": 1571,
+        "confusion_matrix": [
+          [
+            1510,
+            61
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.9611712285168682,
+        "macro_f1": 0.4901006166828952,
+        "fault_recall": null,
+        "normal_window_fpr": 0.03882877148313176
+      },
+      "circling": {
+        "windows": 4623,
+        "confusion_matrix": [
+          [
+            4580,
+            43
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.990698680510491,
+        "macro_f1": 0.49766380528088666,
+        "fault_recall": null,
+        "normal_window_fpr": 0.009301319489508977
+      },
+      "dece": {
+        "windows": 1755,
+        "confusion_matrix": [
+          [
+            1685,
+            70
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.9601139601139601,
+        "macro_f1": 0.4898255813953488,
+        "fault_recall": null,
+        "normal_window_fpr": 0.039886039886039885
+      },
+      "hover": {
+        "windows": 3332,
+        "confusion_matrix": [
+          [
+            2985,
+            347
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.8958583433373349,
+        "macro_f1": 0.47253443090074404,
+        "fault_recall": null,
+        "normal_window_fpr": 0.10414165666266506
+      },
+      "velocity": {
+        "windows": 2071,
+        "confusion_matrix": [
+          [
+            1950,
+            121
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.9415741187831965,
+        "macro_f1": 0.48495399154439195,
+        "fault_recall": null,
+        "normal_window_fpr": 0.05842588121680348
+      },
+      "waypoint": {
+        "windows": 4560,
+        "confusion_matrix": [
+          [
+            4527,
+            33
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.9927631578947368,
+        "macro_f1": 0.49818421921426215,
+        "fault_recall": null,
+        "normal_window_fpr": 0.007236842105263158
+      }
+    },
+    "original_normal_by_status": {
+      "acce": {
+        "windows": 768,
+        "confusion_matrix": [
+          [
+            713,
+            55
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.9283854166666666,
+        "macro_f1": 0.4814314652261985,
+        "fault_recall": null,
+        "normal_window_fpr": 0.07161458333333333
+      },
+      "circling": {
+        "windows": 768,
+        "confusion_matrix": [
+          [
+            760,
+            8
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.9895833333333334,
+        "macro_f1": 0.4973821989528796,
+        "fault_recall": null,
+        "normal_window_fpr": 0.010416666666666666
+      },
+      "dece": {
+        "windows": 768,
+        "confusion_matrix": [
+          [
+            698,
+            70
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.9088541666666666,
+        "macro_f1": 0.4761255115961801,
+        "fault_recall": null,
+        "normal_window_fpr": 0.09114583333333333
+      },
+      "hover": {
+        "windows": 768,
+        "confusion_matrix": [
+          [
+            448,
+            320
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.5833333333333334,
+        "macro_f1": 0.3684210526315789,
+        "fault_recall": null,
+        "normal_window_fpr": 0.4166666666666667
+      },
+      "velocity": {
+        "windows": 768,
+        "confusion_matrix": [
+          [
+            661,
+            107
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.8606770833333334,
+        "macro_f1": 0.4625612316305108,
+        "fault_recall": null,
+        "normal_window_fpr": 0.13932291666666666
+      },
+      "waypoint": {
+        "windows": 768,
+        "confusion_matrix": [
+          [
+            748,
+            20
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.9739583333333334,
+        "macro_f1": 0.49340369393139843,
+        "fault_recall": null,
+        "normal_window_fpr": 0.026041666666666668
+      }
+    },
+    "fault_by_case_class": {
+      "motor": {
+        "windows": 10294,
+        "confusion_matrix": [
+          [
+            0,
+            0
+          ],
+          [
+            167,
+            10127
+          ]
+        ],
+        "accuracy": 0.9837769574509423,
+        "macro_f1": 0.4959110719357524,
+        "fault_recall": 0.9837769574509423,
+        "normal_window_fpr": null
+      },
+      "sensor": {
+        "windows": 7314,
+        "confusion_matrix": [
+          [
+            0,
+            0
+          ],
+          [
+            657,
+            6657
+          ]
+        ],
+        "accuracy": 0.9101722723543888,
+        "macro_f1": 0.47648700880395106,
+        "fault_recall": 0.9101722723543888,
+        "normal_window_fpr": null
+      }
+    }
+  },
+  "elapsed_s": 1016.0004982352257,
+  "finished_at": "2026-10-30T17:21:38.827807+00:00"
+}

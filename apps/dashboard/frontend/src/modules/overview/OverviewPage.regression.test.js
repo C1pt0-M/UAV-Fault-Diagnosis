@@ -40,9 +40,11 @@ vi.mock('echarts', () => ({
 }))
 
 import OverviewPage from './OverviewPage.vue'
+import { applyRuntimeCapabilities } from '@/shared/state/runtimeCapabilities'
 
 describe('OverviewPage industrial research dashboard', () => {
   beforeEach(() => {
+    applyRuntimeCapabilities({ telemetry: true, ai: true })
     getOverviewMock.mockReset()
     messageErrorMock.mockReset()
     getOverviewMock.mockResolvedValue({
@@ -208,5 +210,17 @@ describe('OverviewPage industrial research dashboard', () => {
     expect(wrapper.find('a.panel-action[href="/diagnosis"]').text()).toBe('进入诊断')
     expect(wrapper.find('a.panel-action[href="/reports"]').text()).toBe('查看报告')
     expect(wrapper.find('[data-icon="document"]').exists()).toBe(true)
+  })
+
+  it('retains historical warnings without linking to disabled monitoring', async () => {
+    applyRuntimeCapabilities({ telemetry: false })
+    const wrapper = mount(OverviewPage)
+    await flushPromises()
+    expect(wrapper.find('a[href="/monitoring"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('确认告警数')
+    expect(wrapper.text()).toContain('故障概率异常')
+    expect(wrapper.get('[role="status"]').text()).toContain('历史会话和告警统计仍保留')
+    expect(wrapper.find('a.kpi-card[href="/reports"]').exists()).toBe(true)
+    expect(wrapper.text()).not.toContain('或启动实时检测后')
   })
 })

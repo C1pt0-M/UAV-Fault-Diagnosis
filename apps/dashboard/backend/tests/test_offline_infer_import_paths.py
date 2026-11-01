@@ -18,12 +18,12 @@ def _load_offline_multiclass_infer():
 def test_offline_infer_adds_packaged_uav_fault_paths(monkeypatch):
     module = _load_offline_multiclass_infer()
     repo_root = Path(__file__).resolve().parents[4]
-    data_path = str(repo_root / "packages" / "uav_fault" / "uav_fault" / "data")
-    models_path = str(repo_root / "packages" / "uav_fault" / "uav_fault" / "models")
+    package_path = str(repo_root / "packages" / "uav_fault")
 
-    monkeypatch.setattr(sys, "path", [item for item in sys.path if item not in {data_path, models_path}])
+    monkeypatch.setattr(sys, "path", [item for item in sys.path if item != package_path])
 
     module.add_import_paths(repo_root)
 
-    assert data_path in sys.path
-    assert models_path in sys.path
+    assert package_path in sys.path
+    module.add_import_paths(repo_root)
+    assert sys.path.count(package_path) == 1

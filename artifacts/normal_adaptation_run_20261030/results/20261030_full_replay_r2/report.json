@@ -1,0 +1,830 @@
+{
+  "status": "COMPLETED_REAL_REPLAY_AND_SAMPLED_HOLDOUT",
+  "started_at": "2026-10-29T18:03:19.415131+00:00",
+  "label": "retrospective_streaming_replay_NOT_strict_realtime",
+  "protocol_sha256": "27982a23273175579849e49d7e5f5986a346951d9d36db46279ed7be7db9c85c",
+  "clarification_sha256": "ff684f2f21dd24817d468df8b64dc7fa262c27c72caa9df72036969af69f89f6",
+  "input_index_sha256": "584b6c5f063a60f875f3504f810dd5ecdf004cea71d05f47b2a17c4274ec2194",
+  "source_checkpoint_sha256": "b24f2da7b18197362f7d903eca813f78b70f6125cd249044ac530d5106ae5837",
+  "adapted_checkpoint_sha256": "ca863cb0c3180138543342c60c6c5655d8e1ff31f90a5cf51e8f407f65c155ce",
+  "adaptation_report_sha256": "5876bb62711e196b404f8feb5721c024ef508e57278dd54242ed0602e8745ec3",
+  "source_norm_sha256": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33",
+  "model_source_sha256": "87a928b147c1e62d283910048d19710d55dd9731b963a33d8a5840b430fae1d2",
+  "runner_sha256": "86995e1f972f1cc418091ff4e0bcd4311fe4d79947ca946a4b8410cd2b98cafc",
+  "event_source_sha256": "bb84c0a19880fc36e322cb6c9716c6928e6cf4171898a2eb46ebd2a611c9c4e8",
+  "window_extractor_sha256": "05c3f72b1d58d4ac0b5d592e60a9b066490ea7b43f8a23755701c9cf93fdfd64",
+  "device": "cuda:0",
+  "gpu": "NVIDIA GeForce RTX 4090 D",
+  "torch": "2.5.1+cu124",
+  "numpy": "2.1.3",
+  "batch_size": 512,
+  "cudnn_tf32": true,
+  "matmul_tf32": false,
+  "deterministic_algorithms": true,
+  "full_replay_stride_frames": 10,
+  "sampled_metrics_stride_frames": 5,
+  "sampled_metrics_cap": 64,
+  "ground_truth_interval_end": "last active sample timestamp (inclusive)",
+  "delay_population": "per true interval; post-onset overlapping predictions only; pre-onset hits may have missing start delay",
+  "limitations": [
+    "CSV interpolation can depend on future input; no physical causal delay claim.",
+    "Batched inference time is throughput, not single-window real-time latency.",
+    "Real results had previously been inspected under earlier protocols; not pristine blind testing.",
+    "RflySim event/session replay remains a separate pending validation; sampled holdout is window-only.",
+    "No test-driven method, threshold or rule changes in this run."
+  ],
+  "source_internal_test": {
+    "A0": {
+      "windows": 35392,
+      "confusion_matrix": [
+        [
+          17258,
+          622
+        ],
+        [
+          675,
+          16837
+        ]
+      ],
+      "accuracy": 0.9633533001808319,
+      "macro_f1": 0.9633481139683202,
+      "fault_recall": 0.961455002284148,
+      "normal_window_fpr": 0.03478747203579419
+    },
+    "A1": {
+      "windows": 35392,
+      "confusion_matrix": [
+        [
+          9770,
+          8110
+        ],
+        [
+          474,
+          17038
+        ]
+      ],
+      "accuracy": 0.7574593128390597,
+      "macro_f1": 0.7467806591971007,
+      "fault_recall": 0.9729328460484239,
+      "normal_window_fpr": 0.45357941834451904
+    }
+  },
+  "RflySim_sampled_holdout": {
+    "A0": {
+      "windows": 922,
+      "confusion_matrix": [
+        [
+          922,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "accuracy": 1.0,
+      "macro_f1": 0.5,
+      "fault_recall": null,
+      "normal_window_fpr": 0.0
+    },
+    "A1": {
+      "windows": 922,
+      "confusion_matrix": [
+        [
+          186,
+          736
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "accuracy": 0.2017353579175705,
+      "macro_f1": 0.16787003610108303,
+      "fault_recall": null,
+      "normal_window_fpr": 0.7982646420824295
+    }
+  },
+  "thresholds": {
+    "A0": {
+      "T0": 0.6,
+      "T1": 0.95,
+      "q995": 1.0,
+      "calibration_points": 2192,
+      "calibration_cases": [
+        "REAL/acce/no_fault/457_1",
+        "REAL/circling/no_fault/400_1",
+        "REAL/hover/no_fault/108_1",
+        "REAL/velocity/no_fault/322_1",
+        "REAL/waypoint/no_fault/241_1"
+      ]
+    },
+    "A1": {
+      "T0": 0.6,
+      "T1": 0.9375559183955193,
+      "q995": 0.9375559183955193,
+      "calibration_points": 2192,
+      "calibration_cases": [
+        "REAL/acce/no_fault/457_1",
+        "REAL/circling/no_fault/400_1",
+        "REAL/hover/no_fault/108_1",
+        "REAL/velocity/no_fault/322_1",
+        "REAL/waypoint/no_fault/241_1"
+      ]
+    }
+  },
+  "thresholds_sha256_before_test": "029e14816794142eb74239403959367f4f1ebed71d4f402b0d24eabaa313bc5a",
+  "real_results": {
+    "A0-T0": {
+      "main_normal": {
+        "cases": 33,
+        "cases_with_events": 33,
+        "case_event_fpr": 1.0,
+        "exposure_s": 2835.38,
+        "observable_exposure_s": 2737.04,
+        "false_alarm_events": 139,
+        "false_alarm_events_per_hour": 176.48428076659917,
+        "false_alarm_duration_s": 1565.0
+      },
+      "supplemental_normal": {
+        "cases": 25,
+        "cases_with_events": 17,
+        "case_event_fpr": 0.68,
+        "exposure_s": 907.8,
+        "observable_exposure_s": 833.3000000000001,
+        "false_alarm_events": 52,
+        "false_alarm_events_per_hour": 206.2128222075347,
+        "false_alarm_duration_s": 444.79999999999995
+      },
+      "fault": {
+        "cases": 392,
+        "hit_cases": 380,
+        "case_event_recall": 0.9693877551020408,
+        "missed_cases": [
+          "REAL/acce/motor/408_1",
+          "REAL/acce/motor/409_1",
+          "REAL/acce/motor/410_1",
+          "REAL/acce/motor/414_1",
+          "REAL/acce/motor/428_1",
+          "REAL/hover/GPS/94_1",
+          "REAL/hover/GPS/95_1",
+          "REAL/hover/accelerometer/56_1",
+          "REAL/hover/magnetometer/85_1",
+          "REAL/velocity/motor/279_1",
+          "REAL/waypoint/accelerometer/194_1",
+          "REAL/waypoint/barometer/215_2"
+        ],
+        "pre_first_onset_events": 819,
+        "non_overlapping_alarm_events": 929,
+        "motor": {
+          "cases": 223,
+          "recall": 0.9730941704035875
+        },
+        "sensor": {
+          "cases": 169,
+          "recall": 0.9644970414201184
+        },
+        "ground_truth_intervals": 889,
+        "hit_intervals": 754,
+        "pre_onset_hit_intervals": 617,
+        "event_start_delay_s": {
+          "n": 239,
+          "median": 7.960000000000036,
+          "p90": 24.223999999999982,
+          "p95": 35.72799999999988
+        },
+        "confirmation_delay_s": {
+          "n": 243,
+          "median": 7.840000000000003,
+          "p90": 24.37600000000001,
+          "p95": 30.78199999999995
+        },
+        "final_emission_delay_s": {
+          "n": 754,
+          "median": 14.280000000000015,
+          "p90": 46.374,
+          "p95": 64.95800000000003
+        }
+      },
+      "sampled_window_main": {
+        "windows": 27200,
+        "confusion_matrix": [
+          [
+            7335,
+            10165
+          ],
+          [
+            2153,
+            7547
+          ]
+        ],
+        "accuracy": 0.5471323529411765,
+        "macro_f1": 0.547104840343783,
+        "fault_recall": 0.778041237113402,
+        "normal_window_fpr": 0.5808571428571428
+      },
+      "sampled_window_supplemental": {
+        "windows": 1159,
+        "confusion_matrix": [
+          [
+            551,
+            608
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.47540983606557374,
+        "macro_f1": 0.32222222222222224,
+        "fault_recall": null,
+        "normal_window_fpr": 0.5245901639344263
+      }
+    },
+    "A0-T1": {
+      "main_normal": {
+        "cases": 33,
+        "cases_with_events": 33,
+        "case_event_fpr": 1.0,
+        "exposure_s": 2835.38,
+        "observable_exposure_s": 2737.04,
+        "false_alarm_events": 100,
+        "false_alarm_events_per_hour": 126.96710846517927,
+        "false_alarm_duration_s": 1266.6
+      },
+      "supplemental_normal": {
+        "cases": 25,
+        "cases_with_events": 14,
+        "case_event_fpr": 0.56,
+        "exposure_s": 907.8,
+        "observable_exposure_s": 833.3000000000001,
+        "false_alarm_events": 32,
+        "false_alarm_events_per_hour": 126.90019828155982,
+        "false_alarm_duration_s": 319.99999999999994
+      },
+      "fault": {
+        "cases": 392,
+        "hit_cases": 354,
+        "case_event_recall": 0.9030612244897959,
+        "missed_cases": [
+          "REAL/acce/accelerometer/432_1",
+          "REAL/acce/motor/406_1",
+          "REAL/acce/motor/408_1",
+          "REAL/acce/motor/409_1",
+          "REAL/acce/motor/410_1",
+          "REAL/acce/motor/412_1",
+          "REAL/acce/motor/413_1",
+          "REAL/acce/motor/414_1",
+          "REAL/acce/motor/428_1",
+          "REAL/hover/GPS/100_1",
+          "REAL/hover/GPS/92_1",
+          "REAL/hover/GPS/94_1",
+          "REAL/hover/GPS/95_1",
+          "REAL/hover/accelerometer/56_1",
+          "REAL/hover/barometer/72_1",
+          "REAL/hover/barometer/76_1",
+          "REAL/hover/barometer/77_1",
+          "REAL/hover/gyroscope/66_1",
+          "REAL/hover/gyroscope/68_1",
+          "REAL/hover/gyroscope/70_1",
+          "REAL/hover/magnetometer/81_1",
+          "REAL/hover/magnetometer/82_1",
+          "REAL/hover/magnetometer/85_1",
+          "REAL/hover/magnetometer/88_1",
+          "REAL/hover/magnetometer/89_1",
+          "REAL/velocity/accelerometer/289_1",
+          "REAL/velocity/barometer/301_1",
+          "REAL/velocity/gyroscope/294_1",
+          "REAL/velocity/motor/247_1",
+          "REAL/velocity/motor/249_2",
+          "REAL/velocity/motor/255_1",
+          "REAL/velocity/motor/274_1",
+          "REAL/velocity/motor/279_1",
+          "REAL/waypoint/accelerometer/186_1",
+          "REAL/waypoint/accelerometer/188_1",
+          "REAL/waypoint/accelerometer/194_1",
+          "REAL/waypoint/barometer/215_2",
+          "REAL/waypoint/gyroscope/198_1"
+        ],
+        "pre_first_onset_events": 487,
+        "non_overlapping_alarm_events": 586,
+        "motor": {
+          "cases": 223,
+          "recall": 0.9417040358744395
+        },
+        "sensor": {
+          "cases": 169,
+          "recall": 0.8520710059171598
+        },
+        "ground_truth_intervals": 889,
+        "hit_intervals": 677,
+        "pre_onset_hit_intervals": 521,
+        "event_start_delay_s": {
+          "n": 229,
+          "median": 8.359999999999985,
+          "p90": 26.632000000000012,
+          "p95": 39.59199999999997
+        },
+        "confirmation_delay_s": {
+          "n": 237,
+          "median": 7.67999999999995,
+          "p90": 25.955999999999996,
+          "p95": 36.66399999999998
+        },
+        "final_emission_delay_s": {
+          "n": 677,
+          "median": 15.060000000000002,
+          "p90": 49.21999999999998,
+          "p95": 65.65199999999999
+        }
+      },
+      "sampled_window_main": {
+        "windows": 27200,
+        "confusion_matrix": [
+          [
+            7335,
+            10165
+          ],
+          [
+            2153,
+            7547
+          ]
+        ],
+        "accuracy": 0.5471323529411765,
+        "macro_f1": 0.547104840343783,
+        "fault_recall": 0.778041237113402,
+        "normal_window_fpr": 0.5808571428571428
+      },
+      "sampled_window_supplemental": {
+        "windows": 1159,
+        "confusion_matrix": [
+          [
+            551,
+            608
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.47540983606557374,
+        "macro_f1": 0.32222222222222224,
+        "fault_recall": null,
+        "normal_window_fpr": 0.5245901639344263
+      }
+    },
+    "A1-T0": {
+      "main_normal": {
+        "cases": 33,
+        "cases_with_events": 33,
+        "case_event_fpr": 1.0,
+        "exposure_s": 2835.38,
+        "observable_exposure_s": 2737.04,
+        "false_alarm_events": 44,
+        "false_alarm_events_per_hour": 55.86552772467888,
+        "false_alarm_duration_s": 2314.0
+      },
+      "supplemental_normal": {
+        "cases": 25,
+        "cases_with_events": 16,
+        "case_event_fpr": 0.64,
+        "exposure_s": 907.8,
+        "observable_exposure_s": 833.3000000000001,
+        "false_alarm_events": 20,
+        "false_alarm_events_per_hour": 79.31262392597489,
+        "false_alarm_duration_s": 612.8000000000001
+      },
+      "fault": {
+        "cases": 392,
+        "hit_cases": 385,
+        "case_event_recall": 0.9821428571428571,
+        "missed_cases": [
+          "REAL/hover/barometer/72_1",
+          "REAL/hover/gyroscope/65_1",
+          "REAL/hover/gyroscope/66_1",
+          "REAL/hover/gyroscope/67_1",
+          "REAL/hover/gyroscope/70_1",
+          "REAL/velocity/motor/249_2",
+          "REAL/velocity/motor/279_1"
+        ],
+        "pre_first_onset_events": 435,
+        "non_overlapping_alarm_events": 137,
+        "motor": {
+          "cases": 223,
+          "recall": 0.9910313901345291
+        },
+        "sensor": {
+          "cases": 169,
+          "recall": 0.9704142011834319
+        },
+        "ground_truth_intervals": 889,
+        "hit_intervals": 872,
+        "pre_onset_hit_intervals": 823,
+        "event_start_delay_s": {
+          "n": 64,
+          "median": 6.269999999999982,
+          "p90": 30.24800000000002,
+          "p95": 36.539999999999964
+        },
+        "confirmation_delay_s": {
+          "n": 69,
+          "median": 6.480000000000018,
+          "p90": 27.828000000000053,
+          "p95": 36.839999999999996
+        },
+        "final_emission_delay_s": {
+          "n": 872,
+          "median": 41.53999999999999,
+          "p90": 81.46199999999997,
+          "p95": 89.22399999999998
+        }
+      },
+      "sampled_window_main": {
+        "windows": 27200,
+        "confusion_matrix": [
+          [
+            3199,
+            14301
+          ],
+          [
+            829,
+            8871
+          ]
+        ],
+        "accuracy": 0.44375,
+        "macro_f1": 0.4184621064111472,
+        "fault_recall": 0.9145360824742268,
+        "normal_window_fpr": 0.8172
+      },
+      "sampled_window_supplemental": {
+        "windows": 1159,
+        "confusion_matrix": [
+          [
+            259,
+            900
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.22346850733390855,
+        "macro_f1": 0.18265162200282087,
+        "fault_recall": null,
+        "normal_window_fpr": 0.7765314926660914
+      }
+    },
+    "A1-T1": {
+      "main_normal": {
+        "cases": 33,
+        "cases_with_events": 10,
+        "case_event_fpr": 0.30303030303030304,
+        "exposure_s": 2835.38,
+        "observable_exposure_s": 2737.04,
+        "false_alarm_events": 10,
+        "false_alarm_events_per_hour": 12.696710846517927,
+        "false_alarm_duration_s": 200.7999999999999
+      },
+      "supplemental_normal": {
+        "cases": 25,
+        "cases_with_events": 1,
+        "case_event_fpr": 0.04,
+        "exposure_s": 907.8,
+        "observable_exposure_s": 833.3000000000001,
+        "false_alarm_events": 1,
+        "false_alarm_events_per_hour": 3.9656311962987445,
+        "false_alarm_duration_s": 8.600000000000023
+      },
+      "fault": {
+        "cases": 392,
+        "hit_cases": 140,
+        "case_event_recall": 0.35714285714285715,
+        "missed_cases": [
+          "REAL/acce/GPS/447_1",
+          "REAL/acce/GPS/448_1",
+          "REAL/acce/GPS/449_1",
+          "REAL/acce/accelerometer/431_1",
+          "REAL/acce/accelerometer/432_1",
+          "REAL/acce/accelerometer/433_1",
+          "REAL/acce/barometer/439_1",
+          "REAL/acce/barometer/440_1",
+          "REAL/acce/barometer/441_1",
+          "REAL/acce/barometer/442_1",
+          "REAL/acce/gyroscope/435_1",
+          "REAL/acce/gyroscope/436_1",
+          "REAL/acce/gyroscope/437_1",
+          "REAL/acce/gyroscope/438_1",
+          "REAL/acce/magnetometer/444_1",
+          "REAL/acce/magnetometer/445_1",
+          "REAL/acce/magnetometer/446_1",
+          "REAL/acce/motor/406_1",
+          "REAL/acce/motor/406_2",
+          "REAL/acce/motor/407_1",
+          "REAL/acce/motor/408_1",
+          "REAL/acce/motor/409_1",
+          "REAL/acce/motor/410_1",
+          "REAL/acce/motor/412_1",
+          "REAL/acce/motor/413_1",
+          "REAL/acce/motor/414_1",
+          "REAL/acce/motor/415_1",
+          "REAL/acce/motor/416_2",
+          "REAL/acce/motor/419_1",
+          "REAL/acce/motor/421_1",
+          "REAL/acce/motor/422_1",
+          "REAL/acce/motor/423_1",
+          "REAL/acce/motor/425_1",
+          "REAL/acce/motor/426_1",
+          "REAL/acce/motor/427_1",
+          "REAL/acce/motor/428_1",
+          "REAL/acce/motor/429_1",
+          "REAL/acce/motor/430_1",
+          "REAL/circling/GPS/390_1",
+          "REAL/circling/GPS/392_2",
+          "REAL/circling/GPS/393_1",
+          "REAL/circling/GPS/394_1",
+          "REAL/circling/GPS/395_1",
+          "REAL/circling/barometer/378_1",
+          "REAL/circling/barometer/381_1",
+          "REAL/circling/barometer/383_1",
+          "REAL/circling/barometer/383_2",
+          "REAL/circling/gyroscope/372_1",
+          "REAL/circling/gyroscope/375_1",
+          "REAL/circling/gyroscope/376_1",
+          "REAL/circling/gyroscope/377_1",
+          "REAL/circling/magnetometer/384_1",
+          "REAL/circling/magnetometer/385_1",
+          "REAL/circling/magnetometer/386_1",
+          "REAL/circling/magnetometer/388_1",
+          "REAL/circling/motor/326_1",
+          "REAL/circling/motor/326_2",
+          "REAL/circling/motor/327_1",
+          "REAL/circling/motor/328_1",
+          "REAL/circling/motor/328_3",
+          "REAL/circling/motor/331_1",
+          "REAL/circling/motor/331_2",
+          "REAL/circling/motor/332_1",
+          "REAL/circling/motor/332_2",
+          "REAL/circling/motor/333_1",
+          "REAL/circling/motor/333_2",
+          "REAL/circling/motor/334_2",
+          "REAL/circling/motor/357_1",
+          "REAL/hover/GPS/100_1",
+          "REAL/hover/GPS/100_2",
+          "REAL/hover/GPS/91_1",
+          "REAL/hover/GPS/92_1",
+          "REAL/hover/GPS/93_1",
+          "REAL/hover/GPS/94_1",
+          "REAL/hover/GPS/95_1",
+          "REAL/hover/GPS/97_3",
+          "REAL/hover/GPS/98_1",
+          "REAL/hover/accelerometer/56_1",
+          "REAL/hover/accelerometer/60_1",
+          "REAL/hover/barometer/71_1",
+          "REAL/hover/barometer/72_1",
+          "REAL/hover/barometer/75_1",
+          "REAL/hover/barometer/76_1",
+          "REAL/hover/barometer/76_3",
+          "REAL/hover/barometer/77_1",
+          "REAL/hover/barometer/77_2",
+          "REAL/hover/barometer/78_1",
+          "REAL/hover/barometer/79_1",
+          "REAL/hover/barometer/80_1",
+          "REAL/hover/barometer/80_2",
+          "REAL/hover/gyroscope/61_1",
+          "REAL/hover/gyroscope/62_1",
+          "REAL/hover/gyroscope/63_1",
+          "REAL/hover/gyroscope/64_1",
+          "REAL/hover/gyroscope/65_1",
+          "REAL/hover/gyroscope/66_1",
+          "REAL/hover/gyroscope/66_2",
+          "REAL/hover/gyroscope/67_1",
+          "REAL/hover/gyroscope/68_1",
+          "REAL/hover/gyroscope/68_2",
+          "REAL/hover/gyroscope/69_1",
+          "REAL/hover/gyroscope/70_1",
+          "REAL/hover/magnetometer/81_1",
+          "REAL/hover/magnetometer/82_1",
+          "REAL/hover/magnetometer/83_1",
+          "REAL/hover/magnetometer/84_1",
+          "REAL/hover/magnetometer/85_1",
+          "REAL/hover/magnetometer/86_1",
+          "REAL/hover/magnetometer/87_1",
+          "REAL/hover/magnetometer/88_1",
+          "REAL/hover/magnetometer/89_1",
+          "REAL/hover/magnetometer/90_1",
+          "REAL/hover/motor/10_1",
+          "REAL/hover/motor/11_1",
+          "REAL/hover/motor/13_1",
+          "REAL/hover/motor/18_1",
+          "REAL/hover/motor/19_1",
+          "REAL/hover/motor/1_1",
+          "REAL/hover/motor/20_1",
+          "REAL/hover/motor/21_1",
+          "REAL/hover/motor/24_1",
+          "REAL/hover/motor/28_1",
+          "REAL/hover/motor/29_1",
+          "REAL/hover/motor/2_1",
+          "REAL/hover/motor/33_1",
+          "REAL/hover/motor/36_1",
+          "REAL/hover/motor/38_1",
+          "REAL/hover/motor/4_1",
+          "REAL/hover/motor/5_1",
+          "REAL/hover/motor/6_1",
+          "REAL/hover/motor/8_1",
+          "REAL/hover/motor/9_1",
+          "REAL/velocity/GPS/310_1",
+          "REAL/velocity/GPS/312_1",
+          "REAL/velocity/GPS/313_1",
+          "REAL/velocity/accelerometer/287_1",
+          "REAL/velocity/accelerometer/288_1",
+          "REAL/velocity/accelerometer/289_1",
+          "REAL/velocity/barometer/299_1",
+          "REAL/velocity/barometer/300_1",
+          "REAL/velocity/barometer/301_1",
+          "REAL/velocity/barometer/302_1",
+          "REAL/velocity/barometer/303_1",
+          "REAL/velocity/gyroscope/293_1",
+          "REAL/velocity/gyroscope/294_1",
+          "REAL/velocity/gyroscope/296_1",
+          "REAL/velocity/gyroscope/297_1",
+          "REAL/velocity/magnetometer/304_1",
+          "REAL/velocity/magnetometer/307_1",
+          "REAL/velocity/magnetometer/309_1",
+          "REAL/velocity/motor/246_1",
+          "REAL/velocity/motor/247_1",
+          "REAL/velocity/motor/248_1",
+          "REAL/velocity/motor/249_1",
+          "REAL/velocity/motor/249_2",
+          "REAL/velocity/motor/250_1",
+          "REAL/velocity/motor/251_1",
+          "REAL/velocity/motor/252_1",
+          "REAL/velocity/motor/253_1",
+          "REAL/velocity/motor/254_1",
+          "REAL/velocity/motor/255_1",
+          "REAL/velocity/motor/256_1",
+          "REAL/velocity/motor/259_1",
+          "REAL/velocity/motor/261_1",
+          "REAL/velocity/motor/262_1",
+          "REAL/velocity/motor/263_1",
+          "REAL/velocity/motor/264_1",
+          "REAL/velocity/motor/266_1",
+          "REAL/velocity/motor/267_1",
+          "REAL/velocity/motor/268_1",
+          "REAL/velocity/motor/269_1",
+          "REAL/velocity/motor/270_1",
+          "REAL/velocity/motor/271_1",
+          "REAL/velocity/motor/272_1",
+          "REAL/velocity/motor/273_1",
+          "REAL/velocity/motor/274_1",
+          "REAL/velocity/motor/275_1",
+          "REAL/velocity/motor/277_1",
+          "REAL/velocity/motor/278_1",
+          "REAL/velocity/motor/279_1",
+          "REAL/velocity/motor/280_1",
+          "REAL/velocity/motor/281_1",
+          "REAL/velocity/motor/282_1",
+          "REAL/velocity/motor/283_1",
+          "REAL/velocity/motor/284_1",
+          "REAL/velocity/motor/285_1",
+          "REAL/waypoint/GPS/226_1",
+          "REAL/waypoint/GPS/227_1",
+          "REAL/waypoint/GPS/228_1",
+          "REAL/waypoint/GPS/229_1",
+          "REAL/waypoint/GPS/230_1",
+          "REAL/waypoint/GPS/231_1",
+          "REAL/waypoint/GPS/233_1",
+          "REAL/waypoint/GPS/235_1",
+          "REAL/waypoint/accelerometer/186_1",
+          "REAL/waypoint/accelerometer/188_1",
+          "REAL/waypoint/accelerometer/190_1",
+          "REAL/waypoint/accelerometer/192_1",
+          "REAL/waypoint/accelerometer/194_1",
+          "REAL/waypoint/accelerometer/194_2",
+          "REAL/waypoint/accelerometer/194_3",
+          "REAL/waypoint/accelerometer/194_4",
+          "REAL/waypoint/barometer/206_1",
+          "REAL/waypoint/barometer/209_1",
+          "REAL/waypoint/barometer/211_1",
+          "REAL/waypoint/barometer/215_1",
+          "REAL/waypoint/barometer/215_2",
+          "REAL/waypoint/gyroscope/196_1",
+          "REAL/waypoint/gyroscope/198_1",
+          "REAL/waypoint/gyroscope/199_1",
+          "REAL/waypoint/gyroscope/200_1",
+          "REAL/waypoint/gyroscope/201_1",
+          "REAL/waypoint/magnetometer/216_1",
+          "REAL/waypoint/magnetometer/217_1",
+          "REAL/waypoint/magnetometer/218_1",
+          "REAL/waypoint/magnetometer/219_1",
+          "REAL/waypoint/magnetometer/220_1",
+          "REAL/waypoint/magnetometer/221_1",
+          "REAL/waypoint/magnetometer/223_1",
+          "REAL/waypoint/magnetometer/225_1",
+          "REAL/waypoint/motor/115_1",
+          "REAL/waypoint/motor/133_1",
+          "REAL/waypoint/motor/137_1",
+          "REAL/waypoint/motor/138_2",
+          "REAL/waypoint/motor/139_1",
+          "REAL/waypoint/motor/140_1",
+          "REAL/waypoint/motor/148_2",
+          "REAL/waypoint/motor/151_1",
+          "REAL/waypoint/motor/152_1",
+          "REAL/waypoint/motor/153_1",
+          "REAL/waypoint/motor/154_1",
+          "REAL/waypoint/motor/155_1",
+          "REAL/waypoint/motor/156_1",
+          "REAL/waypoint/motor/157_1",
+          "REAL/waypoint/motor/158_1",
+          "REAL/waypoint/motor/159_1",
+          "REAL/waypoint/motor/160_1",
+          "REAL/waypoint/motor/161_1",
+          "REAL/waypoint/motor/162_1",
+          "REAL/waypoint/motor/163_1",
+          "REAL/waypoint/motor/164_1",
+          "REAL/waypoint/motor/166_1",
+          "REAL/waypoint/motor/168_1",
+          "REAL/waypoint/motor/171_2",
+          "REAL/waypoint/motor/172_1",
+          "REAL/waypoint/motor/174_1",
+          "REAL/waypoint/motor/175_1",
+          "REAL/waypoint/motor/177_1",
+          "REAL/waypoint/motor/178_1",
+          "REAL/waypoint/motor/179_1",
+          "REAL/waypoint/motor/180_1",
+          "REAL/waypoint/motor/182_1"
+        ],
+        "pre_first_onset_events": 30,
+        "non_overlapping_alarm_events": 44,
+        "motor": {
+          "cases": 223,
+          "recall": 0.452914798206278
+        },
+        "sensor": {
+          "cases": 169,
+          "recall": 0.23076923076923078
+        },
+        "ground_truth_intervals": 889,
+        "hit_intervals": 281,
+        "pre_onset_hit_intervals": 183,
+        "event_start_delay_s": {
+          "n": 99,
+          "median": 23.860000000000014,
+          "p90": 46.004,
+          "p95": 56.391999999999975
+        },
+        "confirmation_delay_s": {
+          "n": 100,
+          "median": 24.150000000000006,
+          "p90": 46.342000000000006,
+          "p95": 56.51599999999997
+        },
+        "final_emission_delay_s": {
+          "n": 281,
+          "median": 48.85999999999996,
+          "p90": 86.25999999999999,
+          "p95": 96.84000000000003
+        }
+      },
+      "sampled_window_main": {
+        "windows": 27200,
+        "confusion_matrix": [
+          [
+            3199,
+            14301
+          ],
+          [
+            829,
+            8871
+          ]
+        ],
+        "accuracy": 0.44375,
+        "macro_f1": 0.4184621064111472,
+        "fault_recall": 0.9145360824742268,
+        "normal_window_fpr": 0.8172
+      },
+      "sampled_window_supplemental": {
+        "windows": 1159,
+        "confusion_matrix": [
+          [
+            259,
+            900
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.22346850733390855,
+        "macro_f1": 0.18265162200282087,
+        "fault_recall": null,
+        "normal_window_fpr": 0.7765314926660914
+      }
+    }
+  },
+  "batched_forward_total_s": {
+    "A0": 5.138738473877311,
+    "A1": 2.5577496979385614
+  },
+  "elapsed_s": 23.459091506898403,
+  "finished_at": "2026-10-29T18:03:42.875839+00:00"
+}

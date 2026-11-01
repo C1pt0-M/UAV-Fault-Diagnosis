@@ -1,0 +1,12 @@
+{
+  "task": "Compare fixed existing source checkpoints with saved running BN statistics versus current mixed-batch statistics, with Dropout disabled in both modes.",
+  "arms": ["uniform_replacement", "balanced_source_normal"],
+  "population": "Source train only. Each arm uses the FIRST32 complete512-sample batches of its registered replacement sampler's first162069-draw epoch, generator seed53. All indices are fixed before predictions; no reselection by results. Repeated draws are reported as draws, not independent windows.",
+  "forward_passes": "32 batches x512 draws x2 modes per arm. Identical mixed-normal/fault inputs within each paired mode. No normal-only BN batches.",
+  "reference": "model.eval with saved running statistics; use prior all-train-normal eval predictions as independent index-aligned parity anchor. Max probability error<=1e-5 and zero changed normal predictions.",
+  "batch_stats_mode": "Use a disposable deep-copied model. Set only BatchNorm1d modules training=true and track_running_stats=false; all other modules including Dropout remain eval. Batch statistics used with no parameter or BN buffer updates. Assert original and disposable model state digests unchanged after all forwards. Never save altered model weights.",
+  "outputs": ["paired probabilities and sampled original indices", "overall and normal-origin/hover/fault-family metrics", "32 per-batch hover and fault counts", "per-case draw counts", "state/hash checks"],
+  "decision": "A large hover change would warrant localizing BN state sensitivity, not applying batch-stat inference as a deployable repair. If little change, stop BN diagnosis and correct the short training budget under a separate immutable100-epoch configuration using fresh same-seed initializations. No blind extra variants.",
+  "forbidden": ["backward or optimizer", "Dropout enabled", "parameter/running-stat mutations", "threshold selection", "test/Real reads", "raw logs", "model branch modifications", "deployment changes"],
+  "limits": "Diagnostic only: batch-mode outputs depend on mixed batch composition and include fault examples. They are not online performance, independent generalization or proof of a unique root cause."
+}

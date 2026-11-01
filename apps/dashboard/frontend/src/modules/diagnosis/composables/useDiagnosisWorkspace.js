@@ -2,6 +2,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { assetApi, diagnosisReportApi, modelApi, runApi, telemetryApi } from '@/shared/services'
+import { runtimeCapabilities } from '@/shared/state/runtimeCapabilities'
 import {
   buildRuleExplanationRows,
   buildTraceableEvidenceRows,
@@ -284,6 +285,10 @@ export function useDiagnosisWorkspace() {
       return
     }
 
+    if (!runtimeCapabilities.telemetry) {
+      ElMessage.warning('实时监测未启用，请选择日志资产执行离线诊断')
+      return
+    }
     activeSessionId.value = sessionId
 
     try {
@@ -330,6 +335,10 @@ export function useDiagnosisWorkspace() {
   function openReportAssistant(reportOrRun = null) {
     const reportId = reportOrRun?.report_id || latestReportId.value
     if (!reportId) return
+    if (!runtimeCapabilities.ai) {
+      ElMessage.warning('AI 解读未启用，仍可查看诊断报告')
+      return
+    }
 
     router.push({
       path: '/ai',

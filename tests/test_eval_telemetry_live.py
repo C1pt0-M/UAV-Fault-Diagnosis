@@ -9,6 +9,47 @@ import pandas as pd
 from scripts.eval import eval_telemetry_live
 
 
+def test_replay_summary_keeps_legacy_event_times_and_adds_output_timing(tmp_path, monkeypatch):
+    csv_dir = tmp_path / 'csv'
+    model_dir = tmp_path / 'model'
+    csv_dir.mkdir()
+    model_dir.mkdir()
+    output = tmp_path / 'summary.csv'
+    pd.DataFrame({
+        'time_s': [i / 5 for i in range(11)],
+        'actuator_out_1': 1200.0, 'actuator_out_2': 1200.0,
+        'actuator_out_3': 1200.0, 'actuator_out_4': 1200.0,
+        'accel_z': -9.8, 'vel_x': 0.2, 'baro_alt': 1.0,
+    }).to_csv(csv_dir / 'sample.csv', index=False)
+
+    class Detector:
+        def __init__(self, **kwargs):
+            self.window_size = 150
+            self.config = {'model': 'dummy'}
+
+    fake = types.ModuleType('uav_fault.online.fault_detector')
+    fake.FaultDetector = Detector
+    monkeypatch.setitem(sys.modules, 'uav_fault.online.fault_detector', fake)
+    points = [dict(time_s=i / 5, frame_idx=i, fault_prob=0.9 if i <= 4 else 0.1,
+                   label='fault' if i <= 4 else 'normal', confidence=0.9)
+              for i in range(11)]
+    monkeypatch.setattr(eval_telemetry_live, '_replay_points_fast', lambda *a, **kw: points)
+    monkeypatch.setattr(sys, 'argv', [
+        'eval_telemetry_live', '--csv-dir', str(csv_dir), '--model-dir', str(model_dir),
+        '--out', str(output),
+    ])
+    assert eval_telemetry_live.main() == 0
+    row = pd.read_csv(output).iloc[0]
+    assert row['n_events'] == 1
+    assert row['best_event_start_t'] == 0.0
+    assert row['best_event_end_t'] == 0.8
+    assert row['best_event_confirmed_t'] == 0.4
+    assert row['best_event_emitted_t'] == 1.6
+    assert row['best_event_confirmed_at_unix_s'] > 0
+    assert row['best_event_emitted_at_unix_s'] > 0
+    assert row['best_event_emission_reason'] == 'update'
+
+
 class DummyEvent:
     def __init__(self, start_t: float, end_t: float):
         self.start_t = start_t
@@ -289,6 +330,12 @@ def test_main_routes_px4_backend_into_records_for_backend_fast_mode(
     assert captured["backend"] == "px4"
     assert captured["mode"] == "fast"
     assert out_csv.exists()
+    saved = pd.read_csv(out_csv)
+    assert saved['policy_inference_every'].tolist() == [10]
+    assert saved['policy_onset_th'].tolist() == [0.6]
+    assert saved['respect_input_contract'].tolist() == [True]
+    assert saved['input_contract_check_mode'].tolist() == ['per_inference']
+    assert saved['input_contract_check_every_frames'].tolist() == [10]
 
 
 def test_main_routes_replay_backend_into_records_for_backend_legacy_mode(
@@ -371,6 +418,10 @@ def test_main_routes_replay_backend_into_records_for_backend_legacy_mode(
     assert captured["backend"] == "replay"
     assert captured["mode"] == "legacy"
     assert out_csv.exists()
+    saved = pd.read_csv(out_csv)
+    assert saved['respect_input_contract'].tolist() == [False]
+    assert saved['input_contract_check_mode'].tolist() == ['disabled']
+    assert saved['input_contract_check_every_frames'].isna().all()
 
 
 def test_main_passes_exclude_features_to_fault_detector(tmp_path, monkeypatch):

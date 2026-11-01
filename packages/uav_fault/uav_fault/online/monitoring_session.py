@@ -6,6 +6,7 @@ from typing import Any
 
 from uav_fault.online.decision_engine import TemporalDecisionEngine
 from uav_fault.online.decision_models import DecisionSignal
+from uav_fault.online.detection_policy import OnlineDetectionPolicy
 from uav_fault.online.risk_evaluator import RiskEvaluator
 
 
@@ -24,22 +25,15 @@ class OnlineDetectionRunner:
         *,
         device: str = "cpu",
         window_size: int | None = None,
+        policy: OnlineDetectionPolicy | None = None,
     ) -> None:
+        self.policy = policy or OnlineDetectionPolicy()
         detector_cls = _load_fault_detector()
         detector_kwargs = {"model_dir": model_path, "device": device}
         if window_size is not None:
             detector_kwargs["window_size"] = int(window_size)
         self.detector = detector_cls(**detector_kwargs)
-        from uav_fault.online.event_aggregator import FaultEventAggregator
-
-        self.aggregator = FaultEventAggregator(
-            onset_th=0.6,
-            clear_th=0.4,
-            k_on=3,
-            k_off=3,
-            min_event_s=0.5,
-            merge_gap_s=0.5,
-        )
+        self.aggregator = self.policy.make_aggregator()
 
     @property
     def window_size(self) -> int:
@@ -49,6 +43,10 @@ class OnlineDetectionRunner:
         return self.detector.predict(window)
 
     def update(self, *, frame, window, frame_idx: int):
+        if not self.policy.should_infer(
+            frame_idx=frame_idx, window_length=len(window), window_size=self.window_size
+        ):
+            return None, []
         result = self.predict(window)
         if result is None:
             return None, []

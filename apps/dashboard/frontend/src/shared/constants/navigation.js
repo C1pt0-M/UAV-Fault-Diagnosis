@@ -18,6 +18,7 @@ export const navigationItems = [
   },
   {
     key: 'monitoring',
+    capability: 'telemetry',
     label: '实时监测',
     path: '/monitoring',
     icon: Odometer,
@@ -46,6 +47,7 @@ export const navigationItems = [
   },
   {
     key: 'ai',
+    capability: 'ai',
     label: 'AI 助手',
     path: '/ai',
     icon: ChatDotRound,
@@ -59,6 +61,16 @@ export const navigationItems = [
     matchPaths: ['/settings']
   }
 ]
+
+export function isNavigationAvailable(item, capabilities) {
+  return !item.capability || capabilities[item.capability] === true
+}
+
+export function navigationItemForPath(path) {
+  return navigationItems.find(item => item.matchPaths.some(
+    match => path === match || path.startsWith(`${match}/`)
+  ))
+}
 
 export const pageMeta = {
   '/': {

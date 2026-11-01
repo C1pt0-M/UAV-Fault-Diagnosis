@@ -1,0 +1,74 @@
+{
+  "contract_version": "causal_input_v1_source_publication_replay_pilot",
+  "status": "REPLAY_RULES_IMPLEMENTED_AND_SMALL_SCALE_VALIDATED__LIVE_AND_FULL_TRAINING_BLOCKED",
+  "scope": "26-channel source-only original-ULog publication replay pilot. Preserve crops/split/window identity. Batch training-input builder and stateful runtime adapter validated on fixed source-only pilot. No production cache rebuild, UAV model training or deployment activation.",
+  "reference_evidence": "docs/research/2026-10-31/labeltime_modification_review.md",
+  "grid": {
+    "target_hz": 50,
+    "window_frames": 150,
+    "source_stride_frames": 5,
+    "origin": "existing_processed_crop_start"
+  },
+  "selection": "At grid time t use the latest observation whose availability timestamp is <= t, with observation timestamp <= availability timestamp. Stable arrival order resolves duplicate availability timestamps. No interpolation, backward fill, future look-ahead, timestamp sorting, or fallback past an invalid latest observation.",
+  "availability": {
+    "required": true,
+    "ULog_publication_time": "May be used only as a declared replay proxy, not certified physical receive time",
+    "runtime_receive_time": "Required for live admission; aligned monotonic timebase and per-topic provenance must be demonstrated",
+    "approved_clock_mapping": {
+      "scope": "Original ULog publication-replay proxy only",
+      "clock": "PX4 boot microseconds; no estimated shifting or future lookahead",
+      "physical_receive_mapping_approved": false
+    },
+    "per_group_observation_clock": {
+      "controls": "actuator_controls_0.timestamp_sample",
+      "outputs": "actuator_outputs.timestamp (declared publication proxy)",
+      "gyro": "sensor_combined.timestamp (declared publication proxy)",
+      "accel": "sensor_combined.timestamp + accelerometer_timestamp_relative",
+      "baro": "vehicle_air_data.timestamp_sample",
+      "attitude": "vehicle_attitude.timestamp_sample",
+      "velocity": "vehicle_local_position.timestamp_sample",
+      "mag": "vehicle_magnetometer.timestamp_sample"
+    }
+  },
+  "freshness": {
+    "age_basis": "grid_time_minus_observation_time",
+    "per_observation_group_max_age_us": {
+      "controls": 80000,
+      "outputs": 120000,
+      "gyro": 40000,
+      "accel": 40000,
+      "baro": 100000,
+      "attitude": 80000,
+      "velocity": 140000,
+      "mag": 60000
+    },
+    "approved_for_small_scale_replay": true,
+    "approved_for_live_or_full_training": false,
+    "budget_recipe": "ceil_to_20ms(max_over_12_source_train_case_median_positive_publication_interval + max_over_case_median_publication_minus_observation_lag + 20ms). A declared engineering one-update-plus-grid-and-lag budget, not validated physical fault tolerance. Frozen before validation.",
+    "source_evidence": "artifacts/causal_input_parity_v1_20261031/input_policy.json",
+    "rule": "Invalid timestamps fail, no silently substituting publication time for invalid sample time. Do not widen limits for validation coverage, fault cases or model scores. Prior 0.1/0.2/1s gap diagnostic cuts are not cleaning rules."
+  },
+  "invalid_inputs": "Retain row/time/index and invalid mask, represent missing values as NaN in intermediate data. Never zero-fill or forward-hold beyond explicit age bound. Require every frame/channel of a model window to be input-valid before inference; invalid-input is unavailable, not normal or fault. Do not bridge event intervals across unavailable time.",
+  "derived_features": "acc_norm derives from selected same-frame acceleration components; relative barometric altitude subtracts the window first value before float32 conversion; normalization uses source-training-only statistics fitted for the eventual causal input version, never final tests. All paths must use the same transform and ordering.",
+  "label_masks": "Input validity and endpoint label eligibility are separate. Training filters indices before model forward/BatchNorm and recomputes sampler/class weights on eligible source train labels. Evaluation selects frozen split/Real role explicitly and reports original denominators, unknown labels and unavailable inputs separately. -1 is not a third class. Continuous replay retains the complete time axis.",
+  "current_assets": "Label-time v1 repairs retain legacy future-dependent X. They are retrospective evidence only, not causal model-training/deployment clearance. Historical 3680 RflySim normal suffix windows require their own timing provenance; do not automatically append into a causal version.",
+  "training_enabled": false,
+  "deployment_enabled": false,
+  "normalization_for_pilot": {
+    "path": "artifacts/causal_input_parity_v1_20261031/pilot_norm_stats.json",
+    "fit": "760 eligible original-cap64 windows from 12 source train anchors only, 114000 overlapping frame contributions",
+    "purpose": "parity diagnostic only; never production coefficients",
+    "zero_variance_unit_scale_columns": []
+  },
+  "small_scale_validation": {
+    "report": "artifacts/causal_input_parity_v1_20261031/summary.json",
+    "fit_cases": 12,
+    "validation_cases": 4,
+    "canonical_rows": 42073,
+    "original_windows": 7943,
+    "equal_eligible_normalized_windows": 7729,
+    "ineligible_windows_retained": 214,
+    "physical_live_chain_validated": false
+  },
+  "runtime_integration": "CausalInputStream is an opt-in explicit observation/availability-clock adapter. Current TelemetryState snapshots lack per-topic arrival provenance; do not auto-convert snapshot time to each source clock. Old runtime and deployment unchanged."
+}

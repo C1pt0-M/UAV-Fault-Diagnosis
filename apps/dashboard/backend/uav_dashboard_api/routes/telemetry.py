@@ -12,8 +12,8 @@ from uav_dashboard_api.utils.jwt_utils import token_required, is_admin
 bp = Blueprint('telemetry', __name__)
 
 def _get_manager():
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
-    return telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    return get_telemetry_manager()
 
 
 def _ok(data=None, message='ok', status=200):
@@ -39,7 +39,8 @@ def _telemetry_capabilities() -> dict:
             current_app.config.get('RFLY_INFERENCE_LOCATION') or 'center'
         ).strip().lower(),
         'rfly_sim_map': str(current_app.config.get('RFLY_SIM_MAP') or 'LowGPU').strip(),
-        'blind_test_enabled': bool(current_app.config.get('ENABLE_BLIND_TEST', False)),
+        # 当前盲测固定使用 PX4，不代表 RflySim 支持故障随机注入。
+        'blind_test_enabled': bool(current_app.config.get('ENABLE_BLIND_TEST', False)) and 'px4' in allowed_backends,
     }
 
 
@@ -275,6 +276,8 @@ def start_blind_test(current_user):
     """启动盲测模式（随机故障，不泄露 ground truth）。"""
     if not current_app.config.get('ENABLE_BLIND_TEST', False):
         return _error('blind_test_disabled', status=403)
+    if 'px4' not in (current_app.config.get('TELEMETRY_ALLOWED_BACKENDS') or ()):
+        return _error('backend_not_allowed')
     data = request.get_json(silent=True) or {}
     drone_id = data.get('drone_id')
     sim_time = data.get('sim_time', 120)

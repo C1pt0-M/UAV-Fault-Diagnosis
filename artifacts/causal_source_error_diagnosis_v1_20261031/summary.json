@@ -1,0 +1,519 @@
+{
+  "status": "COMPLETED_SAVED_SOURCE_PREDICTION_ERROR_DIAGNOSIS",
+  "created_at": "2026-11-01T04:00:12.467692+00:00",
+  "scope": "Saved source train/val metadata and completed source-val predictions only. No raw logs, test/Real, new inference, training or threshold changes.",
+  "arms": {
+    "uniform_replacement": {
+      "all_normal": {
+        "windows": 17740,
+        "cases": 551,
+        "false_positives": 825,
+        "false_negatives": 0,
+        "false_positive_rate": 0.04650507328072153
+      },
+      "original_normal": {
+        "windows": 4565,
+        "cases": 72,
+        "false_positives": 820,
+        "false_negatives": 0,
+        "false_positive_rate": 0.1796276013143483
+      },
+      "inactive_fault_case_normal": {
+        "windows": 13175,
+        "cases": 479,
+        "false_positives": 5,
+        "false_negatives": 0,
+        "false_positive_rate": 0.0003795066413662239
+      },
+      "normal_hover": {
+        "windows": 754,
+        "cases": 12,
+        "false_positives": 393,
+        "false_negatives": 0,
+        "false_positive_rate": 0.5212201591511937
+      },
+      "hover_by_domain": {
+        "HIL": {
+          "windows": 370,
+          "cases": 6,
+          "false_positives": 192,
+          "false_negatives": 0,
+          "false_positive_rate": 0.518918918918919
+        },
+        "SIL": {
+          "windows": 384,
+          "cases": 6,
+          "false_positives": 201,
+          "false_negatives": 0,
+          "false_positive_rate": 0.5234375
+        }
+      },
+      "hover_by_original_crop_quarter": [
+        {
+          "crop_progress_quarter": 1,
+          "windows": 155,
+          "cases": 12,
+          "false_positives": 28,
+          "false_negatives": 0,
+          "false_positive_rate": 0.18064516129032257
+        },
+        {
+          "crop_progress_quarter": 2,
+          "windows": 196,
+          "cases": 12,
+          "false_positives": 58,
+          "false_negatives": 0,
+          "false_positive_rate": 0.29591836734693877
+        },
+        {
+          "crop_progress_quarter": 3,
+          "windows": 205,
+          "cases": 12,
+          "false_positives": 110,
+          "false_negatives": 0,
+          "false_positive_rate": 0.5365853658536586
+        },
+        {
+          "crop_progress_quarter": 4,
+          "windows": 198,
+          "cases": 12,
+          "false_positives": 197,
+          "false_negatives": 0,
+          "false_positive_rate": 0.9949494949494949
+        }
+      ],
+      "confidence": {
+        "all_original_normal_false_positives": {
+          "windows": 820,
+          "median_fault_score": 0.5746989846229553,
+          "min_fault_score": 0.5004495978355408,
+          "max_fault_score": 0.7842468023300171,
+          "fault_score_below_0_6": 578,
+          "fault_score_at_least_0_9": 0
+        },
+        "original_hover_false_positives": {
+          "windows": 393,
+          "median_fault_score": 0.5872372388839722,
+          "min_fault_score": 0.501896321773529,
+          "max_fault_score": 0.6374742388725281,
+          "fault_score_below_0_6": 267,
+          "fault_score_at_least_0_9": 0
+        }
+      },
+      "normal_cases_with_any_false_positive": 43,
+      "normal_hover_cases_with_any_false_positive": 12,
+      "fault_family": {
+        "motor": {
+          "windows": 10038,
+          "missed_faults": 44,
+          "recall": 0.9956166567045228
+        },
+        "sensor": {
+          "windows": 6932,
+          "missed_faults": 312,
+          "recall": 0.9549913444893249
+        }
+      },
+      "epoch_trajectory": [
+        {
+          "epoch": 1,
+          "training_loss": 0.05228253956942904,
+          "overall_macro_f1": 0.9301798869161884,
+          "original_normal_hover_fpr": 0.4761273209549072
+        },
+        {
+          "epoch": 2,
+          "training_loss": 0.035325964953903145,
+          "overall_macro_f1": 0.9443562091190101,
+          "original_normal_hover_fpr": 0.5437665782493368
+        },
+        {
+          "epoch": 3,
+          "training_loss": 0.031201120607014333,
+          "overall_macro_f1": 0.9464771099279015,
+          "original_normal_hover_fpr": 0.5278514588859416
+        },
+        {
+          "epoch": 4,
+          "training_loss": 0.02650485441018166,
+          "overall_macro_f1": 0.9537016954500703,
+          "original_normal_hover_fpr": 0.6061007957559682
+        },
+        {
+          "epoch": 5,
+          "training_loss": 0.024751374512699313,
+          "overall_macro_f1": 0.9568083943532562,
+          "original_normal_hover_fpr": 0.5358090185676393
+        },
+        {
+          "epoch": 6,
+          "training_loss": 0.023442431426480743,
+          "overall_macro_f1": 0.9569793244132552,
+          "original_normal_hover_fpr": 0.519893899204244
+        },
+        {
+          "epoch": 7,
+          "training_loss": 0.022360929951941364,
+          "overall_macro_f1": 0.9600100602619652,
+          "original_normal_hover_fpr": 0.5915119363395226
+        },
+        {
+          "epoch": 8,
+          "training_loss": 0.021440954752595456,
+          "overall_macro_f1": 0.9488391835982201,
+          "original_normal_hover_fpr": 0.35809018567639256
+        },
+        {
+          "epoch": 9,
+          "training_loss": 0.020551399427704068,
+          "overall_macro_f1": 0.9585624871137112,
+          "original_normal_hover_fpr": 0.47480106100795755
+        },
+        {
+          "epoch": 10,
+          "training_loss": 0.02073426902211897,
+          "overall_macro_f1": 0.9616816358210212,
+          "original_normal_hover_fpr": 0.5570291777188329
+        },
+        {
+          "epoch": 11,
+          "training_loss": 0.019964785673523364,
+          "overall_macro_f1": 0.9605204090656386,
+          "original_normal_hover_fpr": 0.47745358090185674
+        },
+        {
+          "epoch": 12,
+          "training_loss": 0.01933464487244842,
+          "overall_macro_f1": 0.9643595195122681,
+          "original_normal_hover_fpr": 0.53315649867374
+        },
+        {
+          "epoch": 13,
+          "training_loss": 0.01900527374495749,
+          "overall_macro_f1": 0.9632358674819916,
+          "original_normal_hover_fpr": 0.5570291777188329
+        },
+        {
+          "epoch": 14,
+          "training_loss": 0.01883164920758938,
+          "overall_macro_f1": 0.962482433853008,
+          "original_normal_hover_fpr": 0.5106100795755968
+        },
+        {
+          "epoch": 15,
+          "training_loss": 0.01821244063519811,
+          "overall_macro_f1": 0.9651652944914979,
+          "original_normal_hover_fpr": 0.5185676392572944
+        },
+        {
+          "epoch": 16,
+          "training_loss": 0.01742660460776241,
+          "overall_macro_f1": 0.9621125548322647,
+          "original_normal_hover_fpr": 0.493368700265252
+        },
+        {
+          "epoch": 17,
+          "training_loss": 0.017155364904940504,
+          "overall_macro_f1": 0.9651938507788281,
+          "original_normal_hover_fpr": 0.5278514588859416
+        },
+        {
+          "epoch": 18,
+          "training_loss": 0.0172306227994266,
+          "overall_macro_f1": 0.9639248643086937,
+          "original_normal_hover_fpr": 0.5106100795755968
+        },
+        {
+          "epoch": 19,
+          "training_loss": 0.01652448640531076,
+          "overall_macro_f1": 0.9626550338163842,
+          "original_normal_hover_fpr": 0.46419098143236076
+        },
+        {
+          "epoch": 20,
+          "training_loss": 0.0163295479015409,
+          "overall_macro_f1": 0.9659726643880562,
+          "original_normal_hover_fpr": 0.5212201591511937
+        }
+      ]
+    },
+    "balanced_source_normal": {
+      "all_normal": {
+        "windows": 17740,
+        "cases": 551,
+        "false_positives": 542,
+        "false_negatives": 0,
+        "false_positive_rate": 0.030552423900789178
+      },
+      "original_normal": {
+        "windows": 4565,
+        "cases": 72,
+        "false_positives": 538,
+        "false_negatives": 0,
+        "false_positive_rate": 0.11785323110624316
+      },
+      "inactive_fault_case_normal": {
+        "windows": 13175,
+        "cases": 479,
+        "false_positives": 4,
+        "false_negatives": 0,
+        "false_positive_rate": 0.00030360531309297915
+      },
+      "normal_hover": {
+        "windows": 754,
+        "cases": 12,
+        "false_positives": 273,
+        "false_negatives": 0,
+        "false_positive_rate": 0.3620689655172414
+      },
+      "hover_by_domain": {
+        "HIL": {
+          "windows": 370,
+          "cases": 6,
+          "false_positives": 109,
+          "false_negatives": 0,
+          "false_positive_rate": 0.2945945945945946
+        },
+        "SIL": {
+          "windows": 384,
+          "cases": 6,
+          "false_positives": 164,
+          "false_negatives": 0,
+          "false_positive_rate": 0.4270833333333333
+        }
+      },
+      "hover_by_original_crop_quarter": [
+        {
+          "crop_progress_quarter": 1,
+          "windows": 155,
+          "cases": 12,
+          "false_positives": 16,
+          "false_negatives": 0,
+          "false_positive_rate": 0.1032258064516129
+        },
+        {
+          "crop_progress_quarter": 2,
+          "windows": 196,
+          "cases": 12,
+          "false_positives": 57,
+          "false_negatives": 0,
+          "false_positive_rate": 0.29081632653061223
+        },
+        {
+          "crop_progress_quarter": 3,
+          "windows": 205,
+          "cases": 12,
+          "false_positives": 46,
+          "false_negatives": 0,
+          "false_positive_rate": 0.22439024390243903
+        },
+        {
+          "crop_progress_quarter": 4,
+          "windows": 198,
+          "cases": 12,
+          "false_positives": 154,
+          "false_negatives": 0,
+          "false_positive_rate": 0.7777777777777778
+        }
+      ],
+      "confidence": {
+        "all_original_normal_false_positives": {
+          "windows": 538,
+          "median_fault_score": 0.5317420959472656,
+          "min_fault_score": 0.5010890364646912,
+          "max_fault_score": 0.7757494449615479,
+          "fault_score_below_0_6": 525,
+          "fault_score_at_least_0_9": 0
+        },
+        "original_hover_false_positives": {
+          "windows": 273,
+          "median_fault_score": 0.5216476321220398,
+          "min_fault_score": 0.5010890364646912,
+          "max_fault_score": 0.6018351912498474,
+          "fault_score_below_0_6": 272,
+          "fault_score_at_least_0_9": 0
+        }
+      },
+      "normal_cases_with_any_false_positive": 39,
+      "normal_hover_cases_with_any_false_positive": 11,
+      "fault_family": {
+        "motor": {
+          "windows": 10038,
+          "missed_faults": 102,
+          "recall": 0.9898386132695756
+        },
+        "sensor": {
+          "windows": 6932,
+          "missed_faults": 628,
+          "recall": 0.9094056549336411
+        }
+      },
+      "epoch_trajectory": [
+        {
+          "epoch": 1,
+          "training_loss": 0.06029978271115465,
+          "overall_macro_f1": 0.92401719742858,
+          "original_normal_hover_fpr": 0.34880636604774534
+        },
+        {
+          "epoch": 2,
+          "training_loss": 0.04245659086136412,
+          "overall_macro_f1": 0.9291518542989919,
+          "original_normal_hover_fpr": 0.1962864721485411
+        },
+        {
+          "epoch": 3,
+          "training_loss": 0.038760586068833286,
+          "overall_macro_f1": 0.9498355704031722,
+          "original_normal_hover_fpr": 0.5291777188328912
+        },
+        {
+          "epoch": 4,
+          "training_loss": 0.03433552407879935,
+          "overall_macro_f1": 0.9553579614124736,
+          "original_normal_hover_fpr": 0.5039787798408488
+        },
+        {
+          "epoch": 5,
+          "training_loss": 0.03257414737968979,
+          "overall_macro_f1": 0.9456399629697367,
+          "original_normal_hover_fpr": 0.40981432360742703
+        },
+        {
+          "epoch": 6,
+          "training_loss": 0.03078633817118425,
+          "overall_macro_f1": 0.9512580989135826,
+          "original_normal_hover_fpr": 0.40185676392572944
+        },
+        {
+          "epoch": 7,
+          "training_loss": 0.029878567275517746,
+          "overall_macro_f1": 0.9400873341421843,
+          "original_normal_hover_fpr": 0.17639257294429708
+        },
+        {
+          "epoch": 8,
+          "training_loss": 0.029300116578393178,
+          "overall_macro_f1": 0.9556236933450104,
+          "original_normal_hover_fpr": 0.4124668435013263
+        },
+        {
+          "epoch": 9,
+          "training_loss": 0.027270950394615013,
+          "overall_macro_f1": 0.9482547268136869,
+          "original_normal_hover_fpr": 0.3076923076923077
+        },
+        {
+          "epoch": 10,
+          "training_loss": 0.026956717157589523,
+          "overall_macro_f1": 0.9590815113740667,
+          "original_normal_hover_fpr": 0.5238726790450928
+        },
+        {
+          "epoch": 11,
+          "training_loss": 0.02644805836987796,
+          "overall_macro_f1": 0.9495009243218648,
+          "original_normal_hover_fpr": 0.3010610079575597
+        },
+        {
+          "epoch": 12,
+          "training_loss": 0.02595366340142319,
+          "overall_macro_f1": 0.9538817979677433,
+          "original_normal_hover_fpr": 0.3673740053050398
+        },
+        {
+          "epoch": 13,
+          "training_loss": 0.025580058373769376,
+          "overall_macro_f1": 0.9546016553251369,
+          "original_normal_hover_fpr": 0.25862068965517243
+        },
+        {
+          "epoch": 14,
+          "training_loss": 0.025177341265962327,
+          "overall_macro_f1": 0.9623312355973769,
+          "original_normal_hover_fpr": 0.4708222811671088
+        },
+        {
+          "epoch": 15,
+          "training_loss": 0.02430929572612329,
+          "overall_macro_f1": 0.9601833056576861,
+          "original_normal_hover_fpr": 0.35145888594164454
+        },
+        {
+          "epoch": 16,
+          "training_loss": 0.024018985856829756,
+          "overall_macro_f1": 0.9582711015475911,
+          "original_normal_hover_fpr": 0.4535809018567639
+        },
+        {
+          "epoch": 17,
+          "training_loss": 0.023308597258306828,
+          "overall_macro_f1": 0.9579871300702303,
+          "original_normal_hover_fpr": 0.3793103448275862
+        },
+        {
+          "epoch": 18,
+          "training_loss": 0.02294791623221399,
+          "overall_macro_f1": 0.957745214481206,
+          "original_normal_hover_fpr": 0.3302387267904509
+        },
+        {
+          "epoch": 19,
+          "training_loss": 0.02248121025951503,
+          "overall_macro_f1": 0.9579026052120211,
+          "original_normal_hover_fpr": 0.34350132625994695
+        },
+        {
+          "epoch": 20,
+          "training_loss": 0.022105472876281958,
+          "overall_macro_f1": 0.9612719301370943,
+          "original_normal_hover_fpr": 0.41644562334217505
+        },
+        {
+          "epoch": 21,
+          "training_loss": 0.021647012102115042,
+          "overall_macro_f1": 0.9535696403236185,
+          "original_normal_hover_fpr": 0.20159151193633953
+        },
+        {
+          "epoch": 22,
+          "training_loss": 0.02168883475524958,
+          "overall_macro_f1": 0.963325563079787,
+          "original_normal_hover_fpr": 0.3620689655172414
+        }
+      ]
+    }
+  },
+  "normal_hover_train_support": {
+    "cases": 56,
+    "windows": 3513
+  },
+  "source_val_population": {
+    "all_windows": 34710,
+    "normal_windows": 17740,
+    "inactive_fault_case_normal": 13175,
+    "original_normal_windows": 4565,
+    "original_normal_cases": 72,
+    "original_normal_hover_windows": 754,
+    "original_normal_hover_cases": 12
+  },
+  "paired_hover_errors": {
+    "both_false_positive": 272,
+    "uniform_only": 121,
+    "balanced_only": 1,
+    "both_correct": 360
+  },
+  "interpretation": {
+    "confirmed": "False positives concentrate on original-normal flights, especially later parts of hover crops; both SIL/HIL affected. Reweighting removes some false positives with fault-recall tradeoff.",
+    "supported_hypothesis": "Current learned boundary distinguishes source flight backgrounds/stages and normal sources insufficiently; pooled source-val Macro-F1 hides worst normal operating condition.",
+    "not_proven": "Exact sensor/feature or model branch causing errors; physical landing/ground state; dataset label corruption; fundamental inability of dataset; improvement versus old-data models. Train-normal inference not performed, so fit failure vs held-out normal generalization is not settled.",
+    "no_posthoc_changes": "0.5 decision threshold and checkpoint/early stop unchanged. Confidence summaries are descriptive, not a recommendation to raise threshold. Do not delete misclassified valid cases or retune using final tests."
+  },
+  "input_identities": {
+    "D:\\UAV-Data\\causal_input_v1\\ledgers\\val_included_windows.csv": "8b966bc5bfe74a26bd7614ab44c2e8b581b5cc6f66d0f55ea6f545cb253c16d6",
+    "D:\\UAV-Data\\causal_input_v1\\ledgers\\train_included_windows.csv": "0c491c2ede34534eaba020ae5a9d09257fedb692519863f325c6b0dfeb4afecb",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_source_remote_v1_20261031\\results\\runs\\uniform_replacement\\source_validation_predictions.npz": "68d8f63e3a0d30ef6f216ac4309ccabf12ddc1d53e9c5300325712c65d2ebbec",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_source_remote_v1_20261031\\results\\runs\\balanced_source_normal\\source_validation_predictions.npz": "d754d1cd90a62306646734d54131d2ab4c4cc1c895100ea9d71fcd7bc995d8b0"
+  },
+  "script_sha256": "5845121a68c29679939e24ebde5f1a33ca21f95d06f7428943016a3e4d8c1c14"
+}

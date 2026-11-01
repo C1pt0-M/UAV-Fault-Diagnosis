@@ -1,0 +1,40 @@
+{
+  "status": "FAILED",
+  "started_at": "2026-10-29T17:48:24.460420+00:00",
+  "stage": "adaptation_and_source_validation_only",
+  "protocol_sha256": "27982a23273175579849e49d7e5f5986a346951d9d36db46279ed7be7db9c85c",
+  "source_checkpoint_sha256": "b24f2da7b18197362f7d903eca813f78b70f6125cd249044ac530d5106ae5837",
+  "source_model_code_sha256": "87a928b147c1e62d283910048d19710d55dd9731b963a33d8a5840b430fae1d2",
+  "runner_sha256": "8689320680620d7767df2b5820d3853e5b1fcb72f2534584dd1221af7e81b09c",
+  "source_norm_sha256": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33",
+  "source_validation_sha256": "9a6063590b4b313c0d8df0dbc5213d88e3f5e078bb5be13c8054deb816ed2757",
+  "bundle_sha256": "5dce93d3a7d4101ace539248afaf462ddf5e1585d785ba543fb73e8aa83370ed",
+  "torch": "2.5.1+cu124",
+  "numpy": "2.1.3",
+  "python": "3.12.3 | packaged by Anaconda, Inc. | (main, May  6 2024, 19:46:43) [GCC 11.2.0]",
+  "device": "cuda:0",
+  "gpu": "NVIDIA GeForce RTX 4090 D",
+  "seed": 42,
+  "gradients": false,
+  "batch_size": 64,
+  "calibration_or_final_test_predictions": false,
+  "next_stage_blocker": "Clarify cap64 versus full chronological replay in frozen protocol.",
+  "A0_source_val": {
+    "windows": 35520,
+    "confusion_matrix": [
+      [
+        17345,
+        567
+      ],
+      [
+        802,
+        16806
+      ]
+    ],
+    "accuracy": 0.9614583333333333,
+    "macro_f1": 0.9614494564170862,
+    "fault_recall": 0.9544525215810995,
+    "normal_window_fpr": 0.031654756587762393
+  },
+  "error": "RuntimeError('A0 source validation does not reproduce historical confusion matrix')"
+}

@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import deque
 from types import SimpleNamespace
 
+from uav_fault.online.detection_policy import OnlineDetectionPolicy
 from uav_fault.online.monitoring_session import OnlineMonitoringSession
 from uav_fault.online.realtime_detection_service import RealtimeDetectionService
 
@@ -26,6 +27,7 @@ def test_realtime_service_canonicalizes_simulation_frames_before_detection():
     runner = _CanonicalRunner()
     service = RealtimeDetectionService.__new__(RealtimeDetectionService)
     service.runner = runner
+    service.policy = OnlineDetectionPolicy()
     service.detector = SimpleNamespace(window_size=2)
     service.aggregator = runner.aggregator
     service.monitoring_session = OnlineMonitoringSession()

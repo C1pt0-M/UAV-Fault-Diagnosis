@@ -33,6 +33,8 @@ def _add_import_paths() -> None:
 
 _add_import_paths()
 
+from uav_fault.online.detection_policy import OnlineDetectionPolicy
+from uav_fault.online.event_aggregator import event_timing
 from uav_fault.telemetry.replay_metrics import gt_event_metrics as _gt_event_metrics
 from uav_fault.telemetry.schema_adapter import (
     assess_canonical_input_contract as _assess_canonical_input_contract,
@@ -168,13 +170,14 @@ def _maybe_plot(
 
 
 def _replay_points_legacy(detector, records, every_n: int) -> list[dict]:
+    policy = OnlineDetectionPolicy(inference_every=every_n)
     window = deque(maxlen=int(detector.window_size))
     points = []
     for idx, row in enumerate(records):
         window.append(row)
-        if (idx + 1) % every_n != 0:
-            continue
-        if len(window) < int(detector.window_size):
+        if not policy.should_infer(
+            frame_idx=idx + 1, window_length=len(window), window_size=int(detector.window_size)
+        ):
             continue
         pred = detector.predict(window)
         if pred is None:
@@ -203,13 +206,14 @@ def _window_detection_blocked(records: list[dict], end: int, window_size: int) -
 
 
 def _replay_points_legacy_gated(detector, records, every_n: int) -> list[dict]:
+    policy = OnlineDetectionPolicy(inference_every=every_n)
     window = deque(maxlen=int(detector.window_size))
     points = []
     for idx, row in enumerate(records):
         window.append(row)
-        if (idx + 1) % every_n != 0:
-            continue
-        if len(window) < int(detector.window_size):
+        if not policy.should_infer(
+            frame_idx=idx + 1, window_length=len(window), window_size=int(detector.window_size)
+        ):
             continue
         if _window_detection_blocked(records, idx + 1, int(detector.window_size)):
             continue
@@ -272,7 +276,6 @@ def _replay_points_fast(
 def main() -> int:
     _add_import_paths()
     # Local imports: keep script import-time light.
-    from uav_fault.online.event_aggregator import FaultEventAggregator
     from uav_fault.online.fault_detector import FaultDetector
 
     parser = argparse.ArgumentParser(
@@ -412,6 +415,12 @@ def main() -> int:
     every_n = int(args.every)
     if every_n <= 0:
         raise SystemExit("[ERROR] --every must be positive.")
+    policy = OnlineDetectionPolicy(
+        inference_every=every_n,
+        onset_th=float(args.onset_th), clear_th=float(args.clear_th),
+        k_on=int(args.k_on), k_off=int(args.k_off),
+        min_event_s=float(args.min_event_s), merge_gap_s=float(args.merge_gap_s),
+    )
 
     ts = time.strftime("%Y%m%d_%H%M%S")
     out_csv = (
@@ -455,6 +464,7 @@ def main() -> int:
         f"[INFO] model={detector.config.get('model')} window_size={window_size} every={every_n} device={args.device}"
     )
     print(f"[INFO] replay_mode={args.replay_mode} batch_size={int(args.batch_size)}")
+    print(f"[INFO] detection_policy={policy.to_dict()}")
     print(f"[INFO] scanning {len(files)} files under: {csv_dir}")
 
     for p in files:
@@ -539,14 +549,7 @@ def main() -> int:
             rows.append(row_out)
             continue
 
-        agg = FaultEventAggregator(
-            onset_th=float(args.onset_th),
-            clear_th=float(args.clear_th),
-            k_on=int(args.k_on),
-            k_off=int(args.k_off),
-            min_event_s=float(args.min_event_s),
-            merge_gap_s=float(args.merge_gap_s),
-        )
+        agg = policy.make_aggregator()
         events = []
         for pt in points:
             events.extend(
@@ -632,6 +635,7 @@ def main() -> int:
                     "best_event_dur_s": float(best.end_t - best.start_t),
                     "best_event_max_fp": float(best.max_fault_prob),
                     "best_event_mean_fp": float(best.mean_fault_prob),
+                    **{f"best_event_{key}": value for key, value in event_timing(best).items()},
                 }
             )
 
@@ -651,6 +655,11 @@ def main() -> int:
     import pandas as pd
 
     df_out = pd.DataFrame(rows)
+    for name, value in policy.to_dict().items():
+        df_out[f"policy_{name}"] = value
+    df_out["respect_input_contract"] = not bool(args.ignore_input_contract)
+    df_out["input_contract_check_mode"] = "disabled" if args.ignore_input_contract else "per_inference"
+    df_out["input_contract_check_every_frames"] = None if args.ignore_input_contract else every_n
     df_out.to_csv(out_csv, index=False)
     print(f"\n[OK] wrote summary: {out_csv}")
 

@@ -1,0 +1,43 @@
+{
+  "status": "diagnostic_complete_not_approved_for_training",
+  "cases": 3135,
+  "existing_windows": 200640,
+  "fresh_raw_anchor_cases": 68,
+  "source_csv_identities_checked": 3135,
+  "by_split": {
+    "train": {
+      "cases": 2580,
+      "cases_with_changed_windows": 1107,
+      "selected_windows": 165120,
+      "changed_windows": 3258,
+      "changed_windows_sources_agree": 3149,
+      "source_disagreement_windows": 122,
+      "old_fault_reference_inactive": 1972,
+      "old_normal_reference_active": 1286,
+      "clock_review_cases": 2
+    },
+    "val": {
+      "cases": 555,
+      "cases_with_changed_windows": 231,
+      "selected_windows": 35520,
+      "changed_windows": 656,
+      "changed_windows_sources_agree": 631,
+      "source_disagreement_windows": 29,
+      "old_fault_reference_inactive": 392,
+      "old_normal_reference_active": 264,
+      "clock_review_cases": 1
+    }
+  },
+  "normal_case_checks": {
+    "cases": 406,
+    "selected_windows": 25984,
+    "changed_windows": 0,
+    "all_no_recorded_activation": true
+  },
+  "scope": "3135 source train/val cases only; official crop, original CSV and features, selected cap64 windows unchanged. Sidecars are diagnostic references, not authoritative repair labels or training cache. No Real/final-test/model/fitting access.",
+  "after_crop_activation_checks": {
+    "cases": 40,
+    "old_fault_reference_inactive": 1309,
+    "all_fixed_crops_reference_inactive": true
+  }
+}

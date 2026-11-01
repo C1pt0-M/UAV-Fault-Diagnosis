@@ -1,0 +1,78 @@
+{
+  "status": "COMPLETE_FORMAL_TWO_ARM_SOURCE_RETRAIN_AND_LOCAL_VERIFIED_RECOVERY",
+  "accepted_at": "2026-10-31T20:48:36.218778+00:00",
+  "remote_root": "/root/autodl-tmp/causal_source_v1_20261031",
+  "local_results": "artifacts\\causal_source_remote_v1_20261031\\results",
+  "seed": 42,
+  "epochs": {
+    "uniform_replacement": 20,
+    "balanced_source_normal": 22
+  },
+  "same_initial_state_verified": true,
+  "source_train_windows": 162069,
+  "source_val_windows": 34710,
+  "full_source_prediction_metrics_and_selection_recomputed": true,
+  "source_results": {
+    "uniform_replacement": {
+      "epochs": 20,
+      "best_epoch": 20,
+      "macro_f1": 0.9659726643880562,
+      "fault_recall": 0.979021803182086,
+      "normal_window_fpr": 0.04650507328072153,
+      "original_normal_window_fpr": 0.1796276013143483,
+      "inactive_in_fault_case_normal_fpr": 0.0003795066413662239,
+      "original_normal_hover_fpr": 0.5212201591511937,
+      "confusion_matrix": [
+        [
+          16915,
+          825
+        ],
+        [
+          356,
+          16614
+        ]
+      ],
+      "validation_windows": 34710,
+      "gradient_steps": 6340,
+      "best_checkpoint_sha256": "adc140ab4f3e59dac59b1a32583af2857b4666a1d26c04db0008258b323020fd",
+      "elapsed_s": 366.8815300744027
+    },
+    "balanced_source_normal": {
+      "epochs": 22,
+      "best_epoch": 22,
+      "macro_f1": 0.963325563079787,
+      "fault_recall": 0.9569829110194461,
+      "normal_window_fpr": 0.030552423900789178,
+      "original_normal_window_fpr": 0.11785323110624316,
+      "inactive_in_fault_case_normal_fpr": 0.00030360531309297915,
+      "original_normal_hover_fpr": 0.3620689655172414,
+      "confusion_matrix": [
+        [
+          17198,
+          542
+        ],
+        [
+          730,
+          16240
+        ]
+      ],
+      "validation_windows": 34710,
+      "gradient_steps": 6974,
+      "best_checkpoint_sha256": "a223abd254e2011cfe6f9e706be00f22bdda377ab9abde367ce5cbba6d6eb11d",
+      "elapsed_s": 410.3729215711355
+    }
+  },
+  "execution_revision": "Linux reader path portability only; original config/data checks preserved",
+  "original_protocol_sha256": "565e34af65bcb01bade26f58ad4dacf4288901c247622d052f36ede9454252a5",
+  "execution_protocol_sha256": "40cf51c9c711f06f1b35117f04b7d02fa7b6fd6c8b2a0606822c992320f8a9c0",
+  "results_archive_sha256": "8a4266ee2fa1f12e8874809c4146b99130e39ad3aa9bd10725462261217ba1a6",
+  "local_verification_sha256": "3edeb5a4296d63f7d0cc994bbd1832575325e5bea7a9aba13b6f0a32d2127935",
+  "report_sha256": "11a6379847ea8c2149dcc71c4959d723d8152e7765f58f7336cb4002bdbeab71",
+  "related_regression_tests_passed": 139,
+  "test_or_Real_tensors_uploaded_or_evaluated": false,
+  "extra_unregistered_training_jobs": 0,
+  "deployment_changed": false,
+  "gpu_training_processes_remaining": false,
+  "gpu_instance_shutdown": false,
+  "remaining_quality_issue": "Original-normal hover window false positive rate remains 52.12% uniform /36.21% balanced; lower normal FPR trades off fault recall. No deployment clearance or statistical/target-domain claim."
+}

@@ -64,7 +64,8 @@ if "uav_dashboard_api.services.detection_runner" not in sys.modules:
     fake_detection_runner = types.ModuleType("uav_dashboard_api.services.detection_runner")
 
     class _FakeDetectionRunner:
-        def __init__(self, model_dir=None, device="cpu"):
+        def __init__(self, model_dir=None, device="cpu", policy=None):
+            self.policy = policy
             self.model_dir = model_dir
             self.device = device
             self.window_size = 150
@@ -146,29 +147,19 @@ def isolated_runtime_env(tmp_path, monkeypatch):
     }
     for key, value in env.items():
         monkeypatch.setenv(key, str(value))
-    manager = TelemetryProcessManager()
-    manager._reset_runtime_state()
-    manager._realtime_buffer.clear()
-    manager._px4_proc = None
-    manager._collector_proc = None
-    manager._flight_proc = None
-    manager._receiver = None
-    manager._receiver_thread = None
-    manager.app = None
     yield runtime_dir
-    manager._stop_live_processing_pipeline(drain=False)
-    manager._reset_runtime_state()
-    manager._realtime_buffer.clear()
-    manager._px4_proc = None
-    manager._collector_proc = None
-    manager._flight_proc = None
-    manager._receiver = None
-    manager._receiver_thread = None
-    manager.app = None
 
 
-def test_live_pipeline_decouples_frame_ingest_from_slow_inference(monkeypatch):
-    mgr = TelemetryProcessManager()
+@pytest.fixture
+def manager(isolated_runtime_env):
+    instance = TelemetryProcessManager()
+    yield instance
+    instance._stop_live_processing_pipeline(drain=False)
+    instance._reset_runtime_state()
+
+
+def test_live_pipeline_decouples_frame_ingest_from_slow_inference(manager, monkeypatch):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._backend_name = "rfly"
     mgr.app = types.SimpleNamespace(config={"ONLINE_INFERENCE_STRIDE": 5})
@@ -202,8 +193,8 @@ def test_live_pipeline_decouples_frame_ingest_from_slow_inference(monkeypatch):
     assert mgr._inference_queue_drops > 0
 
 
-def test_old_transport_callback_cannot_submit_into_new_session():
-    mgr = TelemetryProcessManager()
+def test_old_transport_callback_cannot_submit_into_new_session(manager):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._clear_work_queue(mgr._frame_queue)
     old_backend = object()
@@ -223,8 +214,8 @@ def test_old_transport_callback_cannot_submit_into_new_session():
     assert mgr._frame_queue.empty()
 
 
-def test_live_pipeline_canonicalizes_each_frame_once(monkeypatch):
-    mgr = TelemetryProcessManager()
+def test_live_pipeline_canonicalizes_each_frame_once(manager, monkeypatch):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._backend_name = "rfly"
     calls = []
@@ -251,33 +242,95 @@ def test_test_runtime_dirs_are_isolated_from_real_dashboard_runtime(isolated_run
     assert Path(os.environ["RUNTIME_DIR"]).resolve() != (BACKEND_ROOT / "runtime").resolve()
 
 
-def test_get_status_exposes_predictive_warning_fields():
-    mgr = TelemetryProcessManager()
+def test_get_status_exposes_predictive_warning_fields(manager):
+    mgr = manager
     mgr._reset_runtime_state()
-    mgr._current_fault_prob = 0.62
-    mgr._risk_score = 0.58
-    mgr._risk_trend = "rising"
-    mgr._warning_stage = "warning"
-    mgr._warning_reason = "风险持续上升，异常概率已超过预警阈值。"
-    mgr._preview_started_at = 10.0
-    mgr._top_recommendations = [
-        {"title": "结束当前架次后执行离线诊断", "priority": "P1"}
-    ]
+    mgr._monitoring_session.start_detection(None)
+    update = mgr._monitoring_session.ingest_external(
+        result={"fault_prob": 0.62, "label": "fault", "confidence": 0.62},
+        new_events=[], frame_idx=500, time_s=10.0,
+    )
+    mgr._apply_monitoring_update(canonical={"time_s": 10.0}, frame_idx=500, update=update)
     mgr._last_frame_time_s = 13.4
 
     status = mgr.get_status()
 
     assert status["current_fault_prob"] == 0.62
-    assert status["risk_score"] == 0.58
-    assert status["risk_trend"] == "rising"
+    assert status["risk_score"] == 0.62
+    assert status["risk_trend"] == "stable"
     assert status["warning_stage"] == "warning"
-    assert "异常概率已超过预警阈值" in status["warning_reason"]
+    assert "预警区间" in status["warning_reason"]
     assert status["preview_lead_time_s"] == 3.4
     assert status["top_recommendations"][0]["priority"] == "P1"
 
 
-def test_predictive_warning_transitions_from_preview_to_confirmed():
-    mgr = TelemetryProcessManager()
+def test_status_reads_one_session_snapshot_without_manager_risk_copies(manager, monkeypatch):
+    mgr = manager
+    mgr._monitoring_session.start_detection(None)
+    mgr._monitoring_session.ingest_external(
+        result={"fault_prob": 0.7, "label": "fault", "confidence": 0.7},
+        new_events=[], frame_idx=50, time_s=1.0,
+    )
+    original_snapshot = mgr._monitoring_session.snapshot
+    snapshots = []
+
+    def counted_snapshot():
+        value = original_snapshot()
+        snapshots.append(value)
+        return value
+
+    monkeypatch.setattr(mgr._monitoring_session, "snapshot", counted_snapshot)
+    # No Dashboard apply/copy step is needed to observe the current risk state.
+    status = mgr.get_status()
+    assert len(snapshots) == 1
+    assert status["current_fault_prob"] == 0.7
+    assert status["risk_score"] == snapshots[0].risk_score
+    assert status["warning_stage"] == snapshots[0].warning_stage
+    assert status["warning_reason"] == snapshots[0].warning_reason
+    removed = {
+        "_current_fault_prob", "_risk_score", "_risk_trend", "_warning_stage",
+        "_warning_reason", "_preview_started_at", "_last_preview_lead_time_s",
+    }
+    assert removed.isdisjoint(vars(mgr))
+    mgr._monitoring_session.reset_collection()
+    reset_status = mgr.get_status()
+    assert reset_status["current_fault_prob"] == reset_status["risk_score"] == 0.0
+    assert reset_status["warning_stage"] == "normal"
+    assert reset_status["preview_lead_time_s"] is None
+
+
+def test_previous_generation_update_does_not_publish_preview_curve_or_events(manager, monkeypatch):
+    from uav_fault.online.event_aggregator import AggregatedEvent
+
+    mgr = manager
+    mgr._monitoring_session.start_detection(None)
+    event = AggregatedEvent(1.0, 2.0, 50, 100, 4, 0.9, 0.8, {})
+    confirmed = mgr._monitoring_session.ingest_external(
+        result={"fault_prob": 0.9, "label": "fault", "confidence": 0.9},
+        new_events=[event], frame_idx=100, time_s=2.0,
+    )
+    preview = mgr._monitoring_session.ingest_external(
+        result={"fault_prob": 0.9, "label": "fault", "confidence": 0.9},
+        new_events=[], frame_idx=110, time_s=2.2,
+    )
+    mgr._monitoring_session.reset_collection()
+    mgr._monitoring_session.start_detection(None)
+    published = []
+    monkeypatch.setattr(mgr, "_record_fault_event", published.append)
+    for update in (confirmed, preview):
+        assert update.stale is False  # It was valid before collection changed.
+        mgr._apply_monitoring_update(
+            canonical={"time_s": 2.2}, frame_idx=110, update=update,
+        )
+    assert mgr._preview_alert is None
+    assert mgr._fault_prob_curve == []
+    assert mgr._top_recommendations == []
+    assert published == []
+    assert mgr.get_status()["current_fault_prob"] == 0.0
+
+
+def test_predictive_warning_transitions_from_preview_to_confirmed(manager):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._detecting = True
     original_record_fault_event = mgr._record_fault_event
@@ -369,8 +422,8 @@ def test_predictive_warning_transitions_from_preview_to_confirmed():
     assert status_confirmed["latest_diagnoses"][0]["evidence_summary"]["top_evidence"]
 
 
-def test_get_status_exposes_last_frame_time_and_input_contract_status():
-    mgr = TelemetryProcessManager()
+def test_get_status_exposes_last_frame_time_and_input_contract_status(manager):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._session_id = "TS-TEST"
     mgr._backend_name = "px4"
@@ -399,8 +452,8 @@ def test_get_status_exposes_last_frame_time_and_input_contract_status():
     assert status["timeout_reason"] == "collector_no_frames"
 
 
-def test_realtime_data_uses_canonical_frame_values_after_px4_frame_callback():
-    mgr = TelemetryProcessManager()
+def test_realtime_data_uses_canonical_frame_values_after_px4_frame_callback(manager):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._realtime_buffer.clear()
     mgr._backend_name = "px4"
@@ -431,8 +484,8 @@ def test_realtime_data_uses_canonical_frame_values_after_px4_frame_callback():
     assert data["pos_z"] == [12.5]
 
 
-def test_realtime_data_derives_attitude_from_replay_quaternion_frame():
-    mgr = TelemetryProcessManager()
+def test_realtime_data_derives_attitude_from_replay_quaternion_frame(manager):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._realtime_buffer.clear()
     mgr._backend_name = "replay"
@@ -461,8 +514,8 @@ def test_realtime_data_derives_attitude_from_replay_quaternion_frame():
     assert data["pos_z"] == [15.2]
 
 
-def test_mec_result_is_consumed_without_local_detector():
-    mgr = TelemetryProcessManager()
+def test_mec_result_is_consumed_without_local_detector(manager):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._backend_name = "rfly"
     mgr._detecting = True
@@ -505,8 +558,8 @@ def test_mec_result_is_consumed_without_local_detector():
     }
 
 
-def test_center_inference_status_tracks_runtime_latency():
-    mgr = TelemetryProcessManager()
+def test_center_inference_status_tracks_runtime_latency(manager):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._center_inference_count = 1000
 
@@ -523,8 +576,8 @@ def test_center_inference_status_tracks_runtime_latency():
     assert status["inference_count"] == 1003
 
 
-def test_start_detection_marks_startup_phase_detecting():
-    mgr = TelemetryProcessManager()
+def test_start_detection_marks_startup_phase_detecting(manager):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._session_id = "TS-DET"
     mgr._start_time = 100.0
@@ -550,7 +603,8 @@ def test_start_detection_marks_startup_phase_detecting():
     original_get_runner_cls = TelemetryProcessManager._get_detection_runner_cls
 
     class _FakeRunner:
-        def __init__(self, model_dir, device="cpu"):
+        def __init__(self, model_dir, device="cpu", policy=None):
+            self.policy = policy
             self.window_size = 150
 
     telemetry_manager_module.DetectionRunner = _FakeRunner
@@ -564,8 +618,8 @@ def test_start_detection_marks_startup_phase_detecting():
         TelemetryProcessManager._get_detection_runner_cls = original_get_runner_cls
 
 
-def test_start_detection_wraps_detector_init_error_as_runtime_error():
-    mgr = TelemetryProcessManager()
+def test_start_detection_wraps_detector_init_error_as_runtime_error(manager):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._session_id = "TS-DET-ERR"
     mgr._start_time = 100.0
@@ -595,7 +649,7 @@ def test_start_detection_wraps_detector_init_error_as_runtime_error():
     original_get_runner_cls = TelemetryProcessManager._get_detection_runner_cls
 
     class _BoomRunner:
-        def __init__(self, model_dir, device="cpu"):
+        def __init__(self, model_dir, device="cpu", policy=None):
             raise KeyError("hidden_size")
 
     telemetry_manager_module.DetectionRunner = _BoomRunner
@@ -613,8 +667,8 @@ def test_start_detection_wraps_detector_init_error_as_runtime_error():
         TelemetryProcessManager._get_detection_runner_cls = original_get_runner_cls
 
 
-def test_on_backend_frame_adds_preview_alert_when_fault_prob_reaches_onset_threshold_but_no_finalized_event():
-    mgr = TelemetryProcessManager()
+def test_on_backend_frame_adds_preview_alert_when_fault_prob_reaches_onset_threshold_but_no_finalized_event(manager):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._detecting = True
 
@@ -653,8 +707,8 @@ def test_on_backend_frame_adds_preview_alert_when_fault_prob_reaches_onset_thres
     assert status["latest_diagnoses"][0]["probability"] == 0.68
 
 
-def test_start_px4_uses_configured_sim_target_and_autostart(monkeypatch):
-    mgr = TelemetryProcessManager()
+def test_start_px4_uses_configured_sim_target_and_autostart(manager, monkeypatch):
+    mgr = manager
     mgr._reset_runtime_state()
 
     class _FakeApp:
@@ -707,9 +761,10 @@ def test_start_px4_uses_configured_sim_target_and_autostart(monkeypatch):
 
 
 def test_resolve_telemetry_python_bin_prefers_runtime_python_over_legacy_linux_path(
+    manager,
     monkeypatch,
 ):
-    mgr = TelemetryProcessManager()
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._telemetry_python_bin = None
 
@@ -739,8 +794,8 @@ def test_resolve_telemetry_python_bin_prefers_runtime_python_over_legacy_linux_p
     assert checked[0] == sys.executable
 
 
-def test_start_px4_uses_configured_px4_root(monkeypatch):
-    mgr = TelemetryProcessManager()
+def test_start_px4_uses_configured_px4_root(manager, monkeypatch):
+    mgr = manager
     mgr._reset_runtime_state()
 
     class _FakeApp:
@@ -786,8 +841,8 @@ def test_start_px4_uses_configured_px4_root(monkeypatch):
  
  
  
-def test_wait_for_px4_uses_configured_ready_endpoint(monkeypatch): 
-    mgr = TelemetryProcessManager() 
+def test_wait_for_px4_uses_configured_ready_endpoint(manager, monkeypatch):
+    mgr = manager
     mgr._reset_runtime_state() 
  
     class _FakeApp: 
@@ -821,8 +876,8 @@ def test_wait_for_px4_uses_configured_ready_endpoint(monkeypatch):
     assert calls == [{"address": ("10.8.0.9", 19001), "timeout": 2}] 
  
  
-def test_build_collector_command_uses_runtime_config(): 
-    mgr = TelemetryProcessManager() 
+def test_build_collector_command_uses_runtime_config(manager):
+    mgr = manager
     mgr._reset_runtime_state() 
  
     class _FakeApp: 
@@ -865,8 +920,8 @@ def test_build_collector_command_uses_runtime_config():
     ] 
 
 
-def test_runtime_paths_point_to_monorepo_package_roots():
-    mgr = TelemetryProcessManager()
+def test_runtime_paths_point_to_monorepo_package_roots(manager):
+    mgr = manager
     mgr._reset_runtime_state()
 
     repo_root = BACKEND_ROOT.parents[2]
@@ -876,8 +931,8 @@ def test_runtime_paths_point_to_monorepo_package_roots():
     assert repo_root / "packages" / "uav_fault" in mgr._pythonpath_dirs
 
 
-def test_px4_backend_uses_packaged_flight_controller_module():
-    mgr = TelemetryProcessManager()
+def test_px4_backend_uses_packaged_flight_controller_module(manager):
+    mgr = manager
     mgr._reset_runtime_state()
     mgr._blind_test_ground_truth = {
         "fault_type": "motor_failure",
@@ -933,12 +988,14 @@ def test_stop_process_sends_ctrl_break_for_graceful_child_cleanup():
 
 
 def test_px4_backend_sets_timeout_reason_when_px4_never_becomes_ready(
+    manager,
     isolated_runtime_env, monkeypatch
 ):
-    mgr = TelemetryProcessManager()
+    mgr = manager
     mgr._reset_runtime_state()
     mgr.app = types.SimpleNamespace(
         config={
+            "MODEL_ROOT": str(isolated_runtime_env / "models"),
             "RUNTIME_DIR": isolated_runtime_env,
             "UPLOAD_DIR": isolated_runtime_env / "uploads",
             "DERIVED_DIR": isolated_runtime_env / "derived",

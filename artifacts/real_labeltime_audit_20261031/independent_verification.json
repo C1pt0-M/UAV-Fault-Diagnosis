@@ -1,0 +1,18 @@
+{
+  "status": "PASS_DIAGNOSTIC_COMPARISON_NOT_REPAIR",
+  "verified_at": "2026-10-31T07:54:07.552553+00:00",
+  "cases": 465,
+  "changed_endpoints": {
+    "cap64": 11,
+    "stride10": 112
+  },
+  "source_disagreement_endpoints": {
+    "cap64": 202,
+    "stride10": 1353
+  },
+  "roles_and_all_processed_csvs_unchanged": true,
+  "original_ULog_and_used_ROS_exports_hashes_unchanged": true,
+  "original_ROS_bag_not_redecoded": true,
+  "models_predictions_training_accessed": false,
+  "unresolved": "ROS vs ULog are sent/received messages mapped through clocks, not independent physical fault state. Keep evaluation roles and historical scores; no opportunistic test relabeling."
+}

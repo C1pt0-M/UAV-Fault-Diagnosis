@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { applyRuntimeCapabilities } from '@/shared/state/runtimeCapabilities'
 
 const workspaceState = vi.hoisted(() => ({
   activeSessionId: 'TS-262735',
@@ -62,6 +63,7 @@ import DiagnosisRecentRunsPanel from './components/DiagnosisRecentRunsPanel.vue'
 import DiagnosisResultPanel from './components/DiagnosisResultPanel.vue'
 
 describe('DiagnosisPage industrial diagnosis workbench', () => {
+  beforeEach(() => applyRuntimeCapabilities({ ai: true, telemetry: true }))
   it('renders the three-column diagnosis workbench and traceable explanation panels', () => {
     const wrapper = mount(DiagnosisPage, {
       global: {
@@ -178,6 +180,21 @@ describe('DiagnosisPage industrial diagnosis workbench', () => {
     expect(text).toContain('历史参考待匹配')
     expect(text).not.toContain('SHAP')
     expect(text).not.toContain('feature importance')
+  })
+
+  it('keeps report actions but hides AI in result and recent-run panels when disabled', async () => {
+    applyRuntimeCapabilities({ ai: false })
+    const recent = mount(DiagnosisRecentRunsPanel, { props: { recentRuns: [{ id: 1, report_id: 88 }] } })
+    expect(recent.text()).not.toContain('AI 解读')
+    expect(recent.text()).toContain('查看报告')
+    const result = mount(DiagnosisResultPanel, { props: {
+      confidenceText: '89%', latestReportId: 88, resultData: { prediction: { label: 'motor' } },
+      stage: { key: 'completed', label: '诊断完成' }
+    } })
+    expect(result.findAllComponents({ name: 'ElButton' }).map(button => button.text())).not.toContain('AI 解读')
+    expect(result.get('[role="status"]').text()).toContain('仍可生成和查看诊断报告')
+    await result.findComponent({ name: 'ElButton' }).trigger('click')
+    expect(result.emitted('open-reports-center')).toHaveLength(1)
   })
 
   it('emits row-specific report and AI actions from recent runs', async () => {

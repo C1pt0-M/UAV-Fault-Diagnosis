@@ -64,7 +64,7 @@
             {{ diagnosisCopy.reportCenterButton }}
           </el-button>
           <el-button
-            v-if="latestReportId"
+            v-if="latestReportId && runtimeCapabilities.ai"
             type="warning"
             plain
             @click="$emit('open-ai-assistant')"
@@ -72,6 +72,8 @@
             {{ diagnosisCopy.aiActionButton }}
           </el-button>
         </div>
+
+        <p v-if="!runtimeCapabilities.ai" role="status">AI 解读未启用，仍可生成和查看诊断报告。</p>
 
         <div class="diagnosis-result__lower">
           <section class="diagnosis-subpanel">
@@ -130,6 +132,7 @@
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import ElEmpty from 'element-plus/es/components/empty/index.mjs'
 import { computed } from 'vue'
+import { runtimeCapabilities } from '@/shared/state/runtimeCapabilities'
 import { diagnosisCopy, getDiagnosisLabelMeta } from '@/modules/diagnosis/diagnosisView'
 
 const props = defineProps({

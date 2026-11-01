@@ -318,7 +318,8 @@ def test_transport_backend_source_does_not_write_manager_lifecycle_fields() -> N
 
 
 def test_wait_for_px4_returns_false_when_socket_never_becomes_ready(monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import TelemetryProcessManager
+    telemetry_manager = TelemetryProcessManager()
     from uav_dashboard_api.services.telemetry_backends import PX4ScenarioBackend
 
     class _FakeProc:

@@ -1,0 +1,7 @@
+{
+  "scope": "465 frozen Real cases, existing CSV crops and cache identities; no models, predictions, training, role reassignment or input resampling",
+  "reference": "Original ROS bag sent-command discrete IDs using existing first-timesync bridge, last duplicate timestamp wins. Original ULog injection messages are crosschecks, not a replacement source or physical damage truth. Out-of-coverage or source-disagreement endpoints are explicitly not qualified for supervised evaluation.",
+  "clock_policy": "Compare raw bag timesync records to exports; preserve historical first-anchor mapping when original bag confirms it. No silent clock re-estimation, no whole-case removal merely from an export anomaly. Unresolved anchor/clock issues must be flagged, not guessed.",
+  "output": "D:/UAV-Data/real_labeltime_v1, independently versioned; preserve old Real files, role manifest, X, normal adaptation/calibration identity and normalization. Never mix all-role cache into training or compute pooled all-role test score.",
+  "status": "PREPARED_BEFORE_RAW_BAG_RESULTS"
+}

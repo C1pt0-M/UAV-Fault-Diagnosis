@@ -2,6 +2,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { assetApi, diagnosisReportApi } from '@/shared/services'
+import { runtimeCapabilities } from '@/shared/state/runtimeCapabilities'
 import { createDefaultReportFilters, reportsCopy } from '@/modules/reports/reportsView'
 
 export function useReportsWorkspace() {
@@ -110,6 +111,10 @@ export function useReportsWorkspace() {
   }
 
   function openInAssistant(row) {
+    if (!runtimeCapabilities.ai) {
+      ElMessage.warning('AI 解读未启用，报告详情与管理仍可使用')
+      return
+    }
     router.push({
       path: '/ai',
       query: {

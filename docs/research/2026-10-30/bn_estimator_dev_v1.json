@@ -1,0 +1,39 @@
+{
+  "protocol_name": "rflymad_normal_bn_estimator_dev_v1",
+  "status": "FROZEN_DEVELOPMENT_ONLY_BEFORE_EXECUTION",
+  "date": "2026-10-30",
+  "parent_protocol": "rflymad_online_normal_adapt_v1",
+  "parent_protocol_sha256": "27982a23273175579849e49d7e5f5986a346951d9d36db46279ed7be7db9c85c",
+  "purpose": "Controlled CPU development check of BN estimator only; not another Real final-test evaluation or a deployable model selection.",
+  "hypothesis": "Equal cumulative averages remove reset initialization and case-order EMA weighting. Whether this restores source validation discrimination must be measured, not assumed.",
+  "source_checkpoint_sha256": "b24f2da7b18197362f7d903eca813f78b70f6125cd249044ac530d5106ae5837",
+  "norm_sha256": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33",
+  "adaptation": {
+    "input": "Exactly the executed v1 adapt_normal.pt: 10 frozen original-normal Real cases, 64 windows each, 640 total.",
+    "order": "Unchanged: case_uid then window end row.",
+    "batch_size": 64,
+    "passes": 1,
+    "gradient_updates": false,
+    "dropout_training": false,
+    "normalization": "Unchanged source training statistics.",
+    "batchnorm_mode": "Reset running mean=0, variance=1, counter=0; BN train, all other modules eval; then all eval.",
+    "CMA_semantics": "Average the 10 per-case batch means and unbiased within-batch variances equally using native PyTorch momentum=null. This is NOT global pooled variance and does not include between-case mean variance."
+  },
+  "arms": {
+    "B0_source": "Original source checkpoint, no target adaptation.",
+    "B1_reset_ema": "Recompute v1 algorithm on CPU with BN momentum=0.1, not the stored GPU-adapted state.",
+    "B2_reset_cumulative": "Same CPU initialization, inputs, order and operations as B1; only BN momentum changes to null (cumulative moving average)."
+  },
+  "evaluation": {
+    "only_dataset": "The frozen source val.pt: 35520 labeled simulation windows.",
+    "batch_size": 512,
+    "primary_outputs": ["normal_window_fpr_at_argmax", "fault_recall_at_argmax", "macro_f1", "confusion_matrix"],
+    "diagnostics": ["normal/fault probability quantiles", "fraction below fixed clear=0.4", "fraction above fixed onset=0.6", "BN running statistics"],
+    "threshold_search": false,
+    "evaluate_all_three_arms": true,
+    "release_or_final_claim": "None; source validation is development evidence, not Real generalization. Do not tune new variants after looking at results within this run."
+  },
+  "device": "CPU only, float32, deterministic algorithms, 4 threads, seed=42",
+  "forbidden_reads": ["Real calibrate_normal feature/probability files", "Real test_normal/test_fault/supplemental_normal_test feature/probability files", "source test.pt", "RflySim live_holdout.pt"],
+  "scope": "Do not overwrite v1 protocol, role CSV, source cache/checkpoint, GPU outputs, or deployed assets. Any later Real evaluation needs an explicit new protocol and disclosure of previous test exposure."
+}

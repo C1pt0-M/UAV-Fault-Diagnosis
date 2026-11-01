@@ -1,5 +1,5 @@
 # 用户认证路由
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, current_app, request, jsonify
 from datetime import datetime
 from uav_dashboard_api import db
 from uav_dashboard_api.models.user import User
@@ -204,12 +204,18 @@ def logout():
 @bp.route('/profile', methods=['GET'])
 @token_required
 def get_profile(current_user):
-    """获取当前用户信息"""
+    """获取当前用户信息及本应用实际注册的可选能力。"""
     try:
-        return jsonify({
+        response = jsonify({
             'success': True,
-            'data': current_user.to_dict()
-        }), 200
+            'data': current_user.to_dict(),
+            'capabilities': {
+                'ai': 'ai' in current_app.blueprints,
+                'telemetry': 'telemetry' in current_app.blueprints,
+            },
+        })
+        response.headers['Cache-Control'] = 'no-store'
+        return response, 200
     except Exception as e:
         return jsonify({'success': False, 'message': f'获取用户信息失败: {str(e)}'}), 500
 

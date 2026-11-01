@@ -53,12 +53,19 @@ docs/*
 !docs/model_training_pipeline.md
 !docs/autodl_training_runbook.md
 !docs/project_status_and_windows_migration.md
+!docs/实时正常数据适配协议_v1.md
 # Tests are project source. Tests for the removed sim_factory implementation
 # stay local and excluded from the active suite.
 /tests/test_sim_factory_*.py
 /data/
 /logs/
 /runtime/
+# Keep frozen experiment definitions, not generated weights or audit output.
+/artifacts/*
+!/artifacts/normal_adaptation_audit_20261029/
+/artifacts/normal_adaptation_audit_20261029/*
+!/artifacts/normal_adaptation_audit_20261029/normal_adaptation_protocol_v1.json
+!/artifacts/normal_adaptation_audit_20261029/real_case_roles_v1.csv
 /competition/
 results/
 tmp/
@@ -78,11 +85,11 @@ packages/uav_fault/uav_fault/*.csv
 assets/models/*.csv
 .qoder
 软件著作权申请资料/
-build_online_cache.py
-build_online_real3_splits.py
-build_sequence_cache_3class.py
-build_sequence_cache.py
-build_transfer3_splits.py
+/build_online_cache.py
+/build_online_real3_splits.py
+/build_sequence_cache_3class.py
+/build_sequence_cache.py
+/build_transfer3_splits.py
 
 # Keep curated archived docs visible to Git even though most docs are local-only.
 !docs/archive/
@@ -93,4 +100,6 @@ build_transfer3_splits.py
 /.codex/
 .tmp_mineru_*/
 .tmp_compare_*
-1
+
+# Research reports/evidence are curated explicitly; generated datasets remain local.
+/.claude/

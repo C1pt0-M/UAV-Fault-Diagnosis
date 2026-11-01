@@ -31,10 +31,12 @@
     </section>
 
     <section class="overview-kpis">
-      <a
+      <component
+        :is="metric.route ? 'a' : 'div'"
         v-for="metric in kpiCards"
         :key="metric.key"
         :href="metric.route"
+        :aria-disabled="metric.route ? undefined : true"
         class="kpi-card"
         :class="`kpi-card--${metric.tone}`"
         @click.prevent="goTo(metric.route)"
@@ -47,8 +49,9 @@
           <strong class="kpi-card__value">{{ metric.value }}</strong>
           <span class="kpi-card__meta">{{ metric.meta }}</span>
         </div>
-      </a>
+      </component>
     </section>
+    <p v-if="!runtimeCapabilities.telemetry" role="status" class="overview-provenance">实时监测未启用，历史会话和告警统计仍保留。</p>
 
     <section class="overview-main-grid">
       <article class="panel-card panel-card--trend">
@@ -63,7 +66,7 @@
           <TrendCharts />
           <strong>暂无近 24h 风险趋势</strong>
           <span>近 24h 无诊断报告或告警事件</span>
-          <span>生成新诊断报告或启动实时检测后自动形成趋势</span>
+          <span>{{ runtimeCapabilities.telemetry ? '生成新诊断报告或启动实时检测后自动形成趋势' : '生成新诊断报告后自动形成趋势' }}</span>
         </div>
       </article>
 
@@ -129,7 +132,7 @@
             <h2>最近告警</h2>
             <span>基于告警日志记录</span>
           </div>
-          <a class="panel-action" href="/monitoring" @click.prevent="goTo('/monitoring')">查看监测</a>
+          <a v-if="runtimeCapabilities.telemetry" class="panel-action" href="/monitoring" @click.prevent="goTo('/monitoring')">查看监测</a>
         </header>
         <div v-if="recentWarnings.length" class="warning-list">
           <div v-for="item in recentWarnings" :key="item.id" class="warning-row">
@@ -225,6 +228,7 @@ import {
   Warning
 } from '@element-plus/icons-vue'
 import { overviewApi } from '@/shared/services'
+import { runtimeCapabilities } from '@/shared/state/runtimeCapabilities'
 
 const overview = ref({})
 const loading = ref(false)
@@ -317,7 +321,7 @@ const kpiCards = computed(() => [
     meta: `高危 ${warningSummary.value.severity_counts?.high || 0} / 中危 ${warningSummary.value.severity_counts?.medium || 0} / 低危 ${warningSummary.value.severity_counts?.low || 0}`,
     tone: 'danger',
     icon: Bell,
-    route: '/monitoring'
+    route: runtimeCapabilities.telemetry ? '/monitoring' : undefined
   },
   {
     key: 'fault',
@@ -668,7 +672,7 @@ onBeforeUnmount(() => {
   transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
 }
 
-.kpi-card:hover {
+a.kpi-card:hover {
   border-color: rgba(37, 99, 235, 0.28);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);

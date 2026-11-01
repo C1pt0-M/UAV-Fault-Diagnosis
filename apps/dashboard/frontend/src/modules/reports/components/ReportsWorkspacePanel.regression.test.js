@@ -1,10 +1,25 @@
-import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { flushPromises, mount } from '@vue/test-utils'
+import { defineComponent } from 'vue'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { applyRuntimeCapabilities } from '@/shared/state/runtimeCapabilities'
+
+const routerPush = vi.hoisted(() => vi.fn())
+vi.mock('vue-router', () => ({ useRoute: () => ({ query: {} }), useRouter: () => ({ push: routerPush }) }))
+vi.mock('@/shared/services', () => ({
+  assetApi: { list: vi.fn().mockResolvedValue({ data: [] }) },
+  diagnosisReportApi: { list: vi.fn().mockResolvedValue({ data: [] }) }
+}))
+vi.mock('element-plus', () => ({ ElMessage: { warning: vi.fn(), error: vi.fn() }, ElMessageBox: {} }))
 
 import ReportsWorkspacePanel from './ReportsWorkspacePanel.vue'
 import { createReportActionItems } from '@/modules/reports/reportsView'
+import { useReportsWorkspace } from '@/modules/reports/composables/useReportsWorkspace'
 
 describe('ReportsWorkspacePanel regression', () => {
+  beforeEach(() => {
+    applyRuntimeCapabilities({ ai: true })
+    routerPush.mockClear()
+  })
   const sampleReports = [
     {
       id: 3,
@@ -56,6 +71,28 @@ describe('ReportsWorkspacePanel regression', () => {
     expect(text).toContain('共 42 份报告')
     expect(text).toContain('重置')
     expect(text).toContain('刷新')
+  })
+
+  it('keeps report management without advertising disabled AI actions or counts', async () => {
+    applyRuntimeCapabilities({ ai: false })
+    const wrapper = mountPanel()
+    await flushPromises()
+    expect(wrapper.text()).not.toContain('可 AI 解读')
+    expect(wrapper.vm.reportActions.map(item => item.key)).toEqual(['detail', 'remove'])
+    expect(wrapper.get('[role="status"]').text()).toContain('报告详情与管理仍可使用')
+  })
+
+  it.each([false, true])('guards report assistant navigation when ai=%s', async (enabled) => {
+    applyRuntimeCapabilities({ ai: enabled })
+    const harness = defineComponent({ setup: useReportsWorkspace, template: '<div />' })
+    const wrapper = mount(harness)
+    await flushPromises()
+    wrapper.vm.showDetail(sampleReports[0])
+    expect(wrapper.vm.detailVisible).toBe(true)
+    wrapper.vm.openInAssistant(sampleReports[0])
+    if (enabled) expect(routerPush).toHaveBeenCalledWith({ path: '/ai', query: { scene: 'report_analysis', report_id: '3', auto_analyze: '1' } })
+    else expect(routerPush).not.toHaveBeenCalled()
+    wrapper.unmount()
   })
 
   it('renders compact report operation entries with danger delete semantics', () => {

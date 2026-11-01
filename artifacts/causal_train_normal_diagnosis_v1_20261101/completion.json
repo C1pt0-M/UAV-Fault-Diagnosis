@@ -1,0 +1,48 @@
+{
+  "status": "COMPLETE_EXISTING_CHECKPOINT_TRAIN_NORMAL_TEST_AND_VERIFIED_LOCAL_RECOVERY",
+  "completed_at": "2026-11-01T04:13:57.096834+00:00",
+  "train_normal_windows": 83051,
+  "val_normal_windows": 17740,
+  "results": {
+    "uniform_replacement": {
+      "train": {
+        "windows": 3513,
+        "cases": 56,
+        "false_positives": 1731,
+        "false_positive_rate": 0.4927412467976089
+      },
+      "val": {
+        "windows": 754,
+        "cases": 12,
+        "false_positives": 393,
+        "false_positive_rate": 0.5212201591511937
+      }
+    },
+    "balanced_source_normal": {
+      "train": {
+        "windows": 3513,
+        "cases": 56,
+        "false_positives": 1177,
+        "false_positive_rate": 0.33504127526330774
+      },
+      "val": {
+        "windows": 754,
+        "cases": 12,
+        "false_positives": 273,
+        "false_positive_rate": 0.3620689655172414
+      }
+    }
+  },
+  "train_normal_evaluated_not_trained_again": true,
+  "optimizer_updates": 0,
+  "parameter_or_BN_updates": 0,
+  "saved_val_probabilities_max_difference": 0,
+  "test_or_Real_read": false,
+  "raw_logs_read": false,
+  "threshold_or_checkpoint_selection_changed": false,
+  "current_related_regression_tests_passed": 143,
+  "results_archive_sha256": "221caf172d928c9baf9abbdde1b1cd9e896d1d92e78f30daeedb0af2efd62788",
+  "independent_verification_sha256": "cc21d75629210245467f292f6c272e10002620c0329c0ab32927b74ebc0ae29d",
+  "report_sha256": "6eae0c975d955bd661b28deecd0bf3185d248848a79e8fc3d1b37e4de6e80cc8",
+  "conclusion": "Normal hover fails on admitted training samples as well as held-out source-val in eval mode. Not explained solely by held-out generalization. No precise channel/branch/objective/BatchNorm mechanism identified."
+}

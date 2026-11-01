@@ -1,0 +1,1624 @@
+{
+  "status": "COMPLETE_SAVED_SOURCE_OLD_NEW_COMPARISON",
+  "created_at": "2026-11-01T04:18:56.422013+00:00",
+  "scope": "Only saved source-val predictions and training histories/configurations, no inference/training/test/Real/raw logs",
+  "warning": "Same original normal window identities and unchanged normal labels, but inputs, statistics, training labels, qualification/exclusions, suffix population and training budget changed. Not a controlled single-factor causal experiment. Old faulty-label aggregate scores are historical only.",
+  "source_val_normal_windows_matched": 4565,
+  "arms": {
+    "uniform_replacement": {
+      "old_best_epoch": 60,
+      "old_epochs": 64,
+      "new_best_epoch": 20,
+      "new_epochs": 20,
+      "initial_digest_equal_across_versions": true,
+      "old_own_label_overall": {
+        "windows": 35520,
+        "confusion_matrix": [
+          [
+            17237,
+            675
+          ],
+          [
+            824,
+            16784
+          ]
+        ],
+        "accuracy": 0.9577984234234235,
+        "macro_f1": 0.9577915582769339,
+        "fault_recall": 0.9532030895047705,
+        "normal_window_fpr": 0.03768423403305047
+      },
+      "new_own_label_overall": {
+        "windows": 34710,
+        "confusion_matrix": [
+          [
+            16915,
+            825
+          ],
+          [
+            356,
+            16614
+          ]
+        ],
+        "accuracy": 0.9659752232785941,
+        "macro_f1": 0.9659726643880562,
+        "fault_recall": 0.979021803182086,
+        "normal_window_fpr": 0.04650507328072153
+      },
+      "old_own_population_hover": {
+        "windows": 768,
+        "confusion_matrix": [
+          [
+            448,
+            320
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.5833333333333334,
+        "macro_f1": 0.3684210526315789,
+        "fault_recall": null,
+        "normal_window_fpr": 0.4166666666666667
+      },
+      "new_own_population_hover": {
+        "windows": 754,
+        "confusion_matrix": [
+          [
+            361,
+            393
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.47877984084880637,
+        "macro_f1": 0.3237668161434978,
+        "fault_recall": null,
+        "normal_window_fpr": 0.5212201591511937
+      },
+      "matched_normal_population": [
+        {
+          "population": "original_normal",
+          "windows": 4565,
+          "old_false_positives": 569,
+          "new_false_positives": 820,
+          "old_fpr": 0.12464403066812706,
+          "new_fpr": 0.1796276013143483,
+          "both_false_positive": 546,
+          "old_only_false_positive": 23,
+          "new_only_false_positive": 274
+        },
+        {
+          "population": "original_normal_hover",
+          "windows": 754,
+          "old_false_positives": 314,
+          "new_false_positives": 393,
+          "old_fpr": 0.41644562334217505,
+          "new_fpr": 0.5212201591511937,
+          "both_false_positive": 314,
+          "old_only_false_positive": 0,
+          "new_only_false_positive": 79
+        }
+      ],
+      "trajectories": {
+        "old": [
+          {
+            "epoch": 1,
+            "lr": 5.9999999999999995e-05,
+            "train_loss": 0.06638544517936129,
+            "macro_f1": 0.9197895838933512,
+            "original_normal_hover_fpr": 0.6041666666666666
+          },
+          {
+            "epoch": 2,
+            "lr": 0.00011999999999999999,
+            "train_loss": 0.048027487968405086,
+            "macro_f1": 0.9270822005581894,
+            "original_normal_hover_fpr": 0.58203125
+          },
+          {
+            "epoch": 3,
+            "lr": 0.00017999999999999998,
+            "train_loss": 0.043230950911388254,
+            "macro_f1": 0.9308306543123283,
+            "original_normal_hover_fpr": 0.5677083333333334
+          },
+          {
+            "epoch": 4,
+            "lr": 0.00023999999999999998,
+            "train_loss": 0.04067798234296568,
+            "macro_f1": 0.9361197541999251,
+            "original_normal_hover_fpr": 0.55859375
+          },
+          {
+            "epoch": 5,
+            "lr": 0.0003,
+            "train_loss": 0.0388591625473716,
+            "macro_f1": 0.9377504649607421,
+            "original_normal_hover_fpr": 0.5768229166666666
+          },
+          {
+            "epoch": 6,
+            "lr": 0.0003,
+            "train_loss": 0.036568008583377706,
+            "macro_f1": 0.9353569405533272,
+            "original_normal_hover_fpr": 0.4544270833333333
+          },
+          {
+            "epoch": 7,
+            "lr": 0.00029991826197246844,
+            "train_loss": 0.03483258480149688,
+            "macro_f1": 0.9429031750606812,
+            "original_normal_hover_fpr": 0.5559895833333334
+          },
+          {
+            "epoch": 8,
+            "lr": 0.00029967313726920677,
+            "train_loss": 0.034694863551042295,
+            "macro_f1": 0.9392145440837282,
+            "original_normal_hover_fpr": 0.58203125
+          },
+          {
+            "epoch": 9,
+            "lr": 0.00029926489393047916,
+            "train_loss": 0.03398733562366529,
+            "macro_f1": 0.9430713672327757,
+            "original_normal_hover_fpr": 0.5403645833333334
+          },
+          {
+            "epoch": 10,
+            "lr": 0.0002986939783643828,
+            "train_loss": 0.03316096104117054,
+            "macro_f1": 0.9410289808438853,
+            "original_normal_hover_fpr": 0.46875
+          },
+          {
+            "epoch": 11,
+            "lr": 0.00029796101485870695,
+            "train_loss": 0.03321072968343894,
+            "macro_f1": 0.9457722895019476,
+            "original_normal_hover_fpr": 0.53125
+          },
+          {
+            "epoch": 12,
+            "lr": 0.00029706680489828395,
+            "train_loss": 0.032605517458057766,
+            "macro_f1": 0.9474378160562469,
+            "original_normal_hover_fpr": 0.54296875
+          },
+          {
+            "epoch": 13,
+            "lr": 0.00029601232628857684,
+            "train_loss": 0.031467404769677104,
+            "macro_f1": 0.9465651308279166,
+            "original_normal_hover_fpr": 0.5559895833333334
+          },
+          {
+            "epoch": 14,
+            "lr": 0.0002947987320864636,
+            "train_loss": 0.0314166912075245,
+            "macro_f1": 0.9383656781517149,
+            "original_normal_hover_fpr": 0.3567708333333333
+          },
+          {
+            "epoch": 15,
+            "lr": 0.00029342734933938643,
+            "train_loss": 0.03099927871177594,
+            "macro_f1": 0.9459337261757281,
+            "original_normal_hover_fpr": 0.48828125
+          },
+          {
+            "epoch": 16,
+            "lr": 0.0002918996776342448,
+            "train_loss": 0.03142868481350668,
+            "macro_f1": 0.9490636537264046,
+            "original_normal_hover_fpr": 0.49609375
+          },
+          {
+            "epoch": 17,
+            "lr": 0.0002902173874576194,
+            "train_loss": 0.03058928091530547,
+            "macro_f1": 0.9462759104246541,
+            "original_normal_hover_fpr": 0.4908854166666667
+          },
+          {
+            "epoch": 18,
+            "lr": 0.000288382318369119,
+            "train_loss": 0.030248223645894818,
+            "macro_f1": 0.9492108769744816,
+            "original_normal_hover_fpr": 0.5104166666666666
+          },
+          {
+            "epoch": 19,
+            "lr": 0.00028639647698984976,
+            "train_loss": 0.030323995186975507,
+            "macro_f1": 0.9470995700864366,
+            "original_normal_hover_fpr": 0.52734375
+          },
+          {
+            "epoch": 20,
+            "lr": 0.00028426203480820414,
+            "train_loss": 0.030023223839022898,
+            "macro_f1": 0.9498310236619629,
+            "original_normal_hover_fpr": 0.5364583333333334
+          },
+          {
+            "epoch": 21,
+            "lr": 0.0002819813258053701,
+            "train_loss": 0.02940112477111997,
+            "macro_f1": 0.9487266382959791,
+            "original_normal_hover_fpr": 0.5065104166666666
+          },
+          {
+            "epoch": 22,
+            "lr": 0.0002795568439031573,
+            "train_loss": 0.029242345826192336,
+            "macro_f1": 0.9498868891440565,
+            "original_normal_hover_fpr": 0.5078125
+          },
+          {
+            "epoch": 23,
+            "lr": 0.00027699124023692983,
+            "train_loss": 0.028914363072677092,
+            "macro_f1": 0.9516599156860576,
+            "original_normal_hover_fpr": 0.5052083333333334
+          },
+          {
+            "epoch": 24,
+            "lr": 0.00027428732025662895,
+            "train_loss": 0.02874597278282498,
+            "macro_f1": 0.9486889156861602,
+            "original_normal_hover_fpr": 0.4778645833333333
+          },
+          {
+            "epoch": 25,
+            "lr": 0.0002714480406590546,
+            "train_loss": 0.028164423415155123,
+            "macro_f1": 0.9511824268606678,
+            "original_normal_hover_fpr": 0.5169270833333334
+          },
+          {
+            "epoch": 26,
+            "lr": 0.0002684765061547608,
+            "train_loss": 0.028942761273885315,
+            "macro_f1": 0.9508428763731385,
+            "original_normal_hover_fpr": 0.5208333333333334
+          },
+          {
+            "epoch": 27,
+            "lr": 0.0002653759660731004,
+            "train_loss": 0.02804878099511067,
+            "macro_f1": 0.948775424706259,
+            "original_normal_hover_fpr": 0.4622395833333333
+          },
+          {
+            "epoch": 28,
+            "lr": 0.000262149810809131,
+            "train_loss": 0.0280373506868879,
+            "macro_f1": 0.951403360777359,
+            "original_normal_hover_fpr": 0.5169270833333334
+          },
+          {
+            "epoch": 29,
+            "lr": 0.0002588015681162678,
+            "train_loss": 0.02778105219882546,
+            "macro_f1": 0.9519064184258857,
+            "original_normal_hover_fpr": 0.48828125
+          },
+          {
+            "epoch": 30,
+            "lr": 0.000255334899248737,
+            "train_loss": 0.027808151580393313,
+            "macro_f1": 0.9520468911329301,
+            "original_normal_hover_fpr": 0.45703125
+          },
+          {
+            "epoch": 31,
+            "lr": 0.0002517535949580483,
+            "train_loss": 0.027678984804361154,
+            "macro_f1": 0.9538234320056885,
+            "original_normal_hover_fpr": 0.46875
+          },
+          {
+            "epoch": 32,
+            "lr": 0.00024806157134786317,
+            "train_loss": 0.026986581908369608,
+            "macro_f1": 0.9475953585284445,
+            "original_normal_hover_fpr": 0.3841145833333333
+          },
+          {
+            "epoch": 33,
+            "lr": 0.00024426286559179374,
+            "train_loss": 0.02761387440065543,
+            "macro_f1": 0.9495365544174852,
+            "original_normal_hover_fpr": 0.4713541666666667
+          },
+          {
+            "epoch": 34,
+            "lr": 0.0002403616315188122,
+            "train_loss": 0.027498940434871298,
+            "macro_f1": 0.9521311152345703,
+            "original_normal_hover_fpr": 0.4583333333333333
+          },
+          {
+            "epoch": 35,
+            "lr": 0.00023636213507110003,
+            "train_loss": 0.02648662573121714,
+            "macro_f1": 0.9539940137987013,
+            "original_normal_hover_fpr": 0.48046875
+          },
+          {
+            "epoch": 36,
+            "lr": 0.00023226874963930283,
+            "train_loss": 0.02688247539441694,
+            "macro_f1": 0.9543900126454717,
+            "original_normal_hover_fpr": 0.4635416666666667
+          },
+          {
+            "epoch": 37,
+            "lr": 0.00022808595128029162,
+            "train_loss": 0.02642820001946706,
+            "macro_f1": 0.9539402586161799,
+            "original_normal_hover_fpr": 0.4713541666666667
+          },
+          {
+            "epoch": 38,
+            "lr": 0.00022381831382266095,
+            "train_loss": 0.025916695834673716,
+            "macro_f1": 0.9525258907880816,
+            "original_normal_hover_fpr": 0.49609375
+          },
+          {
+            "epoch": 39,
+            "lr": 0.0002194705038653138,
+            "train_loss": 0.02662918654016473,
+            "macro_f1": 0.9526457021856958,
+            "original_normal_hover_fpr": 0.4908854166666667
+          },
+          {
+            "epoch": 40,
+            "lr": 0.00021504727567460465,
+            "train_loss": 0.025662487386866953,
+            "macro_f1": 0.9529263752118071,
+            "original_normal_hover_fpr": 0.4921875
+          },
+          {
+            "epoch": 41,
+            "lr": 0.00021055346598561892,
+            "train_loss": 0.025938641127537597,
+            "macro_f1": 0.9539090900337646,
+            "original_normal_hover_fpr": 0.484375
+          },
+          {
+            "epoch": 42,
+            "lr": 0.00020599398871327395,
+            "train_loss": 0.025813315862394645,
+            "macro_f1": 0.952917681452543,
+            "original_normal_hover_fpr": 0.4700520833333333
+          },
+          {
+            "epoch": 43,
+            "lr": 0.00020137382957902562,
+            "train_loss": 0.025357060820202938,
+            "macro_f1": 0.9531402243502711,
+            "original_normal_hover_fpr": 0.4361979166666667
+          },
+          {
+            "epoch": 44,
+            "lr": 0.0001966980406590546,
+            "train_loss": 0.02567548222670501,
+            "macro_f1": 0.9562759698114294,
+            "original_normal_hover_fpr": 0.47265625
+          },
+          {
+            "epoch": 45,
+            "lr": 0.00019197173485989574,
+            "train_loss": 0.025647992914486113,
+            "macro_f1": 0.9526150628532916,
+            "original_normal_hover_fpr": 0.47265625
+          },
+          {
+            "epoch": 46,
+            "lr": 0.00018720008032754946,
+            "train_loss": 0.02531457615056724,
+            "macro_f1": 0.9552050737043619,
+            "original_normal_hover_fpr": 0.4661458333333333
+          },
+          {
+            "epoch": 47,
+            "lr": 0.00018238829479619013,
+            "train_loss": 0.02530074624175375,
+            "macro_f1": 0.9544668536944514,
+            "original_normal_hover_fpr": 0.4401041666666667
+          },
+          {
+            "epoch": 48,
+            "lr": 0.00017754163988265042,
+            "train_loss": 0.024689947204156355,
+            "macro_f1": 0.9539005261038526,
+            "original_normal_hover_fpr": 0.4205729166666667
+          },
+          {
+            "epoch": 49,
+            "lr": 0.00017266541533292033,
+            "train_loss": 0.024875548772626755,
+            "macro_f1": 0.9552885502616872,
+            "original_normal_hover_fpr": 0.4791666666666667
+          },
+          {
+            "epoch": 50,
+            "lr": 0.00016776495322695312,
+            "train_loss": 0.024322762704369696,
+            "macro_f1": 0.9559323013864496,
+            "original_normal_hover_fpr": 0.4348958333333333
+          },
+          {
+            "epoch": 51,
+            "lr": 0.00016284561214811367,
+            "train_loss": 0.024503842151413362,
+            "macro_f1": 0.9557092177114149,
+            "original_normal_hover_fpr": 0.4192708333333333
+          },
+          {
+            "epoch": 52,
+            "lr": 0.0001579127713236467,
+            "train_loss": 0.024414425665004687,
+            "macro_f1": 0.9557385438482029,
+            "original_normal_hover_fpr": 0.453125
+          },
+          {
+            "epoch": 53,
+            "lr": 0.00015297182474257058,
+            "train_loss": 0.024404106878985962,
+            "macro_f1": 0.9547269565158281,
+            "original_normal_hover_fpr": 0.4622395833333333
+          },
+          {
+            "epoch": 54,
+            "lr": 0.00014802817525742936,
+            "train_loss": 0.023979210955175488,
+            "macro_f1": 0.9556790443407139,
+            "original_normal_hover_fpr": 0.4231770833333333
+          },
+          {
+            "epoch": 55,
+            "lr": 0.0001430872286763532,
+            "train_loss": 0.023847674338542152,
+            "macro_f1": 0.9555978401108511,
+            "original_normal_hover_fpr": 0.4453125
+          },
+          {
+            "epoch": 56,
+            "lr": 0.0001381543878518863,
+            "train_loss": 0.023874812242998318,
+            "macro_f1": 0.9555993732317992,
+            "original_normal_hover_fpr": 0.4635416666666667
+          },
+          {
+            "epoch": 57,
+            "lr": 0.00013323504677304686,
+            "train_loss": 0.023455115475437858,
+            "macro_f1": 0.955656008537642,
+            "original_normal_hover_fpr": 0.45703125
+          },
+          {
+            "epoch": 58,
+            "lr": 0.00012833458466707958,
+            "train_loss": 0.023623851537140028,
+            "macro_f1": 0.9564677325448299,
+            "original_normal_hover_fpr": 0.4296875
+          },
+          {
+            "epoch": 59,
+            "lr": 0.00012345836011734958,
+            "train_loss": 0.023332559399193886,
+            "macro_f1": 0.9567511618705138,
+            "original_normal_hover_fpr": 0.4401041666666667
+          },
+          {
+            "epoch": 60,
+            "lr": 0.00011861170520380985,
+            "train_loss": 0.02323042797489148,
+            "macro_f1": 0.9577915582769339,
+            "original_normal_hover_fpr": 0.4166666666666667
+          },
+          {
+            "epoch": 61,
+            "lr": 0.00011379991967245051,
+            "train_loss": 0.023144732534208082,
+            "macro_f1": 0.9566918689439302,
+            "original_normal_hover_fpr": 0.41015625
+          },
+          {
+            "epoch": 62,
+            "lr": 0.00010902826514010425,
+            "train_loss": 0.023117050813567457,
+            "macro_f1": 0.9553480520877504,
+            "original_normal_hover_fpr": 0.4427083333333333
+          },
+          {
+            "epoch": 63,
+            "lr": 0.00010430195934094535,
+            "train_loss": 0.023031300707071118,
+            "macro_f1": 0.9566114594868875,
+            "original_normal_hover_fpr": 0.4348958333333333
+          },
+          {
+            "epoch": 64,
+            "lr": 9.962617042097434e-05,
+            "train_loss": 0.02265020584631147,
+            "macro_f1": 0.9577653341515444,
+            "original_normal_hover_fpr": 0.4283854166666667
+          }
+        ],
+        "new": [
+          {
+            "epoch": 1,
+            "lr": 9.999999999999999e-05,
+            "train_loss": 0.05228253956942904,
+            "macro_f1": 0.9301798869161884,
+            "original_normal_hover_fpr": 0.4761273209549072
+          },
+          {
+            "epoch": 2,
+            "lr": 0.00019999999999999998,
+            "train_loss": 0.035325964953903145,
+            "macro_f1": 0.9443562091190101,
+            "original_normal_hover_fpr": 0.5437665782493368
+          },
+          {
+            "epoch": 3,
+            "lr": 0.0003,
+            "train_loss": 0.031201120607014333,
+            "macro_f1": 0.9464771099279015,
+            "original_normal_hover_fpr": 0.5278514588859416
+          },
+          {
+            "epoch": 4,
+            "lr": 0.0003,
+            "train_loss": 0.02650485441018166,
+            "macro_f1": 0.9537016954500703,
+            "original_normal_hover_fpr": 0.6061007957559682
+          },
+          {
+            "epoch": 5,
+            "lr": 0.00029898913448242047,
+            "train_loss": 0.024751374512699313,
+            "macro_f1": 0.9568083943532562,
+            "original_normal_hover_fpr": 0.5358090185676393
+          },
+          {
+            "epoch": 6,
+            "lr": 0.0002959702081516836,
+            "train_loss": 0.023442431426480743,
+            "macro_f1": 0.9569793244132552,
+            "original_normal_hover_fpr": 0.519893899204244
+          },
+          {
+            "epoch": 7,
+            "lr": 0.0002909840468074933,
+            "train_loss": 0.022360929951941364,
+            "macro_f1": 0.9600100602619652,
+            "original_normal_hover_fpr": 0.5915119363395226
+          },
+          {
+            "epoch": 8,
+            "lr": 0.0002840980797283501,
+            "train_loss": 0.021440954752595456,
+            "macro_f1": 0.9488391835982201,
+            "original_normal_hover_fpr": 0.35809018567639256
+          },
+          {
+            "epoch": 9,
+            "lr": 0.00027540542780623396,
+            "train_loss": 0.020551399427704068,
+            "macro_f1": 0.9585624871137112,
+            "original_normal_hover_fpr": 0.47480106100795755
+          },
+          {
+            "epoch": 10,
+            "lr": 0.00026502364424628715,
+            "train_loss": 0.02073426902211897,
+            "macro_f1": 0.9616816358210212,
+            "original_normal_hover_fpr": 0.5570291777188329
+          },
+          {
+            "epoch": 11,
+            "lr": 0.00025309312486137566,
+            "train_loss": 0.019964785673523364,
+            "macro_f1": 0.9605204090656386,
+            "original_normal_hover_fpr": 0.47745358090185674
+          },
+          {
+            "epoch": 12,
+            "lr": 0.00023977520945956649,
+            "train_loss": 0.01933464487244842,
+            "macro_f1": 0.9643595195122681,
+            "original_normal_hover_fpr": 0.53315649867374
+          },
+          {
+            "epoch": 13,
+            "lr": 0.00022524999999999995,
+            "train_loss": 0.01900527374495749,
+            "macro_f1": 0.9632358674819916,
+            "original_normal_hover_fpr": 0.5570291777188329
+          },
+          {
+            "epoch": 14,
+            "lr": 0.0002097139250228539,
+            "train_loss": 0.01883164920758938,
+            "macro_f1": 0.962482433853008,
+            "original_normal_hover_fpr": 0.5106100795755968
+          },
+          {
+            "epoch": 15,
+            "lr": 0.00019337708329030798,
+            "train_loss": 0.01821244063519811,
+            "macro_f1": 0.9651652944914979,
+            "original_normal_hover_fpr": 0.5185676392572944
+          },
+          {
+            "epoch": 16,
+            "lr": 0.00017646040256120608,
+            "train_loss": 0.01742660460776241,
+            "macro_f1": 0.9621125548322647,
+            "original_normal_hover_fpr": 0.493368700265252
+          },
+          {
+            "epoch": 17,
+            "lr": 0.0001591926519221161,
+            "train_loss": 0.017155364904940504,
+            "macro_f1": 0.9651938507788281,
+            "original_normal_hover_fpr": 0.5278514588859416
+          },
+          {
+            "epoch": 18,
+            "lr": 0.00014180734807788385,
+            "train_loss": 0.0172306227994266,
+            "macro_f1": 0.9639248643086937,
+            "original_normal_hover_fpr": 0.5106100795755968
+          },
+          {
+            "epoch": 19,
+            "lr": 0.0001245395974387939,
+            "train_loss": 0.01652448640531076,
+            "macro_f1": 0.9626550338163842,
+            "original_normal_hover_fpr": 0.46419098143236076
+          },
+          {
+            "epoch": 20,
+            "lr": 0.00010762291670969202,
+            "train_loss": 0.0163295479015409,
+            "macro_f1": 0.9659726643880562,
+            "original_normal_hover_fpr": 0.5212201591511937
+          }
+        ]
+      },
+      "matched_hover_fpr_change_percentage_points": 10.477453580901857
+    },
+    "balanced_source_normal": {
+      "old_best_epoch": 66,
+      "old_epochs": 76,
+      "new_best_epoch": 22,
+      "new_epochs": 22,
+      "initial_digest_equal_across_versions": true,
+      "old_own_label_overall": {
+        "windows": 35520,
+        "confusion_matrix": [
+          [
+            17329,
+            583
+          ],
+          [
+            835,
+            16773
+          ]
+        ],
+        "accuracy": 0.9600788288288288,
+        "macro_f1": 0.9600690448981475,
+        "fault_recall": 0.9525783734666061,
+        "normal_window_fpr": 0.03254801250558285
+      },
+      "new_own_label_overall": {
+        "windows": 34710,
+        "confusion_matrix": [
+          [
+            17198,
+            542
+          ],
+          [
+            730,
+            16240
+          ]
+        ],
+        "accuracy": 0.9633535004321521,
+        "macro_f1": 0.963325563079787,
+        "fault_recall": 0.9569829110194461,
+        "normal_window_fpr": 0.030552423900789178
+      },
+      "old_own_population_hover": {
+        "windows": 768,
+        "confusion_matrix": [
+          [
+            494,
+            274
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.6432291666666666,
+        "macro_f1": 0.39144215530903326,
+        "fault_recall": null,
+        "normal_window_fpr": 0.3567708333333333
+      },
+      "new_own_population_hover": {
+        "windows": 754,
+        "confusion_matrix": [
+          [
+            481,
+            273
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.6379310344827587,
+        "macro_f1": 0.3894736842105263,
+        "fault_recall": null,
+        "normal_window_fpr": 0.3620689655172414
+      },
+      "matched_normal_population": [
+        {
+          "population": "original_normal",
+          "windows": 4565,
+          "old_false_positives": 469,
+          "new_false_positives": 538,
+          "old_fpr": 0.1027382256297919,
+          "new_fpr": 0.11785323110624316,
+          "both_false_positive": 347,
+          "old_only_false_positive": 122,
+          "new_only_false_positive": 191
+        },
+        {
+          "population": "original_normal_hover",
+          "windows": 754,
+          "old_false_positives": 268,
+          "new_false_positives": 273,
+          "old_fpr": 0.35543766578249336,
+          "new_fpr": 0.3620689655172414,
+          "both_false_positive": 211,
+          "old_only_false_positive": 57,
+          "new_only_false_positive": 62
+        }
+      ],
+      "trajectories": {
+        "old": [
+          {
+            "epoch": 1,
+            "lr": 5.9999999999999995e-05,
+            "train_loss": 0.07268290607766671,
+            "macro_f1": 0.9120488219531069,
+            "original_normal_hover_fpr": 0.453125
+          },
+          {
+            "epoch": 2,
+            "lr": 0.00011999999999999999,
+            "train_loss": 0.05409879270150806,
+            "macro_f1": 0.9087438492571362,
+            "original_normal_hover_fpr": 0.13151041666666666
+          },
+          {
+            "epoch": 3,
+            "lr": 0.00017999999999999998,
+            "train_loss": 0.04967690339368401,
+            "macro_f1": 0.9271793805719919,
+            "original_normal_hover_fpr": 0.4075520833333333
+          },
+          {
+            "epoch": 4,
+            "lr": 0.00023999999999999998,
+            "train_loss": 0.046996542642062364,
+            "macro_f1": 0.9346184367481234,
+            "original_normal_hover_fpr": 0.5481770833333334
+          },
+          {
+            "epoch": 5,
+            "lr": 0.0003,
+            "train_loss": 0.044926945074941174,
+            "macro_f1": 0.9230693427572312,
+            "original_normal_hover_fpr": 0.22265625
+          },
+          {
+            "epoch": 6,
+            "lr": 0.0003,
+            "train_loss": 0.04309248086065054,
+            "macro_f1": 0.9340293918159381,
+            "original_normal_hover_fpr": 0.3528645833333333
+          },
+          {
+            "epoch": 7,
+            "lr": 0.00029991826197246844,
+            "train_loss": 0.04198879646419576,
+            "macro_f1": 0.9387911318484026,
+            "original_normal_hover_fpr": 0.4270833333333333
+          },
+          {
+            "epoch": 8,
+            "lr": 0.00029967313726920677,
+            "train_loss": 0.040473540104699855,
+            "macro_f1": 0.9337811388678634,
+            "original_normal_hover_fpr": 0.2734375
+          },
+          {
+            "epoch": 9,
+            "lr": 0.00029926489393047916,
+            "train_loss": 0.039614097480521054,
+            "macro_f1": 0.9406350661150604,
+            "original_normal_hover_fpr": 0.5091145833333334
+          },
+          {
+            "epoch": 10,
+            "lr": 0.0002986939783643828,
+            "train_loss": 0.03922908022773988,
+            "macro_f1": 0.9402716861598441,
+            "original_normal_hover_fpr": 0.33984375
+          },
+          {
+            "epoch": 11,
+            "lr": 0.00029796101485870695,
+            "train_loss": 0.03845023702491413,
+            "macro_f1": 0.9441213118697089,
+            "original_normal_hover_fpr": 0.4518229166666667
+          },
+          {
+            "epoch": 12,
+            "lr": 0.00029706680489828395,
+            "train_loss": 0.03770766136885592,
+            "macro_f1": 0.9431310078331885,
+            "original_normal_hover_fpr": 0.44140625
+          },
+          {
+            "epoch": 13,
+            "lr": 0.00029601232628857684,
+            "train_loss": 0.037517570269604526,
+            "macro_f1": 0.9433549248739783,
+            "original_normal_hover_fpr": 0.5247395833333334
+          },
+          {
+            "epoch": 14,
+            "lr": 0.0002947987320864636,
+            "train_loss": 0.036925700888263455,
+            "macro_f1": 0.9471452472776979,
+            "original_normal_hover_fpr": 0.4869791666666667
+          },
+          {
+            "epoch": 15,
+            "lr": 0.00029342734933938643,
+            "train_loss": 0.03701642278694745,
+            "macro_f1": 0.9460542742071454,
+            "original_normal_hover_fpr": 0.3854166666666667
+          },
+          {
+            "epoch": 16,
+            "lr": 0.0002918996776342448,
+            "train_loss": 0.036060720128995,
+            "macro_f1": 0.9459699570983202,
+            "original_normal_hover_fpr": 0.4817708333333333
+          },
+          {
+            "epoch": 17,
+            "lr": 0.0002902173874576194,
+            "train_loss": 0.035248502919619736,
+            "macro_f1": 0.9479376443554826,
+            "original_normal_hover_fpr": 0.4830729166666667
+          },
+          {
+            "epoch": 18,
+            "lr": 0.000288382318369119,
+            "train_loss": 0.0350836939771067,
+            "macro_f1": 0.9441288073043532,
+            "original_normal_hover_fpr": 0.4153645833333333
+          },
+          {
+            "epoch": 19,
+            "lr": 0.00028639647698984976,
+            "train_loss": 0.034800592471252785,
+            "macro_f1": 0.9472913852311506,
+            "original_normal_hover_fpr": 0.40234375
+          },
+          {
+            "epoch": 20,
+            "lr": 0.00028426203480820414,
+            "train_loss": 0.03526053662891641,
+            "macro_f1": 0.937307286210649,
+            "original_normal_hover_fpr": 0.4453125
+          },
+          {
+            "epoch": 21,
+            "lr": 0.0002819813258053701,
+            "train_loss": 0.034197130020369185,
+            "macro_f1": 0.9486612813922504,
+            "original_normal_hover_fpr": 0.3619791666666667
+          },
+          {
+            "epoch": 22,
+            "lr": 0.0002795568439031573,
+            "train_loss": 0.03432515735991976,
+            "macro_f1": 0.9349240983154015,
+            "original_normal_hover_fpr": 0.2786458333333333
+          },
+          {
+            "epoch": 23,
+            "lr": 0.00027699124023692983,
+            "train_loss": 0.03385897231937358,
+            "macro_f1": 0.9482796399644112,
+            "original_normal_hover_fpr": 0.4270833333333333
+          },
+          {
+            "epoch": 24,
+            "lr": 0.00027428732025662895,
+            "train_loss": 0.03344756266045751,
+            "macro_f1": 0.94132433613657,
+            "original_normal_hover_fpr": 0.2903645833333333
+          },
+          {
+            "epoch": 25,
+            "lr": 0.0002714480406590546,
+            "train_loss": 0.033720670634824215,
+            "macro_f1": 0.9464421404299614,
+            "original_normal_hover_fpr": 0.35546875
+          },
+          {
+            "epoch": 26,
+            "lr": 0.0002684765061547608,
+            "train_loss": 0.03309041806920008,
+            "macro_f1": 0.9516753083360299,
+            "original_normal_hover_fpr": 0.4361979166666667
+          },
+          {
+            "epoch": 27,
+            "lr": 0.0002653759660731004,
+            "train_loss": 0.032982281561602246,
+            "macro_f1": 0.9515077827605521,
+            "original_normal_hover_fpr": 0.4544270833333333
+          },
+          {
+            "epoch": 28,
+            "lr": 0.000262149810809131,
+            "train_loss": 0.03258189456255147,
+            "macro_f1": 0.9502317191420027,
+            "original_normal_hover_fpr": 0.44921875
+          },
+          {
+            "epoch": 29,
+            "lr": 0.0002588015681162678,
+            "train_loss": 0.0322936498926896,
+            "macro_f1": 0.9509079191392069,
+            "original_normal_hover_fpr": 0.4153645833333333
+          },
+          {
+            "epoch": 30,
+            "lr": 0.000255334899248737,
+            "train_loss": 0.03184568801273902,
+            "macro_f1": 0.9472364722400866,
+            "original_normal_hover_fpr": 0.30078125
+          },
+          {
+            "epoch": 31,
+            "lr": 0.0002517535949580483,
+            "train_loss": 0.03194088419955788,
+            "macro_f1": 0.9512831083736213,
+            "original_normal_hover_fpr": 0.4166666666666667
+          },
+          {
+            "epoch": 32,
+            "lr": 0.00024806157134786317,
+            "train_loss": 0.03201476886416926,
+            "macro_f1": 0.9505790634414928,
+            "original_normal_hover_fpr": 0.3736979166666667
+          },
+          {
+            "epoch": 33,
+            "lr": 0.00024426286559179374,
+            "train_loss": 0.031438014989323686,
+            "macro_f1": 0.954436629012398,
+            "original_normal_hover_fpr": 0.42578125
+          },
+          {
+            "epoch": 34,
+            "lr": 0.0002403616315188122,
+            "train_loss": 0.03126235992055048,
+            "macro_f1": 0.9533879601306223,
+            "original_normal_hover_fpr": 0.41015625
+          },
+          {
+            "epoch": 35,
+            "lr": 0.00023636213507110003,
+            "train_loss": 0.030944588125655145,
+            "macro_f1": 0.9518537510385188,
+            "original_normal_hover_fpr": 0.3671875
+          },
+          {
+            "epoch": 36,
+            "lr": 0.00023226874963930283,
+            "train_loss": 0.03146664052637237,
+            "macro_f1": 0.9517937870873048,
+            "original_normal_hover_fpr": 0.4544270833333333
+          },
+          {
+            "epoch": 37,
+            "lr": 0.00022808595128029162,
+            "train_loss": 0.030652455048579157,
+            "macro_f1": 0.955479689245708,
+            "original_normal_hover_fpr": 0.3697916666666667
+          },
+          {
+            "epoch": 38,
+            "lr": 0.00022381831382266095,
+            "train_loss": 0.029983726228502663,
+            "macro_f1": 0.9483565688869755,
+            "original_normal_hover_fpr": 0.32421875
+          },
+          {
+            "epoch": 39,
+            "lr": 0.0002194705038653138,
+            "train_loss": 0.03009872485065099,
+            "macro_f1": 0.9474712248905797,
+            "original_normal_hover_fpr": 0.2955729166666667
+          },
+          {
+            "epoch": 40,
+            "lr": 0.00021504727567460465,
+            "train_loss": 0.029819786678435226,
+            "macro_f1": 0.9452177583382239,
+            "original_normal_hover_fpr": 0.3098958333333333
+          },
+          {
+            "epoch": 41,
+            "lr": 0.00021055346598561892,
+            "train_loss": 0.030243855212448222,
+            "macro_f1": 0.95233020452051,
+            "original_normal_hover_fpr": 0.4192708333333333
+          },
+          {
+            "epoch": 42,
+            "lr": 0.00020599398871327395,
+            "train_loss": 0.029610864885828713,
+            "macro_f1": 0.9551647004982736,
+            "original_normal_hover_fpr": 0.4283854166666667
+          },
+          {
+            "epoch": 43,
+            "lr": 0.00020137382957902562,
+            "train_loss": 0.029415971881738216,
+            "macro_f1": 0.9544110455626156,
+            "original_normal_hover_fpr": 0.30859375
+          },
+          {
+            "epoch": 44,
+            "lr": 0.0001966980406590546,
+            "train_loss": 0.029293166450930365,
+            "macro_f1": 0.9552161994493716,
+            "original_normal_hover_fpr": 0.3932291666666667
+          },
+          {
+            "epoch": 45,
+            "lr": 0.00019197173485989574,
+            "train_loss": 0.029348690045828168,
+            "macro_f1": 0.9549571317546,
+            "original_normal_hover_fpr": 0.3216145833333333
+          },
+          {
+            "epoch": 46,
+            "lr": 0.00018720008032754946,
+            "train_loss": 0.02920490120057807,
+            "macro_f1": 0.9550432562202307,
+            "original_normal_hover_fpr": 0.3216145833333333
+          },
+          {
+            "epoch": 47,
+            "lr": 0.00018238829479619013,
+            "train_loss": 0.02846802267048395,
+            "macro_f1": 0.9484406138573306,
+            "original_normal_hover_fpr": 0.22395833333333334
+          },
+          {
+            "epoch": 48,
+            "lr": 0.00017754163988265042,
+            "train_loss": 0.02829255811644323,
+            "macro_f1": 0.9570585669816105,
+            "original_normal_hover_fpr": 0.3645833333333333
+          },
+          {
+            "epoch": 49,
+            "lr": 0.00017266541533292033,
+            "train_loss": 0.028674574196338655,
+            "macro_f1": 0.956990806315261,
+            "original_normal_hover_fpr": 0.3723958333333333
+          },
+          {
+            "epoch": 50,
+            "lr": 0.00016776495322695312,
+            "train_loss": 0.02770727216971643,
+            "macro_f1": 0.9584847171700152,
+            "original_normal_hover_fpr": 0.3763020833333333
+          },
+          {
+            "epoch": 51,
+            "lr": 0.00016284561214811367,
+            "train_loss": 0.02781333693049171,
+            "macro_f1": 0.9573833582631597,
+            "original_normal_hover_fpr": 0.3255208333333333
+          },
+          {
+            "epoch": 52,
+            "lr": 0.0001579127713236467,
+            "train_loss": 0.027469844788764464,
+            "macro_f1": 0.9542475090369698,
+            "original_normal_hover_fpr": 0.2994791666666667
+          },
+          {
+            "epoch": 53,
+            "lr": 0.00015297182474257058,
+            "train_loss": 0.02751357765360312,
+            "macro_f1": 0.9588826272773179,
+            "original_normal_hover_fpr": 0.40234375
+          },
+          {
+            "epoch": 54,
+            "lr": 0.00014802817525742936,
+            "train_loss": 0.027081395657450862,
+            "macro_f1": 0.9536487083612442,
+            "original_normal_hover_fpr": 0.3177083333333333
+          },
+          {
+            "epoch": 55,
+            "lr": 0.0001430872286763532,
+            "train_loss": 0.026863300072198563,
+            "macro_f1": 0.948380828176363,
+            "original_normal_hover_fpr": 0.296875
+          },
+          {
+            "epoch": 56,
+            "lr": 0.0001381543878518863,
+            "train_loss": 0.026820622621612115,
+            "macro_f1": 0.9600093768141842,
+            "original_normal_hover_fpr": 0.34765625
+          },
+          {
+            "epoch": 57,
+            "lr": 0.00013323504677304686,
+            "train_loss": 0.027587154352416595,
+            "macro_f1": 0.9564820279785298,
+            "original_normal_hover_fpr": 0.24088541666666666
+          },
+          {
+            "epoch": 58,
+            "lr": 0.00012833458466707958,
+            "train_loss": 0.02669670996679501,
+            "macro_f1": 0.9557265363473337,
+            "original_normal_hover_fpr": 0.3567708333333333
+          },
+          {
+            "epoch": 59,
+            "lr": 0.00012345836011734958,
+            "train_loss": 0.02670409015633843,
+            "macro_f1": 0.9583090073224088,
+            "original_normal_hover_fpr": 0.3528645833333333
+          },
+          {
+            "epoch": 60,
+            "lr": 0.00011861170520380985,
+            "train_loss": 0.026224823228337548,
+            "macro_f1": 0.9563479045871501,
+            "original_normal_hover_fpr": 0.34375
+          },
+          {
+            "epoch": 61,
+            "lr": 0.00011379991967245051,
+            "train_loss": 0.026558967713605275,
+            "macro_f1": 0.9533203834490671,
+            "original_normal_hover_fpr": 0.25
+          },
+          {
+            "epoch": 62,
+            "lr": 0.00010902826514010425,
+            "train_loss": 0.02615703572942452,
+            "macro_f1": 0.9590216538473921,
+            "original_normal_hover_fpr": 0.35546875
+          },
+          {
+            "epoch": 63,
+            "lr": 0.00010430195934094535,
+            "train_loss": 0.025599264297069924,
+            "macro_f1": 0.95596953472955,
+            "original_normal_hover_fpr": 0.3138020833333333
+          },
+          {
+            "epoch": 64,
+            "lr": 9.962617042097434e-05,
+            "train_loss": 0.02553346132238706,
+            "macro_f1": 0.9587889441428998,
+            "original_normal_hover_fpr": 0.2786458333333333
+          },
+          {
+            "epoch": 65,
+            "lr": 9.500601128672595e-05,
+            "train_loss": 0.02570514012636109,
+            "macro_f1": 0.9566462287231314,
+            "original_normal_hover_fpr": 0.3515625
+          },
+          {
+            "epoch": 66,
+            "lr": 9.044653401438108e-05,
+            "train_loss": 0.025265983864665033,
+            "macro_f1": 0.9600690448981475,
+            "original_normal_hover_fpr": 0.3567708333333333
+          },
+          {
+            "epoch": 67,
+            "lr": 8.595272432539531e-05,
+            "train_loss": 0.025248604933872366,
+            "macro_f1": 0.9532141755797083,
+            "original_normal_hover_fpr": 0.3645833333333333
+          },
+          {
+            "epoch": 68,
+            "lr": 8.152949613468618e-05,
+            "train_loss": 0.024571574067301823,
+            "macro_f1": 0.9585849898171444,
+            "original_normal_hover_fpr": 0.2669270833333333
+          },
+          {
+            "epoch": 69,
+            "lr": 7.718168617733906e-05,
+            "train_loss": 0.024924540271361668,
+            "macro_f1": 0.9553854000752677,
+            "original_normal_hover_fpr": 0.24348958333333334
+          },
+          {
+            "epoch": 70,
+            "lr": 7.291404871970836e-05,
+            "train_loss": 0.025014640983532777,
+            "macro_f1": 0.9582520966868162,
+            "original_normal_hover_fpr": 0.24348958333333334
+          },
+          {
+            "epoch": 71,
+            "lr": 6.87312503606972e-05,
+            "train_loss": 0.024862011036638057,
+            "macro_f1": 0.9594091962016441,
+            "original_normal_hover_fpr": 0.2604166666666667
+          },
+          {
+            "epoch": 72,
+            "lr": 6.463786492889992e-05,
+            "train_loss": 0.024482591698567074,
+            "macro_f1": 0.9592814063488773,
+            "original_normal_hover_fpr": 0.39453125
+          },
+          {
+            "epoch": 73,
+            "lr": 6.063836848118774e-05,
+            "train_loss": 0.024383308332074773,
+            "macro_f1": 0.9590774386891355,
+            "original_normal_hover_fpr": 0.3424479166666667
+          },
+          {
+            "epoch": 74,
+            "lr": 5.67371344082062e-05,
+            "train_loss": 0.023982244385688595,
+            "macro_f1": 0.9573439202839413,
+            "original_normal_hover_fpr": 0.24088541666666666
+          },
+          {
+            "epoch": 75,
+            "lr": 5.293842865213677e-05,
+            "train_loss": 0.024236449000961852,
+            "macro_f1": 0.9580413798879105,
+            "original_normal_hover_fpr": 0.2265625
+          },
+          {
+            "epoch": 76,
+            "lr": 4.924640504195173e-05,
+            "train_loss": 0.02396057205782695,
+            "macro_f1": 0.9599777875655293,
+            "original_normal_hover_fpr": 0.3346354166666667
+          }
+        ],
+        "new": [
+          {
+            "epoch": 1,
+            "lr": 9.999999999999999e-05,
+            "train_loss": 0.06029978271115465,
+            "macro_f1": 0.92401719742858,
+            "original_normal_hover_fpr": 0.34880636604774534
+          },
+          {
+            "epoch": 2,
+            "lr": 0.00019999999999999998,
+            "train_loss": 0.04245659086136412,
+            "macro_f1": 0.9291518542989919,
+            "original_normal_hover_fpr": 0.1962864721485411
+          },
+          {
+            "epoch": 3,
+            "lr": 0.0003,
+            "train_loss": 0.038760586068833286,
+            "macro_f1": 0.9498355704031722,
+            "original_normal_hover_fpr": 0.5291777188328912
+          },
+          {
+            "epoch": 4,
+            "lr": 0.0003,
+            "train_loss": 0.03433552407879935,
+            "macro_f1": 0.9553579614124736,
+            "original_normal_hover_fpr": 0.5039787798408488
+          },
+          {
+            "epoch": 5,
+            "lr": 0.00029898913448242047,
+            "train_loss": 0.03257414737968979,
+            "macro_f1": 0.9456399629697367,
+            "original_normal_hover_fpr": 0.40981432360742703
+          },
+          {
+            "epoch": 6,
+            "lr": 0.0002959702081516836,
+            "train_loss": 0.03078633817118425,
+            "macro_f1": 0.9512580989135826,
+            "original_normal_hover_fpr": 0.40185676392572944
+          },
+          {
+            "epoch": 7,
+            "lr": 0.0002909840468074933,
+            "train_loss": 0.029878567275517746,
+            "macro_f1": 0.9400873341421843,
+            "original_normal_hover_fpr": 0.17639257294429708
+          },
+          {
+            "epoch": 8,
+            "lr": 0.0002840980797283501,
+            "train_loss": 0.029300116578393178,
+            "macro_f1": 0.9556236933450104,
+            "original_normal_hover_fpr": 0.4124668435013263
+          },
+          {
+            "epoch": 9,
+            "lr": 0.00027540542780623396,
+            "train_loss": 0.027270950394615013,
+            "macro_f1": 0.9482547268136869,
+            "original_normal_hover_fpr": 0.3076923076923077
+          },
+          {
+            "epoch": 10,
+            "lr": 0.00026502364424628715,
+            "train_loss": 0.026956717157589523,
+            "macro_f1": 0.9590815113740667,
+            "original_normal_hover_fpr": 0.5238726790450928
+          },
+          {
+            "epoch": 11,
+            "lr": 0.00025309312486137566,
+            "train_loss": 0.02644805836987796,
+            "macro_f1": 0.9495009243218648,
+            "original_normal_hover_fpr": 0.3010610079575597
+          },
+          {
+            "epoch": 12,
+            "lr": 0.00023977520945956649,
+            "train_loss": 0.02595366340142319,
+            "macro_f1": 0.9538817979677433,
+            "original_normal_hover_fpr": 0.3673740053050398
+          },
+          {
+            "epoch": 13,
+            "lr": 0.00022524999999999995,
+            "train_loss": 0.025580058373769376,
+            "macro_f1": 0.9546016553251369,
+            "original_normal_hover_fpr": 0.25862068965517243
+          },
+          {
+            "epoch": 14,
+            "lr": 0.0002097139250228539,
+            "train_loss": 0.025177341265962327,
+            "macro_f1": 0.9623312355973769,
+            "original_normal_hover_fpr": 0.4708222811671088
+          },
+          {
+            "epoch": 15,
+            "lr": 0.00019337708329030798,
+            "train_loss": 0.02430929572612329,
+            "macro_f1": 0.9601833056576861,
+            "original_normal_hover_fpr": 0.35145888594164454
+          },
+          {
+            "epoch": 16,
+            "lr": 0.00017646040256120608,
+            "train_loss": 0.024018985856829756,
+            "macro_f1": 0.9582711015475911,
+            "original_normal_hover_fpr": 0.4535809018567639
+          },
+          {
+            "epoch": 17,
+            "lr": 0.0001591926519221161,
+            "train_loss": 0.023308597258306828,
+            "macro_f1": 0.9579871300702303,
+            "original_normal_hover_fpr": 0.3793103448275862
+          },
+          {
+            "epoch": 18,
+            "lr": 0.00014180734807788385,
+            "train_loss": 0.02294791623221399,
+            "macro_f1": 0.957745214481206,
+            "original_normal_hover_fpr": 0.3302387267904509
+          },
+          {
+            "epoch": 19,
+            "lr": 0.0001245395974387939,
+            "train_loss": 0.02248121025951503,
+            "macro_f1": 0.9579026052120211,
+            "original_normal_hover_fpr": 0.34350132625994695
+          },
+          {
+            "epoch": 20,
+            "lr": 0.00010762291670969202,
+            "train_loss": 0.022105472876281958,
+            "macro_f1": 0.9612719301370943,
+            "original_normal_hover_fpr": 0.41644562334217505
+          },
+          {
+            "epoch": 21,
+            "lr": 9.128607497714604e-05,
+            "train_loss": 0.021647012102115042,
+            "macro_f1": 0.9535696403236185,
+            "original_normal_hover_fpr": 0.20159151193633953
+          },
+          {
+            "epoch": 22,
+            "lr": 7.575000000000001e-05,
+            "train_loss": 0.02168883475524958,
+            "macro_f1": 0.963325563079787,
+            "original_normal_hover_fpr": 0.3620689655172414
+          }
+        ]
+      },
+      "matched_hover_fpr_change_percentage_points": 0.6631299734748011
+    }
+  },
+  "identities": {
+    "artifacts\\source_training_coverage_audit_20261030_r2\\val_source_window_links.csv": "5963804ae701d9aa6da2eeb3c6c4b491f5bd0e0e0c6863413244f2713f3f7ad0",
+    "D:\\UAV-Data\\causal_input_v1\\ledgers\\val_included_windows.csv": "8b966bc5bfe74a26bd7614ab44c2e8b581b5cc6f66d0f55ea6f545cb253c16d6",
+    "artifacts\\source_normal_sampling_gpu_run_20261030\\results\\runs\\20261030T170404Z_registered_v1\\seed_42\\uniform_replacement\\report.json": "6aa6384d5adcd5444b86e8bcef3ebe19e3d736cf5d913f8d15c94fee6e512417",
+    "artifacts\\source_normal_sampling_gpu_run_20261030\\results\\runs\\20261030T170404Z_registered_v1\\seed_42\\uniform_replacement\\history.json": "422e15d996bb2ff833408508a0726d37ccc3a3528a7b97c5f0f0d14ce3128c19",
+    "artifacts\\source_normal_sampling_gpu_run_20261030\\results\\runs\\20261030T170404Z_registered_v1\\seed_42\\uniform_replacement\\validation_predictions.npz": "16c5807074a417f4b3a8a056446cae6ae51e588a9a1afda1c0d3437213bf68be",
+    "artifacts\\causal_source_remote_v1_20261031\\results\\runs\\uniform_replacement\\report.json": "c2ea582f189739efe238f40ebbefd0f592560cde8d29a3cd255d97d712afd2d7",
+    "artifacts\\causal_source_remote_v1_20261031\\results\\runs\\uniform_replacement\\history.json": "c1601ca118113d2c782041b9ee540a8cf0780637bbbbb73c1989a12be2407e94",
+    "artifacts\\causal_source_remote_v1_20261031\\results\\runs\\uniform_replacement\\source_validation_predictions.npz": "68d8f63e3a0d30ef6f216ac4309ccabf12ddc1d53e9c5300325712c65d2ebbec",
+    "artifacts\\source_normal_sampling_gpu_run_20261030\\results\\runs\\20261030T170404Z_registered_v1\\seed_42\\balanced_source_normal\\report.json": "99f0bfcb9814dd49d38f0767ec602ee1093fd5294562685fcede7a20c15d6394",
+    "artifacts\\source_normal_sampling_gpu_run_20261030\\results\\runs\\20261030T170404Z_registered_v1\\seed_42\\balanced_source_normal\\history.json": "eaa484cdf5a880bb301e11ab71362ccd535b9fa60cd3c4cceb25576c5539ba3a",
+    "artifacts\\source_normal_sampling_gpu_run_20261030\\results\\runs\\20261030T170404Z_registered_v1\\seed_42\\balanced_source_normal\\validation_predictions.npz": "539cc7a498a011f926debe0411dfbe653f70d6c10ff0094fd7da6b41524d0e17",
+    "artifacts\\causal_source_remote_v1_20261031\\results\\runs\\balanced_source_normal\\report.json": "b8ed474cd6f513a0fd0144d32037f9dfbd2cd1381cd5f363e77a6fc0696ecbbc",
+    "artifacts\\causal_source_remote_v1_20261031\\results\\runs\\balanced_source_normal\\history.json": "88b9b430ad1d7c9e18873e599a79ed812687ed8d8bf44cf4bd20e478cb25c877",
+    "artifacts\\causal_source_remote_v1_20261031\\results\\runs\\balanced_source_normal\\source_validation_predictions.npz": "d754d1cd90a62306646734d54131d2ab4c4cc1c895100ea9d71fcd7bc995d8b0",
+    "configs\\experiments\\normal_source_sampling_train_v1.json": "088bbb0c1ce2d831321304322dab35491b2fdab1dab9fb05aef2dae85d1fcf23",
+    "configs\\experiments\\causal_source_development_v1.json": "565e34af65bcb01bade26f58ad4dacf4288901c247622d052f36ede9454252a5"
+  },
+  "configs": {
+    "old": {
+      "training": {
+        "device": "cuda:0, mandatory for formal mode; never silently fall back to CPU",
+        "model": "kg_mstca",
+        "in_channels": 26,
+        "num_classes": 2,
+        "hidden_size": 64,
+        "num_layers": 1,
+        "dropout": 0.2,
+        "parameters": 156491,
+        "initialization": "Fresh random CPU initialization from each registered seed. Paired arms have identical initial state digest; no pretrained source or target checkpoint loaded.",
+        "max_epochs": 100,
+        "batch_size": 512,
+        "num_workers": 0,
+        "cpu_threads": 4,
+        "optimizer": "AdamW",
+        "lr": 0.0003,
+        "weight_decay": 0.0001,
+        "loss_gamma": 2.0,
+        "loss_alpha": null,
+        "gradient_clip": 1.0,
+        "augmentation": false,
+        "scheduler": "Existing get_warmup_cosine_lr, zero-based epoch",
+        "warmup_epochs": 5,
+        "min_lr": 1e-06,
+        "normalization": "Fixed source norm_stats.json per batch, no Real fitting"
+      },
+      "validation": {
+        "dataset": "Entire source val.pt, all 35520 windows each epoch, no cap beyond existing cache",
+        "batch_size": 512,
+        "checkpoint_selection": "Strict maximum overall source validation Macro-F1; earliest epoch wins exact ties. Save every strict improvement, including <0.002.",
+        "early_stop": {
+          "min_epochs": 30,
+          "patience": 20,
+          "significant_delta": 0.002,
+          "rule": "Separate significant-improvement reference. Count non-improving epochs only from min_epochs; strict score>reference+delta resets counter. Stop at patience or max_epochs."
+        },
+        "required_reports": [
+          "overall",
+          "normal origin",
+          "normal by flight status",
+          "original normal by flight status (including hover)",
+          "fault by original case class"
+        ],
+        "interpretation": "Keep identical selection in both arms to isolate sampling; stratified validation is mandatory and cannot be replaced by overall F1. This is source development evidence, not blind final testing or a release gate."
+      }
+    },
+    "new": {
+      "training": {
+        "hidden_size": 64,
+        "num_layers": 1,
+        "dropout": 0.2,
+        "parameters": 156491,
+        "max_epochs": 30,
+        "batch_size": 512,
+        "cpu_threads": 4,
+        "optimizer": "AdamW",
+        "lr": 0.0003,
+        "weight_decay": 0.0001,
+        "loss_gamma": 2.0,
+        "loss_alpha": null,
+        "gradient_clip": 1.0,
+        "augmentation": false,
+        "mixed_precision": false,
+        "warmup_epochs": 3,
+        "min_lr": 1e-06,
+        "schedule": "Existing get_warmup_cosine_lr zero-based epoch, fixed30 epoch horizon",
+        "initialization": "Fresh CPU seeded initialization, paired arms identical digest, no old weights",
+        "formal_device": "cuda:0 required, never silently fall back or allocate GPU",
+        "draws_per_epoch": 162069,
+        "num_workers": 0
+      },
+      "validation": {
+        "population": "All34710 current qualified source val, never sampled/reweighted for formal run",
+        "batch_size": 512,
+        "prediction_rule": "argmax binary logits, fixed fault threshold0.5, no threshold sweep",
+        "checkpoint": "Strict maximum overall source val Macro-F1; earliest exact tie wins; save any strict improvement",
+        "early_stop": {
+          "min_epochs": 10,
+          "patience": 8,
+          "significant_delta": 0.002,
+          "rule": "Reuse selection_step separate significant_reference; strict improvements always checkpoint, patience counts only from min_epochs"
+        },
+        "stratified_reports": [
+          "overall",
+          "normal_origin",
+          "normal_by_status",
+          "original_normal_by_status incl hover",
+          "fault_by_case_class"
+        ],
+        "selection_not_from": [
+          "internal_test",
+          "Real",
+          "hover FPR",
+          "best seed"
+        ],
+        "interpretation": "Source-development only; one seed is not statistical proof; report both arms without discarding lower arm"
+      }
+    }
+  },
+  "shared_code_verification": {
+    "lstm.py": {
+      "sha256": "c01d5c1c37175f2bcbac2654d2bec43898d814073d465122afe515a825bcb369",
+      "old_new_equal": true
+    },
+    "focal_loss.py": {
+      "sha256": "8fb99a31dd838bafdbad20591313d7bef6766b5b6b64cc73cda8620ed0b3771a",
+      "old_new_equal": true
+    }
+  }
+}

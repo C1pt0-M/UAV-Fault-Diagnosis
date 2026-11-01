@@ -21,7 +21,7 @@ Architecture
 ------------
     x (B, C, T)
       |
-      +-- ChannelTemporalEncoder --> node features (B, C, d)     [weights shared across channels]
+      +-- ChannelTemporalEncoder --> node features (B, C, d)     [independent weights per channel]
       |        |
       |        +-- GAT stack over the channel graph --> (B, C, d)
       |        |        +-- attention pool --> graph feature (B, d)
@@ -73,9 +73,8 @@ def _make_norm(kind: str, channels: int) -> nn.Module:
 class ChannelTemporalEncoder(nn.Module):
     """Encode every channel's own time series into a node feature.
 
-    Weights are shared across channels (depthwise convolutions), so the encoder
-    cannot tell which channel it is looking at and the model is forced to use the
-    graph structure to combine channels.
+    Grouped convolutions keep independent weights for each channel. Cross-channel
+    information is combined by the subsequent graph layers.
     """
 
     def __init__(
@@ -164,6 +163,12 @@ class DenseGATLayer(nn.Module):
         mask = (adjacency > 0) | torch.eye(
             channels, dtype=torch.bool, device=adjacency.device
         )
+        # A multiplicative prior in attention space: softmax(scores + log(weight)).
+        # Without this term a dense fused graph would behave like a full graph,
+        # discarding all prior strength information.
+        weights = adjacency.clone()
+        weights.diagonal().clamp_(min=1.0)
+        scores = scores + weights.clamp_min(1e-12).log()
         scores = scores.masked_fill(~mask, float("-inf"))
         attention = torch.softmax(scores, dim=-1)
         attention = self.dropout(attention)
@@ -222,6 +227,22 @@ class TopologyGNN(nn.Module):
         norm: str = "batch",
     ):
         super().__init__()
+        for name, matrix in (
+            ("adjacency", adjacency),
+            ("reference_mean", reference_mean),
+            ("reference_std", reference_std),
+        ):
+            if matrix is None:
+                continue
+            array = np.asarray(matrix)
+            if array.shape != (in_channels, in_channels) or not np.isfinite(array).all():
+                raise ValueError(f"{name} must be a finite {in_channels}x{in_channels} matrix")
+            if not np.allclose(array, array.T, atol=1e-6):
+                raise ValueError(f"{name} must be symmetric")
+            if name in {"adjacency", "reference_std"} and (array < 0).any():
+                raise ValueError(f"{name} must be nonnegative")
+            if name == "reference_mean" and (np.abs(array) > 1.00001).any():
+                raise ValueError("reference_mean must contain correlations in [-1, 1]")
         self.in_channels = in_channels
         self.num_classes = num_classes
         self.node_dim = node_dim
@@ -261,14 +282,13 @@ class TopologyGNN(nn.Module):
         self.register_buffer(
             "adjacency",
             torch.as_tensor(adjacency, dtype=torch.float32),
-            persistent=False,
         )
         if reference_mean is None:
             reference_mean = np.zeros((in_channels, in_channels), dtype=np.float32)
         if reference_std is None:
             reference_std = np.ones((in_channels, in_channels), dtype=np.float32)
-        self.register_buffer("ref_mean", torch.as_tensor(reference_mean, dtype=torch.float32), persistent=False)
-        self.register_buffer("ref_std", torch.as_tensor(reference_std, dtype=torch.float32), persistent=False)
+        self.register_buffer("ref_mean", torch.as_tensor(reference_mean, dtype=torch.float32))
+        self.register_buffer("ref_std", torch.as_tensor(reference_std, dtype=torch.float32))
 
         if use_edge_branch:
             hidden = max(node_dim // 2, 16)

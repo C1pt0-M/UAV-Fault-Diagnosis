@@ -3,6 +3,8 @@ import { ElMessage } from 'element-plus'
 import Layout from '@/components/Layout.vue'
 import { authApi } from '@/shared/services'
 import { clearStoredSession, parseStoredUser, storeSession } from '@/shared/utils/user'
+import { isNavigationAvailable, navigationItemForPath } from '@/shared/constants/navigation'
+import { applyRuntimeCapabilities, runtimeCapabilities } from '@/shared/state/runtimeCapabilities'
 
 const routes = [
   {
@@ -80,7 +82,7 @@ const router = createRouter({
   routes
 })
 
-let profileValidationPromise = null
+let pendingProfileValidation = null
 
 function isPublicAuthPath(path) {
   return path === '/login' || path === '/setup' || path === '/register'
@@ -92,22 +94,26 @@ async function validateStoredSession() {
 
   if (!token || !user) return false
 
-  if (!profileValidationPromise) {
-    profileValidationPromise = authApi.profile()
+  if (pendingProfileValidation?.token !== token) {
+    const validation = { token, promise: null }
+    validation.promise = authApi.profile()
       .then((response) => {
+        if (localStorage.getItem('token') !== token) return false
         storeSession(token, response.data)
+        applyRuntimeCapabilities(response.capabilities)
         return true
       })
       .catch(() => {
-        clearStoredSession()
+        if (localStorage.getItem('token') === token) clearStoredSession()
         return false
       })
       .finally(() => {
-        profileValidationPromise = null
+        if (pendingProfileValidation === validation) pendingProfileValidation = null
       })
+    pendingProfileValidation = validation
   }
 
-  return profileValidationPromise
+  return pendingProfileValidation.promise
 }
 
 router.beforeEach(async (to, from, next) => {
@@ -131,6 +137,13 @@ router.beforeEach(async (to, from, next) => {
       next()
       return
     }
+  }
+
+  const navigationItem = navigationItemForPath(to.path)
+  if (navigationItem && !isNavigationAvailable(navigationItem, runtimeCapabilities)) {
+    ElMessage.info(`${navigationItem.label}未启用或能力信息不可用，请联系管理员`)
+    next('/')
+    return
   }
 
   if (isPublicAuthPath(to.path) && token && user) {

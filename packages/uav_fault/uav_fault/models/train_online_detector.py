@@ -1,11 +1,17 @@
-"""
-Train online binary fault detectors on stacked window caches.
+"""Train online binary fault detectors on stacked window caches.
+
+Requires a new, explicit output directory. Each completed epoch saves history and
+configuration; validation improvements atomically save a raw best.pt state_dict.
+Input/source hashes are recorded before training. These are recovery artifacts,
+not a full optimizer/RNG checkpoint for exact training resumption.
 """
 
 from __future__ import annotations
 
 import argparse
 import copy
+from datetime import datetime, timezone
+import hashlib
 import json
 import math
 import shutil
@@ -104,7 +110,26 @@ def _classification_report_binary(labels: np.ndarray, preds: np.ndarray) -> dict
     return per_class
 
 
+def _reject_versioned_repair_in_legacy_entry(cache_dir: Path, payload: dict | None = None):
+    # These independent repairs preserve historical interpolated X; copied old
+    # test.pt/y must not silently bypass version, role or unknown-label masks.
+    repair_markers = ('repair_manifest.json', 'RUNNING.json', 'input_contract.json')
+    if any((cache_dir / name).exists() for name in repair_markers):
+        raise ValueError(
+            'Versioned repaired/causal data requires explicit version, split/Real role, '
+            'input-validity and label-mask admission. This legacy training entry is not '
+            'authorized to consume it; do not copy old test.pt or remove checks to bypass. '
+            'Label-only repaired X is not causal realtime-training clearance.'
+        )
+    evidence_fields = {'historical_y', 'qualified_reference_y', 'endpoint_label_valid',
+                       'endpoint_evaluation_valid', 'role_id', 'input_valid', 'label_valid',
+                       'input_contract_version', 'data_version'}
+    if payload is not None and (not isinstance(payload, dict) or evidence_fields.intersection(payload)):
+        raise ValueError('Versioned evidence requires explicit version/role/input and label masks; legacy x/y reader refuses it')
+
+
 def validate_cache_contract(cache_dir: Path) -> dict:
+    _reject_versioned_repair_in_legacy_entry(cache_dir)
     norm_stats_path = cache_dir / "norm_stats.json"
     with open(norm_stats_path, encoding="utf-8") as f:
         stats = json.load(f)
@@ -154,6 +179,7 @@ def validate_cache_contract(cache_dir: Path) -> dict:
     for split_name in ("train", "val", "test"):
         pt_path = cache_dir / f"{split_name}.pt"
         data = torch.load(pt_path, weights_only=True)
+        _reject_versioned_repair_in_legacy_entry(cache_dir, data)
         if "x" not in data or "y" not in data:
             raise ValueError(f"{pt_path} missing x/y")
         x = data["x"]
@@ -181,7 +207,13 @@ class OnlineWindowDataset(Dataset):
         augment: bool = False,
         max_samples: int = 0,
     ):
+        _reject_versioned_repair_in_legacy_entry(Path(pt_path).parent)
         data = torch.load(pt_path, weights_only=True)
+        _reject_versioned_repair_in_legacy_entry(Path(pt_path).parent, data)
+        if 'x' not in data or 'y' not in data:
+            raise ValueError('Legacy cache requires x/y; masked evidence needs a version-aware loader')
+        if data['y'].dtype != torch.int64 or not torch.isin(data['y'], torch.tensor([0, 1], device=data['y'].device)).all():
+            raise ValueError('Legacy binary targets must be int64 0/1; unknown -1 must be masked before forward')
         x = data["x"].float()
         y = data["y"].long()
 
@@ -327,13 +359,33 @@ def plot_results(output_dir: Path, metrics_test: dict, train_losses: list[float]
     plt.close(fig)
 
 
+def _sha256(path: Path) -> str:
+    checksum = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            checksum.update(block)
+    return checksum.hexdigest()
+
+
+def _write_json(path: Path, value) -> None:
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(
+        json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
 def train(args) -> None:
+    if not args.output_dir or not str(args.output_dir).strip():
+        raise ValueError("output_dir must explicitly name a new experiment directory")
+    output_dir = Path(args.output_dir)
+    # Exclusive creation also prevents two processes from claiming the same run.
+    output_dir.mkdir(parents=True, exist_ok=False)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"device: {device}")
 
     cache_dir = Path(args.cache_dir)
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
 
     norm_stats_path = cache_dir / "norm_stats.json"
     stats = validate_cache_contract(cache_dir)
@@ -411,11 +463,76 @@ def train(args) -> None:
         weight_decay=args.weight_decay,
     )
 
-    best_val_f1 = 0.0
-    best_state = copy.deepcopy(model.state_dict())
+    config = {
+        "model": args.model,
+        "mode": getattr(args, "mode", ""),
+        "cache_dir": str(cache_dir.resolve()),
+        "output_dir": str(output_dir.resolve()),
+        "task": "online_binary",
+        "protocol_name": stats.get("protocol_name"),
+        "label_space": stats.get("label_space"),
+        "source_fault_classes": stats.get("source_fault_classes", []),
+        "feature_schema": stats.get("feature_schema", "unknown"),
+        "window_size": int(stats.get("window_size") or train_ds.x.shape[-1]),
+        "feature_count": in_channels,
+        "in_channels": in_channels,
+        "num_classes": 2,
+        "hidden_size": args.hidden_size,
+        "num_layers": args.num_layers,
+        "dropout": args.dropout,
+        "label_names": LABEL_NAMES,
+        "epochs": args.epochs,
+        "epochs_trained": 0,
+        "best_epoch": None,
+        "best_val_f1": None,
+        "gamma": args.gamma,
+        "lr": args.lr,
+        "batch_size": args.batch_size,
+        "seed": args.seed,
+        "weight_decay": args.weight_decay,
+        "warmup": args.warmup,
+        "patience": args.patience,
+        "min_epochs": args.min_epochs,
+        "min_delta": args.min_delta,
+        "max_train_samples": args.max_train_samples,
+        "subsample_seed": 42,
+        "num_workers": args.num_workers,
+        "n_params": n_params,
+    }
+    cache_files = [norm_stats_path, *(cache_dir / f"{s}.pt" for s in ("train", "val", "test"))]
+    if external_test_path is not None:
+        cache_files.append(external_test_path)
+    if (cache_dir / "build_summary.json").is_file():
+        cache_files.append(cache_dir / "build_summary.json")
+    print("hashing input files for experiment provenance...", flush=True)
+    _write_json(output_dir / "provenance.json", {
+        "started_at_utc": datetime.now(timezone.utc).isoformat(),
+        "process_argv": list(sys.argv),
+        "working_directory": str(Path.cwd()),
+        "python": sys.version,
+        "torch": str(torch.__version__),
+        "numpy": np.__version__,
+        "device": str(device),
+        "device_name": torch.cuda.get_device_name(device) if device.type == "cuda" else "cpu",
+        "cuda_version": torch.version.cuda,
+        "cache_files": {
+            path.name: {"sha256": _sha256(path), "bytes": path.stat().st_size}
+            for path in cache_files
+        },
+        "source_sha256": {
+            "trainer": _sha256(Path(__file__)),
+            "model": _sha256(Path(sys.modules[model_cls.__module__].__file__)),
+            "loss": _sha256(Path(sys.modules[FocalLoss.__module__].__file__)),
+        },
+    })
+    shutil.copy2(norm_stats_path, output_dir / "norm_stats.json")
+    _write_json(output_dir / "config.json", config)
+    best_val_f1 = -math.inf
+    best_state = None
     patience_counter = 0
     train_losses: list[float] = []
     val_f1s: list[float] = []
+    history: list[dict] = []
 
     for epoch in range(args.epochs):
         lr = get_warmup_cosine_lr(epoch, args.warmup, args.epochs, args.lr)
@@ -451,16 +568,33 @@ def train(args) -> None:
                 f"val_recall={val_metrics['recall']:.4f} lr={lr:.2e}"
             )
 
+        if not math.isfinite(avg_loss) or not math.isfinite(val_f1):
+            raise FloatingPointError(f"nonfinite training loss or validation F1 at epoch {ep}")
         if val_f1 > best_val_f1 + args.min_delta:
             best_val_f1 = val_f1
             best_state = copy.deepcopy(model.state_dict())
+            # Keep the existing raw state_dict format for inference consumers.
+            temporary = output_dir / "best.pt.tmp"
+            torch.save(best_state, temporary)
+            temporary.replace(output_dir / "best.pt")
+            config["best_epoch"] = ep
+            config["best_val_f1"] = best_val_f1
             patience_counter = 0
         elif ep >= args.min_epochs:
             patience_counter += 1
-            if patience_counter >= args.patience:
-                print(f"early stopping at epoch {ep} (best val_f1={best_val_f1:.4f})")
-                break
+        history.append({
+            "epoch": ep, "train_loss": avg_loss, "val_macro_f1": val_f1,
+            "val_recall": float(val_metrics["recall"]), "lr": lr,
+        })
+        config["epochs_trained"] = ep
+        _write_json(output_dir / "history.json", history)
+        _write_json(output_dir / "config.json", config)
+        if ep >= args.min_epochs and patience_counter >= args.patience:
+            print(f"early stopping at epoch {ep} (best val_f1={best_val_f1:.4f})")
+            break
 
+    if best_state is None:
+        raise RuntimeError("no best model was recorded")
     model.load_state_dict(best_state)
 
     val_metrics = evaluate(model, val_loader, device)
@@ -475,42 +609,10 @@ def train(args) -> None:
     if external_test_metrics is not None:
         print_metrics(external_test_metrics, "External Test")
 
-    torch.save(best_state, output_dir / "best.pt")
-    with open(output_dir / "metrics_val.json", "w", encoding="utf-8") as f:
-        json.dump(val_metrics, f, indent=2, ensure_ascii=False)
-    with open(output_dir / "metrics_test.json", "w", encoding="utf-8") as f:
-        json.dump(test_metrics, f, indent=2, ensure_ascii=False)
+    _write_json(output_dir / "metrics_val.json", val_metrics)
+    _write_json(output_dir / "metrics_test.json", test_metrics)
     if external_test_metrics is not None:
-        with open(output_dir / "metrics_external_test.json", "w", encoding="utf-8") as f:
-            json.dump(external_test_metrics, f, indent=2, ensure_ascii=False)
-
-    config = {
-        "model": args.model,
-        "mode": getattr(args, "mode", ""),
-        "task": "online_binary",
-        "protocol_name": stats.get("protocol_name"),
-        "label_space": stats.get("label_space"),
-        "source_fault_classes": stats.get("source_fault_classes", []),
-        "feature_schema": stats.get("feature_schema", "unknown"),
-        "window_size": int(stats.get("window_size") or train_ds.x.shape[-1]),
-        "feature_count": in_channels,
-        "in_channels": in_channels,
-        "num_classes": 2,
-        "hidden_size": args.hidden_size,
-        "num_layers": args.num_layers,
-        "dropout": args.dropout,
-        "label_names": LABEL_NAMES,
-        "epochs_trained": len(train_losses),
-        "best_val_f1": best_val_f1,
-        "gamma": args.gamma,
-        "lr": args.lr,
-        "batch_size": args.batch_size,
-        "n_params": n_params,
-    }
-    with open(output_dir / "config.json", "w", encoding="utf-8") as f:
-        json.dump(config, f, indent=2, ensure_ascii=False)
-
-    shutil.copy2(norm_stats_path, output_dir / "norm_stats.json")
+        _write_json(output_dir / "metrics_external_test.json", external_test_metrics)
     plot_results(output_dir, test_metrics, train_losses, val_f1s)
     print(f"saved outputs to {output_dir}")
 
@@ -531,8 +633,8 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--output-dir",
-        default=None,
-        help="Output model directory. Defaults to assets/models/online_detector_<model>.",
+        required=True,
+        help="New experiment directory; existing paths are rejected to protect previous runs.",
     )
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--batch-size", type=int, default=256)
@@ -555,9 +657,6 @@ if __name__ == "__main__":
         help="Optional stratified cap on train windows. 0 means no cap.",
     )
     cli_args = parser.parse_args()
-
-    if cli_args.output_dir is None:
-        cli_args.output_dir = f"assets/models/online_detector_{cli_args.model}"
 
     torch.manual_seed(cli_args.seed)
     np.random.seed(cli_args.seed)

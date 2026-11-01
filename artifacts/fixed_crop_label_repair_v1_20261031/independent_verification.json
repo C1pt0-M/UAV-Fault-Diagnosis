@@ -1,0 +1,34 @@
+{
+  "status": "PASS_ACTUAL_SOURCE_LABEL_REPAIR",
+  "verified_at": "2026-10-31T07:26:48.257341+00:00",
+  "repaired_data_root": "D:\\UAV-Data\\online_cache_v2_labeltime_v1",
+  "all_repaired_csv_count": 3135,
+  "repaired_csv_state_rows": 177618,
+  "all_repaired_CSV_time_state_masks_match": true,
+  "splits": {
+    "train": {
+      "windows": 168550,
+      "corrected_binary_labels": 3149,
+      "held_out": 250,
+      "all_X_exact_original_subset": true,
+      "targets_binary_only": true,
+      "metadata_labels_and_indices_match": true,
+      "existing_dataset_loader_smoke_passed": true
+    },
+    "val": {
+      "windows": 35427,
+      "corrected_binary_labels": 631,
+      "held_out": 93,
+      "all_X_exact_original_subset": true,
+      "targets_binary_only": true,
+      "metadata_labels_and_indices_match": true,
+      "existing_dataset_loader_smoke_passed": true
+    }
+  },
+  "normalization_values_unchanged": true,
+  "old_frozen_assets_unchanged": true,
+  "new_dataset_loader_tested": true,
+  "no_UAV_model_forward_or_training": true,
+  "final_test_or_Real_repair": false,
+  "limits": "Completed label-time repair for source train/val under original preprocessing. Remaining gaps/interpolation limitations retained and disclosed; no strict online certification or performance promise."
+}

@@ -10,16 +10,6 @@ from pathlib import Path
 
 import numpy as np
 
-LABEL_NAMES_3CLASS = ['normal', 'motor', 'sensor']
-LABEL_NAMES_4CLASS = ['normal', 'motor', 'propeller', 'sensor']
-LEGACY_FIVE_CLASS_LABEL_NAMES = [
-    'normal',
-    'battery_failure',
-    'motor_failure',
-    'prop_imbalance',
-    'thrust_loss',
-]
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description='offline multiclass inference for single csv')
@@ -33,20 +23,14 @@ def parse_args():
 
 
 def add_import_paths(repo_root: Path):
-    candidates = [
-        repo_root / 'src' / 'models',
-        repo_root / 'src' / 'data',
-        repo_root / 'packages' / 'uav_fault' / 'uav_fault' / 'models',
-        repo_root / 'packages' / 'uav_fault' / 'uav_fault' / 'data',
-    ]
-    for path in candidates:
-        path_text = str(path)
-        if path.exists() and path_text not in sys.path:
-            sys.path.insert(0, path_text)
+    package_root = repo_root / 'packages' / 'uav_fault'
+    path_text = str(package_root)
+    if package_root.exists() and path_text not in sys.path:
+        sys.path.insert(0, path_text)
 
 
 def create_model(model_name: str, in_channels: int, num_classes: int):
-    from cnn.cnn_lstm_v2_normalproto import CNNLSTMv2NormalProtoClassifier
+    from uav_fault.models.cnn.cnn_lstm_v2_normalproto import CNNLSTMv2NormalProtoClassifier
 
     if model_name == 'cnn_lstm_v2_normalproto':
         return CNNLSTMv2NormalProtoClassifier(
@@ -63,38 +47,25 @@ def create_model(model_name: str, in_channels: int, num_classes: int):
     raise ValueError(f'不支持的模型类型: {model_name}')
 
 
-def load_norm_stats(norm_candidates: list[Path], in_channels: int):
+def load_norm_stats(norm_candidates: list[Path | None], columns: list[str], *, model_cfg: dict | None = None):
+    from uav_fault.model_contract import offline_norm_contract_errors
+
     for path in norm_candidates:
-        if not path or not path.exists():
+        if path is None or not path.exists():
             continue
         try:
             with path.open('r', encoding='utf-8') as fp:
                 stats = json.load(fp)
-            mean = np.asarray(stats.get('mean', []), dtype=np.float32)
-            std = np.asarray(stats.get('std', []), dtype=np.float32)
-            if len(mean) == in_channels and len(std) == in_channels:
-                std = np.where(std < 1e-6, 1.0, std)
-                return mean, std, str(path)
-        except Exception:
-            continue
+        except (OSError, ValueError) as exc:
+            raise ValueError(f'无法读取离线归一化文件 {path}: {exc}') from exc
+        errors = offline_norm_contract_errors(stats, columns, config=model_cfg)
+        if errors:
+            raise ValueError(f'无效离线归一化文件 {path}: {"; ".join(errors)}')
+        mean = np.asarray(stats['mean'], dtype=np.float32)
+        std = np.asarray(stats['std'], dtype=np.float32)
+        std = np.where(std < 1e-6, 1.0, std)
+        return mean, std, str(path)
     return None, None, ''
-
-
-def _resolve_label_names(model_cfg: dict, num_classes: int) -> list[str]:
-    labels = model_cfg.get('label_names')
-    if isinstance(labels, list):
-        label_list = [str(item).strip() for item in labels if str(item).strip()]
-        if len(label_list) >= num_classes:
-            return label_list[:num_classes]
-    if num_classes == 3:
-        fallback = LABEL_NAMES_3CLASS[:]
-    elif num_classes == 4:
-        fallback = LABEL_NAMES_4CLASS[:]
-    else:
-        fallback = LEGACY_FIVE_CLASS_LABEL_NAMES[:num_classes]
-    if len(fallback) < num_classes:
-        fallback.extend([f'class_{i}' for i in range(len(fallback), num_classes)])
-    return fallback
 
 
 def run_inference(args):
@@ -111,7 +82,8 @@ def run_inference(args):
         raise FileNotFoundError(f'模型目录不存在: {model_dir}')
 
     add_import_paths(repo_root)
-    from build_sequence_cache import SEQ_LEN, load_and_resample
+    from uav_fault.data.build_sequence_cache import SEQ_COLUMNS, SEQ_LEN, load_and_resample
+    from uav_fault.model_contract import offline_input_contract_errors, offline_label_names
 
     config_path = model_dir / 'config.json'
     if not config_path.exists():
@@ -119,9 +91,13 @@ def run_inference(args):
     with config_path.open('r', encoding='utf-8') as fp:
         model_cfg = json.load(fp)
 
+    errors = offline_input_contract_errors(model_cfg)
+    if errors:
+        raise ValueError(f'无效离线模型输入合同 {model_dir}: {"; ".join(errors)}')
     model_name = model_cfg.get('model', model_dir.name)
-    in_channels = int(model_cfg.get('in_channels', 43))
-    num_classes = int(model_cfg.get('num_classes', 5))
+    in_channels = model_cfg['in_channels']
+    num_classes = model_cfg.get('num_classes', 5)
+    label_list = offline_label_names(model_cfg, num_classes)
     device = torch.device(args.device if args.device == 'cpu' or torch.cuda.is_available() else 'cpu')
 
     raw = load_and_resample(str(csv_path), seq_len=SEQ_LEN)  # (T, C)
@@ -133,7 +109,7 @@ def run_inference(args):
         repo_root / 'data' / 'processed' / 'seq_cache' / 'norm_stats.json',
         repo_root / 'data' / 'processed' / 'online_cache_trainmix_labeled_50hz' / 'norm_stats.json',
     ]
-    norm_mean, norm_std, norm_source = load_norm_stats(norm_candidates, in_channels)
+    norm_mean, norm_std, norm_source = load_norm_stats(norm_candidates, SEQ_COLUMNS, model_cfg=model_cfg)
     if norm_mean is not None and norm_std is not None:
         mean = torch.from_numpy(norm_mean).unsqueeze(1)
         std = torch.from_numpy(norm_std).unsqueeze(1)
@@ -146,7 +122,11 @@ def run_inference(args):
         norm_source = 'sample_zscore'
 
     model = create_model(model_name, in_channels=in_channels, num_classes=num_classes).to(device)
-    state_dict = torch.load(model_dir / 'best.pt', map_location=device)
+    try:
+        state_dict = torch.load(model_dir / 'best.pt', map_location=device, weights_only=True)
+    except TypeError:
+        # 保留与在线加载器一致的旧 Torch 兼容路径。
+        state_dict = torch.load(model_dir / 'best.pt', map_location=device)
     model.load_state_dict(state_dict)
     model.eval()
 
@@ -154,7 +134,6 @@ def run_inference(args):
         logits = model(x.unsqueeze(0).to(device))
         probs = torch.softmax(logits, dim=1).cpu().numpy()[0]
 
-    label_list = _resolve_label_names(model_cfg, num_classes)
     pred_idx = int(np.argmax(probs))
     probs_map = {label_list[i]: float(probs[i]) for i in range(num_classes)}
 

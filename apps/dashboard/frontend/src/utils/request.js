@@ -1,3 +1,5 @@
+import { clearStoredSession } from '@/shared/utils/user'
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 
 function resolveHealthUrl(apiBaseUrl) {
@@ -93,10 +95,11 @@ async function doRequest(path, options = {}) {
     const response = await fetch(url, fetchOptions)
 
     if (response.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login'
+      if (localStorage.getItem('token') === token) {
+        clearStoredSession()
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login'
+        }
       }
       throw new Error('未登录或登录已过期')
     }

@@ -1,0 +1,39 @@
+{
+  "status": "COMPLETE_REPLAY_INPUT_RULES_AND_SMALL_SCALE_BATCH_STREAM_PARITY",
+  "completed_at": "2026-10-31T11:25:04.607394+00:00",
+  "fit_source_train_cases": 12,
+  "fixed_validation_cases": 4,
+  "all_original_rows": 42073,
+  "all_original_stride5_windows": 7943,
+  "equal_eligible_normalized_windows": 7729,
+  "invalid_windows_retained": 214,
+  "exact_equal_source_selection_clocks_ages_masks": true,
+  "future_prefix_invariance_passed": true,
+  "related_regression_tests": 117,
+  "causal_pipeline_tests": 10,
+  "primitive_and_admission_tests": 16,
+  "training_or_model_forward_run": false,
+  "old_runtime_or_deployment_modified": false,
+  "real_live_transport_validated": false,
+  "full_causal_dataset_or_model_training_approved": false,
+  "final_source_sha256": {
+    "packages/uav_fault/uav_fault/causal_input.py": "9c875d6aed2ac04b410afb564e3309b3be84f9578d354e3790fcf6c985320408",
+    "packages/uav_fault/uav_fault/causal_pipeline.py": "973857ad798876c6c660dfe29cf8410b1fba2b864ba78249dd8b9a84cd6b6367",
+    "scripts/research/validate_causal_input_parity.py": "10a589bfbf32f3494d5600d778fc47ca2ebc323632938d140f0fcc685eec75f9",
+    "scripts/research/verify_causal_input_pilot.py": "6984a35e4c281e89065c58d520cfcc5272575182700afe3b74b606ecd5efa736",
+    "tests/test_causal_pipeline.py": "d5335f89cf3340cada1e4a197c17f98aedb0b968b72505a45c2a3d5eb6b52be5",
+    "tests/test_causal_input.py": "6b7ef8973774e081d260ad2d27ff8d532a0c23a686be4b4991580772701a108e",
+    "configs\\experiments\\causal_input_contract_v1.json": "00edc69d5ebf47685ab333d0d32eeab7fcfbe8073f7924e16a0239e3cdcc6122",
+    "docs/research/2026-10-31/causal_input_parity_v1.md": "37346b9f8508389c5ecf11d4c22af3f52a98e4c54009563cc72d205927da0218"
+  },
+  "reports_sha256": {
+    "plan.json": "f2ec1bd73f65e802abb1a3e230327690fa58b3328528d5e444770d0f059c5619",
+    "selection.json": "fd96b9afe2bafd47d720ae6560838f2c0418363c808f9e4839fd718136c7c18f",
+    "input_policy.json": "815bc5cfd728069aba19fbeaa518d20e3ea7e76c3a42e9a6287325e99ed0509b",
+    "fit_timing.json": "8e399eab87c7a4b087182e473ba7916f01ea96a3a489346b43d2de21972e55b6",
+    "pilot_norm_stats.json": "a9148174f2e51354d1ba65cf21818d131931fb34c915e835816cf5e42fabcbcf",
+    "summary.json": "92c2c9d0fe18e6657c5119cd03c27f8bc9280f15d58b234eb6c586529d482442",
+    "independent_verification.json": "acc7a904497130ab7fbb7bb390335492751bac20e7752767e2389bd4ffaf8738"
+  },
+  "scope_note": "Small-scale training-input builder versus explicit-clock runtime adapter replay, not the existing live service. Real live per-topic receive-time provenance remains a specific integration prerequisite, not a failed parity result. No thresholds widened for validation coverage or model scores."
+}

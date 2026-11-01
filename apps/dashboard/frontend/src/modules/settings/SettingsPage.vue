@@ -15,12 +15,13 @@
         <div class="settings-nav__item" :class="{ 'is-active': activeTab === 'appearance' }" @click="activeTab = 'appearance'">
           外观与主题
         </div>
-        <div class="settings-nav__item" :class="{ 'is-active': activeTab === 'ai' }" @click="activeTab = 'ai'">
+        <div v-if="canManageAi" class="settings-nav__item" :class="{ 'is-active': activeTab === 'ai' }" @click="activeTab = 'ai'">
           AI 接入
         </div>
       </aside>
 
       <main class="settings-content">
+        <p v-if="!canManageAi" role="status" class="form-hint">AI 接入未启用或当前账号无管理权限，账号与外观设置仍可使用。</p>
         <section v-show="activeTab === 'account'" class="settings-section">
           <h2 class="settings-section__title">用户信息</h2>
           <div class="page-panel settings-panel">
@@ -67,7 +68,7 @@
           </div>
         </section>
 
-        <section v-show="activeTab === 'ai'" class="settings-section">
+        <section v-if="canManageAi" v-show="activeTab === 'ai'" class="settings-section">
           <h2 class="settings-section__title">AI 接入配置</h2>
 
           <h3 class="settings-config-title">AI 助手模型</h3>
@@ -198,17 +199,22 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElButton } from 'element-plus'
 import { authApi, settingsApi } from '@/shared/services'
 import { parseStoredUser, getRoleLabel, clearStoredSession } from '@/shared/utils/user'
+import { runtimeCapabilities } from '@/shared/state/runtimeCapabilities'
 
 const router = useRouter()
 const activeTab = ref('account')
 
 const storedUser = computed(() => parseStoredUser(localStorage.getItem('user')))
 const roleLabel = computed(() => getRoleLabel(storedUser.value))
+const canManageAi = computed(() => runtimeCapabilities.ai && storedUser.value?.role === 'admin')
+watch(canManageAi, (enabled) => {
+  if (!enabled && activeTab.value === 'ai') activeTab.value = 'account'
+})
 
 async function logout() {
   try {
@@ -331,6 +337,7 @@ function buildEmbeddingSettingsPayload() {
 }
 
 onMounted(async () => {
+  if (!canManageAi.value) return
   try {
     const response = await settingsApi.getAiSettings()
     applyBackendAiSettings(response.data || {})
@@ -340,6 +347,7 @@ onMounted(async () => {
 })
 
 async function saveAiConfig() {
+  if (!canManageAi.value) return
   aiConfigSaving.value = true
   try {
     const response = await settingsApi.updateAiSettings(buildAiSettingsPayload())
@@ -353,6 +361,7 @@ async function saveAiConfig() {
 }
 
 async function saveEmbeddingConfig() {
+  if (!canManageAi.value) return
   embeddingConfigSaving.value = true
   try {
     const response = await settingsApi.updateAiSettings(buildEmbeddingSettingsPayload())
@@ -366,6 +375,7 @@ async function saveEmbeddingConfig() {
 }
 
 async function testAiConfig() {
+  if (!canManageAi.value) return
   aiConfigTesting.value = true
   try {
     const response = await settingsApi.testAiSettings(buildAiSettingsPayload())
@@ -383,6 +393,7 @@ async function testAiConfig() {
 }
 
 async function testEmbeddingConfig() {
+  if (!canManageAi.value) return
   embeddingConfigTesting.value = true
   try {
     const response = await settingsApi.testEmbeddingSettings(buildEmbeddingSettingsPayload())

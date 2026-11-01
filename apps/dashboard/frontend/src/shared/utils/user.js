@@ -1,3 +1,5 @@
+import { resetRuntimeCapabilities } from '@/shared/state/runtimeCapabilities'
+
 export function parseStoredUser(rawValue) {
   if (!rawValue) return null
 
@@ -19,11 +21,13 @@ export function getRoleLabel(user) {
 }
 
 export function clearStoredSession(storage = localStorage) {
+  resetRuntimeCapabilities()
   storage.removeItem('token')
   storage.removeItem('user')
 }
 
 export function storeSession(token, user, storage = localStorage) {
+  if (storage.getItem('token') !== token) resetRuntimeCapabilities()
   storage.setItem('token', token)
   storage.setItem('user', JSON.stringify(user))
 }

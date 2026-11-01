@@ -26,78 +26,13 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 
-RFLY_SEQ_COLUMNS_V1 = [
-    "actuator_ctrl_1",
-    "actuator_ctrl_2",
-    "actuator_ctrl_3",
-    "actuator_ctrl_4",
-    "actuator_out_1",
-    "actuator_out_2",
-    "actuator_out_3",
-    "actuator_out_4",
-    "gyro_x",
-    "gyro_y",
-    "gyro_z",
-    "accel_x",
-    "accel_y",
-    "accel_z",
-    "baro_alt",
-    "baro_temp",
-    "baro_pressure",
-    "att_q_w",
-    "att_q_x",
-    "att_q_y",
-    "att_q_z",
-    "vel_x",
-    "vel_y",
-    "vel_z",
-    "mag_x",
-    "mag_y",
-    "mag_z",
-    "actuator_mean",
-    "actuator_std",
-    "acc_norm",
-    "actuator_effort",
-]
+from uav_fault.model_contract import (
+    RFLY_SEQ_COLUMNS_V1,
+    RFLY_SEQ_COLUMNS_V2,
+    RFLY_SEQ_SCHEMAS,
+)
+
 RFLY_SEQ_INDEX = {name: idx for idx, name in enumerate(RFLY_SEQ_COLUMNS_V1)}
-
-# Aligned with the offline feature contract v1. Same names and order as
-# D:\UAV-Data\feature_contract_v1.json, so offline and online models can share a
-# feature set: baro_temp / baro_pressure / actuator_mean / actuator_std /
-# actuator_effort are dropped and baro_alt becomes window-relative.
-RFLY_SEQ_COLUMNS_V2 = [
-    "actuator_ctrl_1",
-    "actuator_ctrl_2",
-    "actuator_ctrl_3",
-    "actuator_ctrl_4",
-    "actuator_out_1",
-    "actuator_out_2",
-    "actuator_out_3",
-    "actuator_out_4",
-    "gyro_x",
-    "gyro_y",
-    "gyro_z",
-    "accel_x",
-    "accel_y",
-    "accel_z",
-    "baro_alt_relative",
-    "att_q_w",
-    "att_q_x",
-    "att_q_y",
-    "att_q_z",
-    "vel_x",
-    "vel_y",
-    "vel_z",
-    "mag_x",
-    "mag_y",
-    "mag_z",
-    "acc_norm",
-]
-
-RFLY_SEQ_SCHEMAS: dict[str, list[str]] = {
-    "rfly_seq_columns_v1": RFLY_SEQ_COLUMNS_V1,
-    "rfly_seq_columns_v2": RFLY_SEQ_COLUMNS_V2,
-}
 
 
 def resolve_seq_index(columns: list[str] | None, in_channels: int) -> dict[str, int]:

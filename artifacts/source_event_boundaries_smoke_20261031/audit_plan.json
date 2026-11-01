@@ -1,0 +1,16 @@
+{
+  "created_at": "2026-10-31T03:59:38.483062+00:00",
+  "target_cases": 4,
+  "scope": "SIL/HIL source train/val only; diagnostic reference/coverage, not repaired data or clinical/physical fault truth. No Real/final-test/model/probability/native converter access.",
+  "manifest_sha256": "272a91aeba5b563ebfa23fff8d295ac53372ccac391c835dccf2b5660d9d6ce5",
+  "script_sha256": "1d41517cfedbb19132d54d35933d8b89cfc9c0009cec31d94e718a89a74b6f38",
+  "reference_rule": "GTD last state at/before query timestamp, last duplicate retained; no extrapolation outside observed GTD range. No age-threshold claim.",
+  "gap_rule": "Inertial gaps over 0.1 seconds are diagnostic flags, not frozen exclusion thresholds; all other input topics remain unaudited here.",
+  "windows": "Existing selected 150-sample endpoint-labeled windows; not a new sampling policy.",
+  "cases": [
+    "SIL/hover/motor/TestCase_1_1000000000",
+    "SIL/hover/motor/TestCase_2_1000000001",
+    "SIL/hover/motor/TestCase_3_1000000002",
+    "SIL/hover/motor/TestCase_5_1000000004"
+  ]
+}

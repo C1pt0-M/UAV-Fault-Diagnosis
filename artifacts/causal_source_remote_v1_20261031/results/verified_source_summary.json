@@ -1,0 +1,71 @@
+{
+  "status": "PASS_BOTH_FROZEN_FORMAL_SOURCE_DEVELOPMENT_RUNS_VERIFIED",
+  "verified_at": "2026-10-31T20:44:48.048461+00:00",
+  "seed": 42,
+  "same_initial_state": true,
+  "execution_protocol_sha256": "40cf51c9c711f06f1b35117f04b7d02fa7b6fd6c8b2a0606822c992320f8a9c0",
+  "rows": {
+    "uniform_replacement": {
+      "epochs": 20,
+      "best_epoch": 20,
+      "macro_f1": 0.9659726643880562,
+      "fault_recall": 0.979021803182086,
+      "normal_window_fpr": 0.04650507328072153,
+      "original_normal_window_fpr": 0.1796276013143483,
+      "inactive_in_fault_case_normal_fpr": 0.0003795066413662239,
+      "original_normal_hover_fpr": 0.5212201591511937,
+      "confusion_matrix": [
+        [
+          16915,
+          825
+        ],
+        [
+          356,
+          16614
+        ]
+      ],
+      "validation_windows": 34710,
+      "gradient_steps": 6340,
+      "best_checkpoint_sha256": "adc140ab4f3e59dac59b1a32583af2857b4666a1d26c04db0008258b323020fd",
+      "elapsed_s": 366.8815300744027
+    },
+    "balanced_source_normal": {
+      "epochs": 22,
+      "best_epoch": 22,
+      "macro_f1": 0.963325563079787,
+      "fault_recall": 0.9569829110194461,
+      "normal_window_fpr": 0.030552423900789178,
+      "original_normal_window_fpr": 0.11785323110624316,
+      "inactive_in_fault_case_normal_fpr": 0.00030360531309297915,
+      "original_normal_hover_fpr": 0.3620689655172414,
+      "confusion_matrix": [
+        [
+          17198,
+          542
+        ],
+        [
+          730,
+          16240
+        ]
+      ],
+      "validation_windows": 34710,
+      "gradient_steps": 6974,
+      "best_checkpoint_sha256": "a223abd254e2011cfe6f9e706be00f22bdda377ab9abde367ce5cbba6d6eb11d",
+      "elapsed_s": 410.3729215711355
+    }
+  },
+  "balanced_minus_uniform": {
+    "macro_f1": -0.002647101308269173,
+    "fault_recall": -0.022038892162639878,
+    "normal_window_fpr": -0.015952649379932352,
+    "original_normal_window_fpr": -0.06177437020810514,
+    "inactive_in_fault_case_normal_fpr": -7.590132827324476e-05,
+    "original_normal_hover_fpr": -0.1591511936339523
+  },
+  "full_source_validation_predictions_and_earliest_best_rule_recomputed": true,
+  "internal_test_or_Real_evaluated": false,
+  "deployment_modified": false,
+  "unregistered_reruns": false,
+  "interpretation": "One paired seed, SOURCE validation only. Not final testing or statistical significance, not a label-only attribution against historical models. No posthoc rule changes or automatic deployment.",
+  "verifier_sha256": "f224db44e731f262d8d0e0066d1083684bb234a8df69d4eec90637d64180debf"
+}

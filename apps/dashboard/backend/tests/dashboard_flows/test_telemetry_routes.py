@@ -19,7 +19,8 @@ from uav_dashboard_api.utils.path_store import resolve_local_path
 def test_telemetry_start_detection_status_and_session_detail_flow(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     diagnosis = {
         "source": "realtime",
@@ -290,7 +291,8 @@ def test_telemetry_session_detail_returns_404_when_missing(app, client, auth_hea
 def test_telemetry_start_collection_replay_success(
     app, client, auth_header, monkeypatch, tmp_path: Path
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     replay_path = tmp_path / "replay.csv"
     replay_path.write_text("time_s,roll\n0.0,0.1\n", encoding="utf-8")
@@ -340,7 +342,8 @@ def test_telemetry_start_collection_replay_success(
 
 
 def test_telemetry_stop_collection_success(app, client, auth_header, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     stop_calls = []
 
@@ -373,7 +376,8 @@ def test_telemetry_stop_collection_success(app, client, auth_header, monkeypatch
 
 
 def test_telemetry_status_returns_runtime_snapshots_without_leaking_mutable_state(app):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     original_feature_coverage = telemetry_manager._feature_coverage
     original_replay_metrics = telemetry_manager._replay_metrics
@@ -401,7 +405,8 @@ def test_telemetry_status_returns_runtime_snapshots_without_leaking_mutable_stat
 def test_telemetry_status_api_returns_last_frame_and_input_contract(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     monkeypatch.setattr(
         telemetry_manager,
@@ -453,7 +458,8 @@ def test_telemetry_status_api_returns_last_frame_and_input_contract(
 def test_telemetry_stop_collection_replay_stop_failure_still_clears_runtime_and_finalizes_session(
     app, monkeypatch, tmp_path: Path
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     replay_path = tmp_path / "replay_stop_fail.csv"
     replay_path.write_text("time_s,roll\n0.0,0.1\n", encoding="utf-8")
@@ -531,7 +537,8 @@ def test_telemetry_stop_collection_finalize_race_only_finalizes_once(
 ):
     import threading
 
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     replay_path = tmp_path / "replay_finalize_race.csv"
     replay_path.write_text("time_s,roll\n0.0,0.1\n", encoding="utf-8")
@@ -618,7 +625,8 @@ def test_telemetry_stop_collection_finalize_race_only_finalizes_once(
 def test_telemetry_on_backend_frame_px4_marks_direct_live_fields_as_mapped(app):
     from collections import deque
 
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     telemetry_manager._stop_live_processing_pipeline(drain=False)
     state = {
@@ -670,7 +678,8 @@ def test_telemetry_on_backend_frame_px4_marks_direct_live_fields_as_mapped(app):
 def test_telemetry_on_backend_frame_requires_full_window_before_detector_update(app):
     from collections import deque
 
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     class _FakeDetector:
         window_size = 3
@@ -730,7 +739,8 @@ def test_telemetry_on_backend_frame_runs_detector_with_canonical_frame_after_ful
 ):
     from collections import deque
 
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     class _FakeDetector:
         window_size = 2
@@ -814,7 +824,8 @@ def test_telemetry_on_backend_frame_runs_detector_with_canonical_frame_after_ful
 def test_telemetry_on_backend_frame_replay_updates_feature_coverage(app):
     from collections import deque
 
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     state = {
         name: getattr(telemetry_manager, name)
@@ -860,7 +871,8 @@ def test_telemetry_on_backend_frame_replay_updates_feature_coverage(app):
 
 
 def test_telemetry_stop_detection_success(app, client, auth_header, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     stop_calls = []
 
@@ -893,7 +905,8 @@ def test_telemetry_stop_detection_success(app, client, auth_header, monkeypatch)
 def test_telemetry_stop_detection_replay_exposes_metrics_before_finalize(
     app, monkeypatch, tmp_path: Path
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     replay_path = tmp_path / "replay_stop_detection_metrics.csv"
     replay_path.write_text(
@@ -977,7 +990,8 @@ def test_telemetry_stop_detection_replay_exposes_metrics_before_finalize(
 def test_telemetry_stop_collection_clears_runtime_status_after_finalize(
     app, monkeypatch, tmp_path: Path
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     replay_path = tmp_path / "replay_stop_status_clear.csv"
     replay_path.write_text(
@@ -1074,7 +1088,8 @@ def test_telemetry_stop_collection_clears_runtime_status_after_finalize(
 def test_telemetry_stop_collection_clears_realtime_buffer_after_finalize(
     app, monkeypatch, tmp_path: Path
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     replay_path = tmp_path / "replay_stop_buffer_clear.csv"
     replay_path.write_text(
@@ -1180,8 +1195,25 @@ def test_telemetry_stop_collection_clears_realtime_buffer_after_finalize(
         telemetry_manager._realtime_buffer = original_realtime_buffer
 
 
+@pytest.mark.parametrize('allowed', [(), ('replay',), ('rfly',), ('replay', 'rfly')])
+def test_blind_test_cannot_bypass_px4_backend_allowlist(app, client, auth_header, monkeypatch, allowed):
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    manager = get_telemetry_manager()
+    app.config['ENABLE_BLIND_TEST'] = True
+    app.config['TELEMETRY_ALLOWED_BACKENDS'] = allowed
+    monkeypatch.setattr(manager, 'start_blind_test', lambda **kwargs: pytest.fail('forbidden backend must not start'))
+    status = client.get('/api/telemetry/status', headers=auth_header)
+    assert status.status_code == 200
+    assert status.get_json()['data']['telemetry_capabilities']['blind_test_enabled'] is False
+    response = client.post('/api/telemetry/blind-test/start', headers=auth_header, json={'sim_time': 60})
+    assert response.status_code == 400
+    assert response.get_json()['message'] == 'backend_not_allowed'
+    assert manager._blind_test_active is False
+
+
 def test_telemetry_blind_test_start_success(app, client, auth_header, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     start_calls = []
 
@@ -1215,7 +1247,8 @@ def test_telemetry_blind_test_start_success(app, client, auth_header, monkeypatc
 def test_telemetry_blind_test_start_validation_errors(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     start_calls = []
 
@@ -1260,7 +1293,8 @@ def test_telemetry_blind_test_start_validation_errors(
 def test_telemetry_start_collection_validation_errors(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     monkeypatch.setattr(
         telemetry_manager,
@@ -1310,7 +1344,8 @@ def test_telemetry_start_collection_validation_errors(
 def test_telemetry_start_collection_replay_start_failure_rolls_back_runtime_and_session(
     app, monkeypatch, tmp_path: Path
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     replay_path = tmp_path / "replay_start_fail.csv"
     replay_path.write_text("time_s,roll\n0.0,0.1\n", encoding="utf-8")
@@ -1373,7 +1408,8 @@ def test_telemetry_start_collection_replay_start_failure_rolls_back_runtime_and_
 def test_telemetry_start_collection_replay_missing_source_does_not_leave_session_state(
     app, client, auth_header, tmp_path: Path
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     missing_replay_path = tmp_path / "missing_replay.csv"
     original_backend = telemetry_manager._backend
@@ -1431,7 +1467,8 @@ def test_telemetry_start_collection_replay_missing_source_does_not_leave_session
 def test_telemetry_start_collection_replay_runtime_prefixed_path_is_resolved(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     runtime_csv_dir = Path(app.config["RUNTIME_DIR"]) / "uploads" / "csv"
     runtime_csv_dir.mkdir(parents=True, exist_ok=True)
@@ -1499,7 +1536,8 @@ def test_telemetry_start_collection_replay_runtime_prefixed_path_is_resolved(
 def test_telemetry_blind_test_start_collection_failure_rolls_back_blind_runtime_state(
     app, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     original_blind_test_active = telemetry_manager._blind_test_active
     original_blind_test_ground_truth = telemetry_manager._blind_test_ground_truth
@@ -1525,7 +1563,8 @@ def test_telemetry_blind_test_start_collection_failure_rolls_back_blind_runtime_
 
 
 def test_telemetry_blind_test_reveal_success(app, client, auth_header, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     reveal_calls = []
 
@@ -1559,7 +1598,8 @@ def test_telemetry_blind_test_reveal_success(app, client, auth_header, monkeypat
 def test_telemetry_blind_test_reveal_runtime_error_returns_400(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     monkeypatch.setattr(
         telemetry_manager,
@@ -1579,7 +1619,8 @@ def test_telemetry_blind_test_reveal_runtime_error_returns_400(
 def test_telemetry_start_collection_runtime_error_returns_error_contract(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     monkeypatch.setattr(
         telemetry_manager,
@@ -1605,7 +1646,8 @@ def test_telemetry_start_collection_runtime_error_returns_error_contract(
 def test_telemetry_start_detection_validation_errors(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     start_calls = []
 
@@ -1634,7 +1676,8 @@ def test_telemetry_start_detection_validation_errors(
 def test_telemetry_start_detection_runtime_error_returns_error_contract(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     monkeypatch.setattr(
         telemetry_manager,
@@ -1660,7 +1703,8 @@ def test_telemetry_start_detection_runtime_error_returns_error_contract(
 def test_telemetry_blind_test_start_runtime_error_returns_error_contract(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     monkeypatch.setattr(
         telemetry_manager,
@@ -1686,7 +1730,8 @@ def test_telemetry_blind_test_start_runtime_error_returns_error_contract(
 def test_telemetry_stop_collection_runtime_error_returns_error_contract(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     monkeypatch.setattr(
         telemetry_manager,
@@ -1706,7 +1751,8 @@ def test_telemetry_stop_collection_runtime_error_returns_error_contract(
 def test_telemetry_stop_detection_runtime_error_returns_error_contract(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     monkeypatch.setattr(
         telemetry_manager,
@@ -1724,7 +1770,8 @@ def test_telemetry_stop_detection_runtime_error_returns_error_contract(
 
 
 def test_telemetry_realtime_data_success(app, client, auth_header, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     realtime_calls = []
 
@@ -1780,7 +1827,8 @@ def test_telemetry_realtime_data_success(app, client, auth_header, monkeypatch):
 def test_telemetry_realtime_data_route_returns_chart_shape_from_manager_buffer(
     app, client, auth_header
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     original_realtime_buffer = telemetry_manager._realtime_buffer
     try:

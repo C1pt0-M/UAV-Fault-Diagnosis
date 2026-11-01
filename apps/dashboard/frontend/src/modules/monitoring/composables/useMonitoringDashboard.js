@@ -354,9 +354,10 @@ export function useMonitoringDashboard() {
   async function fetchStatus() {
     const response = await telemetryApi.status()
     Object.assign(runStatus, response.data || {})
+    runStatus.telemetry_capabilities = response.data?.telemetry_capabilities || {}
     const allowedValues = new Set(backendOptions.value.map((item) => item.value))
     if (!allowedValues.has(selectedBackend.value)) {
-      selectedBackend.value = backendOptions.value[0]?.value || 'replay'
+      selectedBackend.value = backendOptions.value[0]?.value || ''
     }
   }
 
@@ -381,6 +382,7 @@ export function useMonitoringDashboard() {
   }
 
   async function loadRflyDiagnostics() {
+    if (!backendOptions.value.some(option => option.value === 'rfly')) return
     rflyDiagnosticsLoading.value = true
     try {
       const response = await telemetryApi.rflyDiagnostics()
@@ -391,6 +393,10 @@ export function useMonitoringDashboard() {
   }
 
   async function testRflyDiagnostics() {
+    if (!backendOptions.value.some(option => option.value === 'rfly')) {
+      ElMessage.warning(monitoringCopy.backendNotAllowed)
+      return
+    }
     rflyDiagnosticsLoading.value = true
     try {
       const rflyPath = String(rflyPx4mavctrlPath.value || '').trim()
@@ -438,8 +444,7 @@ export function useMonitoringDashboard() {
 
   async function startCollection() {
     await runAction('startCollection', async () => {
-      const allowedBackends = telemetryCapabilities.value?.allowed_backends || []
-      if (allowedBackends.length && !allowedBackends.includes(selectedBackend.value)) {
+      if (!backendOptions.value.some(option => option.value === selectedBackend.value)) {
         ElMessage.warning(monitoringCopy.backendNotAllowed)
         return
       }
@@ -558,6 +563,10 @@ export function useMonitoringDashboard() {
 
   async function startBlindTest() {
     await runAction('startBlindTest', async () => {
+      if (!blindTestEnabled.value || selectedBackend.value !== 'px4') {
+        ElMessage.warning(monitoringCopy.blindTestRequiresPx4)
+        return
+      }
       try {
         await telemetryApi.startBlindTest({
           drone_id: 'DRONE-001',
@@ -594,7 +603,7 @@ export function useMonitoringDashboard() {
 
   onMounted(async () => {
     try {
-      await Promise.all([loadModels(), loadReplayAssets(), loadRflyDiagnostics(), refreshDashboard()])
+      await Promise.all([loadModels(), loadReplayAssets(), refreshDashboard()])
       if (currentState.value !== 'IDLE') {
         startPolling()
       }

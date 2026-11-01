@@ -1,0 +1,576 @@
+{
+  "status": "COMPLETE_EXISTING_CHECKPOINT_SOURCE_TRAIN_NORMAL_DIAGNOSIS",
+  "completed_at": "2026-11-01T04:10:47.381296+00:00",
+  "data_version": "rflymad_causal_publication_replay_v1",
+  "device": "cuda:0",
+  "environment": {
+    "torch": "2.5.1+cu124",
+    "numpy": "2.1.3",
+    "torch_cuda": "12.4"
+  },
+  "train_normal_windows": 83051,
+  "val_normal_windows": 17740,
+  "fixed_decision_rule": "argmax normal/fault, unchanged0.5",
+  "model_eval_mode": true,
+  "optimizer_updates": 0,
+  "parameter_and_BN_updates": 0,
+  "test_or_Real_read": false,
+  "raw_logs_reread": false,
+  "threshold_or_checkpoint_changed": false,
+  "results": {
+    "uniform_replacement": {
+      "train": {
+        "all_normal": {
+          "windows": 83051,
+          "cases": 2570,
+          "false_positives": 3914,
+          "false_positive_rate": 0.047127668541016965
+        },
+        "original_normal": {
+          "windows": 21145,
+          "cases": 334,
+          "false_positives": 3865,
+          "false_positive_rate": 0.18278552849373375
+        },
+        "inactive_fault_case_normal": {
+          "windows": 61906,
+          "cases": 2236,
+          "false_positives": 49,
+          "false_positive_rate": 0.0007915226310858399
+        },
+        "original_normal_hover": {
+          "windows": 3513,
+          "cases": 56,
+          "false_positives": 1731,
+          "false_positive_rate": 0.4927412467976089
+        },
+        "hover_by_domain": {
+          "HIL": {
+            "windows": 1725,
+            "cases": 28,
+            "false_positives": 813,
+            "false_positive_rate": 0.47130434782608693
+          },
+          "SIL": {
+            "windows": 1788,
+            "cases": 28,
+            "false_positives": 918,
+            "false_positive_rate": 0.5134228187919463
+          }
+        },
+        "original_normal_by_mode": {
+          "acce": {
+            "windows": 3568,
+            "cases": 56,
+            "false_positives": 561,
+            "false_positive_rate": 0.15723094170403587
+          },
+          "circling": {
+            "windows": 3475,
+            "cases": 55,
+            "false_positives": 83,
+            "false_positive_rate": 0.023884892086330937
+          },
+          "dece": {
+            "windows": 3492,
+            "cases": 55,
+            "false_positives": 392,
+            "false_positive_rate": 0.11225658648339061
+          },
+          "hover": {
+            "windows": 3513,
+            "cases": 56,
+            "false_positives": 1731,
+            "false_positive_rate": 0.4927412467976089
+          },
+          "velocity": {
+            "windows": 3554,
+            "cases": 56,
+            "false_positives": 795,
+            "false_positive_rate": 0.2236916150815982
+          },
+          "waypoint": {
+            "windows": 3543,
+            "cases": 56,
+            "false_positives": 303,
+            "false_positive_rate": 0.0855207451312447
+          }
+        },
+        "normal_by_origin": {
+          "normal_part_of_fault_case": {
+            "windows": 61906,
+            "cases": 2236,
+            "false_positives": 49,
+            "false_positive_rate": 0.0007915226310858399
+          },
+          "original_normal_case": {
+            "windows": 21145,
+            "cases": 334,
+            "false_positives": 3865,
+            "false_positive_rate": 0.18278552849373375
+          }
+        },
+        "hover_by_original_crop_quarter": [
+          {
+            "crop_progress_quarter": 1,
+            "windows": 704,
+            "cases": 56,
+            "false_positives": 91,
+            "false_positive_rate": 0.12926136363636365
+          },
+          {
+            "crop_progress_quarter": 2,
+            "windows": 931,
+            "cases": 56,
+            "false_positives": 190,
+            "false_positive_rate": 0.20408163265306123
+          },
+          {
+            "crop_progress_quarter": 3,
+            "windows": 936,
+            "cases": 56,
+            "false_positives": 539,
+            "false_positive_rate": 0.5758547008547008
+          },
+          {
+            "crop_progress_quarter": 4,
+            "windows": 942,
+            "cases": 56,
+            "false_positives": 911,
+            "false_positive_rate": 0.9670912951167728
+          }
+        ],
+        "original_normal_cases_with_any_false_positive": 213,
+        "hover_cases_with_any_false_positive": 55,
+        "crop_quarters_are_physical_flight_phase": false,
+        "hover_false_positive_scores": {
+          "windows": 1731,
+          "median": 0.5895283818244934,
+          "min": 0.5006826519966125,
+          "max": 0.6807957291603088
+        }
+      },
+      "val": {
+        "all_normal": {
+          "windows": 17740,
+          "cases": 551,
+          "false_positives": 825,
+          "false_positive_rate": 0.04650507328072153
+        },
+        "original_normal": {
+          "windows": 4565,
+          "cases": 72,
+          "false_positives": 820,
+          "false_positive_rate": 0.1796276013143483
+        },
+        "inactive_fault_case_normal": {
+          "windows": 13175,
+          "cases": 479,
+          "false_positives": 5,
+          "false_positive_rate": 0.0003795066413662239
+        },
+        "original_normal_hover": {
+          "windows": 754,
+          "cases": 12,
+          "false_positives": 393,
+          "false_positive_rate": 0.5212201591511937
+        },
+        "hover_by_domain": {
+          "HIL": {
+            "windows": 370,
+            "cases": 6,
+            "false_positives": 192,
+            "false_positive_rate": 0.518918918918919
+          },
+          "SIL": {
+            "windows": 384,
+            "cases": 6,
+            "false_positives": 201,
+            "false_positive_rate": 0.5234375
+          }
+        },
+        "original_normal_by_mode": {
+          "acce": {
+            "windows": 757,
+            "cases": 12,
+            "false_positives": 139,
+            "false_positive_rate": 0.18361955085865259
+          },
+          "circling": {
+            "windows": 765,
+            "cases": 12,
+            "false_positives": 0,
+            "false_positive_rate": 0.0
+          },
+          "dece": {
+            "windows": 763,
+            "cases": 12,
+            "false_positives": 114,
+            "false_positive_rate": 0.14941022280471822
+          },
+          "hover": {
+            "windows": 754,
+            "cases": 12,
+            "false_positives": 393,
+            "false_positive_rate": 0.5212201591511937
+          },
+          "velocity": {
+            "windows": 768,
+            "cases": 12,
+            "false_positives": 124,
+            "false_positive_rate": 0.16145833333333334
+          },
+          "waypoint": {
+            "windows": 758,
+            "cases": 12,
+            "false_positives": 50,
+            "false_positive_rate": 0.06596306068601583
+          }
+        },
+        "normal_by_origin": {
+          "normal_part_of_fault_case": {
+            "windows": 13175,
+            "cases": 479,
+            "false_positives": 5,
+            "false_positive_rate": 0.0003795066413662239
+          },
+          "original_normal_case": {
+            "windows": 4565,
+            "cases": 72,
+            "false_positives": 820,
+            "false_positive_rate": 0.1796276013143483
+          }
+        },
+        "hover_by_original_crop_quarter": [
+          {
+            "crop_progress_quarter": 1,
+            "windows": 155,
+            "cases": 12,
+            "false_positives": 28,
+            "false_positive_rate": 0.18064516129032257
+          },
+          {
+            "crop_progress_quarter": 2,
+            "windows": 196,
+            "cases": 12,
+            "false_positives": 58,
+            "false_positive_rate": 0.29591836734693877
+          },
+          {
+            "crop_progress_quarter": 3,
+            "windows": 205,
+            "cases": 12,
+            "false_positives": 110,
+            "false_positive_rate": 0.5365853658536586
+          },
+          {
+            "crop_progress_quarter": 4,
+            "windows": 198,
+            "cases": 12,
+            "false_positives": 197,
+            "false_positive_rate": 0.9949494949494949
+          }
+        ],
+        "original_normal_cases_with_any_false_positive": 43,
+        "hover_cases_with_any_false_positive": 12,
+        "crop_quarters_are_physical_flight_phase": false,
+        "hover_false_positive_scores": {
+          "windows": 393,
+          "median": 0.5872372388839722,
+          "min": 0.501896321773529,
+          "max": 0.6374742388725281
+        }
+      },
+      "unchanged_state_digest": "da93a91ee10bb88e8d78e0d7521202969adfb6932b2fc022c59b4ed63e002c86",
+      "weights_and_BN_buffers_unchanged": true,
+      "checkpoint_sha256": "adc140ab4f3e59dac59b1a32583af2857b4666a1d26c04db0008258b323020fd",
+      "saved_val_probability_max_abs_difference": 0.0,
+      "saved_val_changed_predictions": 0,
+      "elapsed_s": 4.8206330593675375
+    },
+    "balanced_source_normal": {
+      "train": {
+        "all_normal": {
+          "windows": 83051,
+          "cases": 2570,
+          "false_positives": 2536,
+          "false_positive_rate": 0.03053545411855366
+        },
+        "original_normal": {
+          "windows": 21145,
+          "cases": 334,
+          "false_positives": 2519,
+          "false_positive_rate": 0.11912981792385907
+        },
+        "inactive_fault_case_normal": {
+          "windows": 61906,
+          "cases": 2236,
+          "false_positives": 17,
+          "false_positive_rate": 0.0002746098924175363
+        },
+        "original_normal_hover": {
+          "windows": 3513,
+          "cases": 56,
+          "false_positives": 1177,
+          "false_positive_rate": 0.33504127526330774
+        },
+        "hover_by_domain": {
+          "HIL": {
+            "windows": 1725,
+            "cases": 28,
+            "false_positives": 440,
+            "false_positive_rate": 0.25507246376811593
+          },
+          "SIL": {
+            "windows": 1788,
+            "cases": 28,
+            "false_positives": 737,
+            "false_positive_rate": 0.4121923937360179
+          }
+        },
+        "original_normal_by_mode": {
+          "acce": {
+            "windows": 3568,
+            "cases": 56,
+            "false_positives": 284,
+            "false_positive_rate": 0.0795964125560538
+          },
+          "circling": {
+            "windows": 3475,
+            "cases": 55,
+            "false_positives": 41,
+            "false_positive_rate": 0.011798561151079136
+          },
+          "dece": {
+            "windows": 3492,
+            "cases": 55,
+            "false_positives": 208,
+            "false_positive_rate": 0.05956471935853379
+          },
+          "hover": {
+            "windows": 3513,
+            "cases": 56,
+            "false_positives": 1177,
+            "false_positive_rate": 0.33504127526330774
+          },
+          "velocity": {
+            "windows": 3554,
+            "cases": 56,
+            "false_positives": 684,
+            "false_positive_rate": 0.19245920090039392
+          },
+          "waypoint": {
+            "windows": 3543,
+            "cases": 56,
+            "false_positives": 125,
+            "false_positive_rate": 0.03528083545018346
+          }
+        },
+        "normal_by_origin": {
+          "normal_part_of_fault_case": {
+            "windows": 61906,
+            "cases": 2236,
+            "false_positives": 17,
+            "false_positive_rate": 0.0002746098924175363
+          },
+          "original_normal_case": {
+            "windows": 21145,
+            "cases": 334,
+            "false_positives": 2519,
+            "false_positive_rate": 0.11912981792385907
+          }
+        },
+        "hover_by_original_crop_quarter": [
+          {
+            "crop_progress_quarter": 1,
+            "windows": 704,
+            "cases": 56,
+            "false_positives": 58,
+            "false_positive_rate": 0.08238636363636363
+          },
+          {
+            "crop_progress_quarter": 2,
+            "windows": 931,
+            "cases": 56,
+            "false_positives": 189,
+            "false_positive_rate": 0.20300751879699247
+          },
+          {
+            "crop_progress_quarter": 3,
+            "windows": 936,
+            "cases": 56,
+            "false_positives": 239,
+            "false_positive_rate": 0.2553418803418803
+          },
+          {
+            "crop_progress_quarter": 4,
+            "windows": 942,
+            "cases": 56,
+            "false_positives": 691,
+            "false_positive_rate": 0.7335456475583864
+          }
+        ],
+        "original_normal_cases_with_any_false_positive": 179,
+        "hover_cases_with_any_false_positive": 52,
+        "crop_quarters_are_physical_flight_phase": false,
+        "hover_false_positive_scores": {
+          "windows": 1177,
+          "median": 0.5224957466125488,
+          "min": 0.5000293850898743,
+          "max": 0.6033807992935181
+        }
+      },
+      "val": {
+        "all_normal": {
+          "windows": 17740,
+          "cases": 551,
+          "false_positives": 542,
+          "false_positive_rate": 0.030552423900789178
+        },
+        "original_normal": {
+          "windows": 4565,
+          "cases": 72,
+          "false_positives": 538,
+          "false_positive_rate": 0.11785323110624316
+        },
+        "inactive_fault_case_normal": {
+          "windows": 13175,
+          "cases": 479,
+          "false_positives": 4,
+          "false_positive_rate": 0.00030360531309297915
+        },
+        "original_normal_hover": {
+          "windows": 754,
+          "cases": 12,
+          "false_positives": 273,
+          "false_positive_rate": 0.3620689655172414
+        },
+        "hover_by_domain": {
+          "HIL": {
+            "windows": 370,
+            "cases": 6,
+            "false_positives": 109,
+            "false_positive_rate": 0.2945945945945946
+          },
+          "SIL": {
+            "windows": 384,
+            "cases": 6,
+            "false_positives": 164,
+            "false_positive_rate": 0.4270833333333333
+          }
+        },
+        "original_normal_by_mode": {
+          "acce": {
+            "windows": 757,
+            "cases": 12,
+            "false_positives": 80,
+            "false_positive_rate": 0.10568031704095113
+          },
+          "circling": {
+            "windows": 765,
+            "cases": 12,
+            "false_positives": 0,
+            "false_positive_rate": 0.0
+          },
+          "dece": {
+            "windows": 763,
+            "cases": 12,
+            "false_positives": 49,
+            "false_positive_rate": 0.06422018348623854
+          },
+          "hover": {
+            "windows": 754,
+            "cases": 12,
+            "false_positives": 273,
+            "false_positive_rate": 0.3620689655172414
+          },
+          "velocity": {
+            "windows": 768,
+            "cases": 12,
+            "false_positives": 124,
+            "false_positive_rate": 0.16145833333333334
+          },
+          "waypoint": {
+            "windows": 758,
+            "cases": 12,
+            "false_positives": 12,
+            "false_positive_rate": 0.0158311345646438
+          }
+        },
+        "normal_by_origin": {
+          "normal_part_of_fault_case": {
+            "windows": 13175,
+            "cases": 479,
+            "false_positives": 4,
+            "false_positive_rate": 0.00030360531309297915
+          },
+          "original_normal_case": {
+            "windows": 4565,
+            "cases": 72,
+            "false_positives": 538,
+            "false_positive_rate": 0.11785323110624316
+          }
+        },
+        "hover_by_original_crop_quarter": [
+          {
+            "crop_progress_quarter": 1,
+            "windows": 155,
+            "cases": 12,
+            "false_positives": 16,
+            "false_positive_rate": 0.1032258064516129
+          },
+          {
+            "crop_progress_quarter": 2,
+            "windows": 196,
+            "cases": 12,
+            "false_positives": 57,
+            "false_positive_rate": 0.29081632653061223
+          },
+          {
+            "crop_progress_quarter": 3,
+            "windows": 205,
+            "cases": 12,
+            "false_positives": 46,
+            "false_positive_rate": 0.22439024390243903
+          },
+          {
+            "crop_progress_quarter": 4,
+            "windows": 198,
+            "cases": 12,
+            "false_positives": 154,
+            "false_positive_rate": 0.7777777777777778
+          }
+        ],
+        "original_normal_cases_with_any_false_positive": 39,
+        "hover_cases_with_any_false_positive": 11,
+        "crop_quarters_are_physical_flight_phase": false,
+        "hover_false_positive_scores": {
+          "windows": 273,
+          "median": 0.5216476321220398,
+          "min": 0.5010890364646912,
+          "max": 0.6018351912498474
+        }
+      },
+      "unchanged_state_digest": "765f86215bae3e70dad2ae9cbe147f75ded37206be921a4c1cdd413859ad701d",
+      "weights_and_BN_buffers_unchanged": true,
+      "checkpoint_sha256": "a223abd254e2011cfe6f9e706be00f22bdda377ab9abde367ce5cbba6d6eb11d",
+      "saved_val_probability_max_abs_difference": 0.0,
+      "saved_val_changed_predictions": 0,
+      "elapsed_s": 4.310389824211597
+    }
+  },
+  "inputs": {
+    "/root/autodl-tmp/causal_source_v1_20261031/unpacked/code/configs/experiments/causal_source_development_v1.json": "40cf51c9c711f06f1b35117f04b7d02fa7b6fd6c8b2a0606822c992320f8a9c0",
+    "/root/autodl-tmp/causal_source_v1_20261031/train_normal_diagnosis_v1/source_normal_crop_lengths.json": "99bd7e8d94afbb57997e0c80a21c3c511372257d3df2f9523e402c4913a403da",
+    "/root/autodl-tmp/causal_source_v1_20261031/train_normal_diagnosis_v1/plan.json": "85239a8d5456d4d1f9d003d2b2ecdc53568c2957d3fc7220ba856346ac75f7e9",
+    "/root/autodl-tmp/causal_source_v1_20261031/unpacked/data/norm_stats.json": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+    "/root/autodl-tmp/causal_source_v1_20261031/runs/uniform_replacement/best.pt": "adc140ab4f3e59dac59b1a32583af2857b4666a1d26c04db0008258b323020fd",
+    "/root/autodl-tmp/causal_source_v1_20261031/runs/uniform_replacement/report.json": "c2ea582f189739efe238f40ebbefd0f592560cde8d29a3cd255d97d712afd2d7",
+    "/root/autodl-tmp/causal_source_v1_20261031/runs/uniform_replacement/source_validation_predictions.npz": "68d8f63e3a0d30ef6f216ac4309ccabf12ddc1d53e9c5300325712c65d2ebbec",
+    "/root/autodl-tmp/causal_source_v1_20261031/runs/balanced_source_normal/best.pt": "a223abd254e2011cfe6f9e706be00f22bdda377ab9abde367ce5cbba6d6eb11d",
+    "/root/autodl-tmp/causal_source_v1_20261031/runs/balanced_source_normal/report.json": "b8ed474cd6f513a0fd0144d32037f9dfbd2cd1381cd5f363e77a6fc0696ecbbc",
+    "/root/autodl-tmp/causal_source_v1_20261031/runs/balanced_source_normal/source_validation_predictions.npz": "d754d1cd90a62306646734d54131d2ab4c4cc1c895100ea9d71fcd7bc995d8b0"
+  },
+  "script_sha256": "3d9e2a921e8a5f8acf3bd9dd6f1c2dd184e5d93261bb7ae4ac4dc90fbedf8c82",
+  "interpretation_limit": "Training-data performance in inference mode. Does not by itself identify channels, branches, physical flight phase or BatchNorm mechanism. Never remove valid errors or select a new threshold from this diagnosis."
+}

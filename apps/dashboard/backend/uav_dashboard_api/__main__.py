@@ -24,7 +24,12 @@ def main() -> None:
     print("后端服务启动中...")
     print()
 
-    app.run(host=host, port=port, debug=debug, use_reloader=False)
+    try:
+        app.run(host=host, port=port, debug=debug, use_reloader=False)
+    finally:
+        from uav_dashboard_api.services.telemetry_manager import shutdown_telemetry_manager
+
+        shutdown_telemetry_manager(app)
 
 
 if __name__ == "__main__":

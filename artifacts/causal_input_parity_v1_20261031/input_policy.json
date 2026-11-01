@@ -1,0 +1,111 @@
+{
+  "version": "causal_input_v1_source_publication_replay_pilot",
+  "status": "RULES_FROZEN_FOR_SMALL_SCALE_REPLAY_ONLY",
+  "columns": [
+    "actuator_ctrl_1",
+    "actuator_ctrl_2",
+    "actuator_ctrl_3",
+    "actuator_ctrl_4",
+    "actuator_out_1",
+    "actuator_out_2",
+    "actuator_out_3",
+    "actuator_out_4",
+    "gyro_x",
+    "gyro_y",
+    "gyro_z",
+    "accel_x",
+    "accel_y",
+    "accel_z",
+    "baro_alt_relative",
+    "att_q_w",
+    "att_q_x",
+    "att_q_y",
+    "att_q_z",
+    "vel_x",
+    "vel_y",
+    "vel_z",
+    "mag_x",
+    "mag_y",
+    "mag_z",
+    "acc_norm"
+  ],
+  "target_hz": 50,
+  "window_frames": 150,
+  "stride_frames": 5,
+  "max_age_us": {
+    "controls": 80000,
+    "outputs": 120000,
+    "gyro": 40000,
+    "accel": 40000,
+    "baro": 100000,
+    "attitude": 80000,
+    "velocity": 140000,
+    "mag": 60000
+  },
+  "budget_basis": {
+    "controls": {
+      "largest_train_case_median_period_us": 51000.0,
+      "largest_train_case_median_lag_us": 50.0,
+      "grid_allowance_us": 20000,
+      "ceil_grid_tick_us": 20000,
+      "max_age_us": 80000
+    },
+    "outputs": {
+      "largest_train_case_median_period_us": 100000.0,
+      "largest_train_case_median_lag_us": 0.0,
+      "grid_allowance_us": 20000,
+      "ceil_grid_tick_us": 20000,
+      "max_age_us": 120000
+    },
+    "gyro": {
+      "largest_train_case_median_period_us": 4018.0,
+      "largest_train_case_median_lag_us": 0.0,
+      "grid_allowance_us": 20000,
+      "ceil_grid_tick_us": 20000,
+      "max_age_us": 40000
+    },
+    "accel": {
+      "largest_train_case_median_period_us": 4018.0,
+      "largest_train_case_median_lag_us": 0.0,
+      "grid_allowance_us": 20000,
+      "ceil_grid_tick_us": 20000,
+      "max_age_us": 40000
+    },
+    "baro": {
+      "largest_train_case_median_period_us": 52000.0,
+      "largest_train_case_median_lag_us": 24885.0,
+      "grid_allowance_us": 20000,
+      "ceil_grid_tick_us": 20000,
+      "max_age_us": 100000
+    },
+    "attitude": {
+      "largest_train_case_median_period_us": 51000.0,
+      "largest_train_case_median_lag_us": 4000.0,
+      "grid_allowance_us": 20000,
+      "ceil_grid_tick_us": 20000,
+      "max_age_us": 80000
+    },
+    "velocity": {
+      "largest_train_case_median_period_us": 100000.0,
+      "largest_train_case_median_lag_us": 4000.0,
+      "grid_allowance_us": 20000,
+      "ceil_grid_tick_us": 20000,
+      "max_age_us": 140000
+    },
+    "mag": {
+      "largest_train_case_median_period_us": 23198.5,
+      "largest_train_case_median_lag_us": 10408.0,
+      "grid_allowance_us": 20000,
+      "ceil_grid_tick_us": 20000,
+      "max_age_us": 60000
+    }
+  },
+  "clock": "Same PX4 microsecond boot clock, ULog message timestamp as replay availability proxy. Not proven actual publish/write/transport receive time. timestamp_sample or IMU relative clock for age where provided, otherwise declared publication proxy.",
+  "normalization": "Causal valid cap64 source-fit windows only; same frozen diagnostic stats for both paths. Never old stats/val/test/Real fitted.",
+  "selection": "No future interpolation; last available message, final duplicate arrival; observation<=availability<=grid. Latest invalid/stale does not revert to older good record.",
+  "invalid": "Preserve all grid rows and original window starts, NaN and masks for missing/stale/nonfinite. No model on any input-invalid frame/window; labels separate.",
+  "live_input_accepted": false,
+  "training_enabled": false,
+  "deployment_enabled": false,
+  "limit_note": "Engineering pilot one-update-plus-grid-and-lag budget, not a learned physical tolerance. Fixed before validation and never widened for coverage or model scores."
+}

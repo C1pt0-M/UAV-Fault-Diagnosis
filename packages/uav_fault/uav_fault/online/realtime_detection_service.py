@@ -17,6 +17,8 @@ from uav_fault.telemetry.schema_adapter import (
     assess_canonical_input_contract,
     canonicalize_rfly_frame,
 )
+from uav_fault.online.detection_policy import OnlineDetectionPolicy, input_contract_check_due
+from uav_fault.online.event_aggregator import event_timing
 from uav_fault.online.monitoring_session import (
     OnlineDetectionRunner,
     OnlineMonitoringSession,
@@ -33,11 +35,14 @@ class RealtimeDetectionService:
         csv_path: str | None = None,
         window_size: int = 150,
         device: str = "cpu",
+        policy: OnlineDetectionPolicy | None = None,
     ):
+        self.policy = policy or OnlineDetectionPolicy()
         self.runner = OnlineDetectionRunner(
             model_dir,
             device=device,
             window_size=window_size,
+            policy=self.policy,
         )
         self.detector = self.runner.detector
         self.aggregator = self.runner.aggregator
@@ -73,6 +78,8 @@ class RealtimeDetectionService:
         print(f"  窗口: {window_size} 帧")
         print(f"  端口: {port}")
         print(f"  CSV: {csv_path}")
+        print(f"  检测策略: {self.policy.to_dict()}")
+        print("  输入检查: 窗口就绪后每帧检查（独立于推理步长）")
 
     def _on_frame(self, frame: dict, window: deque) -> None:
         """每帧回调：当窗口满时运行检测。"""
@@ -80,7 +87,11 @@ class RealtimeDetectionService:
         canonical, coverage = canonicalize_rfly_frame(frame)
         self.canonical_window.append(canonical)
 
-        if len(self.canonical_window) < self.detector.window_size:
+        if not input_contract_check_due(
+            frame_idx=self.frame_count, window_length=len(self.canonical_window),
+            min_window_size=self.detector.window_size, every_frames=1,
+            has_previous=self.input_contract_status is not None,
+        ):
             return
 
         self.input_contract_status = assess_canonical_input_contract(
@@ -91,6 +102,12 @@ class RealtimeDetectionService:
             window_size=self.detector.window_size,
         )
         if self.input_contract_status.get("detection_blocked"):
+            return
+        if not self.policy.should_infer(
+            frame_idx=self.frame_count,
+            window_length=len(self.canonical_window),
+            window_size=self.detector.window_size,
+        ):
             return
 
         update = self.monitoring_session.ingest(
@@ -114,6 +131,7 @@ class RealtimeDetectionService:
             print(f"  最大概率: {event.max_fault_prob:.3f}")
             print(f"  平均概率: {event.mean_fault_prob:.3f}")
             print(f"  数据点数: {event.n_points}")
+            print(f"  时刻记录: {event_timing(event)}")
 
         # 每 100 次检测打印一次状态
         if self.detection_count % 100 == 0:
@@ -131,6 +149,7 @@ class RealtimeDetectionService:
                 print(f"\n[realtime] ⚠️  故障事件检出 (flush):")
                 print(f"  时间: {event.start_t:.2f}s - {event.end_t:.2f}s")
                 print(f"  最大概率: {event.max_fault_prob:.3f}")
+                print(f"  时刻记录: {event_timing(event)}")
 
             print(f"\n[realtime] 检测完成")
             print(f"  总帧数: {self.frame_count}")
@@ -145,6 +164,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--csv", default=None, help="CSV 输出路径（默认自动生成）")
     parser.add_argument("--window", type=int, default=150, help="滑动窗口大小")
     parser.add_argument("--device", default="cpu", help="推理设备 (cpu/cuda)")
+    parser.add_argument("--every", type=int, default=1, help="每 N 帧推理一次，默认保持每帧推理")
     return parser.parse_args()
 
 
@@ -163,6 +183,7 @@ def main() -> None:
         csv_path=args.csv,
         window_size=args.window,
         device=args.device,
+        policy=OnlineDetectionPolicy(inference_every=args.every),
     )
     service.start()
 

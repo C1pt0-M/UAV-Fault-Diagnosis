@@ -1,0 +1,36 @@
+{
+  "status": "SOURCE_CONFIG_WEIGHTS_SELECTION_FROZEN__CPU_CHECK_PASSED__FORMAL_RETRAIN_GPU_BLOCKED",
+  "completed_at": "2026-10-31T13:05:31.400151+00:00",
+  "data_version": "rflymad_causal_publication_replay_v1",
+  "source_train_windows": 162069,
+  "source_val_windows": 34710,
+  "formal_jobs_registered": 2,
+  "registered_seeds": [
+    42
+  ],
+  "maximum_epochs_per_formal_job": 30,
+  "sampling_weights_recomputed_and_saved": true,
+  "source_class_probability_preserved": true,
+  "loss_alpha": null,
+  "checkpoint_rule": "Full source val Macro-F1 strict maximum, earliest exact tie, fixed0.5 argmax; no test/Real or hover-based choice",
+  "current_regression_tests_passed": 134,
+  "legacy_frozen_hash_test_rejected": 1,
+  "legacy_protocol_modified": false,
+  "cpu_check_jobs_completed": 2,
+  "cpu_check_epochs_per_job": 2,
+  "actual_optimizer_steps_per_cpu_job": 8,
+  "formal_retraining_started": false,
+  "current_blocker": "No available GPU locally or at existing autodl_UAV; no automatic allocation",
+  "final_test_or_Real_tensors_read": false,
+  "model_architecture_or_deployment_modified": false,
+  "protocol_sha256": "565e34af65bcb01bade26f58ad4dacf4288901c247622d052f36ede9454252a5",
+  "report_identities": {
+    "design.json": "7a323e2751001933b1abf83d6a01f7ae81f0fbbe5a0adc364b3d90777da886b0",
+    "preflight/preflight.json": "16485d5cd6baae4ff543e14a6823a9d7915ed76809a45f224f8bbeb68f2dc3f1",
+    "preflight/sampling_weights.npz": "a0bceef866990e246b6cd1b016699cb56fd33f5e31d37a57ea6bd1665b9b5e05",
+    "paired_cpu_verification.json": "6bf5fb34f2d89f64ef94617b9ce08fdb183e0e9bf85a32e2bbdcbc25793426ef",
+    "frozen_protocol_verification.json": "7b84f8c4ddd14135c3465840477897e02e4a68f29d73301aa33d70c20c038abf",
+    "legacy_protocol_check.json": "de527062edae2d895b05cf7689afd2c61baf2fbd94d033d9892c2f70e60e404f",
+    "compute_status.json": "0cb4bf2064936161452cfc1ed2e9bc50d6d24cf582dc2ba4c27f91ce76a9979a"
+  }
+}

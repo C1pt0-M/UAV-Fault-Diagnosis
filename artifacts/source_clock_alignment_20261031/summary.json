@@ -1,0 +1,47 @@
+{
+  "cases": 3135,
+  "raw_anchor_cases": 15,
+  "all_anchor_bridge_max_error_s": 2.4158453015843406e-12,
+  "all_anchor_step_max_error_s": 4.6612019799496807e-14,
+  "anchors_with_original_gtd_ulog_presence_match": 15,
+  "by_domain": {
+    "SIL": {
+      "cases": 1561,
+      "gtd_minus_ulog_command_s": {
+        "n": 1359,
+        "min": -0.14000000000000057,
+        "median": -0.07600000000000051,
+        "max": -0.012000000000000455
+      },
+      "processed_minus_gtd_s": {
+        "n": 1359,
+        "min": -23.482,
+        "median": 0.5,
+        "max": 1.3900000000000006
+      },
+      "processed_earlier_over_1s": 47,
+      "processed_later_over_1s": 15,
+      "note": "One-second split is descriptive only, not an approved tolerance."
+    },
+    "HIL": {
+      "cases": 1574,
+      "gtd_minus_ulog_command_s": {
+        "n": 1370,
+        "min": -0.8859790000000061,
+        "median": -0.0811624999999978,
+        "max": -0.014156000000184576
+      },
+      "processed_minus_gtd_s": {
+        "n": 1370,
+        "min": -39.549201999999994,
+        "median": 0.674889500000063,
+        "max": 4.3329180000000065
+      },
+      "processed_earlier_over_1s": 90,
+      "processed_later_over_1s": 575,
+      "note": "One-second split is descriptive only, not an approved tolerance."
+    }
+  },
+  "scope": "Source train/val only, original crop fixed; no converter, environment installation, Real, final tests, relabeling, training or model access.",
+  "limits": "3135-row inventory summarizes existing full raw audit. Only selected anchors re-read original TrueState clocks; not full 3135 TrueState clock validation. Affine first-record alignment is official tool definition, not independent physical clock synchronization proof. No global offset correction fitted."
+}

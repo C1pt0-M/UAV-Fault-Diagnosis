@@ -1,0 +1,29 @@
+{
+  "case_uid": "HIL/circling/motor/TestCase_10_2300000009",
+  "scope": "Original retained interval unchanged. Upstream pinned function isolated in memory, no crop replacement, no continuous feature changes, no source writes. 20Hz checks sampling behavior on this same interval, not a full official 20Hz pipeline reproduction.",
+  "environment": "Existing Python3.12.4 / NumPy2.5.1 / pandas2.3.1; official pinned environment NOT reproduced.",
+  "source_sha256": "18f86f7e881ef91cc6d746afe9394228af16d83ae3bac22eea14686ac8eae407",
+  "comparisons": [
+    {
+      "frequency_hz": 20,
+      "unchanged_crop_start_s": 35.42378,
+      "last_grid_s": 63.52378,
+      "sample_count": 563,
+      "upstream_generated_active_rows": 257,
+      "gtd_timestamp_reference_active_rows": 0,
+      "upstream_first_active_s": 50.72378,
+      "published_50hz_label_exactly_reproduced": null
+    },
+    {
+      "frequency_hz": 50,
+      "unchanged_crop_start_s": 35.42378,
+      "last_grid_s": 63.52378,
+      "sample_count": 1406,
+      "upstream_generated_active_rows": 641,
+      "gtd_timestamp_reference_active_rows": 0,
+      "upstream_first_active_s": 50.72378,
+      "published_50hz_label_exactly_reproduced": true
+    }
+  ],
+  "interpretation": "The fixed-crop instantaneous labels disagree with original event time even without adopting our crop. This supports a localized source-time inconsistency, not proof that extending the official crop is correct or that all released files are affected."
+}

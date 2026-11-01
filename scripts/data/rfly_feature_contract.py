@@ -16,7 +16,6 @@ import json
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 
 CONTRACT_PATH = Path(r"D:\UAV-Data\feature_contract_v1.json")
 
@@ -77,6 +76,9 @@ def read_case_features(
     Returns the matrix in contract order plus the column names, so callers can assert
     the order rather than assume it.
     """
+    # Window-only consumers need NumPy, not the optional CSV reader dependency.
+    import pandas as pd
+
     path = Path(path)
     columns = contract_columns(contract)
     index = {name: i for i, name in enumerate(columns)}

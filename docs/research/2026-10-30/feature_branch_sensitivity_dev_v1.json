@@ -1,0 +1,37 @@
+{
+  "protocol_name": "rflymad_feature_branch_sensitivity_dev_v1",
+  "status": "FROZEN_DIAGNOSTIC_ONLY_BEFORE_EXECUTION",
+  "date": "2026-10-30",
+  "purpose": "Inspect the frozen source model's branch contributions and sensitivity to normal-domain channel-mean differences. Not model selection, training, a deployed preprocessing change or final Real evaluation.",
+  "source_checkpoint_sha256": "b24f2da7b18197362f7d903eca813f78b70f6125cd249044ac530d5106ae5837",
+  "source_code_sha256": "87a928b147c1e62d283910048d19710d55dd9731b963a33d8a5840b430fae1d2",
+  "source_norm_sha256": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33",
+  "datasets": {
+    "source": "Entire frozen source val.pt, 35520 endpoint-labeled windows; normal reference fitted from its 17912 label-0 windows, including pre-fault windows.",
+    "target": "Only the 640 windows of the 10 frozen adapt_normal cases, all normal. This is in-sample normal diagnosis, not target generalization or target fault recall."
+  },
+  "fixed_model": "Original A0 only; all parameters and buffers unchanged, eval mode, no gradients, source normalization fixed.",
+  "feature_groups": {
+    "magnetometer": ["mag_x", "mag_y", "mag_z"],
+    "actuation": ["actuator_ctrl_1", "actuator_ctrl_2", "actuator_ctrl_3", "actuator_ctrl_4", "actuator_out_1", "actuator_out_2", "actuator_out_3", "actuator_out_4"],
+    "attitude": ["att_q_w", "att_q_x", "att_q_y", "att_q_z"],
+    "motion": ["gyro_x", "gyro_y", "gyro_z", "accel_x", "accel_y", "accel_z", "baro_alt_relative", "vel_x", "vel_y", "vel_z", "acc_norm"]
+  },
+  "feature_probes": {
+    "reference": "Fit delta[channel] = mean(target normalized frames) - mean(source label-0 normalized frames), once before sensitivity predictions. No scale fitting or factor search.",
+    "arms": ["baseline", "shift_magnetometer", "shift_actuation", "shift_attitude", "shift_motion", "shift_all"],
+    "source_direction": "Add delta to the selected channels of every source window, both normal and fault.",
+    "target_direction": "Subtract delta from the selected channels of the same 640 target adaptation windows.",
+    "intervention": "Constant translation within each window. No weights, BN statistics or stored input tensors modified. Keep all groups and report all probes.",
+    "limitations": "Off-manifold diagnostic perturbations can break derived-feature and quaternion consistency. Different directions test sensitivity, not a single deployable adaptation method. Fitting and measuring on the same normal populations is descriptive and optimistic."
+  },
+  "branch_probe": {
+    "method": "Exact frozen linear-head logit-margin decomposition: alpha*(raw_features dot w_fault_minus_normal) + (1-alpha)*(projected_relation_features dot w_fault_minus_normal) + bias_difference.",
+    "outputs": ["gate alpha", "raw and relation signed margin contributions", "head bias", "decomposition reconstruction error", "per-window means of the nine relation inputs", "fraction of normalized acc_norm <=0.1 (denominator-clamped)"],
+    "limitations": "Gate alpha alone is not branch importance; the contributions are a conditional algebraic decomposition, not independent causal attribution. No branch-only retraining or new classifier."
+  },
+  "semantics_audit": "Inspect relation operations on normalized channels: effort denominator clamp, cross-channel gaps, altitude sample difference versus normalized vel_z. Describe them as learned proxies, not strict physical residuals.",
+  "execution": {"device": "cpu", "dtype": "float32", "threads": 4, "seed": 42, "deterministic": true, "batch_size": 512},
+  "forbidden": ["Real calibration features/probabilities", "Real test normal/fault/supplemental features/probabilities", "source test.pt", "RflySim live_holdout.pt", "gradient updates", "BN updates", "threshold search", "choosing and running extra probes after seeing outcomes"],
+  "preservation": "New independent diagnostic protocol; original v1, BN development experiments, source caches, checkpoint and deployed models remain unchanged. No server connection."
+}

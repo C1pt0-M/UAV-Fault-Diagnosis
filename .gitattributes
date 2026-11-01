@@ -30,3 +30,15 @@
 *.vue text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+
+# Frozen protocol hashes refer to original bytes, including line endings.
+artifacts/normal_adaptation_audit_20261029/normal_adaptation_protocol_v1.json -text
+artifacts/normal_adaptation_audit_20261029/real_case_roles_v1.csv -text
+
+# Preserve original bytes of hash-addressed research protocols and evidence.
+configs/experiments/** -text
+artifacts/** -text
+docs/research/2026-10-30/bn_estimator_dev_v1.json -text
+docs/research/2026-10-30/feature_branch_sensitivity_dev_v1.json -text
+docs/research/2026-10-30/normal_source_sampling_cpu_smoke_v1.json -text
+docs/research/2026-11-01/github_evidence_manifest.json -text

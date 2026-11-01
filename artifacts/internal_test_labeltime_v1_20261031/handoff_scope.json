@@ -1,0 +1,7 @@
+{
+  "task": "Finish the already confirmed label-time alignment repair across the remaining internal SIL/HIL test split",
+  "out_of_scope": ["new datasets", "new crop policies", "model restructuring", "training", "threshold tuning", "online-input recertification", "recovering corrupt Real bag records by guessing"],
+  "existing_HIL_version_note": "The frozen split manifest stores pre-reprocessing HIL hashes. This was already documented and reconciled before this task. Use matching 20260813 processing-log and 20261008 audit hashes for file identity, keep original split hash and membership unchanged, then prove full cache X/y mapping. Do not report this historical bookkeeping issue as newly discovered dataset corruption.",
+  "final_acceptance": ["553 cases and 35392 original windows accounted for", "actual new CSVs and mask-aware full-index cache persisted", "old crops, source values, split membership and normalization unchanged", "all 553 CSVs and reference masks independently checked", "original test X/y identities verified before relabeling", "report verified changed-label and unqualified counts, no performance claims", "one concise status table across source train/val, internal test and Real"],
+  "persistent_remaining_boundary": "9 Real cases already quarantined plus recorded source disagreements; do not reopen or expand into general input research. No implication every quarantined window has corrupt sensor input."
+}

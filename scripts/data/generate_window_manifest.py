@@ -35,7 +35,13 @@ def _fault_column_priority():
 
 
 def _infer_fault_mask(df: pd.DataFrame) -> np.ndarray:
-    """Return boolean array: True where fault is active."""
+    """Return historical binary state; reject masked repaired data in this legacy API."""
+    if any(name in df.columns for name in ("labeltime_supervision_valid", "labeltime_input_clock_review")):
+        raise ValueError(
+            "Label-time repaired CSV requires its versioned window links and supervision mask; "
+            "this legacy boolean-only reader cannot safely consume it. "
+            "Use the verified train.pt/val.pt and window links in the repaired version."
+        )
     for col in _fault_column_priority():
         if col not in df.columns:
             continue

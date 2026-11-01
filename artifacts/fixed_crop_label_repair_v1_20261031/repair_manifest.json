@@ -1,0 +1,82 @@
+{
+  "version": "rflymad_online_binary_v2_labeltime_v1",
+  "status": "COMPLETE_SOURCE_LABELTIME_REPAIR",
+  "completed_at": "2026-10-31T07:23:58.252274+00:00",
+  "source_cases": 3135,
+  "repaired_csv_state_rows": 177618,
+  "csv_fields_changed": [
+    "UAVState_data_fault_state",
+    "labeltime_supervision_valid",
+    "labeltime_input_clock_review"
+  ],
+  "all_other_original_csv_fields_exactly_preserved": true,
+  "source_cache_splits_repaired": [
+    "train",
+    "val"
+  ],
+  "splits": {
+    "train": {
+      "original_windows": 168800,
+      "repaired_windows": 168550,
+      "held_out_windows": 250,
+      "source_windows": 164870,
+      "rflysim_suffix_windows": 3680,
+      "corrected_retained_window_labels": 3149,
+      "normal_windows": 87656,
+      "fault_windows": 80894,
+      "source_gap_diagnostic_flags_retained": 1877,
+      "retained_X_exactly_equal_to_original": true,
+      "binary_targets_verified": true,
+      "cache_sha256": "09c39b17a092344a3ac0cffd55f506421b7fcc4aa6499148b34cce7af5b20c46",
+      "metadata_sha256": "c9f4f02fea13d1f360f42ca5a416d9fdecf66944f74d9a7568d7cc8e274cdb77",
+      "source_indices_sha256": "5cd4c20cb1f91c2cc296732474ba4ace1d37ccf435d24fe4c391baa5cde69c81"
+    },
+    "val": {
+      "original_windows": 35520,
+      "repaired_windows": 35427,
+      "held_out_windows": 93,
+      "source_windows": 35427,
+      "rflysim_suffix_windows": 0,
+      "corrected_retained_window_labels": 631,
+      "normal_windows": 18010,
+      "fault_windows": 17417,
+      "source_gap_diagnostic_flags_retained": 389,
+      "retained_X_exactly_equal_to_original": true,
+      "binary_targets_verified": true,
+      "cache_sha256": "2b2f71e396ec96994c5f5f79a3e7eb286c1b5fee5f15bfd56743282f79a380f4",
+      "metadata_sha256": "4973dbef3f340d444d0af2a584300069e57bd75820373a27b8d201954b1ec677",
+      "source_indices_sha256": "03c17d2561e50b78da4b65953dfc1324bb800e0b0e751ab679f7549690cb83ab"
+    }
+  },
+  "labeltime_repair_complete": true,
+  "binary_cache_loader_ready": true,
+  "model_training_run": false,
+  "strict_online_input_certified": false,
+  "deployment_ready": false,
+  "final_test_repaired": false,
+  "raw_originals_overwritten": false,
+  "normalization_numeric_parameters_unchanged": true,
+  "input_hashes_before_after_equal": {
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\fixed_crop_label_policy_proposal_20261031\\proposed_window_labels.csv": "48f82ff70181b8cbeb6aa498ff5d76b4545577fd7addf62d7c9a0e3f403e3473",
+    "D:\\UAV-Data\\splits\\rflymad_case_split_v2\\rflymad_case_level_split_manifest.csv": "272a91aeba5b563ebfa23fff8d295ac53372ccac391c835dccf2b5660d9d6ce5",
+    "D:\\UAV-Fault-Diagnosis\\configs\\experiments\\normal_source_sampling_train_v1.json": "088bbb0c1ce2d831321304322dab35491b2fdab1dab9fb05aef2dae85d1fcf23",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\source_event_boundaries_review_20261031\\all_selected_window_diagnostics.csv": "98581688c19503a734d4d07314fd2217a4593dd7b7e05522713e9f05df0c6781",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\fixed_crop_label_validation_20261031\\selected_window_comparison.csv": "e74f7b2e730e6c7120f3d80ba2f396fe10774dffa87a42248691f5f972ccf1e7",
+    "D:\\UAV-Data\\online_cache_v2\\norm_stats.json": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33",
+    "D:\\UAV-Data\\online_cache_v2\\train.pt": "f0992b19768575364f19378dd5109bcb640764035ecce4cc9d29132557a88d58",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\source_training_coverage_audit_20261030_r2\\train_source_window_links.csv": "e184e65ee588d051904b5f127ff508c972b1ae626ae8d651963bf5e9bdcc611f",
+    "D:\\UAV-Data\\online_cache_v2\\val.pt": "9a6063590b4b313c0d8df0dbc5213d88e3f5e078bb5be13c8054deb816ed2757",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\source_training_coverage_audit_20261030_r2\\val_source_window_links.csv": "5963804ae701d9aa6da2eeb3c6c4b491f5bd0e0e0c6863413244f2713f3f7ad0"
+  },
+  "boundaries": [
+    "Only audited 26-channel source train/val. Old 31-channel runtime and all Real/final tests unchanged.",
+    "151 uncertain endpoint windows and 192 known raw-clock-review windows held out from compact caches, original case splits retained and mappings saved.",
+    "All retained X values identical. Legacy interpolation and remaining sampling gaps retained and flagged for retrospective source development; NOT strict online quality approval.",
+    "CSV stores GTD state and supervision validity, not a third class. Consumers must honor validity and input-clock flags.",
+    "Other label-only command fields, including UAVState_data_cmd, are historical and NOT repaired or valid supervision inputs.",
+    "Historical normalization held constant to isolate label effects. Old scores cannot be treated as repaired model results.",
+    "No test cache exists here; do not silently mix old final-test labels with this version. Frozen original trainer protocol is not rewritten; new training needs explicit repaired-input configuration.",
+    "Replacing a label is not proof of physical health or future performance; GTD is recorded-state reference, disagreement explicitly retained in ledgers."
+  ],
+  "script_sha256": "49cae89fe8e9fe9ceec99c33287be1c0fac6ecb13a1b5dcb8732ae8e96d39a89"
+}

@@ -1,0 +1,88 @@
+{
+  "status": "PASS",
+  "verified_at": "2026-10-31T06:34:47.613441+00:00",
+  "sidecar_cases": 3135,
+  "exact_selected_windows": 200640,
+  "fresh_raw_anchor_cases": 68,
+  "old_labels_vs_gtd_reference_changes": 3914,
+  "changed_and_both_raw_sources_agree": 3780,
+  "changed_and_sources_differ": 134,
+  "unchanged_old_label_but_sources_differ": 17,
+  "all_source_disagreement_windows": 151,
+  "prior_float_audit_comparison": "All identities and endpoint states equal using integer microseconds",
+  "case_original_csv_hashes_checked": 3135,
+  "frozen_files_unchanged": [
+    {
+      "path": "D:\\UAV-Data\\online_cache_v2\\train.pt",
+      "sha256": "f0992b19768575364f19378dd5109bcb640764035ecce4cc9d29132557a88d58"
+    },
+    {
+      "path": "D:\\UAV-Data\\online_cache_v2\\val.pt",
+      "sha256": "9a6063590b4b313c0d8df0dbc5213d88e3f5e078bb5be13c8054deb816ed2757"
+    },
+    {
+      "path": "D:\\UAV-Data\\online_cache_v2\\norm_stats.json",
+      "sha256": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33"
+    },
+    {
+      "path": "D:\\UAV-Data\\splits\\rflymad_case_split_v2\\rflymad_case_level_split_manifest.csv",
+      "sha256": "272a91aeba5b563ebfa23fff8d295ac53372ccac391c835dccf2b5660d9d6ce5"
+    },
+    {
+      "path": "D:\\UAV-Fault-Diagnosis\\artifacts\\source_training_coverage_audit_20261030_r2\\train_source_window_links.csv",
+      "sha256": "e184e65ee588d051904b5f127ff508c972b1ae626ae8d651963bf5e9bdcc611f"
+    },
+    {
+      "path": "D:\\UAV-Fault-Diagnosis\\artifacts\\source_training_coverage_audit_20261030_r2\\val_source_window_links.csv",
+      "sha256": "5963804ae701d9aa6da2eeb3c6c4b491f5bd0e0e0c6863413244f2713f3f7ad0"
+    }
+  ],
+  "class_count_diagnostics": [
+    {
+      "split": "train",
+      "domain": "HIL",
+      "windows": 82944,
+      "old_normal": 41856,
+      "old_fault": 41088,
+      "gtd_reference_inactive": 42373,
+      "gtd_reference_active": 40571,
+      "label_changes": 2507,
+      "raw_source_disagreements": 59
+    },
+    {
+      "split": "train",
+      "domain": "SIL",
+      "windows": 82176,
+      "old_normal": 41494,
+      "old_fault": 40682,
+      "gtd_reference_inactive": 41663,
+      "gtd_reference_active": 40513,
+      "label_changes": 751,
+      "raw_source_disagreements": 63
+    },
+    {
+      "split": "val",
+      "domain": "HIL",
+      "windows": 17792,
+      "old_normal": 8978,
+      "old_fault": 8814,
+      "gtd_reference_inactive": 9090,
+      "gtd_reference_active": 8702,
+      "label_changes": 522,
+      "raw_source_disagreements": 18
+    },
+    {
+      "split": "val",
+      "domain": "SIL",
+      "windows": 17728,
+      "old_normal": 8934,
+      "old_fault": 8794,
+      "gtd_reference_inactive": 8950,
+      "gtd_reference_active": 8778,
+      "label_changes": 134,
+      "raw_source_disagreements": 11
+    }
+  ],
+  "verification_retry": "First independent verification exceeded timeout due to redundant full-table sorting inside per-case loop; restructured checks without changing audit output or source data.",
+  "limits": "Sidecars are diagnostic references, not approved training labels; source agreement is not physical damage truth. No model inference."
+}

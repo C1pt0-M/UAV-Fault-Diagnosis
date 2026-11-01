@@ -1,0 +1,93 @@
+{
+  "completed_at": "2026-10-31T04:33:58.417332+00:00",
+  "scope": "All 3135 frozen SIL/HIL normal/motor/sensor train/val cases and 200640 existing cap64 windows. GTD reference and diagnostic flags, not repaired labels/cache or certified training membership. No Real/final-test/model access.",
+  "cases": 3135,
+  "windows": 200640,
+  "domains": {
+    "SIL": 1561,
+    "HIL": 1574
+  },
+  "event_references_complete": true,
+  "source_clock_review_cases": 3,
+  "all_case_warnings": {},
+  "by_split": {
+    "train": {
+      "cases": 2580,
+      "selected_windows": 165120,
+      "gtd_endpoint_covered_windows": 165120,
+      "gtd_full_window_covered_windows": 165120,
+      "cases_with_label_disagreements": 1107,
+      "label_reference_disagreements": 3258,
+      "old_fault_raw_no_activation": 1972,
+      "old_normal_raw_active": 1286,
+      "label_disagreements_both_raw_sources_agree": 3149,
+      "gtd_command_endpoint_disagreements": 122,
+      "after_crop_activation_cases": 33,
+      "input_clock_review_cases": 2,
+      "inertial_gap_over_0_1s_crossing_windows": 1878,
+      "unknown_gap_status_windows": 128
+    },
+    "val": {
+      "cases": 555,
+      "selected_windows": 35520,
+      "gtd_endpoint_covered_windows": 35520,
+      "gtd_full_window_covered_windows": 35520,
+      "cases_with_label_disagreements": 231,
+      "label_reference_disagreements": 656,
+      "old_fault_raw_no_activation": 392,
+      "old_normal_raw_active": 264,
+      "label_disagreements_both_raw_sources_agree": 631,
+      "gtd_command_endpoint_disagreements": 29,
+      "after_crop_activation_cases": 7,
+      "input_clock_review_cases": 1,
+      "inertial_gap_over_0_1s_crossing_windows": 389,
+      "unknown_gap_status_windows": 64
+    }
+  },
+  "unresolved_quality": "Other input topics, causal reprocessing, raw-source freshness gates, flight/crop semantics and model validity are not certified. 0.1s inertial gap is descriptive, not an approved exclusion rule.",
+  "failed_first_batch": "Initial six-worker pool stopped after 2651 saved cases; preserved originals, identity-checked continuation of 484 cases with two workers, no overwrite. Three clock exceptions have separate event-only reads, not silently sorted.",
+  "input_artifacts": [
+    {
+      "path": "artifacts\\source_event_boundaries_full_20261031\\audit_plan.json",
+      "sha256": "d630ec988c1c42f142e632b36146d1e67b048a33a2a304215d34128b875fc761"
+    },
+    {
+      "path": "artifacts\\source_event_boundaries_full_20261031\\case_assessments.jsonl",
+      "sha256": "7b6c62f39a2879c0a1caba9ddaa7df8d61e45ee3061379af27df8bd227dbc65e"
+    },
+    {
+      "path": "artifacts\\source_event_boundaries_full_20261031\\selected_window_assessments.csv",
+      "sha256": "ee20f1f0fbae38484247161613549ba4f4732b08427633ec5776744838e274a2"
+    },
+    {
+      "path": "artifacts\\source_event_boundaries_full_20261031\\raw_clock_exception_events.json",
+      "sha256": "ce27d43626a0dd36a524bfc5432e17f2a9f31f4fb8b29267b2e814e85084683f"
+    },
+    {
+      "path": "artifacts\\source_event_boundaries_full_20261031\\known_40_crop_diagnostics.json",
+      "sha256": "90d9e65565409b663112777cb9642184621973b619198100f363027ff4df8706"
+    },
+    {
+      "path": "artifacts\\source_event_boundaries_remaining_20261031\\audit_plan.json",
+      "sha256": "3cc0cd26044be879c59232bc31aaa253ac028153e4d963e45787f428a1a51bfb"
+    },
+    {
+      "path": "artifacts\\source_event_boundaries_remaining_20261031\\case_assessments.jsonl",
+      "sha256": "30c1aaec8c5421f96d7d2dd664103255a62bd5e3850c164dc4be6558931445e8"
+    },
+    {
+      "path": "artifacts\\source_event_boundaries_remaining_20261031\\selected_window_assessments.csv",
+      "sha256": "26c63d094775bda0c5969cf13bed8f9c048b16606b74186258316a0c59c75556"
+    },
+    {
+      "path": "artifacts\\source_event_boundaries_remaining_20261031\\summary.json",
+      "sha256": "ae7402a989dcdae2bfc942215fcbaf21ea6e0d051a15f713351297c694a2224e"
+    }
+  ],
+  "raw_gtd_ulog_onset_difference_s": {
+    "n": 2729,
+    "min": -0.8859790000000061,
+    "max": -0.012000000000000455,
+    "median": -0.07900000000000063
+  }
+}

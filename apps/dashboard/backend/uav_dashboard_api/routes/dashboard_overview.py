@@ -278,9 +278,9 @@ def _model_display_name(model: dict) -> str:
 
 def _runtime_telemetry_status() -> dict:
     try:
-        from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+        from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
 
-        status = telemetry_manager.get_status()
+        status = get_telemetry_manager().get_status()
         return status if isinstance(status, dict) else {}
     except Exception:
         return {}

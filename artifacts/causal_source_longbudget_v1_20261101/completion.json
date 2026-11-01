@@ -1,0 +1,101 @@
+{
+  "status": "COMPLETE_BN_CHECK_AND_CORRECTED_BUDGET_TWO_ARM_TRAINING_WITH_VERIFIED_LOCAL_RECOVERY",
+  "completed_at": "2026-11-01T05:24:37.263980+00:00",
+  "protocol_sha256": "2d92fc2ffa2dc28050000721e44fb5509a45e67eae9269ede59df4d557757acd",
+  "archive_sha256": "c9de65fa6cb4b94725f7273261a77a652164342e4a9d3aaf7e9dbfdf9a14f369",
+  "archive_bytes": 4235720,
+  "result_members_verified": 29,
+  "local_verification_sha256": "57a1a11c6c86c0644b37b4ad9be0448794b1489b242d33b185a2894ea198aaf2",
+  "report_sha256": "7214c70678ad567018818019aa9393e445dacdb792d6309db7d805e41a449d2c",
+  "rows": {
+    "uniform_replacement": {
+      "epochs": 100,
+      "best_epoch": 99,
+      "gradient_steps": 31700,
+      "overall": {
+        "windows": 34710,
+        "confusion_matrix": [
+          [
+            17295,
+            445
+          ],
+          [
+            420,
+            16550
+          ]
+        ],
+        "accuracy": 0.9750792278882167,
+        "macro_f1": 0.9750677419908667,
+        "fault_recall": 0.9752504419563937,
+        "normal_window_fpr": 0.025084554678692222
+      },
+      "hover": {
+        "windows": 754,
+        "confusion_matrix": [
+          [
+            485,
+            269
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.6432360742705571,
+        "macro_f1": 0.39144471347861176,
+        "fault_recall": null,
+        "normal_window_fpr": 0.356763925729443
+      },
+      "hover_fpr_change_percentage_points": -16.445623342175068
+    },
+    "balanced_source_normal": {
+      "epochs": 60,
+      "best_epoch": 60,
+      "gradient_steps": 19020,
+      "overall": {
+        "windows": 34710,
+        "confusion_matrix": [
+          [
+            17381,
+            359
+          ],
+          [
+            708,
+            16262
+          ]
+        ],
+        "accuracy": 0.969259579371939,
+        "macro_f1": 0.969227596875599,
+        "fault_recall": 0.9582793164407778,
+        "normal_window_fpr": 0.02023675310033822
+      },
+      "hover": {
+        "windows": 754,
+        "confusion_matrix": [
+          [
+            546,
+            208
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "accuracy": 0.7241379310344828,
+        "macro_f1": 0.42,
+        "fault_recall": null,
+        "normal_window_fpr": 0.27586206896551724
+      },
+      "hover_fpr_change_percentage_points": -8.620689655172415
+    }
+  },
+  "current_related_tests_passed": 146,
+  "all_initial_tensors_equal_across_arms_and_short_budget": true,
+  "all_source_data_identities_unchanged": true,
+  "test_or_Real_scored": false,
+  "deployment_modified": false,
+  "more_experiments_started": false,
+  "gpu_training_finished": true,
+  "machine_shut_down_or_released": false,
+  "interpretation": "Budget/schedule correction materially improves this seed source validation. Not a pure epoch-count attribution, statistical significance, final-test result or solved normal hover failure."
+}

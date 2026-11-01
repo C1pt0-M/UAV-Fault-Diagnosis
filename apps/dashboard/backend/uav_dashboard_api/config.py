@@ -12,7 +12,19 @@ BASE_DIR = PACKAGE_DIR.parent
 DASHBOARD_DIR = BASE_DIR.parent
 PROJECT_ROOT = BASE_DIR.parents[2].resolve()
 
-load_dotenv(BASE_DIR / '.env')
+
+def _is_pytest_process() -> bool:
+    """pytest 进程不读本地 .env。
+
+    否则开发者机器上的本地配置（ENABLE_AI、MODEL_ROOT、SECRET_KEY 等）会悄悄改变
+    测试行为：同一个测试在别人机器上通过，在你机器上失败。
+    """
+    return 'pytest' in sys.modules
+
+
+# .env 只服务本地开发运行；测试必须与环境隔离。
+if not _is_pytest_process():
+    load_dotenv(BASE_DIR / '.env')
 
 
 def _get_env(name: str, default: str | None = None) -> str | None:

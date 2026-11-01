@@ -49,7 +49,7 @@ def model_root(tmp_path: Path) -> Path:
         config={
             "model": "cnn_lstm_v2_normalproto",
             "architecture": "cnn_lstm_v2_normalproto",
-            "in_channels": 43,
+            "in_channels": 31,
             "num_classes": 3,
             "best_val_f1": 0.91,
             "label_names": ["normal", "motor", "sensor"],
@@ -131,6 +131,9 @@ def app(model_root: Path, tmp_path: Path):
     with app.app_context():
         db.create_all()
         yield app
+        from uav_dashboard_api.services.telemetry_manager import shutdown_telemetry_manager
+
+        shutdown_telemetry_manager(app)
         db.session.remove()
         db.drop_all()
 
@@ -439,7 +442,8 @@ def test_overview_field_contract_explains_waiting_coverage(app, client, auth_hea
 
 
 def test_telemetry_status_endpoint_exposes_online_model_summary(client, auth_header, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     monkeypatch.setattr(telemetry_manager, "get_status", lambda: {
         "is_collecting": True,
@@ -478,7 +482,8 @@ def test_telemetry_status_endpoint_exposes_online_model_summary(client, auth_hea
 
 
 def test_start_detection_endpoint_returns_online_model_summary(client, auth_header, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     captured = {}
 

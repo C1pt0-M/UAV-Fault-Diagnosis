@@ -103,7 +103,8 @@ import { ArrowLeft, ArrowRight, SwitchButton, Sunny, Moon, ArrowDown } from '@el
 import { useRoute, useRouter } from 'vue-router'
 import { authApi } from '@/shared/services'
 import { APP_NAME } from '@/shared/constants/brand'
-import { navigationItems, resolvePageMeta } from '@/shared/constants/navigation'
+import { isNavigationAvailable, navigationItems, resolvePageMeta } from '@/shared/constants/navigation'
+import { runtimeCapabilities } from '@/shared/state/runtimeCapabilities'
 import {
   clearStoredSession,
   getDisplayName,
@@ -155,24 +156,25 @@ const groupedNavigation = computed(() => {
   const aiKeys = ['ai']
   const systemKeys = ['settings']
 
+  const availableItems = navigationItems.filter(item => isNavigationAvailable(item, runtimeCapabilities))
   return [
     {
       title: '核心业务',
-      items: navigationItems.filter(i => coreKeys.includes(i.key))
+      items: availableItems.filter(i => coreKeys.includes(i.key))
     },
     {
       title: '数据与资产',
-      items: navigationItems.filter(i => dataKeys.includes(i.key))
+      items: availableItems.filter(i => dataKeys.includes(i.key))
     },
     {
       title: '智能助手',
-      items: navigationItems.filter(i => aiKeys.includes(i.key))
+      items: availableItems.filter(i => aiKeys.includes(i.key))
     },
     {
       title: '系统与工具',
-      items: navigationItems.filter(i => systemKeys.includes(i.key))
+      items: availableItems.filter(i => systemKeys.includes(i.key))
     }
-  ]
+  ].filter(group => group.items.length > 0)
 })
 
 function isActive(item) {

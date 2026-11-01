@@ -12,7 +12,8 @@ import time
 from collections import deque
 from pathlib import Path
 
-from uav_fault.online.event_aggregator import FaultEventAggregator
+from uav_fault.online.detection_policy import OnlineDetectionPolicy
+from uav_fault.online.event_aggregator import event_timing
 from uav_fault.telemetry.schema_adapter import (
     assess_canonical_input_contract,
     canonicalize_rfly_frame,
@@ -32,6 +33,7 @@ def _event_payload(event) -> dict:
         "n_points": int(event.n_points),
         "max_fault_prob": float(event.max_fault_prob),
         "mean_fault_prob": float(event.mean_fault_prob),
+        "timing": event_timing(event),
     }
 
 
@@ -48,11 +50,13 @@ class MecTelemetryService:
         stride: int = 5,
         metrics_csv: str | None = None,
         device: str = "cpu",
+        policy: OnlineDetectionPolicy | None = None,
     ):
         self.listen = (listen_host, int(listen_port))
         self.forward = (forward_host, int(forward_port))
         self.window_size = max(1, int(window_size))
-        self.stride = max(1, int(stride))
+        self.policy = policy or OnlineDetectionPolicy(inference_every=max(1, int(stride)))
+        self.stride = self.policy.inference_every
         self.metrics_csv = Path(metrics_csv) if metrics_csv else None
         self.model_dir = str(model_dir)
         self.device = str(device)
@@ -80,16 +84,8 @@ class MecTelemetryService:
         self.inference_samples: deque[float] = deque(maxlen=1000)
         self.stop_event = threading.Event()
 
-    @staticmethod
-    def _new_aggregator() -> FaultEventAggregator:
-        return FaultEventAggregator(
-            onset_th=0.6,
-            clear_th=0.4,
-            k_on=3,
-            k_off=3,
-            min_event_s=0.5,
-            merge_gap_s=0.5,
-        )
+    def _new_aggregator(self):
+        return self.policy.make_aggregator()
 
     def _publish_result(self, result: dict) -> None:
         with self.result_lock:
@@ -228,7 +224,11 @@ class MecTelemetryService:
             )
 
         self.window.append(canonical)
-        if len(self.window) >= self.window_size and self.frame_count % self.stride == 0:
+        if self.policy.should_infer(
+            frame_idx=self.frame_count,
+            window_length=len(self.window),
+            window_size=self.window_size,
+        ):
             contract = assess_canonical_input_contract(
                 list(self.window),
                 coverage=coverage,
@@ -324,7 +324,8 @@ class MecTelemetryService:
         sock_out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         print(
             f"[mec] listen={self.listen[0]}:{self.listen[1]} "
-            f"forward={self.forward[0]}:{self.forward[1]} stride={self.stride}"
+            f"forward={self.forward[0]}:{self.forward[1]} stride={self.stride} "
+            f"policy={self.policy.to_dict()} input_contract_check=per_inference"
         )
         worker = threading.Thread(
             target=self._inference_worker,

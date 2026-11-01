@@ -375,12 +375,16 @@ def rfly_api_app(tmp_path: Path):
         db.session.add(user)
         db.session.commit()
         yield app
+        from uav_dashboard_api.services.telemetry_manager import shutdown_telemetry_manager
+
+        shutdown_telemetry_manager(app)
         db.session.remove()
         db.drop_all()
 
 
 def test_start_collection_api_accepts_rfly_backend(rfly_api_app, monkeypatch, tmp_path):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
     from uav_dashboard_api.utils.jwt_utils import JWTUtils
 
     px4mavctrl = tmp_path / "PX4MavCtrlV4.py"
@@ -545,7 +549,8 @@ def test_rfly_diagnostics_buaa_mode_checks_autotest_dir_not_sdk_px4mavctrl(
 
 
 def test_telemetry_status_exposes_rfly_diagnostics_summary(rfly_api_app, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
     from uav_dashboard_api.utils.jwt_utils import JWTUtils
 
     monkeypatch.setattr(telemetry_manager, "get_status", lambda: {"is_collecting": False})
@@ -742,4 +747,4 @@ def test_rfly_backend_allows_detection_for_proxy_outputs_with_valid_imu(monkeypa
     assert mgr._input_contract_status["status"] == "degraded"
     assert mgr._input_contract_status["actuator_source"] == "proxy"
     assert mgr._input_contract_status["detection_blocked"] is False
-    assert mgr._current_fault_prob == 0.2
+    assert mgr.get_status()["current_fault_prob"] == 0.2

@@ -17,6 +17,8 @@ from collections import deque
 from datetime import datetime
 from pathlib import Path
 
+from flask import current_app
+
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
 UAV_FAULT_PACKAGE_ROOT = PROJECT_ROOT / "packages" / "uav_fault"
 PYTHONPATH_DIRS = [PROJECT_ROOT, UAV_FAULT_PACKAGE_ROOT]
@@ -47,10 +49,13 @@ from uav_fault.telemetry.schema_adapter import (
     adapt_px4_live_frame,
     canonicalize_rfly_frame,
 )
-from uav_fault.online.event_aggregator import AggregatedEvent
+from uav_fault.online.event_aggregator import AggregatedEvent, event_timing
 from uav_fault.online.monitoring_session import OnlineMonitoringSession
+from uav_fault.online.detection_policy import OnlineDetectionPolicy, input_contract_check_due
 
 DetectionRunner = None
+_MANAGER_EXTENSION_KEY = "dashboard_telemetry_manager"
+_manager_lock = threading.RLock()
 
 
 def _generate_id(prefix: str) -> str:
@@ -338,19 +343,7 @@ class TelemetryPersistence:
 
 
 class TelemetryProcessManager:
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialized = False
-        return cls._instance
-
     def __init__(self, app=None):
-        if self._initialized:
-            return
-        self._initialized = True
-
         self.app = app
         self._frame_queue: queue.Queue = queue.Queue(maxsize=4096)
         self._inference_queue: queue.Queue = queue.Queue(maxsize=1)
@@ -404,30 +397,32 @@ class TelemetryProcessManager:
         self._center_inference_count = 0
         self._mec_last_inference_count = 0
         self._mec_last_event_seq = 0
-        self._current_fault_prob: float = 0.0
-        self._risk_score: float = 0.0
-        self._risk_trend: str = "stable"
-        self._warning_stage: str = "normal"
-        self._warning_reason: str = "当前未发现风险演化信号"
-        self._preview_started_at: float | None = None
+        # Risk and preview timing are owned only by OnlineMonitoringSession.
         self._top_recommendations: list[dict] = []
-        self._last_preview_lead_time_s: float | None = None
         self._stop_in_progress = False
         self._last_stop_result: dict | None = None
         self._last_stop_error: Exception | None = None
         self._stop_condition = threading.Condition(self._lock)
         self._persistence = TelemetryPersistence(self)
-        self._sessions_dir = PROJECT_ROOT / "data" / "telemetry_sessions"
+        runtime_dir = app.config.get("RUNTIME_DIR") if app is not None else None
+        self._sessions_dir = (
+            Path(runtime_dir) / "telemetry_sessions"
+            if runtime_dir is not None else PROJECT_ROOT / "data" / "telemetry_sessions"
+        )
         self._sessions_dir.mkdir(parents=True, exist_ok=True)
 
     def init_app(self, app):
-        if self.app is not None and self.app is not app and (
-            self.is_collecting or self._backend is not None
-        ):
-            raise RuntimeError("遥测管理器仍有活动会话，不能切换 Flask app")
-        self.app = app
-        self._sessions_dir = Path(app.config["RUNTIME_DIR"]) / "telemetry_sessions"
-        self._sessions_dir.mkdir(parents=True, exist_ok=True)
+        with _manager_lock:
+            if self.app is not None and self.app is not app:
+                raise RuntimeError("遥测管理器已有所属应用，不能切换 Flask app")
+            existing = app.extensions.get(_MANAGER_EXTENSION_KEY)
+            if existing is not None and existing is not self:
+                raise RuntimeError("Flask app 已有所属遥测管理器")
+            sessions_dir = Path(app.config["RUNTIME_DIR"]) / "telemetry_sessions"
+            sessions_dir.mkdir(parents=True, exist_ok=True)
+            self.app = app
+            self._sessions_dir = sessions_dir
+            app.extensions[_MANAGER_EXTENSION_KEY] = self
 
     def on_transport_lifecycle(self, snapshot, session_id=None, backend=None) -> None:
         """Receive lifecycle snapshots from the active transport Adapter."""
@@ -488,14 +483,7 @@ class TelemetryProcessManager:
         self._center_inference_count = 0
         self._mec_last_inference_count = 0
         self._mec_last_event_seq = 0
-        self._current_fault_prob = 0.0
-        self._risk_score = 0.0
-        self._risk_trend = "stable"
-        self._warning_stage = "normal"
-        self._warning_reason = "当前未发现风险演化信号"
-        self._preview_started_at = None
         self._top_recommendations = []
-        self._last_preview_lead_time_s = None
         self._monitoring_session.reset_collection()
         self._canonical_window.clear()
         self._frame_queue_drops = 0
@@ -548,14 +536,7 @@ class TelemetryProcessManager:
         self._center_inference_count = 0
         self._mec_last_inference_count = 0
         self._mec_last_event_seq = 0
-        self._current_fault_prob = 0.0
-        self._risk_score = 0.0
-        self._risk_trend = "stable"
-        self._warning_stage = "normal"
-        self._warning_reason = "当前未发现风险演化信号"
-        self._preview_started_at = None
         self._top_recommendations = []
-        self._last_preview_lead_time_s = None
         self._monitoring_session.reset_collection()
         self._canonical_window.clear()
         self._frame_queue_drops = 0
@@ -862,7 +843,7 @@ class TelemetryProcessManager:
                 {
                     "kind": "risk",
                     "name": "warning_stage",
-                    "value": self._warning_stage,
+                    "value": self._monitoring_session.snapshot().warning_stage,
                     "status": "derived",
                 },
                 {
@@ -1121,16 +1102,17 @@ class TelemetryProcessManager:
                 mec_metrics = processes.get("mec_metrics")
                 if mec_metrics:
                     mec.update(mec_metrics)
-            preview_started_at = self._preview_started_at
-            current_fault_prob = self._current_fault_prob
-            risk_score = self._risk_score
-            risk_trend = self._risk_trend
-            warning_stage = self._warning_stage
-            warning_reason = self._warning_reason
+            monitoring = self._monitoring_session.snapshot()
+            preview_started_at = monitoring.preview_started_at
+            current_fault_prob = monitoring.current_fault_prob
+            risk_score = monitoring.risk_score
+            risk_trend = monitoring.risk_trend
+            warning_stage = monitoring.warning_stage
+            warning_reason = monitoring.warning_reason
             top_recommendations = (
                 self._snapshot_runtime_value(self._top_recommendations) or []
             )
-            preview_lead_time_s = self._last_preview_lead_time_s
+            preview_lead_time_s = monitoring.last_preview_lead_time_s
             if (
                 preview_lead_time_s is None
                 and preview_started_at is not None
@@ -1171,6 +1153,8 @@ class TelemetryProcessManager:
                     "mode": "async_live"
                     if self._frame_worker_thread is not None
                     else "synchronous",
+                    "input_contract_check_every_frames": 50
+                    if self._frame_worker_thread is not None else 1,
                     "frame_queue_depth": self._frame_queue.qsize(),
                     "frame_queue_drops": self._frame_queue_drops,
                     "inference_queue_depth": self._inference_queue.qsize(),
@@ -1651,7 +1635,10 @@ class TelemetryProcessManager:
                 self._detector = None
             else:
                 runner_cls = self._get_detection_runner_cls()
-                self._detector = runner_cls(model_meta["path"], device="cpu")
+                self._detector = runner_cls(
+                    model_meta["path"], device="cpu",
+                    policy=OnlineDetectionPolicy(inference_every=self._get_online_inference_stride()),
+                )
             self._active_model = self._model_summary(model_meta)
             self._monitoring_session.start_detection(
                 self._detector,
@@ -1771,10 +1758,11 @@ class TelemetryProcessManager:
                     "default": coverage.get("default", []),
                     "proxy": coverage.get("proxy", []),
                 }
-                should_assess = len(detect_window) >= 150 and (
-                    force_contract_assessment
-                    or input_contract_status is None
-                    or frame_idx % 50 == 0
+                should_assess = input_contract_check_due(
+                    frame_idx=frame_idx, window_length=len(detect_window),
+                    min_window_size=150, every_frames=50,
+                    has_previous=input_contract_status is not None,
+                    force=force_contract_assessment,
                 )
                 if should_assess:
                     input_contract_status = assess_canonical_input_contract(
@@ -1805,7 +1793,7 @@ class TelemetryProcessManager:
                             frame.get("baro_alt_meter", frame.get("pos_z", 0)),
                         ),
                     ),
-                    "fault_prob": self._current_fault_prob,
+                    "fault_prob": self._monitoring_session.snapshot().current_fault_prob,
                 }
             )
             detector = self._detector
@@ -1840,7 +1828,7 @@ class TelemetryProcessManager:
                             n_points=int(item.get("n_points") or 0),
                             max_fault_prob=float(item.get("max_fault_prob") or 0.0),
                             mean_fault_prob=float(item.get("mean_fault_prob") or 0.0),
-                            meta={"inference_location": "mec"},
+                            meta={"inference_location": "mec", "timing": item.get("timing")},
                         )
                     )
                 self._mec_last_event_seq = event_seq
@@ -1866,9 +1854,12 @@ class TelemetryProcessManager:
             return
         if input_contract_status and input_contract_status.get("detection_blocked"):
             return
-        if len(detect_window) < detector.window_size:
-            return
-        if frame_idx % self._get_online_inference_stride() != 0:
+        policy = getattr(detector, "policy", None) or OnlineDetectionPolicy(
+            inference_every=self._get_online_inference_stride()
+        )
+        if not policy.should_infer(
+            frame_idx=frame_idx, window_length=len(detect_window), window_size=detector.window_size
+        ):
             return
         session_snapshot = self._monitoring_session.snapshot()
         if session_snapshot.state != "running":
@@ -1919,18 +1910,11 @@ class TelemetryProcessManager:
         frame_idx: int | None,
         update,
     ) -> None:
-        if update.stale:
+        if update.stale or update.snapshot.generation != self._monitoring_session.generation:
             return
         snapshot = update.snapshot
         result = update.result
         canonical = canonical or {}
-        self._current_fault_prob = snapshot.current_fault_prob
-        self._risk_score = snapshot.risk_score
-        self._risk_trend = snapshot.risk_trend
-        self._warning_stage = snapshot.warning_stage
-        self._warning_reason = snapshot.warning_reason
-        self._preview_started_at = snapshot.preview_started_at
-        self._last_preview_lead_time_s = snapshot.last_preview_lead_time_s
         self._top_recommendations = self._recommend_actions_for_stage(
             snapshot.warning_stage
         )
@@ -1986,8 +1970,11 @@ class TelemetryProcessManager:
             probability=event.max_fault_prob,
             start_time=event.start_t,
             end_time=event.end_t,
-            lead_time_s=self._last_preview_lead_time_s,
+            lead_time_s=getattr(
+                event, "lead_time_s", self._monitoring_session.snapshot().last_preview_lead_time_s
+            ),
         )
+        diagnosis["event_timing"] = event_timing(event)
         self._persistence.record_fault_event(
             session_id=self._session_id,
             event=event,
@@ -2073,6 +2060,7 @@ class TelemetryProcessManager:
             "severity": severity,
             "severity_legacy": legacy_severity_from_canonical(severity),
             "diagnosis": diagnosis,
+            "event_timing": diagnosis.get("event_timing") or event_timing(event),
             "created_at": getattr(event, "created_at", None).strftime(
                 "%Y-%m-%d %H:%M:%S"
             )
@@ -2137,5 +2125,34 @@ class TelemetryProcessManager:
         )
 
 
-# 全局单例
-telemetry_manager = TelemetryProcessManager()
+def get_telemetry_manager(app=None) -> TelemetryProcessManager:
+    """Return the manager owned by this Flask app; never fall back to another app."""
+    app = app if app is not None else current_app._get_current_object()
+    if not app.config.get("ENABLE_TELEMETRY", True):
+        raise RuntimeError("当前应用未启用遥测")
+    with _manager_lock:
+        manager = app.extensions.get(_MANAGER_EXTENSION_KEY)
+        if manager is None:
+            manager = TelemetryProcessManager(app)
+            manager.init_app(app)
+        return manager
+
+
+def shutdown_telemetry_manager(app) -> None:
+    """Explicit application shutdown, not request/app-context teardown.
+
+    Keep the owner registered if cleanup fails so it cannot be silently orphaned.
+    """
+    with _manager_lock:
+        manager = app.extensions.get(_MANAGER_EXTENSION_KEY)
+        if manager is None:
+            return
+        with app.app_context():
+            if manager._backend is not None or manager.is_collecting:
+                manager.stop_collection()
+            manager.stop_transport_processing()
+        if any(thread is not None and thread.is_alive() for thread in (
+            manager._frame_worker_thread, manager._inference_worker_thread,
+        )):
+            raise RuntimeError("遥测工作线程尚未退出，保留管理器以便继续清理")
+        app.extensions.pop(_MANAGER_EXTENSION_KEY)

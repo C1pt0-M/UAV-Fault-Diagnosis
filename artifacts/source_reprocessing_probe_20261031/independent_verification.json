@@ -1,0 +1,1237 @@
+{
+  "status": "PASS",
+  "verified_at": "2026-10-31T04:46:15.779515+00:00",
+  "sampled_cases": 138,
+  "verified_candidate_cases": 135,
+  "original_clock_quarantined_cases": 3,
+  "known40_active_windows_recovered_cases": 40,
+  "descriptive_invalid_frame_causes_overlapping": {
+    "frames_input_unavailable_or_stale": 3649,
+    "frames_not_confirmed_airborne_or_land_stale": 1864,
+    "frames_gtd_time_uncovered": 119937
+  },
+  "censoring": {
+    "left_censored_cases": 5,
+    "right_censored_cases": 126,
+    "confirmed_landing_cases": 9
+  },
+  "checks": "Independent source timestamp lookup and all 26 channels, raw hashes, temporal coverage, GTD event intervals, complete-window validity; no future frame or nonfinite fill accepted.",
+  "caution": "Recorded timestamp causal feature sampling does not certify end-to-end online latency. Flight crop and confirmation are retrospective selection, thresholds provisional.",
+  "cases": [
+    {
+      "case_uid": "HIL/acce/GPS/TestCase_101_2406000100",
+      "sample_sha256": "91fc92434a345fa65e66453560af1d6c7624e83e589eca9b47b05d1b4ab925d6",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 649,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/acce/accelerometer/TestCase_101_2402000100",
+      "sample_sha256": "4d17188aa6a8366cf96963bdee9dc7e629cf82e2e9c5d6b63530147b654f9b0e",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 618,
+      "valid_active_windows": 418,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/acce/barometer/TestCase_100_2404000099",
+      "sample_sha256": "f78bdcc84ad042f2006b8ba7363013116aa346df64862e26d4f9373ebacb3037",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 610,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/acce/gyroscope/TestCase_102_2403000101",
+      "sample_sha256": "d609ca720bb20e973dfbd06763e89f515bb88f10a2b31814afef6dc431c575de",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 649,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/acce/magnetometer/TestCase_100_2405000099",
+      "sample_sha256": "3f7902276014133e6975986fd37ac8e8ca71c972c111aa1adaa16ac38a4c421f",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 650,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/acce/motor/TestCase_10_2400000009",
+      "sample_sha256": "e562fb82d2dec93dbd8fbfb353e58978ce9b0002a7ef8072e1a18fd678b00865",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 649,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/acce/no_fault/TestCase_161_2419000160",
+      "sample_sha256": "4d329b63da9c3d085800f17653517e17de5fd2b7a5224fa45600ab4679ce179a",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 300,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/acce/no_fault/TestCase_200_2419000199",
+      "sample_sha256": "5fedf156c29f41b84b114d6f3c13bebfdaeb065c946a25991fed9a375e4d97fc",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 288,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/circling/GPS/TestCase_131_2306000130",
+      "sample_sha256": "cab3f6103042e629a8a8fca56393fad84304eaee85e117cda50623ab24ec4b66",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 919,
+      "valid_active_windows": 419,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/GPS/TestCase_61_2306000060",
+      "sample_sha256": "6f50bf9ab1dd7ecb95eb5b8fa3d97f1e05fa2800ebb84a8c53a8878473853f1b",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 912,
+      "valid_active_windows": 413,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/GPS/TestCase_71_2306000070",
+      "sample_sha256": "436aa226d7ee569cb746c26cf7a46cb8952ac51264f935a3c54f48cee82cdef4",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 950,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/GPS/TestCase_79_2306000078",
+      "sample_sha256": "0b010ea31d1f39dd4e5b466a9d64e8ad02c9b1e20f7cd6c54f3f5d0776a859fc",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 884,
+      "valid_active_windows": 384,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/accelerometer/TestCase_131_2302000130",
+      "sample_sha256": "6a62551687a64a96224ad7b6f669ed829d60892fd133a35d1e96c9683abed73f",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 950,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/circling/accelerometer/TestCase_59_2302000058",
+      "sample_sha256": "2cf39f68f087b124410d769f9f0b9f1c6cc269321ff108c1fe4f252b592e947d",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 892,
+      "valid_active_windows": 427,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/accelerometer/TestCase_63_2302000062",
+      "sample_sha256": "d504ba6703167441a3f4fa67c50e27ec82c84cb3f2383568ff8bcd4cd132be51",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 911,
+      "valid_active_windows": 412,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/accelerometer/TestCase_71_2302000070",
+      "sample_sha256": "fe691bae611d79a21058731de3240ca6788b39486e946936667253e812f19f7c",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 912,
+      "valid_active_windows": 412,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/accelerometer/TestCase_74_2302000073",
+      "sample_sha256": "48e4f91fb0f483c234840eeaaf68d6e344b9d970d6f60943563f1d83ad61af97",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 853,
+      "valid_active_windows": 400,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/barometer/TestCase_131_2304000130",
+      "sample_sha256": "808173a036af8c561f124ba26eaddc084386820df74acf83fc9813753f7369c7",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 932,
+      "valid_active_windows": 433,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/circling/barometer/TestCase_55_2304000054",
+      "sample_sha256": "44e3d054949ac1c69a4c967015abf11166aaebb47e801458b784a2a63d39512e",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 676,
+      "valid_active_windows": 176,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/barometer/TestCase_56_2304000055",
+      "sample_sha256": "89daab39bdb48a261e4f7c689179c4adf890ecbe9fd567c06c35c6cc6ea6789b",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 715,
+      "valid_active_windows": 215,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/barometer/TestCase_57_2304000056",
+      "sample_sha256": "5fd5884894684efe153f291710315875650e09409946b42e25e7d4f79aecff4c",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 715,
+      "valid_active_windows": 215,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/barometer/TestCase_59_2304000058",
+      "sample_sha256": "febefc76867e3d7c2b2140b8c8f7969c40e58ae92bd8f06dc459e4f3ca3ecba8",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 678,
+      "valid_active_windows": 178,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/barometer/TestCase_61_2304000060",
+      "sample_sha256": "4ca1df2e94f81a86d3163ed0e3bf484e19a2ad5dd009d681493108c75b58d06a",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 670,
+      "valid_active_windows": 170,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/barometer/TestCase_63_2304000062",
+      "sample_sha256": "bf2274172f0b0cf38266f1efec37cb2df47000644bc243dab95e7c3c1cc3bd80",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 715,
+      "valid_active_windows": 215,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/barometer/TestCase_73_2304000072",
+      "sample_sha256": "172ae62a24e32a780f2a005e3100b1f0afa31e2a6332431395425860447c6ea0",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 890,
+      "valid_active_windows": 389,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/barometer/TestCase_74_2304000073",
+      "sample_sha256": "2417e507886a4ad35f6fc56e44c7a4249b7b23196ddcf7df9342f04913d4c289",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 920,
+      "valid_active_windows": 420,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/gyroscope/TestCase_131_2303000130",
+      "sample_sha256": "b56a88d906d43fd1f1e40c871ccd4b9a215a6a76391a31cea095c9780de954b0",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 944,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/circling/gyroscope/TestCase_132_2303000131",
+      "sample_sha256": "77068769b1fedcc4b389511c6570189b24bf2d6aa047246155d47c0732b036cf",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 944,
+      "valid_active_windows": 444,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/gyroscope/TestCase_59_2303000058",
+      "sample_sha256": "3c7ffce529fd714df439cdc9eefeaa6a11b65d3e25fc9ba3e1d91f2d551dcc8b",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 900,
+      "valid_active_windows": 400,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/gyroscope/TestCase_60_2303000059",
+      "sample_sha256": "9ec0941893fbb50534f9dd11b857b503c75e1461699eb05793d15b8beb53a8cf",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 950,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/gyroscope/TestCase_64_2303000063",
+      "sample_sha256": "02ce4574f3c2176e8ec02905e0b1ffe6f795e3518a406aa4ff3d467f2562f010",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 901,
+      "valid_active_windows": 401,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/magnetometer/TestCase_131_2305000130",
+      "sample_sha256": "f90c3c52088a1ae0ef5ef08fa99b7cf9e2757516ff5f2dc38db4e77afa1d1fc4",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 910,
+      "valid_active_windows": 410,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/circling/magnetometer/TestCase_56_2305000055",
+      "sample_sha256": "955a25d6c77871bb61f94c85f54d1e90532fe45d7b228d95cc6a211858e9e0df",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 950,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/magnetometer/TestCase_63_2305000062",
+      "sample_sha256": "b2168ab2230be547dea97337b7020311b57a7967557416bcf82dc345379fc822",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 910,
+      "valid_active_windows": 410,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/magnetometer/TestCase_70_2305000069",
+      "sample_sha256": "e5071a70c77c1927d7c4503e13af676e699b958b146150f6d4ce77b35184a36a",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 950,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/magnetometer/TestCase_80_2305000079",
+      "sample_sha256": "aae9389beb5b3cdc12c05be25c897358849c7dd907b7fc52b695196ec42252d2",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 950,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_100_2300000099",
+      "sample_sha256": "2353831b743b8657e5c9b04cb0524faaa8178fa259b2acc4b98fd1eff1777765",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 1068,
+      "valid_active_windows": 569,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_10_2300000009",
+      "sample_sha256": "da3ae9c1fc2a53b08210f0a42ffe6da383897c9479652519cf678204713ba9c6",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 898,
+      "valid_active_windows": 398,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_130_2300000129",
+      "sample_sha256": "3e19eb9175801f68d36bfa05c5794df676ac7f59c241ad477ab38f37accb02c1",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 1100,
+      "valid_active_windows": 601,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_143_2300000142",
+      "sample_sha256": "d5d75f3f5c53570e8ec658bde1b8a6d7df8040217404f967592f3da0d7358f25",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 1052,
+      "valid_active_windows": 551,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_144_2300000143",
+      "sample_sha256": "6ed23b0abaf848151c078194b27b0e5e1cc6ac57b1dcb75759eea9951be371d9",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 1014,
+      "valid_active_windows": 556,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_149_2300000148",
+      "sample_sha256": "567b85760369880b64600c650fadf3d5e278ea860173cf50ac8ab2386f708d36",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 1068,
+      "valid_active_windows": 568,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_154_2300000153",
+      "sample_sha256": "d4c943510891ef1a6db0ce6ea14562fa4ef3e3cb1a7e5a85bbf679d95f7a6a4a",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 1069,
+      "valid_active_windows": 569,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_161_2300000160",
+      "sample_sha256": "3949aab42fd036918eb233b0ab4f06fab6786672d48b3a588fd493c8556501af",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 1025,
+      "valid_active_windows": 526,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_184_2300000183",
+      "sample_sha256": "3825f3a595ee378db97b8aeb98f683405ee4c14e03fd0d10329c1afd3f27873f",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 950,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_192_2300000191",
+      "sample_sha256": "0c686933ea78bac88a843de20fe8338b78bc7afd8287091d2c592bf548ace0c3",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 898,
+      "valid_active_windows": 399,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_21_2300000020",
+      "sample_sha256": "a3a1acbfab048abd595c64d04413d3021dd2611d982457d99322397dcb63df2e",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 878,
+      "valid_active_windows": 378,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_52_2300000051",
+      "sample_sha256": "930f942ed48fa733a93e59abfeb9c84979ac378fa92f9826e4398db2c3054ed0",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 907,
+      "valid_active_windows": 407,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_53_2300000052",
+      "sample_sha256": "6ba282fc7afa3eea8e89df134f3e57b708f70f98c5f92c521c2d42e44b1413c4",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 952,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_58_2300000057",
+      "sample_sha256": "50b04cd7780ffc61ad726c62cb2b4d8777ce186e22b26296c4a7b1d78c8af43f",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 896,
+      "valid_active_windows": 396,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_69_2300000068",
+      "sample_sha256": "0f5c7f5b13f76da8793afc5d9c122a1123a031c7c87f63a05d1e3632542515f3",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 952,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_71_2300000070",
+      "sample_sha256": "007cd70a212f5ab970aee727c9f57babbcc3fa594b0937f833017d08f067247b",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 917,
+      "valid_active_windows": 417,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/motor/TestCase_99_2300000098",
+      "sample_sha256": "1f219f232d29cb2cee74d2e77b202d882e83864e84ce860f852fc564cc12baae",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 1068,
+      "valid_active_windows": 569,
+      "is_known_after_crop_case": true
+    },
+    {
+      "case_uid": "HIL/circling/no_fault/TestCase_100_2319000099",
+      "sample_sha256": "2b072520d317e6657e930636796a4d4db92672029a32f9c4c6cff659ff9284a2",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 600,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/circling/no_fault/TestCase_98_2319000097",
+      "sample_sha256": "100c589d8aaec358903dcc92c64c838c8bd188bd15a2c2966e62a540502ea6dc",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 568,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/dece/GPS/TestCase_112_2506000111",
+      "sample_sha256": "aef248e70f32b0fb602b47b71e922d19754e924c5759b1375133d28f8468b4d2",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 670,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/dece/accelerometer/TestCase_112_2502000111",
+      "sample_sha256": "58cd9e420bc08f6666a6421a70fe1f7af9ba73f4e9771c166188d9894e0be811",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 640,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/dece/barometer/TestCase_112_2504000111",
+      "sample_sha256": "aa23e639f78b4810ab763e1f8c43e06e21c48077045669a39d0f54eac965be1d",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 366,
+      "valid_active_windows": 146,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/dece/gyroscope/TestCase_112_2503000111",
+      "sample_sha256": "a64351c28fcffb93ed1ab54f7ea9a15f6fea4c1175b25bd3ef9202d1b4769730",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 638,
+      "valid_active_windows": 418,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/dece/magnetometer/TestCase_112_2505000111",
+      "sample_sha256": "60d10f1d92810d1146d7a5271cd8a70498fa767d95d4a7b1d2283247613fbd4c",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 670,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/dece/motor/TestCase_10_2500000009",
+      "sample_sha256": "e4cbfdd808d27eb736276079928d4b2d7f5cda1f55c75856ff3be00362ae18b6",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 469,
+      "valid_active_windows": 250,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/dece/no_fault/TestCase_201_2519000200",
+      "sample_sha256": "2b7cf5b09a01c33d7b3ee27b18218a84bebb59e82769b3e1b3a1895d8542a6fb",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 350,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/dece/no_fault/TestCase_240_2519000239",
+      "sample_sha256": "fd2720e7b40f1fc8c66235363a1cf16335682b5210b9239a5ebeadc4a80d3ecd",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 349,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/hover/GPS/TestCase_10_2006000009",
+      "sample_sha256": "415b738b619b8f007effc3fb4c0b4653fd26aeba09a1933feadf3d75f3e6b2a8",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 387,
+      "valid_active_windows": 200,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/hover/accelerometer/TestCase_10_2002000009",
+      "sample_sha256": "68636ffa3e6712c685cd10b233a217577c8f554fdd2e9108eb70eab2a346cce8",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 396,
+      "valid_active_windows": 250,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/hover/barometer/TestCase_10_2004000009",
+      "sample_sha256": "c10712c6bc507e3f7032aaac53f96d6fd455f0e91c7475daf76639ee1789e8b5",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 365,
+      "valid_active_windows": 216,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/hover/gyroscope/TestCase_11_2003000010",
+      "sample_sha256": "76fb9ae7375ce0c88c36dc6a5376624e7805bc16ca1d27e23653b23619ba8b4d",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 437,
+      "valid_active_windows": 250,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/hover/magnetometer/TestCase_11_2005000010",
+      "sample_sha256": "e7dfeb74fcfc7536f31eaac45ac89175bd981de5099f8dbf0f6d2f1ead13d08e",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 374,
+      "valid_active_windows": 181,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/hover/motor/TestCase_100_2000000099",
+      "sample_sha256": "ebc79fae8d8fd066014a4c2aff06dfc8b96bb6ab69f4e4f2aa8fa6ca8f3d75c9",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 658,
+      "valid_active_windows": 510,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_10_2019000009",
+      "sample_sha256": "0e0eb34fa8f26733449b16986c63abed73dcec78cb433f94a149683f6c5e18f9",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 472,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_9_2019000008",
+      "sample_sha256": "3faafdd5f284aa70ed4e61cb055cf8e609a0bac2148523d7f3e98e576697d194",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 412,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/velocity/GPS/TestCase_134_2206000133",
+      "sample_sha256": "2778a73ac66c24b2ff698b901404251ce3b4f03242bce6b600288c42b0ad85c8",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 650,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/velocity/accelerometer/TestCase_133_2202000132",
+      "sample_sha256": "e728d1b960a5e29030b7bf25db177943e481761c6867f02a6d82502ba7ca69e7",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 577,
+      "valid_active_windows": 381,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/velocity/barometer/TestCase_133_2204000132",
+      "sample_sha256": "3070e2c1cba8d23ffb52d4fef115dd10e0df11d9f560803eb4dca8b9edeabb29",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 617,
+      "valid_active_windows": 418,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/velocity/gyroscope/TestCase_133_2203000132",
+      "sample_sha256": "9c15c2024eaef830debb2a9e9758cd680af10c9d6f229d79b76b2492809b0728",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 573,
+      "valid_active_windows": 405,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/velocity/magnetometer/TestCase_133_2205000132",
+      "sample_sha256": "d122601750c97d979440f3c8bafd3fe3dd24eeb253cdc9017ee25a4048c00523",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 645,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/velocity/motor/TestCase_11_2200000010",
+      "sample_sha256": "bc0697ca489bb4ae30a7d08a6c11264b33cfd6f16e96bdfe4fb4aac4e3289d88",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 549,
+      "valid_active_windows": 350,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/velocity/no_fault/TestCase_121_2219000120",
+      "sample_sha256": "b3d40dc96202630ac1545fc21cfd65df3c26d04bb0a92cee61a3c227f4d6a2d6",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 399,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/velocity/no_fault/TestCase_160_2219000159",
+      "sample_sha256": "d6f4f32beaf035e1fc4c6702ddba86a9f6bda3754cfc0bf6d8546e7cef181171",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 337,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/waypoint/GPS/TestCase_129_2106000128",
+      "sample_sha256": "6c6e0acd49a7e5a77ee44ee0950bf361548b1e6df3369e63632c69076a91a56d",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 956,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/waypoint/accelerometer/TestCase_129_2102000128",
+      "sample_sha256": "8c34f0c30b23dce0575896334836f59106baf86029e0d500f990861f9ba10eec",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 950,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/waypoint/barometer/TestCase_129_2104000128",
+      "sample_sha256": "40abfa15c7912f93592e4f62a85403d4a497fc55c187006b043193cce6fd34c1",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 945,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/waypoint/gyroscope/TestCase_129_2103000128",
+      "sample_sha256": "24a1b6865a40da2fc98b2bbc7d446c6368116d9601cf64f282629d642824f7e2",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 951,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/waypoint/magnetometer/TestCase_129_2105000128",
+      "sample_sha256": "b5e072e464c8b28eac8197347fd566e0ab7be4b1f4ff6ffef5a6d1504af93c5c",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 919,
+      "valid_active_windows": 381,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/waypoint/motor/TestCase_100_2100000099",
+      "sample_sha256": "0e38976bad0a948fbd140fe490038f2eaeeb6de9e7dcac5c32e32626396c7bff",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 1062,
+      "valid_active_windows": 561,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/waypoint/no_fault/TestCase_41_2119000040",
+      "sample_sha256": "7f4cbdc26687a62dcd873430179071e4783b538e276b9b92c72ab6bb944b4306",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 600,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "HIL/waypoint/no_fault/TestCase_80_2119000079",
+      "sample_sha256": "c6286159fa8e465660328b1770d5f6e35e93a4ab5bec9f1660173ed0c23e2c62",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 650,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/acce/GPS/TestCase_101_1406000100",
+      "sample_sha256": "c5bf887bfe20af0808a5a7e05495ebee7f5ca70f0e9c9718c22c32a26623e6b4",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 666,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/acce/accelerometer/TestCase_101_1402000100",
+      "sample_sha256": "7c0ae7e5a4bd1ab8f952b1d9589316ed339ea5c6faab8e8f2aeece2c990de8bc",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 666,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/acce/barometer/TestCase_100_1404000099",
+      "sample_sha256": "c2fce443da64f4dc67326eba36671e7e106463b38a2ad91d084ba106a597f525",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 666,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/acce/gyroscope/TestCase_102_1403000101",
+      "sample_sha256": "ad1a18a2b718eb222f35cd6079ff2a02b9b9e628410f34649d0479f013ad0024",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 665,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/acce/magnetometer/TestCase_100_1405000099",
+      "sample_sha256": "d527c643177a017c9899393feb77397fd320fccb33e107b41785f9b373e149a2",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 666,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/acce/motor/TestCase_10_2400000009",
+      "sample_sha256": "90a501ba3bdb3ccc22603d6e5bfa2ae82e950bd412bcd604a33f2607bd13d44b",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 666,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/acce/no_fault/TestCase_161_1419000160",
+      "sample_sha256": "ac207b5ba0d65f7dc06a05074710fdfe71e8d175109801f12e003cee9469928b",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 316,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/acce/no_fault/TestCase_200_1419000199",
+      "sample_sha256": "3051c8d0c8b8c0833bf528e5664aef2893e076e441f91099e16255ec88deae15",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 315,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/circling/GPS/TestCase_131_1306000130",
+      "sample_sha256": "86f143504dc54e79d075f094eac0e6bf7a720d47fa4e86499f3da4da6b3c836f",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 966,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/circling/accelerometer/TestCase_131_1302000130",
+      "sample_sha256": "bbae68ddceab5e08db5db244d42d90aadd1e8bc8b4b21d6ad825f2c9df0ef3f8",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 966,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/circling/barometer/TestCase_131_1304000130",
+      "sample_sha256": "2fa85fec94e9796bc020bba9e55c3194990fe1a41785745fcd5356da3178f3a5",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 966,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/circling/gyroscope/TestCase_131_1303000130",
+      "sample_sha256": "a7fea1c2455fb4111c2e6ec1f6a9a19e3e274c79437d053dd04d7fa09a024847",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 966,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/circling/magnetometer/TestCase_131_1305000130",
+      "sample_sha256": "698450a63ee43e2daeb1ccdab0d0a86371f85e8bfa306f9d6028dfbf67224cad",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 966,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/circling/motor/TestCase_100_1300000099",
+      "sample_sha256": "84abc998a9854efb4610374b3eb2df5192d88e87f493aca5212a862527b59b2b",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 1115,
+      "valid_active_windows": 600,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/circling/no_fault/TestCase_100_1319000099",
+      "sample_sha256": "d87770a33b7d522192ac6356dea74c0a4f94f250f78977896c6e74e9b7e2fbda",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 615,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/circling/no_fault/TestCase_96_1319000095",
+      "sample_sha256": "8e4d704f61311c8cab86e0b2efd64358df28d205cf89f75151723c4dd83e2186",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 615,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/dece/GPS/TestCase_112_1506000111",
+      "sample_sha256": "3d6fbed56ded72da819aac1251c7f8e61161f63feef443fb8657c4dd46096865",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 686,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/dece/accelerometer/TestCase_112_1502000111",
+      "sample_sha256": "e531c039688dfa17fbf35644fece241b9a8db8940eb3a0992130de9902ad3629",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 686,
+      "valid_active_windows": 451,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/dece/barometer/TestCase_112_1504000111",
+      "sample_sha256": "6c9411ac72b0449a6603e8cf6cd3373b2ee4de6f78725c9ab7112d74106fa4d4",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 449,
+      "valid_active_windows": 213,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/dece/gyroscope/TestCase_112_1503000111",
+      "sample_sha256": "d6cc8519c460a2356a6d93d5cdacbe18b976cfa48563a9b91f9f2322c8ac0e80",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 686,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/dece/magnetometer/TestCase_112_1505000111",
+      "sample_sha256": "d2c16c67455827d7bc1fad03634f0087480686345d09aedda6febfc893d8484e",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 686,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/dece/motor/TestCase_10_2500000009",
+      "sample_sha256": "9c2a2a5fbc9709a6301235d7829d68819196de97ccf446d206a8690e4dd15a96",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 486,
+      "valid_active_windows": 250,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/dece/no_fault/TestCase_201_1519000200",
+      "sample_sha256": "1932200d518a3ef508824d004d6867610d898ac779fd4d477937f380aba7d6fe",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 365,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/dece/no_fault/TestCase_240_1519000239",
+      "sample_sha256": "49487b95542911a71d054d291c8371d3ce5ca4d0a06bba5d93a6647190478554",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 365,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/hover/GPS/TestCase_10_1006000009",
+      "sample_sha256": "bc315302c1b084dd9b31e53dfc1046b8a68089a8d4732174ee63a7e393338b5d",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 416,
+      "valid_active_windows": 251,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/hover/accelerometer/TestCase_10_1002000009",
+      "sample_sha256": "451218b23dfa11630da250f60774c2f6910a71c53b806d9e3f8e009aa906c603",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 415,
+      "valid_active_windows": 250,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/hover/barometer/TestCase_10_1004000009",
+      "sample_sha256": "550c248f9b607b6df0ce7ee1529dabf83ec0b0e09d3e93849bfb9fcc61a62a0b",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 378,
+      "valid_active_windows": 213,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/hover/gyroscope/TestCase_11_1003000010",
+      "sample_sha256": "a24eb4da23f4a6f322820c3abeafb32cd693aed78ef5b4395281ada4f4e455d6",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 416,
+      "valid_active_windows": 251,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/hover/magnetometer/TestCase_11_1005000010",
+      "sample_sha256": "3e104ccc98ff18242771d7056c1d1d48264045715300988c24bdf274dad80d3c",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 415,
+      "valid_active_windows": 250,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/hover/motor/TestCase_100_1000000099",
+      "sample_sha256": "2cf7ca68becf7b0148f3bc12866820f84a3a9a4a87efa2b9f6a553cb27802ce0",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 766,
+      "valid_active_windows": 601,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_10_1019000009",
+      "sample_sha256": "6c4cbeb74f775fabe828f325e4b09adfb2c0ca136e6ca1f9551746ee20db8ec2",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 451,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_9_1019000008",
+      "sample_sha256": "d6581b6d2add5daf23d3dcd0fab43356cb61873797ed7b77226ae5927d9d4141",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 441,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/velocity/GPS/TestCase_134_1206000133",
+      "sample_sha256": "4395b368a419928496e270f4061e1f3b58f4790e98061220cab282916d655881",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 666,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/velocity/accelerometer/TestCase_133_1202000132",
+      "sample_sha256": "2b0136d3739a15a4cca04050f74005c6c70a99b369566ca2c8710c06e7e1b344",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 666,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/velocity/barometer/TestCase_133_1204000132",
+      "sample_sha256": "b892ceae127f8f6c1d72333f5ea67af0d0eb85f6d098b376e58e768ca156108f",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 666,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/velocity/gyroscope/TestCase_133_1203000132",
+      "sample_sha256": "5f38bf8eca6d4a60b0be5cfa0165a3a9af5194b4a9015db5caee67a732b87d77",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 666,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/velocity/magnetometer/TestCase_133_1205000132",
+      "sample_sha256": "d625a99af1f001286c2dc40dacf6ac55d3872ad7b7db4eaddb225d409eb51bd3",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 666,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/velocity/motor/TestCase_11_2200000010",
+      "sample_sha256": "3a720b368e8a252e0d022c1fdc4fbb559d14448781343128affc136bfbdfc7ff",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 566,
+      "valid_active_windows": 351,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/velocity/no_fault/TestCase_121_1219000120",
+      "sample_sha256": "5a25ed2068d7878bb28c66811e3a8290799a914dabe297c2acbb36a020baba24",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 415,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/velocity/no_fault/TestCase_160_1219000159",
+      "sample_sha256": "dd97235156934d388811c619d9b60aab7f8eb0d49ca28b6ec66380c65724112c",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 415,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/waypoint/GPS/TestCase_129_1106000128",
+      "sample_sha256": "7d4dbb088f9a0ecb71e2916211a425e5129ecccb79ce36f632aacbc5fa0f9ba0",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 966,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/waypoint/accelerometer/TestCase_129_1102000128",
+      "sample_sha256": "7500285c8e967dce35a626d0af047cd077bc69034724b56ceff79980077c8454",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 966,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/waypoint/barometer/TestCase_129_1104000128",
+      "sample_sha256": "f991a00d98e179f884b17427ac701fc3d62957fb7605b2a379d20b34b73b05ee",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 966,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/waypoint/gyroscope/TestCase_129_1103000128",
+      "sample_sha256": "c31c5107d5a0289fe3ad74b1ebfe2c60cab5edfcab383e857c2258ffafc8d392",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 966,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/waypoint/magnetometer/TestCase_129_1105000128",
+      "sample_sha256": "ab853f779a3872bbf417909aa8062c2e4cb006ad3e1aab9fe15881d43be61e9b",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 966,
+      "valid_active_windows": 450,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/waypoint/motor/TestCase_100_1100000099",
+      "sample_sha256": "c099da630e71e2934a42a7ad25b0ef0db13d3841a35a955f6a69b8b414c7bbb2",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 1116,
+      "valid_active_windows": 601,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/waypoint/no_fault/TestCase_41_1119000040",
+      "sample_sha256": "4d469158d0ec8a562b75d34b5595adbd2963d438f944125e19882a5c67c94e5d",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 665,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    },
+    {
+      "case_uid": "SIL/waypoint/no_fault/TestCase_80_1119000079",
+      "sample_sha256": "6b60d284e916c44d040087b2511d3225a9470534a5cec88d5822a71dc107e7d8",
+      "source_hash_matches_prior_audit": true,
+      "independent_feature_and_endpoint_checks": "PASS",
+      "valid_windows": 665,
+      "valid_active_windows": 0,
+      "is_known_after_crop_case": false
+    }
+  ]
+}

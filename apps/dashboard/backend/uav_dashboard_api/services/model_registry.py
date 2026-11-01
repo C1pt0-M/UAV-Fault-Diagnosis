@@ -3,8 +3,16 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
+
+from uav_fault.model_contract import (
+    RFLY_SEQ_COLUMNS_V1,
+    offline_input_contract_errors,
+    offline_label_names,
+    offline_norm_contract_errors,
+    online_input_contract_errors,
+)
 
 
 SUPPORTED_OFFLINE_ARCHITECTURES = {
@@ -45,28 +53,50 @@ def _read_json(path: Path) -> dict[str, Any]:
     return data if isinstance(data, dict) else {}
 
 
-def _manifest_model_dirs(model_root: Path) -> list[Path] | None:
+def _manifest_models(model_root: Path) -> list[tuple[Path, str | None]] | None:
     manifest_path = model_root / "manifest.json"
     if not manifest_path.exists():
         return None
     manifest = _read_json(manifest_path)
+    if type(manifest.get("version")) is not int or manifest["version"] != 1:
+        raise ValueError("Model manifest version must be 1")
     entries = manifest.get("models")
     if not isinstance(entries, list):
-        return []
+        raise ValueError("Model manifest models must be a list")
 
-    model_dirs: list[Path] = []
+    root = model_root.resolve()
+    models: list[tuple[Path, str | None]] = []
+    names: set[str] = set()
+    directories: set[Path] = set()
     for entry in entries:
         if not isinstance(entry, dict):
-            continue
-        raw_path = str(entry.get("path") or entry.get("name") or "").strip()
-        if not raw_path:
-            continue
-        candidate = Path(raw_path).expanduser()
-        model_dir = candidate if candidate.is_absolute() else model_root / candidate
+            raise ValueError("Model manifest entry must be an object")
+        raw_path = entry.get("path", entry.get("name"))
+        if not isinstance(raw_path, str) or not raw_path or raw_path.strip() != raw_path:
+            raise ValueError("Model manifest path must be a nonblank relative path")
+        windows_path, posix_path = PureWindowsPath(raw_path), PurePosixPath(raw_path)
+        if windows_path.drive or windows_path.root or posix_path.is_absolute() or ".." in windows_path.parts:
+            raise ValueError(f"Model manifest path must stay inside MODEL_ROOT: {raw_path}")
+        model_dir = (root / raw_path).resolve()
+        if model_dir == root or not model_dir.is_relative_to(root):
+            raise ValueError(f"Model manifest path must stay inside MODEL_ROOT: {raw_path}")
+        name = entry.get("name", model_dir.name)
+        if name != model_dir.name:
+            raise ValueError(f"Model manifest name must match directory name: {raw_path}")
+        if name in names or model_dir in directories:
+            raise ValueError(f"Duplicate model manifest entry: {name}")
+        runtime = entry.get("runtime")
+        if "runtime" in entry and runtime not in ("online", "offline"):
+            raise ValueError(f"Invalid model manifest runtime: {name}")
         if not model_dir.is_dir():
             raise FileNotFoundError(f"Manifest model directory does not exist: {model_dir}")
-        model_dirs.append(model_dir)
-    return model_dirs
+        for filename in ("config.json", "best.pt"):
+            if not (model_dir / filename).is_file():
+                raise FileNotFoundError(f"Manifest model file does not exist: {model_dir / filename}")
+        names.add(name)
+        directories.add(model_dir)
+        models.append((model_dir, runtime))
+    return models
 
 
 def _task_matches(model_task: str, requested_task: str | None) -> bool:
@@ -85,7 +115,7 @@ def _task_matches(model_task: str, requested_task: str | None) -> bool:
 def _as_nonnegative_int(value: Any) -> int:
     try:
         parsed = int(value or 0)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return 0
     return max(0, parsed)
 
@@ -103,6 +133,8 @@ def _infer_task(
     config: dict[str, Any],
     norm_stats: dict[str, Any] | None,
 ) -> str:
+    if _infer_architecture(model_dir, config) in SUPPORTED_OFFLINE_ARCHITECTURES:
+        return OFFLINE_MULTICLASS_TASK
     num_classes = _as_nonnegative_int(config.get("num_classes"))
     raw_label_names = config.get("label_names")
     label_names = (
@@ -125,34 +157,9 @@ def _infer_task(
 def _default_label_names(task: str, num_classes: int) -> list[str]:
     if task == "online_binary" and num_classes == 2:
         return ["normal", "fault"]
-    if task in OFFLINE_MULTICLASS_TASK_ALIASES and num_classes == 5:
-        return ["normal", "battery_failure", "motor_failure", "prop_imbalance", "thrust_loss"]
-    if task == "offline_multiclass" and num_classes == 3:
-        return ["normal", "motor", "sensor"]
-    if task == "offline_multiclass" and num_classes == 4:
-        return ["normal", "motor", "propeller", "sensor"]
+    if task in OFFLINE_MULTICLASS_TASK_ALIASES and num_classes >= 3:
+        return offline_label_names({}, num_classes)
     return [f"class_{idx}" for idx in range(num_classes)] if num_classes > 0 else []
-
-
-def _has_valid_online_norm_contract(
-    config: dict[str, Any],
-    norm_stats: dict[str, Any] | None,
-) -> bool:
-    if not isinstance(norm_stats, dict):
-        return False
-    columns = norm_stats.get("columns")
-    mean = norm_stats.get("mean")
-    std = norm_stats.get("std")
-    if not all(isinstance(items, list) and items for items in (columns, mean, std)):
-        return False
-    feature_count = len(columns)
-    if len(mean) != feature_count or len(std) != feature_count:
-        return False
-    try:
-        in_channels = _as_nonnegative_int(config.get("in_channels"))
-        return in_channels == feature_count and all(float(value) > 0 for value in std)
-    except (TypeError, ValueError):
-        return False
 
 
 def _metrics_bundle(config: dict[str, Any], metrics: dict[str, Any]) -> dict[str, Any]:
@@ -221,26 +228,36 @@ def _build_metadata(model_dir: Path) -> dict[str, Any] | None:
 
     architecture = _infer_architecture(model_dir, config)
     task = _infer_task(model_dir, config, norm_stats)
-    num_classes = _as_nonnegative_int(config.get("num_classes"))
+    num_classes = _as_nonnegative_int(config.get("num_classes", 5 if task in OFFLINE_MULTICLASS_TASK_ALIASES else 0))
     label_names = config.get("label_names")
     if not isinstance(label_names, list) or not label_names:
         label_names = _default_label_names(task, num_classes)
 
-    has_valid_online_norm_contract = _has_valid_online_norm_contract(config, norm_stats)
+    input_contract_errors: list[str] = []
+    if task == "online_binary":
+        input_contract_errors = online_input_contract_errors(config, norm_stats)
+    elif architecture in SUPPORTED_OFFLINE_ARCHITECTURES:
+        input_contract_errors = offline_input_contract_errors(config)
+        if not input_contract_errors:
+            label_names = offline_label_names(config, num_classes)
+        if norm_stats_path.exists():
+            input_contract_errors.extend(offline_norm_contract_errors(norm_stats, RFLY_SEQ_COLUMNS_V1, config=config))
+    has_valid_input_contract = not input_contract_errors
     capabilities = {
         "offline_detection": (
             task in OFFLINE_MULTICLASS_TASK_ALIASES
             and architecture in SUPPORTED_OFFLINE_ARCHITECTURES
+            and has_valid_input_contract
         ),
         "realtime_detection": (
             task == "online_binary"
             and architecture in SUPPORTED_ONLINE_ARCHITECTURES
-            and has_valid_online_norm_contract
+            and has_valid_input_contract
         ),
         "fault_prob_curve": (
             task == "online_binary"
             and architecture in SUPPORTED_ONLINE_ARCHITECTURES
-            and has_valid_online_norm_contract
+            and has_valid_input_contract
         ),
     }
 
@@ -255,10 +272,15 @@ def _build_metadata(model_dir: Path) -> dict[str, Any] | None:
         "metrics": _metrics_bundle(config, metrics),
         "metrics_external": _metrics_bundle(config, metrics_external),
         "capabilities": capabilities,
+        "input_contract_errors": input_contract_errors,
         "has_norm_stats": norm_stats_path.exists(),
         "norm_stats_path": str(norm_stats_path) if norm_stats_path.exists() else None,
         "window_size": norm_stats.get("window_size") if isinstance(norm_stats, dict) else None,
-        "feature_count": len(norm_stats.get("columns") or []) if isinstance(norm_stats, dict) else 0,
+        "feature_count": (
+            len(norm_stats["columns"])
+            if isinstance(norm_stats, dict) and isinstance(norm_stats.get("columns"), list)
+            else 0
+        ),
         "updated_at": int(model_dir.stat().st_mtime),
     }
 
@@ -275,16 +297,25 @@ def list_registered_models(
     if not model_root.exists():
         return []
 
-    manifest_dirs = _manifest_model_dirs(model_root)
-    model_dirs = manifest_dirs if manifest_dirs is not None else sorted(model_root.iterdir(), key=lambda item: item.name)
+    manifest_models = _manifest_models(model_root)
+    models = (
+        manifest_models if manifest_models is not None
+        else [(directory, None) for directory in sorted(model_root.iterdir(), key=lambda item: item.name)]
+    )
 
     items: list[dict[str, Any]] = []
-    for model_dir in model_dirs:
+    for model_dir, runtime in models:
         if whitelist and model_dir.name not in whitelist:
             continue
         meta = _build_metadata(model_dir)
         if meta is None:
+            if manifest_models is not None:
+                raise ValueError(f"Invalid manifest model metadata: {model_dir}")
             continue
+        if runtime is not None:
+            expected_tasks = {"online_binary"} if runtime == "online" else OFFLINE_MULTICLASS_TASK_ALIASES
+            if meta["task"] not in expected_tasks:
+                raise ValueError(f"Model manifest runtime disagrees with model task: {model_dir.name}")
         if not _task_matches(meta["task"], task):
             continue
         if capability and not meta["capabilities"].get(capability, False) and not include_unavailable:

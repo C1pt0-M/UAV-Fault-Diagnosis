@@ -1,0 +1,52 @@
+{
+  "status": "APPLIED_INPUT_ONLY_PILOT_WINDOW_EXCLUSION",
+  "files_examined": 16,
+  "partially_affected_files": 5,
+  "whole_files_excluded": 0,
+  "original_windows": 7943,
+  "input_eligible_windows": 7729,
+  "input_excluded_windows": 214,
+  "excluded_by_original_split": {
+    "train": 147,
+    "val": 67
+  },
+  "included_by_original_split": {
+    "train": 6082,
+    "val": 1647
+  },
+  "exclusion_reason": "Input observation age exceeds frozen pilot per-group budget in at least one required frame.",
+  "original_inputs_and_masks_unchanged": true,
+  "original_case_window_ids_and_split_preserved": true,
+  "physical_files_deleted": false,
+  "model_or_scores_used": false,
+  "training_authorized": false,
+  "scope": "Only existing fixed 16-case source train/val pilot; not a full-dataset count or deletion. Input eligibility alone does not establish label eligibility or live receive-time provenance. Full continuous replay and original exclusion denominators remain intact.",
+  "source_identities": {
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\case_results.jsonl": "e07097deeec762e793d6623460b8146270cc7282cb43133239bd6320210f528d",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\summary.json": "92c2c9d0fe18e6657c5119cd03c27f8bc9280f15d58b234eb6c586529d482442",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\input_policy.json": "815bc5cfd728069aba19fbeaa518d20e3ea7e76c3a42e9a6287325e99ed0509b",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\pilot_norm_stats.json": "a9148174f2e51354d1ba65cf21818d131931fb34c915e835816cf5e42fabcbcf",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\SIL__hover__no_fault__TestCase_10_1019000009.npz": "d9a65c1dbdae975ff86753ceab6b3211e9aa45fda4900a7fde619141dabc3e02",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\SIL__waypoint__no_fault__TestCase_41_1119000040.npz": "08f520eced124ad7d23e945d9c6bad118570ee1eddbb2542b6beb7c601e96f8a",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\SIL__circling__no_fault__TestCase_101_1319000100.npz": "cfd64ea5695393fd7ccd0d6abf31a3208d9411b454424a86bb1e726a08df3152",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\SIL__velocity__no_fault__TestCase_121_1219000120.npz": "17a82b7e3cf4c2d39e867b3b6f28ec9dc0e9beee1580209ac154c1973b6b8cc6",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\SIL__acce__no_fault__TestCase_161_1419000160.npz": "fa2cd68beb58efd339c64f55c59b05f02ab2739901f19c0ac6de931b6ad8943b",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\SIL__dece__no_fault__TestCase_202_1519000201.npz": "f7b4271d82c9ec394ca747dcf00506302c6d86a75f318d5c1010572f9f2ac392",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\HIL__hover__no_fault__TestCase_10_2019000009.npz": "7224d6862fa6fea32a82ca40d37ff2ddf770d2006f70b72f166b05b6fe7eb0d9",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\HIL__waypoint__no_fault__TestCase_41_2119000040.npz": "59d811f6fc67a4994325be7713aa622d86fc6e654b5ec19032633564ebdbbb83",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\HIL__circling__no_fault__TestCase_101_2319000100.npz": "8f4a271ca2a42a4c74040b9c10cf630eb449e4135a28e1275908dd8a8721e73e",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\HIL__velocity__no_fault__TestCase_121_2219000120.npz": "bd6fe586afe409c8f70295ec63534b7a6371b4cf97a3daef798ae00f2783131b",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\HIL__acce__no_fault__TestCase_161_2419000160.npz": "c44b75e0e92bca9537cb6d9ee5ee148b79e4c94156d86d6d45abb244889685cd",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\HIL__dece__no_fault__TestCase_202_2519000201.npz": "6b82d8ec5348147fcc0a048a2ba6a1bda99c81580c7aa5039abe0afc2012cf85",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\SIL__acce__no_fault__TestCase_172_1419000171.npz": "f1d0a9505e6a6edd39f2abdc14f0988ea8eb6744ef18ed3a2411700a39ada835",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\HIL__acce__no_fault__TestCase_172_2419000171.npz": "86962a0ec4392acb52855ecaae4daf4b8370c8333b2ffaa45a5ac61075bf819e",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\HIL__hover__motor__TestCase_181_2000000180.npz": "2d18235ab2686f13eb96f980dca3f3985a0aeb1b404b4e40288f51004694c3a5",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\HIL__circling__motor__TestCase_118_2300000117.npz": "9cb86b4ab1b83a88a2ad80bab22734f8adbcc97b156d70477b74f152061570c7"
+  },
+  "script_sha256": "29378ffdefb6d5672de7d8c31f2682a55d20c163af099e55c6e5b809b7d88c1f",
+  "outputs_sha256": {
+    "included_input_windows.csv": "7f1345efb48d735ad238da57b021af7ec9d1e1118a5ff15f0ef4befce2e72d0d",
+    "excluded_input_windows.csv": "6df37dcf89671b147ed47bcf24fbaa9ab563e6b9fc91847b37da297c22dccf8e",
+    "case_selection_summary.csv": "de2c329888964b2325e7017658f1d4f3266922c2592dbe70cff55f40e8b81bcc"
+  }
+}

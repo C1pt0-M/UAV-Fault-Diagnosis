@@ -9,6 +9,8 @@ we store events (start/end) rather than full 50Hz telemetry in the DB.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
+from time import time
 from typing import Any
 
 
@@ -24,6 +26,33 @@ class AggregatedEvent:
     meta: dict[str, Any]
 
 
+def event_timing(event) -> dict[str, Any]:
+    """Read optional timing metadata, including legacy or untrusted transport events.
+
+    *_t uses the input stream clock; *_at_unix_s uses the emitting host clock.
+    Hysteresis confirmation precedes final duration filtering. Emission means the
+    aggregator returned a finalized event, not browser delivery or physical onset.
+    """
+    meta = getattr(event, "meta", None)
+    timing = meta.get("timing") if isinstance(meta, dict) else None
+    if not isinstance(timing, dict):
+        return {}
+    result = {}
+    for name in ("confirmed_t", "emitted_t", "confirmed_at_unix_s", "emitted_at_unix_s"):
+        value = timing.get(name)
+        if isinstance(value, bool):
+            continue
+        try:
+            value = float(value)
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if math.isfinite(value):
+            result[name] = value
+    if timing.get("emission_reason") in ("update", "flush"):
+        result["emission_reason"] = timing["emission_reason"]
+    return result
+
+
 @dataclass
 class _EventAccum:
     start_t: float
@@ -33,6 +62,8 @@ class _EventAccum:
     n_points: int
     max_fault_prob: float
     sum_fault_prob: float
+    confirmed_t: float | None = None
+    confirmed_at_unix_s: float | None = None
 
     def add_point(self, t: float, fault_prob: float, frame_idx: int | None):
         self.end_t = float(t)
@@ -112,7 +143,7 @@ class FaultEventAggregator:
         out = self._maybe_keep(ev)
         return [out] if out is not None else []
 
-    def _maybe_keep(self, acc: _EventAccum) -> AggregatedEvent | None:
+    def _maybe_keep(self, acc: _EventAccum, *, emission_reason: str = "update") -> AggregatedEvent | None:
         dur = float(acc.end_t) - float(acc.start_t)
         if dur < self.min_event_s:
             return None
@@ -124,6 +155,13 @@ class FaultEventAggregator:
             "k_off": self.k_off,
             "min_event_s": self.min_event_s,
             "merge_gap_s": self.merge_gap_s,
+            "timing": {
+                "confirmed_t": acc.confirmed_t,
+                "confirmed_at_unix_s": acc.confirmed_at_unix_s,
+                "emitted_t": self._last_t,
+                "emitted_at_unix_s": time(),
+                "emission_reason": emission_reason,
+            },
         }
         return acc.to_event(meta)
 
@@ -139,12 +177,11 @@ class FaultEventAggregator:
         fault_prob = float(fault_prob)
 
         finalized: list[AggregatedEvent] = []
+        self._last_t = t
 
         # If we have a pending event, it may become final as time advances.
         if self._pending_closed is not None:
             finalized.extend(self._finalize_if_ready(t))
-
-        self._last_t = t
 
         # ── Not currently in an event: look for onset streak ──
         if self._active is None:
@@ -171,6 +208,8 @@ class FaultEventAggregator:
                             n_points=0,
                             max_fault_prob=0.0,
                             sum_fault_prob=0.0,
+                            confirmed_t=t,
+                            confirmed_at_unix_s=time(),
                         )
 
                     # Add all candidate points into the active event.
@@ -222,7 +261,7 @@ class FaultEventAggregator:
 
         # Emit pending event regardless of merge gap.
         if self._pending_closed is not None:
-            ev = self._maybe_keep(self._pending_closed)
+            ev = self._maybe_keep(self._pending_closed, emission_reason="flush")
             if ev is not None:
                 out.append(ev)
             self._pending_closed = None

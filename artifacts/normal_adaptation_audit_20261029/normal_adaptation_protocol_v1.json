@@ -1,0 +1,193 @@
+{
+  "protocol_name": "rflymad_online_normal_adapt_v1",
+  "status": "FROZEN",
+  "frozen_at": "2026-10-29T10:50:29.178278+08:00",
+  "base_case_split": "rflymad_case_split_v2",
+  "base_manifest_sha256": "272a91aeba5b563ebfa23fff8d295ac53372ccac391c835dccf2b5660d9d6ce5",
+  "role_manifest": "artifacts\\normal_adaptation_audit_20261029\\real_case_roles_v1.csv",
+  "role_manifest_sha256": "f3aa12c2bd2c1cfbf6df8db9cdcdd308579a135efe4b73b784bb5cb32ce687dd",
+  "source_audit_report": "artifacts\\normal_adaptation_audit_20261029\\prerequisites_audit_v2.json",
+  "source_audit_sha256": "5a279decaf8e3dfa8939f0881b8228ed497096e03cc2b462cac6fe8473cec921",
+  "cache_identity_report": "D:\\UAV-Fault-Diagnosis\\artifacts\\normal_adaptation_audit_20261029\\cache_identity.json",
+  "cache_identity": {
+    "checked_at": "2026-10-29T02:10:23.372420+08:00",
+    "remote_alias": "autodl_UAV",
+    "local_cache": "D:/UAV-Data/online_cache_v2",
+    "remote_cache": "/root/autodl-tmp/online_cache_v2",
+    "files": [
+      {
+        "file": "train.pt",
+        "local": {
+          "bytes": 2634632149,
+          "sha256": "f0992b19768575364f19378dd5109bcb640764035ecce4cc9d29132557a88d58"
+        },
+        "remote": {
+          "bytes": 2634632149,
+          "sha256": "f0992b19768575364f19378dd5109bcb640764035ecce4cc9d29132557a88d58"
+        },
+        "identical": true
+      },
+      {
+        "file": "val.pt",
+        "local": {
+          "bytes": 554397893,
+          "sha256": "9a6063590b4b313c0d8df0dbc5213d88e3f5e078bb5be13c8054deb816ed2757"
+        },
+        "remote": {
+          "bytes": 554397893,
+          "sha256": "9a6063590b4b313c0d8df0dbc5213d88e3f5e078bb5be13c8054deb816ed2757"
+        },
+        "identical": true
+      },
+      {
+        "file": "test.pt",
+        "local": {
+          "bytes": 552400077,
+          "sha256": "a3fd37b9f00d157aff1ad5d157f5997ab1cf2349808b2b19114f9a474e2b31e2"
+        },
+        "remote": {
+          "bytes": 552400077,
+          "sha256": "a3fd37b9f00d157aff1ad5d157f5997ab1cf2349808b2b19114f9a474e2b31e2"
+        },
+        "identical": true
+      },
+      {
+        "file": "real_holdout_test.pt",
+        "local": {
+          "bytes": 457612917,
+          "sha256": "2c0a46cc5536e0c0eaee0e04dc0f75eb8cc75907d053b0c76a1464b72c1225e6"
+        },
+        "remote": {
+          "bytes": 457612917,
+          "sha256": "2c0a46cc5536e0c0eaee0e04dc0f75eb8cc75907d053b0c76a1464b72c1225e6"
+        },
+        "identical": true
+      },
+      {
+        "file": "live_holdout.pt",
+        "local": {
+          "bytes": 14394381,
+          "sha256": "0cf2d1bdf55d6cbe99954a1238ae47a1fb02a9688bd9b81e60dfa812c6b7fcfd"
+        },
+        "remote": {
+          "bytes": 14394381,
+          "sha256": "0cf2d1bdf55d6cbe99954a1238ae47a1fb02a9688bd9b81e60dfa812c6b7fcfd"
+        },
+        "identical": true
+      }
+    ],
+    "all_identical": true,
+    "limitation": "Byte identity does not validate every source CSV or causal preprocessing; numerical source probes are in prerequisites_audit.json."
+  },
+  "role_counts": {
+    "test_fault": 392,
+    "adapt_normal": 10,
+    "test_normal": 33,
+    "calibrate_normal": 5,
+    "supplemental_normal_test": 25
+  },
+  "role_rules": {
+    "adapt_normal": "10 retain_normal cases: 2 per flight_status, selected by fixed SHA256 ordering of TestInfo case-ID candidate groups",
+    "calibrate_normal": "5 retain_normal cases: 1 per flight_status, selected by the same ordering after adaptation groups",
+    "test_normal": "remaining retain_normal cases",
+    "test_fault": "all 392 Real motor/sensor cases",
+    "supplemental_normal_test": "all 25 retain_normal_only cases, reported separately",
+    "association_rule": "same TestInfo Real Flight case ID candidate group cannot cross adaptation, calibration and test roles; this does not assert same flight or device"
+  },
+  "source_training": {
+    "cache": "online_cache_v2",
+    "source_domains": [
+      "SIL",
+      "HIL"
+    ],
+    "source_fault_classes": [
+      "motor",
+      "sensor"
+    ],
+    "rflysim_normal_train_sessions": 32,
+    "rflysim_normal_holdout_sessions": 8,
+    "real_fault_or_normal_training": false,
+    "input_norm_stats": "source training statistics only"
+  },
+  "input_contract": {
+    "feature_schema": "rfly_seq_columns_v2",
+    "feature_count": 26,
+    "target_hz": 50.0,
+    "window_size_frames": 150,
+    "window_seconds": 3.0,
+    "manifest_stride_frames": 5,
+    "max_windows_per_case": 64,
+    "window_label": "causal endpoint normal/fault label"
+  },
+  "model_arms": {
+    "A0_no_target_adaptation": "source best checkpoint, source normalization, no Real reads",
+    "A1_normal_bn_recalibration": {
+      "source_checkpoint_same_as_A0": true,
+      "real_role": "adapt_normal",
+      "gradient_updates": false,
+      "parameters_frozen": true,
+      "reset_batchnorm_running_stats": true,
+      "batch_size": 64,
+      "num_workers": 0,
+      "shuffle": false,
+      "window_order": "case_uid then window_end_row",
+      "dropout_training": false,
+      "input_norm_stats": "source training statistics only",
+      "only_for_models_with_batchnorm": true
+    }
+  },
+  "threshold_arms": {
+    "T0_fixed": {
+      "onset_threshold": 0.6,
+      "clear_threshold": 0.4,
+      "k_on": 3,
+      "k_off": 3,
+      "min_event_s": 0.5,
+      "merge_gap_s": 0.5,
+      "inference_every_frames": 10
+    },
+    "T1_normal_calibrated": {
+      "calibration_role": "calibrate_normal",
+      "quantile": 0.995,
+      "quantile_method": "linear",
+      "onset_threshold": "clip(max(0.60, q), 0.60, 0.95)",
+      "clear_threshold": 0.4,
+      "k_on": 3,
+      "k_off": 3,
+      "min_event_s": 0.5,
+      "merge_gap_s": 0.5,
+      "inference_every_frames": 10
+    }
+  },
+  "evaluation": {
+    "main_real_test_roles": [
+      "test_normal",
+      "test_fault"
+    ],
+    "supplemental_real_test_roles": [
+      "supplemental_normal_test"
+    ],
+    "primary_metrics": [
+      "fault_case_event_recall",
+      "motor_case_recall",
+      "sensor_case_recall",
+      "normal_case_event_false_alarm_rate",
+      "false_alarm_events_per_hour",
+      "event_detection_latency_distribution"
+    ],
+    "secondary_metrics": [
+      "window_accuracy",
+      "window_macro_f1",
+      "window_fault_recall"
+    ],
+    "pre_onset_alarm": "report separately; never convert to negative latency",
+    "latency": "event_start after ground_truth_onset minus ground_truth_onset; missing when no post-onset event",
+    "real_replay_label": "retrospective streaming replay until causal preprocessing is separately verified",
+    "rflysim_holdout": "report separately from RflyMAD Real"
+  },
+  "frozen_boundaries": [
+    "Real fault cases are never used for training, adaptation, threshold calibration, early stopping or model selection.",
+    "Base case split and source cache are not overwritten.",
+    "Any change to members, adaptation method, threshold rule or preprocessing requires protocol v2."
+  ]
+}

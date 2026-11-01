@@ -22,6 +22,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
+from uav_fault.model_contract import online_input_contract_errors
+from uav_fault.online.detection_policy import OnlineDetectionPolicy
+
 try:
     from uav_fault.models.cnn.lstm import (
         OnlineBiLSTM,
@@ -82,12 +85,15 @@ class FaultDetector:
         self.device = torch.device(device)
 
         # 加载配置
-        with open(model_dir / "config.json") as f:
+        with open(model_dir / "config.json", encoding="utf-8") as f:
             self.config = json.load(f)
 
-        # 加载归一化参数
-        with open(model_dir / "norm_stats.json") as f:
+        # 在构造模型或读取权重前检查，避免与 Dashboard 的可用性判断不一致。
+        with open(model_dir / "norm_stats.json", encoding="utf-8") as f:
             stats = json.load(f)
+        errors = online_input_contract_errors(self.config, stats)
+        if errors:
+            raise ValueError(f"Invalid online model input contract ({model_dir}): {'; '.join(errors)}")
         self.columns = stats["columns"]
         self.mean = np.array(stats["mean"], dtype=np.float32)  # (C,)
         self.std = np.array(stats["std"], dtype=np.float32)  # (C,)
@@ -271,12 +277,8 @@ class FaultDetector:
 
     def _window_end_indices(self, n_rows: int, every_n: int) -> np.ndarray:
         """返回与实时链路一致的窗口结束位置（1-based exclusive end）。"""
-        if every_n <= 0:
-            raise ValueError("every_n must be positive")
-        if n_rows < self.window_size:
-            return np.empty(0, dtype=np.int64)
-        first_end = ((self.window_size + every_n - 1) // every_n) * every_n
-        return np.arange(first_end, n_rows + 1, every_n, dtype=np.int64)
+        policy = OnlineDetectionPolicy(inference_every=every_n)
+        return np.fromiter(policy.window_ends(n_rows, self.window_size), dtype=np.int64)
 
     def _predict_batch_tensor(self, batch_x: np.ndarray) -> list[dict]:
         """对 (B, C, T) batch 执行推理并返回与 predict 一致的结果。"""

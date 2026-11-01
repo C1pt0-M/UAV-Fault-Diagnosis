@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { navigationItems, resolvePageMeta } from '@/shared/constants/navigation'
+import { applyRuntimeCapabilities, runtimeCapabilities } from '@/shared/state/runtimeCapabilities'
 
 const routeState = vi.hoisted(() => ({ path: '/reports' }))
 const routerPush = vi.hoisted(() => vi.fn())
@@ -39,6 +40,7 @@ function mountLayout() {
 describe('Layout shell', () => {
   beforeEach(() => {
     localStorage.clear()
+    applyRuntimeCapabilities({ ai: true, telemetry: true })
     routeState.path = '/reports'
     routerPush.mockReset()
     logoutMock.mockClear()
@@ -71,5 +73,18 @@ describe('Layout shell', () => {
     expect(localStorage.getItem('token')).toBeNull()
     expect(localStorage.getItem('user')).toBeNull()
     expect(routerPush).toHaveBeenCalledWith('/login')
+    expect(runtimeCapabilities.ai).toBe(false)
+    expect(runtimeCapabilities.telemetry).toBe(false)
+  })
+
+  it('omits disabled optional navigation and empty group headings', () => {
+    applyRuntimeCapabilities({ ai: false, telemetry: false })
+    const wrapper = mountLayout()
+    const labels = wrapper.findAll('.nav-item__label').map(item => item.text())
+    expect(labels).not.toContain('实时监测')
+    expect(labels).not.toContain('AI 助手')
+    expect(labels).toContain('系统设置')
+    expect(labels).toContain('诊断报告')
+    expect(wrapper.findAll('.nav-group-title').map(item => item.text())).not.toContain('智能助手')
   })
 })

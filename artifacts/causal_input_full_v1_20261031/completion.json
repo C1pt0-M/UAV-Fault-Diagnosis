@@ -1,0 +1,183 @@
+{
+  "status": "COMPLETE_FULL_FROZEN_SCOPE_CAUSAL_PUBLICATION_REPLAY_DATA_WITH_EXCLUSIONS",
+  "version": "rflymad_causal_publication_replay_v1",
+  "completed_at": "2026-10-31T12:06:34.396542+00:00",
+  "cases": 4153,
+  "splits": {
+    "train": {
+      "split": "train",
+      "original_windows": 168800,
+      "supervised_windows": 162069,
+      "input_eligible_windows": 162184,
+      "excluded_windows": 6731,
+      "cases": 2580,
+      "entirely_excluded_cases": 10,
+      "input_issues": {
+        "publication_clock_reversal": 4
+      },
+      "class_counts": {
+        "normal": 83051,
+        "fault": 79018
+      },
+      "roles": {
+        "historical_train_suffix": {
+          "original": 3680,
+          "eligible": 0
+        },
+        "train": {
+          "original": 165120,
+          "eligible": 162069
+        }
+      },
+      "cache_file": "D:\\UAV-Data\\causal_input_v1\\cache\\train.pt",
+      "cache_sha256": "d4c3c2c741c67d224547cf604087f45fa4ed371197129fd026ecf475d4de428d",
+      "norm_sha256": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+      "training_run": false,
+      "deployment_approved": false
+    },
+    "val": {
+      "split": "val",
+      "original_windows": 35520,
+      "supervised_windows": 34710,
+      "input_eligible_windows": 34738,
+      "excluded_windows": 810,
+      "cases": 555,
+      "entirely_excluded_cases": 3,
+      "input_issues": {
+        "publication_clock_reversal": 2
+      },
+      "class_counts": {
+        "normal": 17740,
+        "fault": 16970
+      },
+      "roles": {
+        "val": {
+          "original": 35520,
+          "eligible": 34710
+        }
+      },
+      "cache_file": "D:\\UAV-Data\\causal_input_v1\\cache\\val.pt",
+      "cache_sha256": "1cb842b81ef7c8c8f00708add6404b96191d50b97b83aa76f26e27aadedf411f",
+      "norm_sha256": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+      "training_run": false,
+      "deployment_approved": false
+    },
+    "test": {
+      "split": "test",
+      "original_windows": 35392,
+      "supervised_windows": 34802,
+      "input_eligible_windows": 34828,
+      "excluded_windows": 590,
+      "cases": 553,
+      "entirely_excluded_cases": 1,
+      "input_issues": {},
+      "class_counts": {
+        "normal": 17800,
+        "fault": 17002
+      },
+      "roles": {
+        "test": {
+          "original": 35392,
+          "eligible": 34802
+        }
+      },
+      "cache_file": "D:\\UAV-Data\\causal_input_v1\\cache\\test_evidence.pt",
+      "cache_sha256": "ac2c38afcd40a17ab67eaa4729d83cebd5ed7ce9d5722bf297924dfc686371fc",
+      "norm_sha256": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+      "training_run": false,
+      "deployment_approved": false
+    },
+    "real": {
+      "split": "real",
+      "original_windows": 29319,
+      "supervised_windows": 26815,
+      "input_eligible_windows": 27540,
+      "excluded_windows": 2504,
+      "cases": 465,
+      "entirely_excluded_cases": 10,
+      "input_issues": {},
+      "class_counts": {
+        "normal": 17998,
+        "fault": 8817
+      },
+      "roles": {
+        "adapt_normal": {
+          "original": 640,
+          "eligible": 598
+        },
+        "calibrate_normal": {
+          "original": 320,
+          "eligible": 301
+        },
+        "supplemental_normal_test": {
+          "original": 1159,
+          "eligible": 1085
+        },
+        "test_fault": {
+          "original": 25088,
+          "eligible": 22947
+        },
+        "test_normal": {
+          "original": 2112,
+          "eligible": 1884
+        }
+      },
+      "cache_file": "D:\\UAV-Data\\causal_input_v1\\cache\\real_evidence.pt",
+      "cache_sha256": "33e20a51f368501c96298e93c9f7a644ac0365237544147b33d74cea2c980f7a",
+      "norm_sha256": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+      "training_run": false,
+      "deployment_approved": false
+    }
+  },
+  "normalization": {
+    "file": "D:\\UAV-Data\\causal_input_v1\\norm_stats.json",
+    "sha256": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+    "fit_windows": 162069,
+    "fit_frame_contributions": 24310350,
+    "scope": "eligible original cap64 source train only"
+  },
+  "source_input_identities": {
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_full_v1_20261031\\plan.json": "9a6011e2d23b9709d0c0db0a762e80e042c558bfe5d2cb31adf604451a6f27cc",
+    "D:\\UAV-Fault-Diagnosis\\configs\\experiments\\causal_input_contract_v1.json": "00edc69d5ebf47685ab333d0d32eeab7fcfbe8073f7924e16a0239e3cdcc6122",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_input_parity_v1_20261031\\input_policy.json": "815bc5cfd728069aba19fbeaa518d20e3ea7e76c3a42e9a6287325e99ed0509b",
+    "D:\\UAV-Data\\online_cache_v2_labeltime_v1\\repair_manifest.json": "cccd4aa5fb1d101d166c691dbb9db0bd6815b9921270330f9cfac2881f541f08",
+    "D:\\UAV-Data\\internal_test_labeltime_v1\\repair_manifest.json": "71620eecaa295f7da2d6bcc2ee8b8a07edb5c21b77606c892d29ee7596a17cf3",
+    "D:\\UAV-Data\\real_labeltime_v1\\repair_manifest.json": "b6a3786a5dea2fe1b5bc020a4e3b5b16d171450f5ca698f86b2932cddc448ff9",
+    "D:\\UAV-Data\\splits\\rflymad_case_split_v2\\rflymad_case_level_split_manifest.csv": "272a91aeba5b563ebfa23fff8d295ac53372ccac391c835dccf2b5660d9d6ce5",
+    "D:\\UAV-Fault-Diagnosis\\packages\\uav_fault\\uav_fault\\causal_input.py": "9c875d6aed2ac04b410afb564e3309b3be84f9578d354e3790fcf6c985320408",
+    "D:\\UAV-Fault-Diagnosis\\packages\\uav_fault\\uav_fault\\causal_pipeline.py": "973857ad798876c6c660dfe29cf8410b1fba2b864ba78249dd8b9a84cd6b6367",
+    "D:\\UAV-Data\\online_cache_v2\\train.pt": "f0992b19768575364f19378dd5109bcb640764035ecce4cc9d29132557a88d58",
+    "D:\\UAV-Data\\online_cache_v2\\val.pt": "9a6063590b4b313c0d8df0dbc5213d88e3f5e078bb5be13c8054deb816ed2757",
+    "D:\\UAV-Data\\online_cache_v2\\test.pt": "a3fd37b9f00d157aff1ad5d157f5997ab1cf2349808b2b19114f9a474e2b31e2",
+    "D:\\UAV-Data\\online_cache_v2\\real_holdout_test.pt": "2c0a46cc5536e0c0eaee0e04dc0f75eb8cc75907d053b0c76a1464b72c1225e6",
+    "D:\\UAV-Data\\online_cache_v2\\norm_stats.json": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33"
+  },
+  "tasks_sha256": "ae2ac67a4df6de2494f70155f768ae8158c033fcb3c2b8768d4d46a72404015f",
+  "legacy_suffix_windows_excluded": 3680,
+  "all_original_windows_accounted_for": true,
+  "original_raw_or_labeltime_assets_overwritten": false,
+  "physical_source_files_deleted": false,
+  "no_future_selection_verified": true,
+  "input_and_label_masks_separate": true,
+  "real_roles_preserved": true,
+  "training_or_model_scoring_run": false,
+  "deployment_enabled": false,
+  "live_transport_receive_time_certified": false,
+  "engineering_freshness_limits_frozen_not_score_tuned": true,
+  "scope_warning": "Complete for 4153 frozen label-reviewed 26-channel cases plus explicit exclusion ledger for 3680 historical suffix windows. Not all 6605 raw cases, open-set, 28 out-of-role Real, 31-channel offline/deployment or physical real-time transport certification.",
+  "verification_reports_sha256": {
+    "verification_norm.json": "5bb7580c17287e4365954610ffa4f9fa68f327db44438f6a78481a3aee1e50fa",
+    "verification_parity.json": "8d6f9b545bb09965c59e72a615baffa390a702375c37983a6ee2fac8393589cb",
+    "verification_real.json": "8122467441621b2b8a61571abb676d842f69e7bac4449e7cee3d484842d2c2ac",
+    "verification_test.json": "bc8f2348e2a2a17f33429f609c27a0df4fb669a372a5afe92fc38fadd4057bfc",
+    "verification_train.json": "91b8f51d00ad0a64e99b9395e738440d240a3af651a4b6d9bd71ea5a48ab5b3e",
+    "verification_val.json": "37c319a8bbca81d52803f73fb6a2bb5d5dc2206b10aeca9c7f9c6bf9a645bc59"
+  },
+  "code_sha256": {
+    "scripts/data/build_full_causal_input.py": "9121bdeac9e7cdd3f3a8d5768f16fd47c43b4a95a76ecec24589d089807f8c9b",
+    "scripts/research/verify_full_causal_input.py": "be9b1e496a54d45dca65402efd3dda15bf9232d5b292073782bcf8d2a353dc5c",
+    "packages/uav_fault/uav_fault/data/causal_cache.py": "d2446e8bc36dcd0fd337084b6d4bd991f457069869295e1310dc2c11cad49ef0",
+    "packages/uav_fault/uav_fault/causal_pipeline.py": "973857ad798876c6c660dfe29cf8410b1fba2b864ba78249dd8b9a84cd6b6367",
+    "packages/uav_fault/uav_fault/causal_input.py": "9c875d6aed2ac04b410afb564e3309b3be84f9578d354e3790fcf6c985320408"
+  }
+}

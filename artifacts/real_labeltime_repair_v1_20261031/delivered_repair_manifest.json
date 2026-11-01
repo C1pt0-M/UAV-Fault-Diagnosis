@@ -1,0 +1,106 @@
+{
+  "status": "COMPLETE_REAL_LABELTIME_REPAIR_WITH_EXPLICIT_QUARANTINE",
+  "version": "rflymad_real_labeltime_v1",
+  "completed_at": "2026-10-31T09:01:10.785218+00:00",
+  "script_sha256": "fb32cd834aa676effc717660dca9cecc059a5581a20ab457fb173f84470a751d",
+  "role_ids": {
+    "adapt_normal": 0,
+    "calibrate_normal": 1,
+    "test_normal": 2,
+    "test_fault": 3,
+    "supplemental_normal_test": 4
+  },
+  "roles": {
+    "test_fault": {
+      "role_id": 3,
+      "cases": 392,
+      "windows": 25088,
+      "eligible_endpoints": 24441,
+      "ineligible_endpoints": 647,
+      "defined_reference_changed_labels": 11,
+      "eligible_changed_labels": 10,
+      "review_reasons": {
+        "ROS_sent_ULog_received_state_disagree": 199,
+        "original_bag_required_record_integrity_unresolved": 448
+      }
+    },
+    "test_normal": {
+      "role_id": 2,
+      "cases": 33,
+      "windows": 2112,
+      "eligible_endpoints": 1984,
+      "ineligible_endpoints": 128,
+      "defined_reference_changed_labels": 0,
+      "eligible_changed_labels": 0,
+      "review_reasons": {
+        "original_bag_required_record_integrity_unresolved": 128
+      }
+    },
+    "adapt_normal": {
+      "role_id": 0,
+      "cases": 10,
+      "windows": 640,
+      "eligible_endpoints": 640,
+      "ineligible_endpoints": 0,
+      "defined_reference_changed_labels": 0,
+      "eligible_changed_labels": 0,
+      "review_reasons": {}
+    },
+    "calibrate_normal": {
+      "role_id": 1,
+      "cases": 5,
+      "windows": 320,
+      "eligible_endpoints": 320,
+      "ineligible_endpoints": 0,
+      "defined_reference_changed_labels": 0,
+      "eligible_changed_labels": 0,
+      "review_reasons": {}
+    },
+    "supplemental_normal_test": {
+      "role_id": 4,
+      "cases": 25,
+      "windows": 1159,
+      "eligible_endpoints": 1159,
+      "ineligible_endpoints": 0,
+      "defined_reference_changed_labels": 0,
+      "eligible_changed_labels": 0,
+      "review_reasons": {}
+    }
+  },
+  "csv": {
+    "cases": 465,
+    "verified_cases": 456,
+    "quarantined_cases": 9,
+    "changed_state_rows": 1032,
+    "cap64_windows": 29319,
+    "replay_windows": 196142,
+    "cache_not_yet_built": false
+  },
+  "windows": 29319,
+  "input_identities": {
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\normal_adaptation_audit_20261029\\real_case_roles_v1.csv": "f3aa12c2bd2c1cfbf6df8db9cdcdd308579a135efe4b73b784bb5cb32ce687dd",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\real_labeltime_audit_20261031\\case_results.jsonl": "6f26c0b7c741d34258601c2a3b8e7ce0b8de303e7a0285c55ada58e8550e38fc",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\real_labeltime_repair_v1_20261031\\bag_verification\\case_results.jsonl": "0688e430893fe377a13a818502a0aac8d8bc68d8634ca09ddeb6c01b4877ceba",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\real_labeltime_repair_v1_20261031\\output_contract.json": "d961524d5e8c6b89d2a8c199d66a72b7a49a18562d04d07af5e51a4e5a450106",
+    "D:\\UAV-Data\\feature_contract_v1.json": "bdc39e51d728203bb3053d3ea94c2afc844e81022242b7856bc59eb80ff564fe",
+    "D:\\UAV-Data\\online_cache_v2\\norm_stats.json": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33",
+    "D:\\UAV-Data\\online_cache_v2\\real_holdout_test.pt": "2c0a46cc5536e0c0eaee0e04dc0f75eb8cc75907d053b0c76a1464b72c1225e6",
+    "D:\\UAV-Data\\window_manifest_v1\\window_manifest.csv": "392f43dbd111c038c209c0ba21b663ea481f5da80d760e39729a63116a38e2cd"
+  },
+  "artifact_sha256": {
+    "real_all_roles_evidence.pt": "9f73c94224099789d855117c45f4a52b1b28c415a6eede15305035815ada3ee4",
+    "case_manifest.csv": "629e313ddb7c894f099c0988ff441f5a238b04e1930f60965cea16167024c238",
+    "real_cap64_window_links.csv": "96f4e57bb46e05df9f29e47f2b5fdf8c873b9629924da27fb77f0bebedd65591",
+    "stride10_replay_window_links.csv": "bdda442c422a4397194a8774d053cd9ad2944b32c6ab87f99459add2b954d8ea",
+    "evaluation_ineligible_window_ledger.csv": "d8a2545bf4a07985d7703dedb79b13cfa81ee3be022e9c47180a376ca6cdfb29",
+    "norm_stats.json": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33"
+  },
+  "all_original_X_exactly_preserved": true,
+  "models_or_predictions_used": false,
+  "training_run": false,
+  "input_quality_and_physical_onset_certified": false,
+  "event_scoring_ready": false,
+  "warning": "All-role evidence bundle, NOT train.pt/test.pt. Explicit role selection and endpoint validity required. No pooled all-role score. Row masks must be honored in any later event scoring. Old protocol and scores remain historical.",
+  "csv_and_cache_execution_script_sha256": "e0933735e28c9e0af590a2b5f96b3131f64bebac9eb392e1e8714aa103c3de33",
+  "metadata_patch": "Explicit historical_* fields retained; level2_label reflects qualified repaired label or uncertain; cache tensors unchanged."
+}

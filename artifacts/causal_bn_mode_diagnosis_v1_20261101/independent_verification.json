@@ -1,0 +1,79 @@
+{
+  "status": "PASS_LOCAL_BN_MODE_DIAGNOSIS_RECOMPUTED",
+  "results": {
+    "uniform_replacement": {
+      "running": {
+        "hover_draws": 368,
+        "hover_unique_windows": 350,
+        "hover_false_positives": 193,
+        "hover_fpr": 0.5244565217391305,
+        "confusion_matrix": [
+          [
+            7885,
+            408
+          ],
+          [
+            50,
+            8041
+          ]
+        ]
+      },
+      "batch": {
+        "hover_draws": 368,
+        "hover_unique_windows": 350,
+        "hover_false_positives": 190,
+        "hover_fpr": 0.5163043478260869,
+        "confusion_matrix": [
+          [
+            7880,
+            413
+          ],
+          [
+            53,
+            8038
+          ]
+        ]
+      },
+      "hover_change_percentage_points": -0.815217391304357
+    },
+    "balanced_source_normal": {
+      "running": {
+        "hover_draws": 714,
+        "hover_unique_windows": 642,
+        "hover_false_positives": 229,
+        "hover_fpr": 0.32072829131652664,
+        "confusion_matrix": [
+          [
+            7845,
+            528
+          ],
+          [
+            219,
+            7792
+          ]
+        ]
+      },
+      "batch": {
+        "hover_draws": 714,
+        "hover_unique_windows": 642,
+        "hover_false_positives": 219,
+        "hover_fpr": 0.3067226890756303,
+        "confusion_matrix": [
+          [
+            7834,
+            539
+          ],
+          [
+            237,
+            7774
+          ]
+        ]
+      },
+      "hover_change_percentage_points": -1.4005602240896364
+    }
+  },
+  "optimizer_updates": 0,
+  "BN_or_parameter_updates": 0,
+  "raw_logs_val_test_Real_read": false,
+  "interpretation": "Only small FPR changes in fixed mixed contexts; no evidence of large BN saved-stat mismatch explaining high hover errors. Not proof BN has no effect."
+}

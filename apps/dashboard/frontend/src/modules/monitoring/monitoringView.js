@@ -82,7 +82,8 @@ export const monitoringCopy = {
   noSelection: '未选择',
   noValue: '暂无',
 
-  backendNotAllowed: '当前环境未开放该后端，请使用 CSV 回放',
+  backendNotAllowed: '当前部署未开放该数据源或能力信息不可用',
+  blindTestRequiresPx4: '盲测仅支持已开放的 PX4 数据源；当前界面未开放 PX4 选择',
   rflyNotReady: 'RflySim 配置未就绪，请先完成配置诊断',
   replayAssetRequired: '请选择回放资产',
   startCollectionSuccess: '遥测采集已启动',
@@ -104,11 +105,14 @@ export function resolveMonitoringState(runStatus = {}) {
 }
 
 export function resolveMonitoringBackendOptions(capabilities = {}) {
-  return monitoringBackendOptions
+  if (capabilities?.enabled !== true || !Array.isArray(capabilities.allowed_backends)) return []
+  // PX4 和 MEC 选择仍按现有界面策略隐藏，不据后端开放状态擅自恢复。
+  return monitoringBackendOptions.filter(option => capabilities.allowed_backends.includes(option.value))
 }
 
 export function shouldShowBlindTest(capabilities = {}) {
-  return Boolean(capabilities?.blind_test_enabled)
+  return capabilities?.enabled === true && capabilities.blind_test_enabled === true &&
+    Array.isArray(capabilities.allowed_backends) && capabilities.allowed_backends.includes('px4')
 }
 
 export function formatMonitoringModelName(value) {

@@ -19,7 +19,8 @@ from uav_dashboard_api.utils.path_store import resolve_local_path
 def test_telemetry_replay_session_auto_finalize_persists_runtime_fields(
     app, auth_header, tmp_path: Path
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     replay_path = tmp_path / "replay_auto_finalize.csv"
     replay_path.write_text(
@@ -170,7 +171,8 @@ def test_telemetry_replay_session_auto_finalize_persists_runtime_fields(
 def test_telemetry_stop_collection_flushes_detection_events_into_finalize(
     app, monkeypatch, tmp_path: Path
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     replay_path = tmp_path / "replay_stop_detection.csv"
     replay_path.write_text(
@@ -188,6 +190,11 @@ def test_telemetry_stop_collection_flushes_detection_events_into_finalize(
         max_fault_prob = 0.97
         mean_fault_prob = 0.91
         n_points = 2
+        meta = {'timing': {
+            'confirmed_t': 0.15, 'emitted_t': 0.2,
+            'confirmed_at_unix_s': 1000.0, 'emitted_at_unix_s': 1001.0,
+            'emission_reason': 'flush',
+        }}
 
     class _FakeDetector:
         window_size = 150
@@ -247,6 +254,11 @@ def test_telemetry_stop_collection_flushes_detection_events_into_finalize(
             assert len(events) == 1
             assert events[0].max_fault_prob == pytest.approx(0.97)
             assert events[0].get_diagnosis()["label"] == "fault"
+            assert events[0].get_diagnosis()['event_timing'] == _FakeEvent.meta['timing']
+            saved = events[0].to_dict()
+            assert saved['event_timing'] == _FakeEvent.meta['timing']
+            assert saved['start_time'] == 0.1
+            assert saved['end_time'] == 0.2
             replay_metrics = session.get_meta()["replay_metrics"]
             assert replay_metrics["pred_event_count"] == 1
             assert replay_metrics["hit"] == 1
@@ -268,7 +280,8 @@ def test_telemetry_stop_collection_flushes_detection_events_into_finalize(
 
 
 def test_telemetry_record_fault_event_delegates_persistence_writes(app, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     class _FakeEvent:
         start_t = 0.1
@@ -311,7 +324,8 @@ def test_telemetry_record_fault_event_delegates_persistence_writes(app, monkeypa
 
 
 def test_telemetry_finalize_session_delegates_persistence_writes(app, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     captured = {}
     replay_metrics = {"pred_event_count": 1, "hit": 1}
@@ -362,7 +376,8 @@ def test_telemetry_finalize_session_delegates_persistence_writes(app, monkeypatc
 
 
 def test_telemetry_finalize_session_skips_replay_asset_registration(app, tmp_path: Path):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     csv_path = tmp_path / "session_asset.csv"
     csv_path.write_text("time_s,motor1,fault_prob\n0.0,1000,0.2\n", encoding="utf-8")
@@ -405,7 +420,8 @@ def test_telemetry_finalize_session_skips_replay_asset_registration(app, tmp_pat
 def test_telemetry_finalize_session_registers_non_replay_session_asset(
     app, tmp_path: Path
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     csv_path = tmp_path / "px4_session_asset.csv"
     csv_path.write_text("time_s,motor1,fault_prob\n0.0,1000,0.2\n", encoding="utf-8")
@@ -441,7 +457,8 @@ def test_telemetry_finalize_session_registers_non_replay_session_asset(
 
 
 def test_telemetry_create_session_record_delegates_persistence_writes(app, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     captured = {}
     meta = {"ground_truth": {"fault_type": "none"}}
@@ -502,7 +519,8 @@ def test_telemetry_create_session_record_delegates_persistence_writes(app, monke
 
 
 def test_telemetry_delete_session_record_delegates_persistence_writes(app, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     captured = {}
 
@@ -522,7 +540,8 @@ def test_telemetry_delete_session_record_delegates_persistence_writes(app, monke
 def test_telemetry_update_session_detection_delegates_persistence_writes(
     app, monkeypatch
 ):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     captured = {}
 
@@ -541,7 +560,8 @@ def test_telemetry_update_session_detection_delegates_persistence_writes(
 
 
 def test_telemetry_write_log_delegates_persistence_writes(app, monkeypatch):
-    from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+    from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
+    telemetry_manager = get_telemetry_manager()
 
     captured = {}
 

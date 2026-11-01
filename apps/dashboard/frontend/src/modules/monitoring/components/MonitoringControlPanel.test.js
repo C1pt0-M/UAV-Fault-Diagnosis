@@ -79,6 +79,19 @@ describe('MonitoringControlPanel telemetry console', () => {
     expect(wrapper.find('[data-test="start-collection"]').attributes('disabled')).toBeDefined()
   })
 
+  it('disables collection with an explanation when no source is allowed', () => {
+    const wrapper = mountControlPanel({ backendOptions: [] })
+    expect(wrapper.find('[data-test="start-collection"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.get('[role="status"]').text()).toContain('数据源未启用或能力信息不可用')
+  })
+
+  it('never treats RflySim selection as a PX4 blind-test source', () => {
+    const wrapper = mountControlPanel({ blindTestEnabled: true, selectedBackend: 'rfly' })
+    expect(wrapper.find('[data-test="start-blind-test"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[data-test="start-blind-test"]').attributes('title')).toContain('PX4')
+    expect(wrapper.find('[data-test="rfly-inference-location"]').exists()).toBe(false)
+  })
+
   it('emits diagnostics request when the RflySim diagnostics button is clicked', async () => {
     const wrapper = mountControlPanel({
       selectedBackend: 'rfly',

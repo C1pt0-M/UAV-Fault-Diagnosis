@@ -1,0 +1,31 @@
+{
+  "status": "PASS_OVERLAY_INTEGRITY__NOT_TRAINING_APPROVAL",
+  "verified_at": "2026-10-31T06:55:05.739309+00:00",
+  "splits": [
+    {
+      "split": "train",
+      "cache_rows": 168800,
+      "unknown_labels": 122,
+      "clock_review": 128,
+      "unknown_clock_overlap": 0,
+      "pre_forward_candidates": 168550,
+      "candidate_relabels": 3149,
+      "historical_labels_and_x_cache_identity_preserved": true
+    },
+    {
+      "split": "val",
+      "cache_rows": 35520,
+      "unknown_labels": 29,
+      "clock_review": 64,
+      "unknown_clock_overlap": 0,
+      "pre_forward_candidates": 35427,
+      "candidate_relabels": 631,
+      "historical_labels_and_x_cache_identity_preserved": true
+    }
+  ],
+  "unit_tests": "54 passed: overlay, fixed-crop, time, boundary, raw-suitability checks",
+  "training_ready": false,
+  "unchanged_input_hashes": 10,
+  "tests_of_bn_and_loss": "Synthetic tensors only, no UAV model or checkpoint loaded, no optimizer step.",
+  "pending": "Input-quality decision, frozen comparison protocol and a training entry explicitly compatible with overlay index masks."
+}

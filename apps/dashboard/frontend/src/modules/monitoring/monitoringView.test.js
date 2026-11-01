@@ -9,26 +9,30 @@ import {
 } from '@/modules/monitoring/monitoringView'
 
 describe('monitoring deployment capability helpers', () => {
-  it('keeps RflySim visible even when backend capability is not ready', () => {
+  it('does not offer a backend outside the deployment allowlist', () => {
     const options = resolveMonitoringBackendOptions({
+      enabled: true,
       allowed_backends: ['replay'],
       blind_test_enabled: false,
       px4_enabled: false
     })
 
-    expect(options).toEqual([
-      { label: 'RflySim 实时链路', value: 'rfly' },
-      { label: 'CSV 回放', value: 'replay' }
-    ])
+    expect(options).toEqual([{ label: 'CSV 回放', value: 'replay' }])
   })
 
-  it('returns default backend options when capability list is absent', () => {
-    const options = resolveMonitoringBackendOptions({})
+  it.each([{}, { enabled: false, allowed_backends: ['rfly'] }, { enabled: true, allowed_backends: 'replay' }])('offers no source for unavailable capability %j', (capabilities) => {
+    expect(resolveMonitoringBackendOptions(capabilities)).toEqual([])
+  })
 
-    expect(options).toEqual([
-      { label: 'RflySim 实时链路', value: 'rfly' },
-      { label: 'CSV 回放', value: 'replay' }
-    ])
+  it('keeps allowed but not-ready RflySim visible without restoring hidden PX4', () => {
+    expect(resolveMonitoringBackendOptions({ enabled: true, allowed_backends: ['rfly', 'px4'], rfly_ready: false }))
+      .toEqual([{ label: 'RflySim 实时链路', value: 'rfly' }])
+  })
+
+  it('requires both the blind-test flag and allowed PX4 backend', () => {
+    expect(shouldShowBlindTest({ enabled: true, allowed_backends: ['rfly'], blind_test_enabled: true })).toBe(false)
+    expect(shouldShowBlindTest({ enabled: true, allowed_backends: ['px4'], blind_test_enabled: 'true' })).toBe(false)
+    expect(shouldShowBlindTest({ enabled: true, allowed_backends: ['px4'], blind_test_enabled: true })).toBe(true)
   })
 
   it('uses readable Chinese labels for states and durations', () => {

@@ -106,7 +106,8 @@ def create_app(config_class=None):
     app.register_blueprint(users.bp, url_prefix=f'{api_prefix}/users')
     if app.config.get('ENABLE_SETUP_API', False):
         app.register_blueprint(setup.bp, url_prefix=f'{api_prefix}/setup')
-    app.register_blueprint(settings.bp, url_prefix=f'{api_prefix}/settings')
+    if app.config.get('ENABLE_AI', True):
+        app.register_blueprint(settings.bp, url_prefix=f'{api_prefix}/settings')
     app.register_blueprint(dashboard.bp, url_prefix=f'{api_prefix}')
     app.register_blueprint(
         diagnosis_reports.bp, url_prefix=f'{api_prefix}/reports/diagnosis'
@@ -155,9 +156,9 @@ def create_app(config_class=None):
         for warning in persistence_snapshot.get('warnings', []):
             app.logger.warning(warning)
         if app.config.get('ENABLE_TELEMETRY', True):
-            from uav_dashboard_api.services.telemetry_manager import telemetry_manager
+            from uav_dashboard_api.services.telemetry_manager import get_telemetry_manager
 
-            telemetry_manager.init_app(app)
+            get_telemetry_manager(app)
         if app.config.get('ENABLE_AI', True):
             from uav_dashboard_api.services.ai_assistant import ai_assistant_service
 

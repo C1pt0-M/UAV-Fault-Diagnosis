@@ -1,0 +1,11 @@
+{
+  "task": "Test whether completed fixed checkpoints also misclassify source-training normal and hover windows, compared with held-out source-validation normal predictions.",
+  "checkpoints": ["uniform_replacement/best.pt", "balanced_source_normal/best.pt"],
+  "scope": "All83051 admitted source-train normal endpoints, including21145 original-normal and61906 inactive-in-fault-case normal; compare all17740 val normal endpoints including4565 original-normal. No subsampling, new thresholds or checkpoint selection. Fixed0.5/argmax decision, existing source-train statistics, original masks/indices and case groups.",
+  "mode": "model.eval and inference_mode, original GPU execution environment, no optimizer or gradient updates, no BatchNorm statistic mutation, no augmentation. Measures training-data performance in inference mode, not online minibatch training accuracy.",
+  "breakdowns": ["normal origin", "domain", "flight mode", "original normal hover", "per-case", "four quarters of original retained crop"],
+  "crop_progress": "Use previously saved causal case metadata row count, not last selected valid window and not inferred physical flight phase. No raw log reread.",
+  "validation_path_check": "Recompute full34710 source-val probabilities with same512 batch layout and compare argmax to saved predictions. Require max probability difference<=1e-5 (floating kernel allowance only) and identical discrete predictions; report actual differences. Do not use any new val result to choose model/threshold.",
+  "interpretation": "If train normals also fail in eval mode, cannot attribute remaining failure solely to held-out normal generalization; if train normals perform well and val normals fail, supports train-val generalization gap. Exact feature/branch/BatchNorm mechanism is not established by this test.",
+  "forbidden": ["new training", "parameter or running-stat updates", "threshold sweep", "test/Real reads", "raw dataset audit", "deleting misclassified valid windows", "deployment change"]
+}

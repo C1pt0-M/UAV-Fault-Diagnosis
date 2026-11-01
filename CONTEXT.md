@@ -21,8 +21,16 @@ A repeatable way to feed prepared flight log data through monitoring or analysis
 _Avoid_: Real-time simulation, closed-loop flight test
 
 **Online monitoring session**:
-A time-ordered monitoring run that evaluates a replayed telemetry-like data stream, summarizes risk over sliding windows, helps locate suspicious fault intervals, and can be handed off for offline diagnosis.
+A time-ordered monitoring run that evaluates a replayed telemetry-like data stream, summarizes risk over sliding windows, helps locate suspicious fault intervals, and can be handed off for offline diagnosis. Its core session owns current risk, warning state, and preview timing; Dashboard reads a snapshot rather than maintaining copies of those values. The Dashboard telemetry manager belongs to one Flask application, is looked up through that application, and is closed explicitly rather than at request teardown.
 _Avoid_: Final fault classification, RflySim flight, simulator mission
+
+**Online detection policy**:
+The explicit inference interval and event aggregation settings used by an online monitoring session. Runtime entries share the implementation but retain their declared defaults; transport queues, arming gates, input-quality assessment cadence, and experimental data roles are separate concerns.
+_Avoid_: Training hyperparameters, a replacement for the frozen experiment protocol, one mandatory default for every transport
+
+**Event timing record**:
+Supplemental metadata that distinguishes a candidate event's original interval, hysteresis confirmation, and finalized output. Stream-clock times and emitting-host Unix times are separate; neither establishes physical damage onset or browser receipt. Existing event intervals and frozen evaluation metrics are unchanged.
+_Avoid_: Physical detection latency, end-to-end notification latency, treating the candidate start as the actual alert time
 
 **Offline diagnosis**:
 A follow-up analysis flow that classifies a selected flight log asset or monitoring session output into the current supported fault categories and prepares evidence for reporting.
@@ -63,6 +71,14 @@ _Avoid_: Open signup portal, multi-tenant user management
 **Runtime function module**:
 A user-facing capability of the V1.0 system, such as asset management, online monitoring, offline diagnosis, report management, or AI-assisted interpretation.
 _Avoid_: Training experiment, research script
+
+**Runtime deployment capability**:
+Whether this Flask application has registered an optional runtime function module. The authenticated profile exposes only AI and telemetry availability for navigation; the browser keeps these declarations in memory and does not enable optional pages when declarations are missing or malformed. Availability does not grant account permissions or certify provider/simulator readiness: endpoint authentication, administrator checks and object access controls remain authoritative. Logout, token replacement and current-session expiry clear the browser declaration. Business shortcuts follow the same availability without removing historical reports or warning statistics. Telemetry source choices are filtered by the server allowlist, separately from readiness checks; the current blind-test API uses PX4 and requires both its switch and PX4 allowance. Existing hidden PX4/MEC selectors are not reopened merely because their backend is available.
+_Avoid_: User permissions, provider readiness, a browser-only security control, an experimental model capability
+
+**Model input contract**:
+The task, ordered feature names, normalization coefficients, label order, and declared schema/protocol metadata needed to interpret a model input correctly. Model discovery and loading share validation without importing the ML runtime into discovery. Legacy online assets may omit task, labels, schema and window declarations, but supplied declarations must agree. Offline diagnosis keeps its separate 31-channel whole-log preprocessor, normalization floor and missing-file fallback; an existing invalid statistics file must not silently select different statistics. Legacy offline statistics without column names remain positional. Offline discovery and prediction resolve labels identically, keeping defaults, whitespace trimming and legacy extra-label truncation while rejecting incomplete or duplicate labels. Supplied feature counts and known schemas must match the input order, and schema/protocol declarations must agree with the selected statistics; missing declarations stay missing and custom schemas are not semantically certified. The version-1 runtime manifest restricts model directories to MODEL_ROOT and checks identity, required files and declared runtime task. These checks do not certify checkpoint contents or experimental validity.
+_Avoid_: A training protocol, checkpoint verification, proof of real-time performance
 
 **Model design and training support**:
 The technical foundation that prepares, trains, evaluates, and manages models used by runtime diagnosis and monitoring functions; it is documented as algorithm support rather than a user-facing runtime module.

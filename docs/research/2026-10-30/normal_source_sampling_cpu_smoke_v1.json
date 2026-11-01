@@ -1,0 +1,52 @@
+{
+  "protocol_name": "normal_source_sampling_cpu_smoke_v1",
+  "status": "FIXED_PIPELINE_CHECK_BEFORE_EXECUTION",
+  "purpose": "Check paired samplers, forward/backward, stratified validation and checkpoint I/O. Not a performance experiment, deployment or formal GPU training protocol.",
+  "inputs": {
+    "audit_sha256": "3acdcf485810673a6ae1ecab77c2c13e76a538301d0fd2b19f42e8aeb403abda",
+    "train_links_sha256": "e184e65ee588d051904b5f127ff508c972b1ae626ae8d651963bf5e9bdcc611f",
+    "val_links_sha256": "5963804ae701d9aa6da2eeb3c6c4b491f5bd0e0e0c6863413244f2713f3f7ad0",
+    "norm_sha256": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33",
+    "cache_files": ["train.pt", "val.pt"],
+    "real_reads": false
+  },
+  "sampling": {
+    "arms": ["uniform_replacement", "balanced_source_normal"],
+    "replacement": true,
+    "baseline": "Uniform weights for every training window. Same sampling mechanism as balanced arm; not historical shuffle-without-replacement replay.",
+    "balanced": "Keep fault and RflySim weights=1; give each of original-normal and pre-fault-normal SIL/HIL pools half their combined total probability mass.",
+    "invariants": "Total weight, binary class probabilities and RflySim probability unchanged; only split within SIL/HIL normal pools changes. Finite random draws fluctuate, so per-batch counts need not match.",
+    "distribution_probe_draws": 100000,
+    "generator_seed": 53
+  },
+  "training": {
+    "device": "cpu",
+    "threads": 4,
+    "seed": 42,
+    "model": "kg_mstca",
+    "hidden_size": 64,
+    "num_layers": 1,
+    "dropout": 0.2,
+    "initialization": "One shared random state, identically loaded into both arms; no historical pretrained weights loaded.",
+    "epochs": 2,
+    "steps_per_epoch": 4,
+    "batch_size": 32,
+    "optimizer": "AdamW",
+    "lr": 0.0003,
+    "weight_decay": 0.0001,
+    "loss": "FocalLoss gamma=2, alpha=None",
+    "gradient_clip": 1.0,
+    "augmentation": false,
+    "scheduler": "constant learning rate for this smoke check only"
+  },
+  "validation": {
+    "only_split": "val",
+    "subset": "Four existing cache windows per source validation case, evenly spaced within its ordered cap64 windows; 555 cases / 2220 windows.",
+    "batch_size": 128,
+    "reports": ["overall", "normal origin", "normal by flight status", "original normal by flight status", "fault by original case class"],
+    "checkpoint": "Best overall sampled-validation Macro-F1, plus last state and per-epoch history; reload best and verify evaluation matches saved epoch.",
+    "interpretation": "Tiny sampled validation and only eight training updates per arm: verify plumbing only, never infer effectiveness from scores."
+  },
+  "forbidden": ["test.pt", "real_holdout_test.pt", "external_test.pt", "live_holdout.pt", "Real adaptation/calibration/test tensors", "deployment model overwrite", "source cache modification", "claiming GPU readiness or model improvement from this check"],
+  "future": "Formal paired training recipe, epochs, validation selection rule and GPU launcher still require separate registration and integration."
+}

@@ -1,0 +1,2141 @@
+{
+  "status": "PASSED_SIX_JOB_INDEPENDENT_RESULTS_CHECK",
+  "checked_at": "2026-10-30T19:02:45.277370+00:00",
+  "gpu_checkpoint_replay": true,
+  "jobs": [
+    {
+      "seed": 42,
+      "arm": "uniform_replacement",
+      "epochs": 64,
+      "best_epoch": 60,
+      "initial_digest": "7772ccc1a20ce8b6d97c7ce83fc4927a8ff9a5dc7bef17038ca767806e561c55",
+      "metrics": {
+        "overall": {
+          "windows": 35520,
+          "confusion_matrix": [
+            [
+              17237,
+              675
+            ],
+            [
+              824,
+              16784
+            ]
+          ],
+          "accuracy": 0.9577984234234235,
+          "macro_f1": 0.9577915582769339,
+          "fault_recall": 0.9532030895047705,
+          "normal_window_fpr": 0.03768423403305047
+        },
+        "normal_origin": {
+          "fault_endpoint": {
+            "windows": 17608,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                824,
+                16784
+              ]
+            ],
+            "accuracy": 0.9532030895047705,
+            "macro_f1": 0.4880204698767155,
+            "fault_recall": 0.9532030895047705,
+            "normal_window_fpr": null
+          },
+          "normal_part_of_fault_case": {
+            "windows": 13304,
+            "confusion_matrix": [
+              [
+                13209,
+                95
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9928592904389657,
+            "macro_f1": 0.49820842605514276,
+            "fault_recall": null,
+            "normal_window_fpr": 0.007140709561034276
+          },
+          "original_normal_case": {
+            "windows": 4608,
+            "confusion_matrix": [
+              [
+                4028,
+                580
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.8741319444444444,
+            "macro_f1": 0.4664196387216304,
+            "fault_recall": null,
+            "normal_window_fpr": 0.12586805555555555
+          }
+        },
+        "normal_by_status": {
+          "acce": {
+            "windows": 1571,
+            "confusion_matrix": [
+              [
+                1510,
+                61
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9611712285168682,
+            "macro_f1": 0.4901006166828952,
+            "fault_recall": null,
+            "normal_window_fpr": 0.03882877148313176
+          },
+          "circling": {
+            "windows": 4623,
+            "confusion_matrix": [
+              [
+                4580,
+                43
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.990698680510491,
+            "macro_f1": 0.49766380528088666,
+            "fault_recall": null,
+            "normal_window_fpr": 0.009301319489508977
+          },
+          "dece": {
+            "windows": 1755,
+            "confusion_matrix": [
+              [
+                1685,
+                70
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9601139601139601,
+            "macro_f1": 0.4898255813953488,
+            "fault_recall": null,
+            "normal_window_fpr": 0.039886039886039885
+          },
+          "hover": {
+            "windows": 3332,
+            "confusion_matrix": [
+              [
+                2985,
+                347
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.8958583433373349,
+            "macro_f1": 0.47253443090074404,
+            "fault_recall": null,
+            "normal_window_fpr": 0.10414165666266506
+          },
+          "velocity": {
+            "windows": 2071,
+            "confusion_matrix": [
+              [
+                1950,
+                121
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9415741187831965,
+            "macro_f1": 0.48495399154439195,
+            "fault_recall": null,
+            "normal_window_fpr": 0.05842588121680348
+          },
+          "waypoint": {
+            "windows": 4560,
+            "confusion_matrix": [
+              [
+                4527,
+                33
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9927631578947368,
+            "macro_f1": 0.49818421921426215,
+            "fault_recall": null,
+            "normal_window_fpr": 0.007236842105263158
+          }
+        },
+        "original_normal_by_status": {
+          "acce": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                713,
+                55
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9283854166666666,
+            "macro_f1": 0.4814314652261985,
+            "fault_recall": null,
+            "normal_window_fpr": 0.07161458333333333
+          },
+          "circling": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                760,
+                8
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9895833333333334,
+            "macro_f1": 0.4973821989528796,
+            "fault_recall": null,
+            "normal_window_fpr": 0.010416666666666666
+          },
+          "dece": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                698,
+                70
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9088541666666666,
+            "macro_f1": 0.4761255115961801,
+            "fault_recall": null,
+            "normal_window_fpr": 0.09114583333333333
+          },
+          "hover": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                448,
+                320
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.5833333333333334,
+            "macro_f1": 0.3684210526315789,
+            "fault_recall": null,
+            "normal_window_fpr": 0.4166666666666667
+          },
+          "velocity": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                661,
+                107
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.8606770833333334,
+            "macro_f1": 0.4625612316305108,
+            "fault_recall": null,
+            "normal_window_fpr": 0.13932291666666666
+          },
+          "waypoint": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                748,
+                20
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9739583333333334,
+            "macro_f1": 0.49340369393139843,
+            "fault_recall": null,
+            "normal_window_fpr": 0.026041666666666668
+          }
+        },
+        "fault_by_case_class": {
+          "motor": {
+            "windows": 10294,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                167,
+                10127
+              ]
+            ],
+            "accuracy": 0.9837769574509423,
+            "macro_f1": 0.4959110719357524,
+            "fault_recall": 0.9837769574509423,
+            "normal_window_fpr": null
+          },
+          "sensor": {
+            "windows": 7314,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                657,
+                6657
+              ]
+            ],
+            "accuracy": 0.9101722723543888,
+            "macro_f1": 0.47648700880395106,
+            "fault_recall": 0.9101722723543888,
+            "normal_window_fpr": null
+          }
+        }
+      },
+      "best_sha256": "b5cb85587dbcb58f969f37f9c2030eca7eb704e46f87f8ddb481ad764883c4ec",
+      "gpu_probabilities_bitwise_equal": true,
+      "gpu_max_abs_probability_difference": 0.0
+    },
+    {
+      "seed": 42,
+      "arm": "balanced_source_normal",
+      "epochs": 76,
+      "best_epoch": 66,
+      "initial_digest": "7772ccc1a20ce8b6d97c7ce83fc4927a8ff9a5dc7bef17038ca767806e561c55",
+      "metrics": {
+        "overall": {
+          "windows": 35520,
+          "confusion_matrix": [
+            [
+              17329,
+              583
+            ],
+            [
+              835,
+              16773
+            ]
+          ],
+          "accuracy": 0.9600788288288288,
+          "macro_f1": 0.9600690448981475,
+          "fault_recall": 0.9525783734666061,
+          "normal_window_fpr": 0.03254801250558285
+        },
+        "normal_origin": {
+          "fault_endpoint": {
+            "windows": 17608,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                835,
+                16773
+              ]
+            ],
+            "accuracy": 0.9525783734666061,
+            "macro_f1": 0.4878566650184695,
+            "fault_recall": 0.9525783734666061,
+            "normal_window_fpr": null
+          },
+          "normal_part_of_fault_case": {
+            "windows": 13304,
+            "confusion_matrix": [
+              [
+                13202,
+                102
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9923331328923632,
+            "macro_f1": 0.49807590734173396,
+            "fault_recall": null,
+            "normal_window_fpr": 0.007666867107636801
+          },
+          "original_normal_case": {
+            "windows": 4608,
+            "confusion_matrix": [
+              [
+                4127,
+                481
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.8956163194444444,
+            "macro_f1": 0.4724670864338867,
+            "fault_recall": null,
+            "normal_window_fpr": 0.10438368055555555
+          }
+        },
+        "normal_by_status": {
+          "acce": {
+            "windows": 1571,
+            "confusion_matrix": [
+              [
+                1501,
+                70
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9554423933800127,
+            "macro_f1": 0.4886067708333333,
+            "fault_recall": null,
+            "normal_window_fpr": 0.04455760661998727
+          },
+          "circling": {
+            "windows": 4623,
+            "confusion_matrix": [
+              [
+                4599,
+                24
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9948085658663206,
+            "macro_f1": 0.49869876382563433,
+            "fault_recall": null,
+            "normal_window_fpr": 0.005191434133679429
+          },
+          "dece": {
+            "windows": 1755,
+            "confusion_matrix": [
+              [
+                1670,
+                85
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9515669515669516,
+            "macro_f1": 0.48759124087591244,
+            "fault_recall": null,
+            "normal_window_fpr": 0.04843304843304843
+          },
+          "hover": {
+            "windows": 3332,
+            "confusion_matrix": [
+              [
+                3017,
+                315
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9054621848739496,
+            "macro_f1": 0.47519294377067256,
+            "fault_recall": null,
+            "normal_window_fpr": 0.09453781512605042
+          },
+          "velocity": {
+            "windows": 2071,
+            "confusion_matrix": [
+              [
+                2000,
+                71
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9657170449058425,
+            "macro_f1": 0.49127978383689513,
+            "fault_recall": null,
+            "normal_window_fpr": 0.034282955094157415
+          },
+          "waypoint": {
+            "windows": 4560,
+            "confusion_matrix": [
+              [
+                4542,
+                18
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9960526315789474,
+            "macro_f1": 0.4990112063282795,
+            "fault_recall": null,
+            "normal_window_fpr": 0.003947368421052632
+          }
+        },
+        "original_normal_by_status": {
+          "acce": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                712,
+                56
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9270833333333334,
+            "macro_f1": 0.4810810810810811,
+            "fault_recall": null,
+            "normal_window_fpr": 0.07291666666666667
+          },
+          "circling": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                763,
+                5
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9934895833333334,
+            "macro_f1": 0.4983670803396473,
+            "fault_recall": null,
+            "normal_window_fpr": 0.006510416666666667
+          },
+          "dece": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                688,
+                80
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.8958333333333334,
+            "macro_f1": 0.4725274725274725,
+            "fault_recall": null,
+            "normal_window_fpr": 0.10416666666666667
+          },
+          "hover": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                494,
+                274
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.6432291666666666,
+            "macro_f1": 0.39144215530903326,
+            "fault_recall": null,
+            "normal_window_fpr": 0.3567708333333333
+          },
+          "velocity": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                710,
+                58
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9244791666666666,
+            "macro_f1": 0.4803788903924222,
+            "fault_recall": null,
+            "normal_window_fpr": 0.07552083333333333
+          },
+          "waypoint": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                760,
+                8
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9895833333333334,
+            "macro_f1": 0.4973821989528796,
+            "fault_recall": null,
+            "normal_window_fpr": 0.010416666666666666
+          }
+        },
+        "fault_by_case_class": {
+          "motor": {
+            "windows": 10294,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                166,
+                10128
+              ]
+            ],
+            "accuracy": 0.9838741014183019,
+            "macro_f1": 0.49593575555773184,
+            "fault_recall": 0.9838741014183019,
+            "normal_window_fpr": null
+          },
+          "sensor": {
+            "windows": 7314,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                669,
+                6645
+              ]
+            ],
+            "accuracy": 0.9085315832649713,
+            "macro_f1": 0.4760369653986675,
+            "fault_recall": 0.9085315832649713,
+            "normal_window_fpr": null
+          }
+        }
+      },
+      "best_sha256": "6bf32519e13b529d79a3f38a2067b179d7c76fd35ebd5b78574d42c53debb74d",
+      "gpu_probabilities_bitwise_equal": true,
+      "gpu_max_abs_probability_difference": 0.0
+    },
+    {
+      "seed": 43,
+      "arm": "uniform_replacement",
+      "epochs": 76,
+      "best_epoch": 69,
+      "initial_digest": "339cbd34fe71bb2bd53b15321ac07ed8b1977ddd6e663f5b76f4e306a273730d",
+      "metrics": {
+        "overall": {
+          "windows": 35520,
+          "confusion_matrix": [
+            [
+              17391,
+              521
+            ],
+            [
+              861,
+              16747
+            ]
+          ],
+          "accuracy": 0.9610923423423423,
+          "macro_f1": 0.9610795484205651,
+          "fault_recall": 0.9511017719218537,
+          "normal_window_fpr": 0.029086645824028583
+        },
+        "normal_origin": {
+          "fault_endpoint": {
+            "windows": 17608,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                861,
+                16747
+              ]
+            ],
+            "accuracy": 0.9511017719218537,
+            "macro_f1": 0.4874690729151506,
+            "fault_recall": 0.9511017719218537,
+            "normal_window_fpr": null
+          },
+          "normal_part_of_fault_case": {
+            "windows": 13304,
+            "confusion_matrix": [
+              [
+                13235,
+                69
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9948135898977751,
+            "macro_f1": 0.4987000263762764,
+            "fault_recall": null,
+            "normal_window_fpr": 0.005186410102224895
+          },
+          "original_normal_case": {
+            "windows": 4608,
+            "confusion_matrix": [
+              [
+                4156,
+                452
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9019097222222222,
+            "macro_f1": 0.47421268827019625,
+            "fault_recall": null,
+            "normal_window_fpr": 0.09809027777777778
+          }
+        },
+        "normal_by_status": {
+          "acce": {
+            "windows": 1571,
+            "confusion_matrix": [
+              [
+                1517,
+                54
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9656269891788669,
+            "macro_f1": 0.49125647668393785,
+            "fault_recall": null,
+            "normal_window_fpr": 0.03437301082113304
+          },
+          "circling": {
+            "windows": 4623,
+            "confusion_matrix": [
+              [
+                4605,
+                18
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9961064243997404,
+            "macro_f1": 0.49902470741222366,
+            "fault_recall": null,
+            "normal_window_fpr": 0.003893575600259572
+          },
+          "dece": {
+            "windows": 1755,
+            "confusion_matrix": [
+              [
+                1699,
+                56
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9680911680911681,
+            "macro_f1": 0.49189345686160973,
+            "fault_recall": null,
+            "normal_window_fpr": 0.03190883190883191
+          },
+          "hover": {
+            "windows": 3332,
+            "confusion_matrix": [
+              [
+                3028,
+                304
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9087635054021609,
+            "macro_f1": 0.4761006289308176,
+            "fault_recall": null,
+            "normal_window_fpr": 0.09123649459783914
+          },
+          "velocity": {
+            "windows": 2071,
+            "confusion_matrix": [
+              [
+                2016,
+                55
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9734427812650893,
+            "macro_f1": 0.4932713481771471,
+            "fault_recall": null,
+            "normal_window_fpr": 0.02655721873491067
+          },
+          "waypoint": {
+            "windows": 4560,
+            "confusion_matrix": [
+              [
+                4526,
+                34
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9925438596491228,
+            "macro_f1": 0.4981289896544134,
+            "fault_recall": null,
+            "normal_window_fpr": 0.007456140350877193
+          }
+        },
+        "original_normal_by_status": {
+          "acce": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                721,
+                47
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9388020833333334,
+            "macro_f1": 0.4842175957018133,
+            "fault_recall": null,
+            "normal_window_fpr": 0.061197916666666664
+          },
+          "circling": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                764,
+                4
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9947916666666666,
+            "macro_f1": 0.49869451697127937,
+            "fault_recall": null,
+            "normal_window_fpr": 0.005208333333333333
+          },
+          "dece": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                715,
+                53
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9309895833333334,
+            "macro_f1": 0.48213081591368845,
+            "fault_recall": null,
+            "normal_window_fpr": 0.06901041666666667
+          },
+          "hover": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                494,
+                274
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.6432291666666666,
+            "macro_f1": 0.39144215530903326,
+            "fault_recall": null,
+            "normal_window_fpr": 0.3567708333333333
+          },
+          "velocity": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                722,
+                46
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9401041666666666,
+            "macro_f1": 0.48456375838926175,
+            "fault_recall": null,
+            "normal_window_fpr": 0.059895833333333336
+          },
+          "waypoint": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                740,
+                28
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9635416666666666,
+            "macro_f1": 0.4907161803713528,
+            "fault_recall": null,
+            "normal_window_fpr": 0.036458333333333336
+          }
+        },
+        "fault_by_case_class": {
+          "motor": {
+            "windows": 10294,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                186,
+                10108
+              ]
+            ],
+            "accuracy": 0.9819312220711094,
+            "macro_f1": 0.4954416233702578,
+            "fault_recall": 0.9819312220711094,
+            "normal_window_fpr": null
+          },
+          "sensor": {
+            "windows": 7314,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                675,
+                6639
+              ]
+            ],
+            "accuracy": 0.9077112387202625,
+            "macro_f1": 0.4758116534078693,
+            "fault_recall": 0.9077112387202625,
+            "normal_window_fpr": null
+          }
+        }
+      },
+      "best_sha256": "80b382f9e9057fd624542ab86c93bf6cc5529c2a499b562074b73c963a23eb30",
+      "gpu_probabilities_bitwise_equal": true,
+      "gpu_max_abs_probability_difference": 0.0
+    },
+    {
+      "seed": 43,
+      "arm": "balanced_source_normal",
+      "epochs": 68,
+      "best_epoch": 65,
+      "initial_digest": "339cbd34fe71bb2bd53b15321ac07ed8b1977ddd6e663f5b76f4e306a273730d",
+      "metrics": {
+        "overall": {
+          "windows": 35520,
+          "confusion_matrix": [
+            [
+              17290,
+              622
+            ],
+            [
+              901,
+              16707
+            ]
+          ],
+          "accuracy": 0.9571227477477477,
+          "macro_f1": 0.9571111936734875,
+          "fault_recall": 0.9488300772376193,
+          "normal_window_fpr": 0.03472532380527021
+        },
+        "normal_origin": {
+          "fault_endpoint": {
+            "windows": 17608,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                901,
+                16707
+              ]
+            ],
+            "accuracy": 0.9488300772376193,
+            "macro_f1": 0.48687163048229637,
+            "fault_recall": 0.9488300772376193,
+            "normal_window_fpr": null
+          },
+          "normal_part_of_fault_case": {
+            "windows": 13304,
+            "confusion_matrix": [
+              [
+                13120,
+                184
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9861695730607336,
+            "macro_f1": 0.4965183166818044,
+            "fault_recall": null,
+            "normal_window_fpr": 0.013830426939266387
+          },
+          "original_normal_case": {
+            "windows": 4608,
+            "confusion_matrix": [
+              [
+                4170,
+                438
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9049479166666666,
+            "macro_f1": 0.4750512645249487,
+            "fault_recall": null,
+            "normal_window_fpr": 0.09505208333333333
+          }
+        },
+        "normal_by_status": {
+          "acce": {
+            "windows": 1571,
+            "confusion_matrix": [
+              [
+                1510,
+                61
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9611712285168682,
+            "macro_f1": 0.4901006166828952,
+            "fault_recall": null,
+            "normal_window_fpr": 0.03882877148313176
+          },
+          "circling": {
+            "windows": 4623,
+            "confusion_matrix": [
+              [
+                4513,
+                110
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9762059268873026,
+            "macro_f1": 0.4939798598949212,
+            "fault_recall": null,
+            "normal_window_fpr": 0.02379407311269738
+          },
+          "dece": {
+            "windows": 1755,
+            "confusion_matrix": [
+              [
+                1692,
+                63
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9641025641025641,
+            "macro_f1": 0.4908616187989556,
+            "fault_recall": null,
+            "normal_window_fpr": 0.035897435897435895
+          },
+          "hover": {
+            "windows": 3332,
+            "confusion_matrix": [
+              [
+                3015,
+                317
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9048619447779112,
+            "macro_f1": 0.47502757208129825,
+            "fault_recall": null,
+            "normal_window_fpr": 0.09513805522208883
+          },
+          "velocity": {
+            "windows": 2071,
+            "confusion_matrix": [
+              [
+                2017,
+                54
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9739256397875422,
+            "macro_f1": 0.4933953033268102,
+            "fault_recall": null,
+            "normal_window_fpr": 0.02607436021245775
+          },
+          "waypoint": {
+            "windows": 4560,
+            "confusion_matrix": [
+              [
+                4543,
+                17
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9962719298245614,
+            "macro_f1": 0.4990662418982753,
+            "fault_recall": null,
+            "normal_window_fpr": 0.0037280701754385964
+          }
+        },
+        "original_normal_by_status": {
+          "acce": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                717,
+                51
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.93359375,
+            "macro_f1": 0.48282828282828283,
+            "fault_recall": null,
+            "normal_window_fpr": 0.06640625
+          },
+          "circling": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                752,
+                16
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9791666666666666,
+            "macro_f1": 0.49473684210526314,
+            "fault_recall": null,
+            "normal_window_fpr": 0.020833333333333332
+          },
+          "dece": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                709,
+                59
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9231770833333334,
+            "macro_f1": 0.4800270819228165,
+            "fault_recall": null,
+            "normal_window_fpr": 0.07682291666666667
+          },
+          "hover": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                501,
+                267
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.65234375,
+            "macro_f1": 0.3947990543735225,
+            "fault_recall": null,
+            "normal_window_fpr": 0.34765625
+          },
+          "velocity": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                732,
+                36
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.953125,
+            "macro_f1": 0.488,
+            "fault_recall": null,
+            "normal_window_fpr": 0.046875
+          },
+          "waypoint": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                759,
+                9
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.98828125,
+            "macro_f1": 0.49705304518664045,
+            "fault_recall": null,
+            "normal_window_fpr": 0.01171875
+          }
+        },
+        "fault_by_case_class": {
+          "motor": {
+            "windows": 10294,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                144,
+                10150
+              ]
+            ],
+            "accuracy": 0.9860112687002137,
+            "macro_f1": 0.49647818430835455,
+            "fault_recall": 0.9860112687002137,
+            "normal_window_fpr": null
+          },
+          "sensor": {
+            "windows": 7314,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                757,
+                6557
+              ]
+            ],
+            "accuracy": 0.8964998632759092,
+            "macro_f1": 0.4727128541561531,
+            "fault_recall": 0.8964998632759092,
+            "normal_window_fpr": null
+          }
+        }
+      },
+      "best_sha256": "bd0c9b4e1fa21ceef825c557c7ec324e256b183854150c6fbac19894a91a8a83",
+      "gpu_probabilities_bitwise_equal": true,
+      "gpu_max_abs_probability_difference": 0.0
+    },
+    {
+      "seed": 44,
+      "arm": "uniform_replacement",
+      "epochs": 86,
+      "best_epoch": 80,
+      "initial_digest": "bf76e7e1b443cfafead00b85d11f19a0bdbb61cad6b759af9b7b4c8d3ce7b007",
+      "metrics": {
+        "overall": {
+          "windows": 35520,
+          "confusion_matrix": [
+            [
+              17292,
+              620
+            ],
+            [
+              805,
+              16803
+            ]
+          ],
+          "accuracy": 0.9598817567567568,
+          "macro_f1": 0.9598741518125935,
+          "fault_recall": 0.9542821444797819,
+          "normal_window_fpr": 0.034613666815542656
+        },
+        "normal_origin": {
+          "fault_endpoint": {
+            "windows": 17608,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                805,
+                16803
+              ]
+            ],
+            "accuracy": 0.9542821444797819,
+            "macro_f1": 0.488303158873616,
+            "fault_recall": 0.9542821444797819,
+            "normal_window_fpr": null
+          },
+          "normal_part_of_fault_case": {
+            "windows": 13304,
+            "confusion_matrix": [
+              [
+                13233,
+                71
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9946632591701744,
+            "macro_f1": 0.49866224516712515,
+            "fault_recall": null,
+            "normal_window_fpr": 0.005336740829825617
+          },
+          "original_normal_case": {
+            "windows": 4608,
+            "confusion_matrix": [
+              [
+                4059,
+                549
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.880859375,
+            "macro_f1": 0.4683281412253375,
+            "fault_recall": null,
+            "normal_window_fpr": 0.119140625
+          }
+        },
+        "normal_by_status": {
+          "acce": {
+            "windows": 1571,
+            "confusion_matrix": [
+              [
+                1529,
+                42
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9732654360280076,
+            "macro_f1": 0.4932258064516129,
+            "fault_recall": null,
+            "normal_window_fpr": 0.02673456397199236
+          },
+          "circling": {
+            "windows": 4623,
+            "confusion_matrix": [
+              [
+                4603,
+                20
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9956738048886005,
+            "macro_f1": 0.49891610665510516,
+            "fault_recall": null,
+            "normal_window_fpr": 0.004326195111399524
+          },
+          "dece": {
+            "windows": 1755,
+            "confusion_matrix": [
+              [
+                1674,
+                81
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9538461538461539,
+            "macro_f1": 0.4881889763779528,
+            "fault_recall": null,
+            "normal_window_fpr": 0.046153846153846156
+          },
+          "hover": {
+            "windows": 3332,
+            "confusion_matrix": [
+              [
+                3006,
+                326
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9021608643457383,
+            "macro_f1": 0.47428210792047965,
+            "fault_recall": null,
+            "normal_window_fpr": 0.09783913565426171
+          },
+          "velocity": {
+            "windows": 2071,
+            "confusion_matrix": [
+              [
+                1946,
+                125
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9396426846933849,
+            "macro_f1": 0.48444112521782423,
+            "fault_recall": null,
+            "normal_window_fpr": 0.06035731530661516
+          },
+          "waypoint": {
+            "windows": 4560,
+            "confusion_matrix": [
+              [
+                4534,
+                26
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9942982456140351,
+            "macro_f1": 0.4985704860347482,
+            "fault_recall": null,
+            "normal_window_fpr": 0.005701754385964913
+          }
+        },
+        "original_normal_by_status": {
+          "acce": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                733,
+                35
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9544270833333334,
+            "macro_f1": 0.4883411059293804,
+            "fault_recall": null,
+            "normal_window_fpr": 0.045572916666666664
+          },
+          "circling": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                763,
+                5
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9934895833333334,
+            "macro_f1": 0.4983670803396473,
+            "fault_recall": null,
+            "normal_window_fpr": 0.006510416666666667
+          },
+          "dece": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                692,
+                76
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9010416666666666,
+            "macro_f1": 0.473972602739726,
+            "fault_recall": null,
+            "normal_window_fpr": 0.09895833333333333
+          },
+          "hover": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                469,
+                299
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.6106770833333334,
+            "macro_f1": 0.3791430881164107,
+            "fault_recall": null,
+            "normal_window_fpr": 0.3893229166666667
+          },
+          "velocity": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                653,
+                115
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.8502604166666666,
+            "macro_f1": 0.4595355383532723,
+            "fault_recall": null,
+            "normal_window_fpr": 0.14973958333333334
+          },
+          "waypoint": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                749,
+                19
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9752604166666666,
+            "macro_f1": 0.4937376400791035,
+            "fault_recall": null,
+            "normal_window_fpr": 0.024739583333333332
+          }
+        },
+        "fault_by_case_class": {
+          "motor": {
+            "windows": 10294,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                190,
+                10104
+              ]
+            ],
+            "accuracy": 0.9815426462016709,
+            "macro_f1": 0.49534268065496617,
+            "fault_recall": 0.9815426462016709,
+            "normal_window_fpr": null
+          },
+          "sensor": {
+            "windows": 7314,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                615,
+                6699
+              ]
+            ],
+            "accuracy": 0.9159146841673503,
+            "macro_f1": 0.47805609077285377,
+            "fault_recall": 0.9159146841673503,
+            "normal_window_fpr": null
+          }
+        }
+      },
+      "best_sha256": "f88587bf3781c1dc39878098529861f3eb22cf9d725626205d9aa55d6948d3ca",
+      "gpu_probabilities_bitwise_equal": true,
+      "gpu_max_abs_probability_difference": 0.0
+    },
+    {
+      "seed": 44,
+      "arm": "balanced_source_normal",
+      "epochs": 67,
+      "best_epoch": 47,
+      "initial_digest": "bf76e7e1b443cfafead00b85d11f19a0bdbb61cad6b759af9b7b4c8d3ce7b007",
+      "metrics": {
+        "overall": {
+          "windows": 35520,
+          "confusion_matrix": [
+            [
+              17355,
+              557
+            ],
+            [
+              1003,
+              16605
+            ]
+          ],
+          "accuracy": 0.956081081081081,
+          "macro_f1": 0.9560614916455603,
+          "fault_recall": 0.9430372557928215,
+          "normal_window_fpr": 0.031096471639124608
+        },
+        "normal_origin": {
+          "fault_endpoint": {
+            "windows": 17608,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                1003,
+                16605
+              ]
+            ],
+            "accuracy": 0.9430372557928215,
+            "macro_f1": 0.48534182912927837,
+            "fault_recall": 0.9430372557928215,
+            "normal_window_fpr": null
+          },
+          "normal_part_of_fault_case": {
+            "windows": 13304,
+            "confusion_matrix": [
+              [
+                13190,
+                114
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9914311485267588,
+            "macro_f1": 0.4978485694874311,
+            "fault_recall": null,
+            "normal_window_fpr": 0.008568851473241131
+          },
+          "original_normal_case": {
+            "windows": 4608,
+            "confusion_matrix": [
+              [
+                4165,
+                443
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9038628472222222,
+            "macro_f1": 0.47475208024620996,
+            "fault_recall": null,
+            "normal_window_fpr": 0.09613715277777778
+          }
+        },
+        "normal_by_status": {
+          "acce": {
+            "windows": 1571,
+            "confusion_matrix": [
+              [
+                1520,
+                51
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9675366008911521,
+            "macro_f1": 0.49175024263992234,
+            "fault_recall": null,
+            "normal_window_fpr": 0.032463399108847865
+          },
+          "circling": {
+            "windows": 4623,
+            "confusion_matrix": [
+              [
+                4587,
+                36
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9922128487994809,
+            "macro_f1": 0.49804560260586317,
+            "fault_recall": null,
+            "normal_window_fpr": 0.007787151200519144
+          },
+          "dece": {
+            "windows": 1755,
+            "confusion_matrix": [
+              [
+                1692,
+                63
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9641025641025641,
+            "macro_f1": 0.4908616187989556,
+            "fault_recall": null,
+            "normal_window_fpr": 0.035897435897435895
+          },
+          "hover": {
+            "windows": 3332,
+            "confusion_matrix": [
+              [
+                3019,
+                313
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.906062424969988,
+            "macro_f1": 0.47535821130530626,
+            "fault_recall": null,
+            "normal_window_fpr": 0.093937575030012
+          },
+          "velocity": {
+            "windows": 2071,
+            "confusion_matrix": [
+              [
+                1994,
+                77
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9628198937711251,
+            "macro_f1": 0.4905289052890529,
+            "fault_recall": null,
+            "normal_window_fpr": 0.03718010622887494
+          },
+          "waypoint": {
+            "windows": 4560,
+            "confusion_matrix": [
+              [
+                4543,
+                17
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9962719298245614,
+            "macro_f1": 0.4990662418982753,
+            "fault_recall": null,
+            "normal_window_fpr": 0.0037280701754385964
+          }
+        },
+        "original_normal_by_status": {
+          "acce": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                724,
+                44
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9427083333333334,
+            "macro_f1": 0.48525469168900803,
+            "fault_recall": null,
+            "normal_window_fpr": 0.057291666666666664
+          },
+          "circling": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                764,
+                4
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9947916666666666,
+            "macro_f1": 0.49869451697127937,
+            "fault_recall": null,
+            "normal_window_fpr": 0.005208333333333333
+          },
+          "dece": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                709,
+                59
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9231770833333334,
+            "macro_f1": 0.4800270819228165,
+            "fault_recall": null,
+            "normal_window_fpr": 0.07682291666666667
+          },
+          "hover": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                503,
+                265
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.6549479166666666,
+            "macro_f1": 0.3957513768686074,
+            "fault_recall": null,
+            "normal_window_fpr": 0.3450520833333333
+          },
+          "velocity": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                704,
+                64
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9166666666666666,
+            "macro_f1": 0.4782608695652174,
+            "fault_recall": null,
+            "normal_window_fpr": 0.08333333333333333
+          },
+          "waypoint": {
+            "windows": 768,
+            "confusion_matrix": [
+              [
+                761,
+                7
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "accuracy": 0.9908854166666666,
+            "macro_f1": 0.4977109221713538,
+            "fault_recall": null,
+            "normal_window_fpr": 0.009114583333333334
+          }
+        },
+        "fault_by_case_class": {
+          "motor": {
+            "windows": 10294,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                191,
+                10103
+              ]
+            ],
+            "accuracy": 0.9814455022343113,
+            "macro_f1": 0.4953179389125852,
+            "fault_recall": 0.9814455022343113,
+            "normal_window_fpr": null
+          },
+          "sensor": {
+            "windows": 7314,
+            "confusion_matrix": [
+              [
+                0,
+                0
+              ],
+              [
+                812,
+                6502
+              ]
+            ],
+            "accuracy": 0.8889800382827454,
+            "macro_f1": 0.47061378112333524,
+            "fault_recall": 0.8889800382827454,
+            "normal_window_fpr": null
+          }
+        }
+      },
+      "best_sha256": "77c2d287536d78fa0e0337018fab0eb8274c9b4be0919684ef002e0b77cee174",
+      "gpu_probabilities_bitwise_equal": true,
+      "gpu_max_abs_probability_difference": 0.0
+    }
+  ],
+  "recomputed_summary_metrics": {
+    "macro_f1": {
+      "uniform_replacement": {
+        "per_seed": [
+          0.9577915582769339,
+          0.9610795484205651,
+          0.9598741518125935
+        ],
+        "mean": 0.9595817528366976,
+        "sample_std": 0.0016633828984881445
+      },
+      "balanced_source_normal": {
+        "per_seed": [
+          0.9600690448981475,
+          0.9571111936734875,
+          0.9560614916455603
+        ],
+        "mean": 0.9577472434057318,
+        "sample_std": 0.0020781097695974807
+      },
+      "paired_balanced_minus_uniform": {
+        "per_seed": [
+          0.0022774866212136313,
+          -0.003968354747077574,
+          -0.0038126601670331883
+        ],
+        "mean": -0.0018345094309657102,
+        "sample_std": 0.003561943830328837
+      }
+    },
+    "fault_recall": {
+      "uniform_replacement": {
+        "per_seed": [
+          0.9532030895047705,
+          0.9511017719218537,
+          0.9542821444797819
+        ],
+        "mean": 0.9528623353021354,
+        "sample_std": 0.0016173365363355006
+      },
+      "balanced_source_normal": {
+        "per_seed": [
+          0.9525783734666061,
+          0.9488300772376193,
+          0.9430372557928215
+        ],
+        "mean": 0.948148568832349,
+        "sample_std": 0.004806929570535841
+      },
+      "paired_balanced_minus_uniform": {
+        "per_seed": [
+          -0.0006247160381643857,
+          -0.002271694684234493,
+          -0.011244888686960386
+        ],
+        "mean": -0.004713766469786422,
+        "sample_std": 0.00571575040803045
+      }
+    },
+    "normal_fpr": {
+      "uniform_replacement": {
+        "per_seed": [
+          0.03768423403305047,
+          0.029086645824028583,
+          0.034613666815542656
+        ],
+        "mean": 0.0337948488908739,
+        "sample_std": 0.004356888551282575
+      },
+      "balanced_source_normal": {
+        "per_seed": [
+          0.03254801250558285,
+          0.03472532380527021,
+          0.031096471639124608
+        ],
+        "mean": 0.032789935983325885,
+        "sample_std": 0.0018264822029648597
+      },
+      "paired_balanced_minus_uniform": {
+        "per_seed": [
+          -0.0051362215274676215,
+          0.005638677981241624,
+          -0.0035171951764180476
+        ],
+        "mean": -0.001004912907548015,
+        "sample_std": 0.005810188164298533
+      }
+    },
+    "original_normal_fpr": {
+      "uniform_replacement": {
+        "per_seed": [
+          0.12586805555555555,
+          0.09809027777777778,
+          0.119140625
+        ],
+        "mean": 0.11436631944444443,
+        "sample_std": 0.01449126391041367
+      },
+      "balanced_source_normal": {
+        "per_seed": [
+          0.10438368055555555,
+          0.09505208333333333,
+          0.09613715277777778
+        ],
+        "mean": 0.09852430555555557,
+        "sample_std": 0.005103288201521202
+      },
+      "paired_balanced_minus_uniform": {
+        "per_seed": [
+          -0.021484375,
+          -0.0030381944444444475,
+          -0.023003472222222224
+        ],
+        "mean": -0.01584201388888889,
+        "sample_std": 0.011114416690366212
+      }
+    },
+    "prefault_normal_fpr": {
+      "uniform_replacement": {
+        "per_seed": [
+          0.007140709561034276,
+          0.005186410102224895,
+          0.005336740829825617
+        ],
+        "mean": 0.005887953497694929,
+        "sample_std": 0.001087519263089332
+      },
+      "balanced_source_normal": {
+        "per_seed": [
+          0.007666867107636801,
+          0.013830426939266387,
+          0.008568851473241131
+        ],
+        "mean": 0.010022048506714773,
+        "sample_std": 0.003328844193273677
+      },
+      "paired_balanced_minus_uniform": {
+        "per_seed": [
+          0.0005261575466025256,
+          0.008644016837041493,
+          0.0032321106434155143
+        ],
+        "mean": 0.004134095009019845,
+        "sample_std": 0.004133411631048563
+      }
+    },
+    "original_hover_fpr": {
+      "uniform_replacement": {
+        "per_seed": [
+          0.4166666666666667,
+          0.3567708333333333,
+          0.3893229166666667
+        ],
+        "mean": 0.3875868055555556,
+        "sample_std": 0.029985634460791468
+      },
+      "balanced_source_normal": {
+        "per_seed": [
+          0.3567708333333333,
+          0.34765625,
+          0.3450520833333333
+        ],
+        "mean": 0.34982638888888884,
+        "sample_std": 0.006153405763349747
+      },
+      "paired_balanced_minus_uniform": {
+        "per_seed": [
+          -0.05989583333333337,
+          -0.009114583333333315,
+          -0.04427083333333337
+        ],
+        "mean": -0.037760416666666685,
+        "sample_std": 0.026009094212810162
+      }
+    }
+  },
+  "scope": "Source validation only. All saved strata, earliest strict-best selection, stopping, paired initial tensors and summary checked. No final tests, training or deployment.",
+  "verifier_sha256": "758945bdcaf692f9f4ec9563fcb48284c6dab9e97dde257e9099344f587cdf16"
+}

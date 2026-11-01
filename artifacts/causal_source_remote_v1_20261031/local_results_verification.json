@@ -1,0 +1,59 @@
+{
+  "status": "PASS_LOCAL_RETURNED_FORMAL_SOURCE_RESULTS_VERIFICATION",
+  "same_initial_state_exactly": true,
+  "registered_jobs_completed": 2,
+  "final_test_or_Real_used": false,
+  "checks": {
+    "uniform_replacement": {
+      "epochs": 20,
+      "best_epoch": 20,
+      "confusion_matrix": [
+        [
+          16915,
+          825
+        ],
+        [
+          356,
+          16614
+        ]
+      ],
+      "macro_f1": 0.9659726643880562,
+      "fault_recall": 0.979021803182086,
+      "normal_fpr": 0.04650507328072153,
+      "pure_normal_denominator": 4565,
+      "pure_normal_false_positives": 820,
+      "pure_normal_fpr": 0.1796276013143483,
+      "pure_hover_denominator": 754,
+      "pure_hover_false_positives": 393,
+      "pure_hover_fpr": 0.5212201591511937,
+      "selection_recomputed": true,
+      "checkpoint_sha256_verified": true
+    },
+    "balanced_source_normal": {
+      "epochs": 22,
+      "best_epoch": 22,
+      "confusion_matrix": [
+        [
+          17198,
+          542
+        ],
+        [
+          730,
+          16240
+        ]
+      ],
+      "macro_f1": 0.963325563079787,
+      "fault_recall": 0.9569829110194461,
+      "normal_fpr": 0.030552423900789178,
+      "pure_normal_denominator": 4565,
+      "pure_normal_false_positives": 538,
+      "pure_normal_fpr": 0.11785323110624316,
+      "pure_hover_denominator": 754,
+      "pure_hover_false_positives": 273,
+      "pure_hover_fpr": 0.3620689655172414,
+      "selection_recomputed": true,
+      "checkpoint_sha256_verified": true
+    }
+  },
+  "warning": "Hover normal FPR remains high; no deployment clearance. Single-seed source validation, not historical attribution or target-domain evidence."
+}

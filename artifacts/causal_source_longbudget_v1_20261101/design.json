@@ -1,0 +1,33 @@
+{
+  "experiment_id": "causal_source_corrected_longbudget_v1",
+  "created_at": "2026-11-01T04:34:28.484087+00:00",
+  "authorization": "User approved bounded BN diagnosis then correct short training budget if BN difference small; server already available.",
+  "trigger": "Fixed32-batch diagnostic hover FPR running/batch uniform193/368 vs190/368; balanced229/714 vs219/714. Does not explain high error; stop BN variants.",
+  "scope": "Exactly2 source-only runs, same seed42 random initialization and all original data/model/loss/sampler/selection identities. Fresh training, no old checkpoint or optimizer resume. No automatic extra seeds, third jobs, final tests or deployment.",
+  "baseline_protocol_sha256": "40cf51c9c711f06f1b35117f04b7d02fa7b6fd6c8b2a0606822c992320f8a9c0",
+  "baseline_initial_state_digest": "7772ccc1a20ce8b6d97c7ce83fc4927a8ff9a5dc7bef17038ca767806e561c55",
+  "changes": {
+    "training.max_epochs": [
+      30,
+      100
+    ],
+    "training.warmup_epochs": [
+      3,
+      5
+    ],
+    "training.schedule": [
+      "fixed30 cosine horizon",
+      "fixed100 cosine horizon"
+    ],
+    "validation.early_stop.min_epochs": [
+      10,
+      30
+    ],
+    "validation.early_stop.patience": [
+      8,
+      20
+    ]
+  },
+  "unchanged": "Data/schema/norm/masks/populations, reader path execution identity, exact frozen model/loss/trainer code, weights, seed42 initialization, replacement samplers and seeds, batch512, lr3e-4/wd1e-4/gamma2/clip1, threshold0.5, strict max overall source-val F1 checkpoint and delta0.002 early-stop reference.",
+  "interpretation": "Compare to shorter causal-source training only as joint budget/schedule correction. Not label-only benefit or proof training length solves normal hover errors. Report both arms even if worse."
+}

@@ -1,0 +1,39 @@
+{
+  "status": "COMPLETE_INTERNAL_TEST_LABELTIME_REPAIR_WITH_EXPLICIT_MASKS",
+  "version": "rflymad_internal_test_labeltime_v1",
+  "completed_at": "2026-10-31T10:18:00.010346+00:00",
+  "script_sha256": "f3ef68d3b079ed840a0cc4668e38ac62140896cdeb7f18d04203cfbb7b9ef4dc",
+  "cases": 553,
+  "windows": 35392,
+  "changed_state_rows": 28644,
+  "diagnostic_changed_endpoint_labels": 628,
+  "corrected_qualified_endpoint_labels": 603,
+  "eligible_endpoints": 35365,
+  "ineligible_endpoints": 27,
+  "review_reasons": {
+    "GTD_ULog_endpoint_state_disagreement": 27
+  },
+  "clock_review_cases": 0,
+  "gap_flagged_windows_retained": 456,
+  "after_crop_activation_cases": 5,
+  "all_original_X_preserved": true,
+  "input_identities": {
+    "D:\\UAV-Data\\splits\\rflymad_case_split_v2\\rflymad_case_level_split_manifest.csv": "272a91aeba5b563ebfa23fff8d295ac53372ccac391c835dccf2b5660d9d6ce5",
+    "D:\\UAV-Data\\feature_contract_v1.json": "bdc39e51d728203bb3053d3ea94c2afc844e81022242b7856bc59eb80ff564fe",
+    "D:\\UAV-Data\\online_cache_v2\\norm_stats.json": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33",
+    "D:\\UAV-Data\\online_cache_v2\\test.pt": "a3fd37b9f00d157aff1ad5d157f5997ab1cf2349808b2b19114f9a474e2b31e2",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\internal_test_labeltime_v1_20261031\\repair_plan.json": "63fb95beb6013fc7c23fb1c6d38eddbdf32e0cc1e2b33d24545583916b52e5da",
+    "D:\\UAV-Fault-Diagnosis\\scripts\\data\\repair_fixed_crop_labeltime.py": "49cae89fe8e9fe9ceec99c33287be1c0fac6ecb13a1b5dcb8732ae8e96d39a89",
+    "D:\\UAV-Data\\window_manifest_v1\\window_manifest.csv": "392f43dbd111c038c209c0ba21b663ea481f5da80d760e39729a63116a38e2cd"
+  },
+  "outputs_sha256": {
+    "internal_test_evidence.pt": "d978ebf588a5a0b8273cc15f9862786be884fa64029575972f88c59e1c799911",
+    "test_window_links.csv": "949dd594fb18e9ca9029ec0263bd4fcbd155da18bedbc20f8300fa4a0f406e5a",
+    "case_manifest.csv": "69fb7d67dbf5bcb6988a56f8f9601470f67b4678f999e716485c5634aaa6b6eb",
+    "evaluation_ineligible_window_ledger.csv": "85de041ec1825285132a2a5183395395cb146a8b16dc006d096ef0d0a2974546",
+    "norm_stats.json": "a474fc77c2da1cf7e02b765446919f0d27f5ad64869ef882a678867a2108bf33"
+  },
+  "models_or_training_used": false,
+  "event_scoring_ready": false,
+  "scope_limit": "Final-test label correction only. No physical-onset, full input-quality or online causality certification. Unknowns retained, no generic y/test.pt or historical score update."
+}

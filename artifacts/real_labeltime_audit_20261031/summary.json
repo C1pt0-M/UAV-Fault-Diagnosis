@@ -1,0 +1,157 @@
+{
+  "cases": 465,
+  "status_counts": {
+    "diagnostic_complete": 465
+  },
+  "issues": {},
+  "warnings": {
+    "ROS_export_does_not_cover_entire_fixed_crop": 4,
+    "timesync_series_nonmonotonic": 4
+  },
+  "by_role": {
+    "test_fault": {
+      "cases": 392,
+      "old_vs_ros_changed_row_cases": 303,
+      "old_vs_ros_row_disagreements": 1040,
+      "normal_role_injection_flags": 0,
+      "sampled": {
+        "cap64": {
+          "windows": 25088,
+          "ros_covered": 25088,
+          "ulog_covered": 25088,
+          "old_vs_ros_label_differences": 11,
+          "old_vs_ros_differences_ulog_agrees": 10,
+          "ros_vs_ulog_disagreement_endpoints": 202,
+          "old_vs_ulog_label_differences": 211
+        },
+        "stride10": {
+          "windows": 171980,
+          "ros_covered": 171980,
+          "ulog_covered": 171980,
+          "old_vs_ros_label_differences": 112,
+          "old_vs_ros_differences_ulog_agrees": 110,
+          "ros_vs_ulog_disagreement_endpoints": 1353,
+          "old_vs_ulog_label_differences": 1461
+        }
+      }
+    },
+    "adapt_normal": {
+      "cases": 10,
+      "old_vs_ros_changed_row_cases": 0,
+      "old_vs_ros_row_disagreements": 0,
+      "normal_role_injection_flags": 0,
+      "sampled": {
+        "cap64": {
+          "windows": 640,
+          "ros_covered": 640,
+          "ulog_covered": 640,
+          "old_vs_ros_label_differences": 0,
+          "old_vs_ros_differences_ulog_agrees": 0,
+          "ros_vs_ulog_disagreement_endpoints": 0,
+          "old_vs_ulog_label_differences": 0
+        },
+        "stride10": {
+          "windows": 4084,
+          "ros_covered": 4084,
+          "ulog_covered": 4084,
+          "old_vs_ros_label_differences": 0,
+          "old_vs_ros_differences_ulog_agrees": 0,
+          "ros_vs_ulog_disagreement_endpoints": 0,
+          "old_vs_ulog_label_differences": 0
+        }
+      }
+    },
+    "test_normal": {
+      "cases": 33,
+      "old_vs_ros_changed_row_cases": 0,
+      "old_vs_ros_row_disagreements": 0,
+      "normal_role_injection_flags": 0,
+      "sampled": {
+        "cap64": {
+          "windows": 2112,
+          "ros_covered": 2112,
+          "ulog_covered": 2112,
+          "old_vs_ros_label_differences": 0,
+          "old_vs_ros_differences_ulog_agrees": 0,
+          "ros_vs_ulog_disagreement_endpoints": 0,
+          "old_vs_ulog_label_differences": 0
+        },
+        "stride10": {
+          "windows": 13705,
+          "ros_covered": 13705,
+          "ulog_covered": 13705,
+          "old_vs_ros_label_differences": 0,
+          "old_vs_ros_differences_ulog_agrees": 0,
+          "ros_vs_ulog_disagreement_endpoints": 0,
+          "old_vs_ulog_label_differences": 0
+        }
+      }
+    },
+    "calibrate_normal": {
+      "cases": 5,
+      "old_vs_ros_changed_row_cases": 0,
+      "old_vs_ros_row_disagreements": 0,
+      "normal_role_injection_flags": 0,
+      "sampled": {
+        "cap64": {
+          "windows": 320,
+          "ros_covered": 320,
+          "ulog_covered": 320,
+          "old_vs_ros_label_differences": 0,
+          "old_vs_ros_differences_ulog_agrees": 0,
+          "ros_vs_ulog_disagreement_endpoints": 0,
+          "old_vs_ulog_label_differences": 0
+        },
+        "stride10": {
+          "windows": 2192,
+          "ros_covered": 2192,
+          "ulog_covered": 2192,
+          "old_vs_ros_label_differences": 0,
+          "old_vs_ros_differences_ulog_agrees": 0,
+          "ros_vs_ulog_disagreement_endpoints": 0,
+          "old_vs_ulog_label_differences": 0
+        }
+      }
+    },
+    "supplemental_normal_test": {
+      "cases": 25,
+      "old_vs_ros_changed_row_cases": 0,
+      "old_vs_ros_row_disagreements": 0,
+      "normal_role_injection_flags": 0,
+      "sampled": {
+        "cap64": {
+          "windows": 1159,
+          "ros_covered": 1159,
+          "ulog_covered": 1159,
+          "old_vs_ros_label_differences": 0,
+          "old_vs_ros_differences_ulog_agrees": 0,
+          "ros_vs_ulog_disagreement_endpoints": 0,
+          "old_vs_ulog_label_differences": 0
+        },
+        "stride10": {
+          "windows": 4181,
+          "ros_covered": 4181,
+          "ulog_covered": 4181,
+          "old_vs_ros_label_differences": 0,
+          "old_vs_ros_differences_ulog_agrees": 0,
+          "ros_vs_ulog_disagreement_endpoints": 0,
+          "old_vs_ulog_label_differences": 0
+        }
+      }
+    }
+  },
+  "old_minus_ros_onset_s": {
+    "n": 392,
+    "min": -0.020379893000006675,
+    "median": -0.0018896759999990462,
+    "max": 0.01362815600001812
+  },
+  "ros_minus_ulog_onset_s": {
+    "n": 417,
+    "min": -0.39252047299999,
+    "median": -0.1690924620000124,
+    "max": 0.10242814499998093
+  },
+  "roles_unchanged": true,
+  "decision": "Audit only. Preserve old roles/crops and final-test labels until semantics/coverage issues resolved. Do not use test observations to optimize model or align labels to predictions."
+}

@@ -46,6 +46,7 @@
     </div>
 
     <div class="section-card__body">
+      <p v-if="!runtimeCapabilities.ai" role="status">AI 解读未启用，报告详情与管理仍可使用。</p>
       <div class="reports-summary-strip">
         <article
           v-for="item in reportSummaryItems"
@@ -94,7 +95,7 @@
           <template #default="{ row }">
             <div class="reports-actions">
               <el-button
-                v-for="action in createReportActionItems()"
+                v-for="action in reportActions"
                 :key="action.key"
                 link
                 :type="action.type"
@@ -127,6 +128,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { runtimeCapabilities } from '@/shared/state/runtimeCapabilities'
 import ElButton from 'element-plus/es/components/button/index.mjs'
 import ElPagination from 'element-plus/es/components/pagination/index.mjs'
 import { ElOption, ElSelect } from 'element-plus/es/components/select/index.mjs'
@@ -166,7 +168,10 @@ const reportFilters = defineModel('filters', {
   required: true
 })
 
-const reportSummaryItems = computed(() => createReportSummaryItems(props.reports, props.pagination))
+const reportSummaryItems = computed(() => createReportSummaryItems(props.reports, props.pagination)
+  .filter(item => item.tone !== 'ai' || runtimeCapabilities.ai))
+const reportActions = computed(() => createReportActionItems()
+  .filter(item => item.key !== 'ai' || runtimeCapabilities.ai))
 
 function emitReportAction(actionKey, row) {
   const eventMap = {

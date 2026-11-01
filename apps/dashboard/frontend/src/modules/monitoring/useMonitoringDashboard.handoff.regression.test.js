@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { defineComponent, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -8,6 +8,8 @@ const telemetryApiMock = vi.hoisted(() => ({
   rflyDiagnostics: vi.fn(),
   sessions: vi.fn(),
   startCollection: vi.fn(),
+  startBlindTest: vi.fn(),
+  testRflyDiagnostics: vi.fn(),
   status: vi.fn(),
   stopCollection: vi.fn()
 }))
@@ -50,14 +52,15 @@ const Harness = defineComponent({
 
 async function flushMountedWork() {
   await nextTick()
-  await Promise.resolve()
-  await Promise.resolve()
+  await flushPromises()
 }
 
 describe('useMonitoringDashboard fault handoff dialog', () => {
   beforeEach(() => {
     routerPush.mockClear()
-    telemetryApiMock.status.mockResolvedValue({ data: {} })
+    telemetryApiMock.status.mockResolvedValue({ data: {
+      telemetry_capabilities: { enabled: true, allowed_backends: ['replay', 'rfly'] }
+    } })
     telemetryApiMock.sessions.mockResolvedValue({ data: { items: [] } })
     telemetryApiMock.realtimeData.mockResolvedValue({ data: { times: [] } })
     telemetryApiMock.rflyDiagnostics.mockResolvedValue({ data: null })
@@ -80,6 +83,43 @@ describe('useMonitoringDashboard fault handoff dialog', () => {
 
   afterEach(() => {
     vi.clearAllMocks()
+  })
+
+  it.each([{}, { enabled: true, allowed_backends: [] }, { enabled: true, allowed_backends: ['replay'] }])('does not probe or start forbidden RflySim for %j', async (capabilities) => {
+    telemetryApiMock.status.mockResolvedValue({ data: { telemetry_capabilities: capabilities } })
+    const wrapper = mount(Harness)
+    await flushMountedWork()
+    wrapper.vm.selectedBackend = 'rfly'
+    await flushMountedWork()
+    await wrapper.vm.testRflyDiagnostics()
+    await wrapper.vm.startCollection()
+    expect(telemetryApiMock.rflyDiagnostics).not.toHaveBeenCalled()
+    expect(telemetryApiMock.testRflyDiagnostics).not.toHaveBeenCalled()
+    expect(telemetryApiMock.startCollection).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
+  it('clears old backend declarations when a later status omits capabilities', async () => {
+    const wrapper = mount(Harness)
+    await flushMountedWork()
+    expect(wrapper.vm.backendOptions).toHaveLength(2)
+    telemetryApiMock.status.mockResolvedValue({ data: {} })
+    await wrapper.vm.stopCollection()
+    expect(wrapper.vm.backendOptions).toEqual([])
+    expect(wrapper.vm.selectedBackend).toBe('')
+    wrapper.unmount()
+  })
+
+  it('refuses blind-test requests from RflySim even if PX4 blind tests are enabled', async () => {
+    telemetryApiMock.status.mockResolvedValue({ data: { telemetry_capabilities: {
+      enabled: true, allowed_backends: ['rfly', 'replay', 'px4'], blind_test_enabled: true
+    } } })
+    const wrapper = mount(Harness)
+    await flushMountedWork()
+    wrapper.vm.selectedBackend = 'rfly'
+    await wrapper.vm.startBlindTest()
+    expect(telemetryApiMock.startBlindTest).not.toHaveBeenCalled()
+    wrapper.unmount()
   })
 
   it('opens a custom handoff dialog when stopping collection returns fault events', async () => {

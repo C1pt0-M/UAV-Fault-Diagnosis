@@ -1,0 +1,50 @@
+{
+  "reviewed_at": "2026-10-31T04:59:40.035134+00:00",
+  "official_repository": "https://github.com/lerlis/Data_processing_tools",
+  "fixed_commit": "3b5b326da73890efb3bae120e75e16a5ea03293c",
+  "local_git_status": " M data_HIL_PX4.json\n?? __pycache__/Rflytool_main.cpython-312.pyc\n?? __pycache__/data_extractor.cpython-312.pyc\n?? __pycache__/fileprocess.cpython-312.pyc\n?? __pycache__/get_parse.cpython-312.pyc\n?? __pycache__/timetrans.cpython-312.pyc\n?? data_HIL_PX4.json.backup_20260813_103608\n",
+  "files": [
+    {
+      "name": "fileprocess.py",
+      "url": "https://raw.githubusercontent.com/lerlis/Data_processing_tools/3b5b326da73890efb3bae120e75e16a5ea03293c/fileprocess.py",
+      "upstream_sha256": "65ae2252f87fb5a0b6e0c874ed7009991c0703c1529e3cbba08efb87d9c3be3e",
+      "local_sha256": "18f86f7e881ef91cc6d746afe9394228af16d83ae3bac22eea14686ac8eae407",
+      "ast_function_equality": {
+        "CSVFile_extractor.find_fly_land_time": true,
+        "CSVFile_extractor.freq_adjustment": true,
+        "CSVFile_extractor.str_freq_adjustment": true
+      }
+    },
+    {
+      "name": "Rflytool_main.py",
+      "url": "https://raw.githubusercontent.com/lerlis/Data_processing_tools/3b5b326da73890efb3bae120e75e16a5ea03293c/Rflytool_main.py",
+      "upstream_sha256": "33609e90f42ac1bdb38fae6f63471a7693a8cd42aeeefd19fc1b626c7e089771",
+      "local_sha256": "4109ab2eabf172d62d353570c3b34639655e9f9827f3c5c86b87fa87fc21a498",
+      "ast_function_equality": {
+        "SHIL_data_reader": true
+      }
+    }
+  ],
+  "current_environment": {
+    "python": "3.12.4 (tags/v3.12.4:8e8a4ba, Jun  6 2024, 19:30:16) [MSC v.1940 64 bit (AMD64)]",
+    "numpy": "2.5.1",
+    "pandas": "2.3.1",
+    "pyulog": "1.2.2"
+  },
+  "official_pinned_environment_readme": "Python3.9.7, NumPy1.20.3, pandas1.3.4, pyulog0.9.0; full pristine pinned-environment reproduction NOT performed.",
+  "example": {
+    "case_uid": "HIL/circling/motor/TestCase_10_2300000009",
+    "processed_start_s": 35.42378,
+    "processed_end_s": 63.52378,
+    "processed_first_fault_state_s": 50.72378,
+    "original_gtd_first_activation_s": 88.349,
+    "original_ulog_first_fault_command_s": 88.475456,
+    "gtd_reference_in_original_crop_has_activation": false,
+    "meaning": "These are source-time inconsistencies under the stated instantaneous fault labels; they do not alone establish that the official crop must be extended or the candidate landing rule is physically correct."
+  },
+  "interpretation": {
+    "confirmed": "Compared functions match official pinned commit by AST; existing instantaneous processed labels conflict with raw activation times in the fixed retained crop.",
+    "not_established": "Official crop is physically wrong, all official processed data have the same issue, or our 2-second landing / 0.2-second freshness rule is correct.",
+    "candidate_freeze": "Do not promote candidate outputs or run full replacement until policy intent and source consistency are reviewed; keep official baseline and frozen assets."
+  }
+}

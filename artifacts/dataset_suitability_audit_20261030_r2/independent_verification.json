@@ -1,0 +1,28 @@
+{
+  "status": "PASSED_INDEPENDENT_AGGREGATION_AND_CACHE_LABEL_CHECK",
+  "cases": 3135,
+  "source_windows": 200640,
+  "r1_r2_all_source_records_and_window_diagnostics_identical": true,
+  "raw_native_reproduction_cases": 70,
+  "all_40_state_without_command_cases_have_injection_after_crop": true,
+  "known_false_fault_labels_in_cropped_cases": {
+    "train": {
+      "cases": 33,
+      "cached_windows": 2112,
+      "fault_labels_before_raw_injection": 1077
+    },
+    "val": {
+      "cases": 7,
+      "cached_windows": 448,
+      "fault_labels_before_raw_injection": 232
+    }
+  },
+  "raw_normal_cases_checked": 14,
+  "hover_fault_cases_same_first_command": 654,
+  "healthy_hover_first_command_overlap": {
+    "train": 2,
+    "val": 0
+  },
+  "processed_marker_disagreement_windows": 3893,
+  "caution": "The 70 raw cases are a deliberately targeted audit, not a random estimate of whole-dataset label error. Raw command/GTD timing is not independent physical damage truth."
+}

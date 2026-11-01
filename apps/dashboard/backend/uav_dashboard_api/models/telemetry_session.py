@@ -172,6 +172,7 @@ class TelemetryFaultEvent(db.Model):
             'severity': diagnosis.get('severity') or self.severity,
             'severity_legacy': self.severity,
             'diagnosis': diagnosis,
+            'event_timing': diagnosis.get('event_timing') or {},
             'evidence_timeline': _build_evidence_timeline(diagnosis, start_time, end_time),
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None,
         }

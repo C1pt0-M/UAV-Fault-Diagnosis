@@ -42,6 +42,7 @@
       </div>
 
       <div class="monitoring-controls">
+        <p v-if="!backendOptions.length" role="status">数据源未启用或能力信息不可用，请检查部署配置。</p>
         <div class="monitoring-controls__inputs">
           <label class="monitoring-field">
             <span>数据源</span>
@@ -185,7 +186,9 @@
             type="warning"
             plain
             :loading="actionLoading.startBlindTest"
-            :disabled="currentState !== 'IDLE' || selectedBackend === 'replay'"
+            :disabled="currentState !== 'IDLE' || selectedBackend !== 'px4'"
+            :title="monitoringCopy.blindTestRequiresPx4"
+            data-test="start-blind-test"
             @click="$emit('start-blind-test')"
           >
             {{ monitoringCopy.startBlindTestLabel }}
@@ -306,6 +309,7 @@ const rflyDiagnosticsChecks = computed(() => {
 
 const isStartCollectionDisabled = computed(() => {
   if (props.currentState !== 'IDLE') return true
+  if (!props.backendOptions.some(option => option.value === selectedBackend.value)) return true
   if (selectedBackend.value !== 'rfly') return false
   return props.rflyDiagnostics?.ready !== true
 })

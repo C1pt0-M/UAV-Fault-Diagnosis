@@ -1,0 +1,122 @@
+[
+  {
+    "case_uid": "REAL/acce/no_fault/458_1",
+    "role": "test_normal",
+    "warnings": [
+      "ROS_export_does_not_cover_entire_fixed_crop"
+    ],
+    "bad_sync_transitions": [],
+    "uncovered_ros_rows": [
+      2707
+    ],
+    "all_selected_endpoints_have_reference": true
+  },
+  {
+    "case_uid": "REAL/circling/motor/361_1",
+    "role": "test_fault",
+    "warnings": [
+      "timesync_series_nonmonotonic"
+    ],
+    "bad_sync_transitions": [
+      {
+        "row": 118,
+        "previous_remote_ns": 111791802000,
+        "remote_ns": 8,
+        "mapped_px4_us": 111675043,
+        "inside_fixed_crop": false
+      }
+    ],
+    "uncovered_ros_rows": [],
+    "all_selected_endpoints_have_reference": true
+  },
+  {
+    "case_uid": "REAL/circling/no_fault/397_1",
+    "role": "test_normal",
+    "warnings": [
+      "timesync_series_nonmonotonic"
+    ],
+    "bad_sync_transitions": [
+      {
+        "row": 1147,
+        "previous_remote_ns": 202730387000,
+        "remote_ns": 8,
+        "mapped_px4_us": 202737778,
+        "inside_fixed_crop": true
+      }
+    ],
+    "uncovered_ros_rows": [],
+    "all_selected_endpoints_have_reference": true
+  },
+  {
+    "case_uid": "REAL/hover/no_fault/106_1",
+    "role": "test_normal",
+    "warnings": [
+      "ROS_export_does_not_cover_entire_fixed_crop"
+    ],
+    "bad_sync_transitions": [],
+    "uncovered_ros_rows": [
+      1825
+    ],
+    "all_selected_endpoints_have_reference": true
+  },
+  {
+    "case_uid": "REAL/hover/no_fault/110_1",
+    "role": "test_normal",
+    "warnings": [
+      "ROS_export_does_not_cover_entire_fixed_crop"
+    ],
+    "bad_sync_transitions": [],
+    "uncovered_ros_rows": [
+      2405
+    ],
+    "all_selected_endpoints_have_reference": true
+  },
+  {
+    "case_uid": "REAL/velocity/no_fault/322_1",
+    "role": "calibrate_normal",
+    "warnings": [
+      "ROS_export_does_not_cover_entire_fixed_crop"
+    ],
+    "bad_sync_transitions": [],
+    "uncovered_ros_rows": [
+      2222
+    ],
+    "all_selected_endpoints_have_reference": true
+  },
+  {
+    "case_uid": "REAL/waypoint/GPS/229_1",
+    "role": "test_fault",
+    "warnings": [
+      "timesync_series_nonmonotonic"
+    ],
+    "bad_sync_transitions": [
+      {
+        "row": 1682,
+        "previous_remote_ns": 301891303000,
+        "remote_ns": 229,
+        "mapped_px4_us": 301975406,
+        "inside_fixed_crop": true
+      }
+    ],
+    "uncovered_ros_rows": [],
+    "all_selected_endpoints_have_reference": true
+  },
+  {
+    "case_uid": "REAL/waypoint/no_fault/242_1",
+    "role": "test_normal",
+    "warnings": [
+      "timesync_series_nonmonotonic"
+    ],
+    "bad_sync_transitions": [
+      {
+        "row": 590,
+        "previous_remote_ns": 214819973000,
+        "remote_ns": 0,
+        "mapped_px4_us": 214780222,
+        "inside_fixed_crop": true
+      }
+    ],
+    "uncovered_ros_rows": [],
+    "all_selected_endpoints_have_reference": true
+  }
+]

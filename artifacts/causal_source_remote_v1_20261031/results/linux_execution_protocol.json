@@ -1,0 +1,193 @@
+{
+  "protocol_name": "causal_source_development_v1",
+  "status": "FROZEN_BEFORE_OPTIMIZER_UPDATES",
+  "date": "2026-10-31",
+  "data_version": "rflymad_causal_publication_replay_v1",
+  "design_sha256": "7a323e2751001933b1abf83d6a01f7ae81f0fbbe5a0adc364b3d90777da886b0",
+  "purpose": "Finite two-arm first-stage SOURCE validation development on new causal replay inputs; not old/new causal-attribution or actual live testing",
+  "arms": [
+    "uniform_replacement",
+    "balanced_source_normal"
+  ],
+  "seeds": [
+    42
+  ],
+  "maximum_formal_jobs": 2,
+  "data": {
+    "columns": [
+      "actuator_ctrl_1",
+      "actuator_ctrl_2",
+      "actuator_ctrl_3",
+      "actuator_ctrl_4",
+      "actuator_out_1",
+      "actuator_out_2",
+      "actuator_out_3",
+      "actuator_out_4",
+      "gyro_x",
+      "gyro_y",
+      "gyro_z",
+      "accel_x",
+      "accel_y",
+      "accel_z",
+      "baro_alt_relative",
+      "att_q_w",
+      "att_q_x",
+      "att_q_y",
+      "att_q_z",
+      "vel_x",
+      "vel_y",
+      "vel_z",
+      "mag_x",
+      "mag_y",
+      "mag_z",
+      "acc_norm"
+    ],
+    "train_windows": 162069,
+    "val_windows": 34710,
+    "train_cases": 2570,
+    "val_cases": 552,
+    "train_original_denominator": 168800,
+    "val_original_denominator": 35520,
+    "legacy_suffix_included": false,
+    "source_split_and_pair_membership_unchanged": true
+  },
+  "data_identities": {
+    "build_manifest.json": "250a246f48eec5141fca2a2c6f9fa8d99d8dc08572b075fe2d99027883eb1773",
+    "input_contract.json": "3ed8b8cd4008384109629dc4c8308839620e170286345e752b227495f4597945",
+    "norm_stats.json": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+    "train_cache_complete.json": "bfce0a9ae3cb0fa0953425caa03a9337053c5c1e0d0f6a2fe920ed54bca192da",
+    "val_cache_complete.json": "1423cb199cbe92add62912f76b585600f8a4b9b2d85e0cc8c87b6a81f004cb82",
+    "cache/train.pt": "d4c3c2c741c67d224547cf604087f45fa4ed371197129fd026ecf475d4de428d",
+    "cache/val.pt": "1cb842b81ef7c8c8f00708add6404b96191d50b97b83aa76f26e27aadedf411f",
+    "ledgers/train_included_windows.csv": "0c491c2ede34534eaba020ae5a9d09257fedb692519863f325c6b0dfeb4afecb",
+    "ledgers/val_included_windows.csv": "8b966bc5bfe74a26bd7614ab44c2e8b581b5cc6f66d0f55ea6f545cb253c16d6"
+  },
+  "code_identities": {
+    "scripts/research/train_causal_source_v1.py": "5ff7d43bcf1b0118154b32511c085839de300f25b7c267d5aafed9bf8f088e62",
+    "scripts/research/smoke_normal_source_sampling.py": "bca9d170fd967284d6ea914c4fb3ae459e9fc13aaf0005f06f2fe5307e54968c",
+    "scripts/research/train_source_normal_sampling.py": "ec26de4cda06ed3feb2360fc42a8469a2146950cdbd95201551fad20c4a5e4e2",
+    "scripts/research/run_normal_adaptation_v1.py": "932d6b57189c76c6bd3738bf19d65648d9809081794da3309dd1942bc48d29e4",
+    "scripts/research/run_normal_replay_v1.py": "86995e1f972f1cc418091ff4e0bcd4311fe4d79947ca946a4b8410cd2b98cafc",
+    "packages/uav_fault/uav_fault/models/cnn/lstm.py": "c01d5c1c37175f2bcbac2654d2bec43898d814073d465122afe515a825bcb369",
+    "packages/uav_fault/uav_fault/models/cnn/focal_loss.py": "8fb99a31dd838bafdbad20591313d7bef6766b5b6b64cc73cda8620ed0b3771a",
+    "packages/uav_fault/uav_fault/models/train_online_detector.py": "aa4d64f6c79a8b568e8a5f3f79953dd9572d9d074b7f7ee7d699d4894e5eddc3",
+    "packages/uav_fault/uav_fault/data/causal_cache.py": "c60774c78609381dac87ce264dc837fcc0ad414be767c0ad67ff19849c5e2a05"
+  },
+  "sampling": {
+    "sampler": "WeightedRandomSampler",
+    "replacement": true,
+    "draws_per_epoch": 162069,
+    "uniform": "Each qualified train window weight1",
+    "balanced": "Recompute from eligible current labels/families; original normal and inactive-in-fault-case normal receive half of total current normal mass each, fault weight1",
+    "normal_counts": {
+      "original_normal_case": 21145,
+      "normal_part_of_fault_case": 61906
+    },
+    "fault_windows": 79018,
+    "invariants": "Both arms same expected normal/fault probability, total mass and original eligible population; no class-balanced loss or old suffix",
+    "sampler_seed_offset": 11,
+    "loader_seed_offset": 101
+  },
+  "loss": {
+    "name": "FocalLoss",
+    "gamma": 2.0,
+    "alpha": null,
+    "class_weights": [
+      1.0,
+      1.0
+    ],
+    "reason": "Sampler isolates normal-origin mass; no additional class-weight adjustment"
+  },
+  "model": {
+    "implementation": "OnlineKGMSTCA",
+    "honest_description": "Existing relation-feature-enhanced MSTCA, no implemented knowledge graph",
+    "architectural_changes": false,
+    "pretrained_checkpoint": null
+  },
+  "training": {
+    "hidden_size": 64,
+    "num_layers": 1,
+    "dropout": 0.2,
+    "parameters": 156491,
+    "max_epochs": 30,
+    "batch_size": 512,
+    "cpu_threads": 4,
+    "optimizer": "AdamW",
+    "lr": 0.0003,
+    "weight_decay": 0.0001,
+    "loss_gamma": 2.0,
+    "loss_alpha": null,
+    "gradient_clip": 1.0,
+    "augmentation": false,
+    "mixed_precision": false,
+    "warmup_epochs": 3,
+    "min_lr": 1e-06,
+    "schedule": "Existing get_warmup_cosine_lr zero-based epoch, fixed30 epoch horizon",
+    "initialization": "Fresh CPU seeded initialization, paired arms identical digest, no old weights",
+    "formal_device": "cuda:0 required, never silently fall back or allocate GPU",
+    "draws_per_epoch": 162069,
+    "num_workers": 0
+  },
+  "validation": {
+    "population": "All34710 current qualified source val, never sampled/reweighted for formal run",
+    "batch_size": 512,
+    "prediction_rule": "argmax binary logits, fixed fault threshold0.5, no threshold sweep",
+    "checkpoint": "Strict maximum overall source val Macro-F1; earliest exact tie wins; save any strict improvement",
+    "early_stop": {
+      "min_epochs": 10,
+      "patience": 8,
+      "significant_delta": 0.002,
+      "rule": "Reuse selection_step separate significant_reference; strict improvements always checkpoint, patience counts only from min_epochs"
+    },
+    "stratified_reports": [
+      "overall",
+      "normal_origin",
+      "normal_by_status",
+      "original_normal_by_status incl hover",
+      "fault_by_case_class"
+    ],
+    "selection_not_from": [
+      "internal_test",
+      "Real",
+      "hover FPR",
+      "best seed"
+    ],
+    "interpretation": "Source-development only; one seed is not statistical proof; report both arms without discarding lower arm"
+  },
+  "cpu_check": {
+    "epochs": 2,
+    "draws_per_epoch": 128,
+    "batch_size": 32,
+    "val_windows_per_case": 2,
+    "validation_batch_size": 128,
+    "purpose": "Actual tiny source-only optimizer execution check, not formal retraining/performance"
+  },
+  "formal_environment": {
+    "torch": "2.5.1+cu124",
+    "numpy": "2.1.3",
+    "torch_cuda": "12.4"
+  },
+  "persistence": "Fresh directories only, initial/best/last raw checkpoints, per-epoch history, input/code/protocol SHA. Partial artifacts retained on failure. No optimizer/RNG resume. Unregistered reruns forbidden.",
+  "compute": "At freeze both local and current autodl_UAV report no available GPU; formal training blocked until CUDA available, no resource allocation authorized",
+  "forbidden": [
+    "reading internal test cache",
+    "reading Real or test ledgers/tensors for model selection",
+    "old data hash bypass",
+    "changing architecture or source input thresholds",
+    "automatic extra seeds",
+    "automatic deployment",
+    "reporting CPU-check validation as model performance"
+  ],
+  "execution_revision": {
+    "name": "linux_path_only_r1",
+    "original_protocol_sha256": "565e34af65bcb01bade26f58ad4dacf4288901c247622d052f36ede9454252a5",
+    "reason": "Recorded Windows cache_file paths relocated by basename under explicit root/cache. Same cache hashes/content, version/role/mask/containment validation retained. No training, sampler, selection, seeds or data changes.",
+    "changed_code": {
+      "packages/uav_fault/uav_fault/data/causal_cache.py": {
+        "before": "d2446e8bc36dcd0fd337084b6d4bd991f457069869295e1310dc2c11cad49ef0",
+        "after": "c60774c78609381dac87ce264dc837fcc0ad414be767c0ad67ff19849c5e2a05"
+      }
+    },
+    "created_at": "2026-10-31T19:09:13.818544+00:00"
+  }
+}

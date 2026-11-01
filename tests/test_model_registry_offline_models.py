@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from uav_dashboard_api.services.model_registry import list_registered_models
+from uav_fault.model_contract import RFLY_SEQ_COLUMNS_V1
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -29,6 +30,7 @@ def test_model_registry_includes_external_metrics_and_new_architectures(tmp_path
                 "model": model_name,
                 "architecture": architecture,
                 "task": "offline_multiclass",
+                "in_channels": 31,
                 "num_classes": 3,
                 "label_names": ["normal", "motor", "sensor"],
                 "best_val_f1": 0.95,
@@ -53,7 +55,7 @@ def test_model_registry_includes_external_metrics_and_new_architectures(tmp_path
         )
         _write_json(
             model_dir / "norm_stats.json",
-            {"columns": [f"feat_{i}" for i in range(31)]},
+            {"columns": RFLY_SEQ_COLUMNS_V1, "mean": [0.0] * 31, "std": [1.0] * 31},
         )
 
     models = list_registered_models(
