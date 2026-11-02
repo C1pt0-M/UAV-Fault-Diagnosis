@@ -1,0 +1,30 @@
+{
+  "status": "PASS_INDEPENDENT_PAIRED_BALANCED_WINDOW_DIFFERENCE_VERIFICATION",
+  "checked_at": "2026-11-02T18:54:32.559376+00:00",
+  "paired_IDs": 32381,
+  "changed_windows_reconstructed_from_case_sidecar": 455,
+  "changed_case_sidecars": 129,
+  "physical_summary_max_error": 1.7763568394002505e-15,
+  "collapsed16D_vs_original_adapter_max_changed_margin_error": 3.7662963867646226e-06,
+  "direct_branch_pivotal_counts": {
+    "new_miss": 105,
+    "resolved_FP": 84
+  },
+  "group_counts": {
+    "shared_TP": 15904,
+    "shared_TN": 15382,
+    "shared_miss": 334,
+    "shared_FP": 306,
+    "new_miss": 192,
+    "resolved_FP": 166,
+    "recovered_fault": 68,
+    "new_FP": 29
+  },
+  "all_historical_input_and_output_SHA_verified": true,
+  "adapter_output_constant_bias_margin": -0.5758621692657471,
+  "constant_bias_interpretation": "Contribution includes learned adapter output bias; split into bias and input-dependent16D term is algebraic parameterization, not independent causal importance.",
+  "analysis_script_sha256": "d718798f37b8de9eb4ed88fef22a10402d575db3335c530b69788368dd11817a",
+  "verifier_script_sha256": "11e55bc0f9cee2e06f8119eba03d65358c619042c8d30ee9edf9f680ab29b0b2",
+  "training_threshold_or_model_asset_changes": false,
+  "final_test_or_Real_read": false
+}
