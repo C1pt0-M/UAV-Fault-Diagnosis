@@ -1,0 +1,148 @@
+{
+  "polled_at": "2026-11-02T17:08:31.607616+00:00",
+  "current_status": "COMPLETE_FOUR_FORMAL_JOBS_AND_BOTH_REPLAYS",
+  "historical_failure_note": "postrun_status/recovered_postrun_status are preserved earlier failures. Corrected replay completion and verified results supersede them; no formal training rerun.",
+  "remote_status.json": {
+    "phase": "ALL_FORMAL_JOBS_COMPLETE_VERIFY_PENDING",
+    "pid": 8143,
+    "started_at": "2026-11-01T19:17:55.509569+00:00",
+    "completed_jobs": [
+      "M0_matched__uniform_replacement",
+      "M1__uniform_replacement",
+      "M0_matched__balanced_source_normal",
+      "M1__balanced_source_normal"
+    ],
+    "automatic_retries": false,
+    "test_Real_or_deployment": false,
+    "updated_at": "2026-11-01T19:58:24.227475+00:00",
+    "current_job": null,
+    "registered_jobs": [
+      {
+        "variant": "M0_matched",
+        "arm": "uniform_replacement"
+      },
+      {
+        "variant": "M1",
+        "arm": "uniform_replacement"
+      },
+      {
+        "variant": "M0_matched",
+        "arm": "balanced_source_normal"
+      },
+      {
+        "variant": "M1",
+        "arm": "balanced_source_normal"
+      }
+    ]
+  },
+  "corrected_replays_status.json": {
+    "status": "COMPLETE_CORRECTED_CONTINUOUS_AND_NATURAL_REPLAYS",
+    "started_at": "2026-11-02T14:53:05.527324+00:00",
+    "training_calls": 0,
+    "prior_failed_outputs_preserved": true,
+    "completed_at": "2026-11-02T14:59:02.448317+00:00"
+  },
+  "runs": {
+    "M0_matched/uniform_replacement": {
+      "status": "COMPLETE_FORMAL_SOURCE_M1_COMPARISON",
+      "variant": "M0_matched",
+      "arm": "uniform_replacement",
+      "epochs": 85,
+      "best_epoch": 81,
+      "gradient_steps": 25245,
+      "elapsed_s": 793.9395796209574,
+      "model_parameters": 105938,
+      "started_at": "2026-11-01T19:18:07.839307+00:00",
+      "finished_at": "2026-11-01T19:31:21.777448+00:00",
+      "completed_epochs": 85,
+      "last_epoch": {
+        "epoch": 85,
+        "lr": 2.1443156096842698e-05,
+        "train_loss": 0.010693733022244089,
+        "gradient_steps": 297,
+        "selection": {
+          "best_score": 0.9743536683528595,
+          "best_epoch": 81,
+          "significant_reference": 0.9735799014334563,
+          "bad_epochs": 20
+        }
+      }
+    },
+    "M0_matched/balanced_source_normal": {
+      "status": "COMPLETE_FORMAL_SOURCE_M1_COMPARISON",
+      "variant": "M0_matched",
+      "arm": "balanced_source_normal",
+      "epochs": 49,
+      "best_epoch": 45,
+      "gradient_steps": 14553,
+      "elapsed_s": 456.8470892980695,
+      "model_parameters": 105938,
+      "started_at": "2026-11-01T19:41:00.090960+00:00",
+      "finished_at": "2026-11-01T19:48:36.936809+00:00",
+      "completed_epochs": 49,
+      "last_epoch": {
+        "epoch": 49,
+        "lr": 0.00017266541533292033,
+        "train_loss": 0.016271939171910887,
+        "gradient_steps": 297,
+        "selection": {
+          "best_score": 0.9729967790697038,
+          "best_epoch": 45,
+          "significant_reference": 0.9722799161222526,
+          "bad_epochs": 20
+        }
+      }
+    },
+    "M1/uniform_replacement": {
+      "status": "COMPLETE_FORMAL_SOURCE_M1_COMPARISON",
+      "variant": "M1",
+      "arm": "uniform_replacement",
+      "epochs": 56,
+      "best_epoch": 48,
+      "gradient_steps": 16632,
+      "elapsed_s": 555.8461138680577,
+      "model_parameters": 109106,
+      "started_at": "2026-11-01T19:31:33.221770+00:00",
+      "finished_at": "2026-11-01T19:40:49.066403+00:00",
+      "completed_epochs": 56,
+      "last_epoch": {
+        "epoch": 56,
+        "lr": 0.0001381543878518863,
+        "train_loss": 0.01220244370394634,
+        "gradient_steps": 297,
+        "selection": {
+          "best_score": 0.971266520348443,
+          "best_epoch": 48,
+          "significant_reference": 0.9703537544598532,
+          "bad_epochs": 20
+        }
+      }
+    },
+    "M1/balanced_source_normal": {
+      "status": "COMPLETE_FORMAL_SOURCE_M1_COMPARISON",
+      "variant": "M1",
+      "arm": "balanced_source_normal",
+      "epochs": 59,
+      "best_epoch": 58,
+      "gradient_steps": 17523,
+      "elapsed_s": 575.1101063787937,
+      "model_parameters": 109106,
+      "started_at": "2026-11-01T19:48:48.205921+00:00",
+      "finished_at": "2026-11-01T19:58:23.314732+00:00",
+      "completed_epochs": 59,
+      "last_epoch": {
+        "epoch": 59,
+        "lr": 0.00012345836011734958,
+        "train_loss": 0.014432266351425086,
+        "gradient_steps": 297,
+        "selection": {
+          "best_score": 0.9734057734960182,
+          "best_epoch": 58,
+          "significant_reference": 0.9725086802624217,
+          "bad_epochs": 20
+        }
+      }
+    }
+  },
+  "gpu": "NVIDIA GeForce RTX 4090 D, 0 MiB, 0 %"
+}

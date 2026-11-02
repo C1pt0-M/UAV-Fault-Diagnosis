@@ -1,0 +1,3638 @@
+{
+  "status": "PASS_FIXED_SOURCE_VAL_DIRECTORY_AND_HOVER_ANALYSIS",
+  "checked_at": "2026-11-02T14:48:56.340517+00:00",
+  "verified_summary_sha256": "c6d6366b1311218b248259fb1f31a2247493d07a780997b1d5ed947be6761b5b",
+  "rows": [
+    {
+      "variant": "M0_matched",
+      "arm": "uniform_replacement",
+      "epochs": 85,
+      "best_epoch": 81,
+      "parameters": 105938,
+      "accuracy": 0.9743676847534047,
+      "macro_f1": 0.9743536683528595,
+      "fault_recall": 0.9791489877560916,
+      "normal_fpr": 0.030598753384121387,
+      "original_normal_fpr": 0.11327392120075047,
+      "hover_fpr": 0.39859154929577467,
+      "average_precision_step_integral": 0.9972296287407071,
+      "confusion_matrix": [
+        [
+          15397,
+          486
+        ],
+        [
+          344,
+          16154
+        ]
+      ],
+      "fault_by_case_class": {
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              24,
+              9851
+            ]
+          ],
+          "accuracy": 0.9975696202531645,
+          "macro_f1": 0.4993916658217581,
+          "fault_recall": 0.9975696202531645,
+          "normal_window_fpr": null
+        },
+        "sensor": {
+          "windows": 6623,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              320,
+              6303
+            ]
+          ],
+          "accuracy": 0.9516835271025215,
+          "macro_f1": 0.4876218474392697,
+          "fault_recall": 0.9516835271025215,
+          "normal_window_fpr": null
+        }
+      },
+      "elapsed_s": 793.9395796209574,
+      "source_val_windows": 32381,
+      "best_sha256": "9a7f9537d8b9548edfe50c61807a4095c253bafd0e85d4e8468db6f8cab09372",
+      "fixed_threshold": 0.5,
+      "overall_fixed_threshold": {
+        "windows": 32381,
+        "confusion_matrix": [
+          [
+            15397,
+            486
+          ],
+          [
+            344,
+            16154
+          ]
+        ],
+        "precision": 0.9707932692307693,
+        "fault_recall": 0.9791489877560916,
+        "normal_fpr": 0.030598753384121387,
+        "fault_misses": 344,
+        "normal_false_positives": 486
+      },
+      "six_fault_directories": {
+        "GPS": {
+          "windows": 1228,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              23,
+              1205
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9812703583061889,
+          "normal_fpr": null,
+          "fault_misses": 23,
+          "normal_false_positives": 0
+        },
+        "accelerometer": {
+          "windows": 1130,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              59,
+              1071
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.947787610619469,
+          "normal_fpr": null,
+          "fault_misses": 59,
+          "normal_false_positives": 0
+        },
+        "barometer": {
+          "windows": 1046,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              36,
+              1010
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9655831739961759,
+          "normal_fpr": null,
+          "fault_misses": 36,
+          "normal_false_positives": 0
+        },
+        "gyroscope": {
+          "windows": 1683,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              27,
+              1656
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.983957219251337,
+          "normal_fpr": null,
+          "fault_misses": 27,
+          "normal_false_positives": 0
+        },
+        "magnetometer": {
+          "windows": 1536,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              175,
+              1361
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.8860677083333334,
+          "normal_fpr": null,
+          "fault_misses": 175,
+          "normal_false_positives": 0
+        },
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              24,
+              9851
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9975696202531645,
+          "normal_fpr": null,
+          "fault_misses": 24,
+          "normal_false_positives": 0
+        }
+      },
+      "all_normal_by_flight_status": {
+        "acce": {
+          "windows": 1383,
+          "confusion_matrix": [
+            [
+              1328,
+              55
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.03976861894432393,
+          "fault_misses": 0,
+          "normal_false_positives": 55
+        },
+        "circling": {
+          "windows": 4467,
+          "confusion_matrix": [
+            [
+              4466,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.00022386389075442132,
+          "fault_misses": 0,
+          "normal_false_positives": 1
+        },
+        "dece": {
+          "windows": 1520,
+          "confusion_matrix": [
+            [
+              1470,
+              50
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.03289473684210526,
+          "fault_misses": 0,
+          "normal_false_positives": 50
+        },
+        "hover": {
+          "windows": 2602,
+          "confusion_matrix": [
+            [
+              2318,
+              284
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.10914681014604151,
+          "fault_misses": 0,
+          "normal_false_positives": 284
+        },
+        "velocity": {
+          "windows": 1757,
+          "confusion_matrix": [
+            [
+              1671,
+              86
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.048947068867387596,
+          "fault_misses": 0,
+          "normal_false_positives": 86
+        },
+        "waypoint": {
+          "windows": 4154,
+          "confusion_matrix": [
+            [
+              4144,
+              10
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.002407318247472316,
+          "fault_misses": 0,
+          "normal_false_positives": 10
+        }
+      },
+      "independent_normal_by_flight_status": {
+        "acce": {
+          "windows": 700,
+          "confusion_matrix": [
+            [
+              645,
+              55
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.07857142857142857,
+          "fault_misses": 0,
+          "normal_false_positives": 55
+        },
+        "circling": {
+          "windows": 729,
+          "confusion_matrix": [
+            [
+              728,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.0013717421124828531,
+          "fault_misses": 0,
+          "normal_false_positives": 1
+        },
+        "dece": {
+          "windows": 704,
+          "confusion_matrix": [
+            [
+              655,
+              49
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.06960227272727272,
+          "fault_misses": 0,
+          "normal_false_positives": 49
+        },
+        "hover": {
+          "windows": 710,
+          "confusion_matrix": [
+            [
+              427,
+              283
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.39859154929577467,
+          "fault_misses": 0,
+          "normal_false_positives": 283
+        },
+        "velocity": {
+          "windows": 699,
+          "confusion_matrix": [
+            [
+              613,
+              86
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.12303290414878398,
+          "fault_misses": 0,
+          "normal_false_positives": 86
+        },
+        "waypoint": {
+          "windows": 722,
+          "confusion_matrix": [
+            [
+              713,
+              9
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.012465373961218837,
+          "fault_misses": 0,
+          "normal_false_positives": 9
+        }
+      },
+      "independent_normal_hover_crop_time": {
+        "first30s": {
+          "windows": 430,
+          "confusion_matrix": [
+            [
+              368,
+              62
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.14418604651162792,
+          "fault_misses": 0,
+          "normal_false_positives": 62
+        },
+        "after30s": {
+          "windows": 280,
+          "confusion_matrix": [
+            [
+              59,
+              221
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.7892857142857143,
+          "fault_misses": 0,
+          "normal_false_positives": 221
+        }
+      },
+      "independent_normal_hover_cases": [
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_21_2019000020",
+          "windows": 52,
+          "confusion_matrix": [
+            [
+              52,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": null,
+          "fault_recall": null,
+          "normal_fpr": 0.0,
+          "fault_misses": 0,
+          "normal_false_positives": 0,
+          "after30s": {
+            "windows": 23,
+            "confusion_matrix": [
+              [
+                23,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": null,
+            "fault_recall": null,
+            "normal_fpr": 0.0,
+            "fault_misses": 0,
+            "normal_false_positives": 0
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_27_2019000026",
+          "windows": 55,
+          "confusion_matrix": [
+            [
+              40,
+              15
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.2727272727272727,
+          "fault_misses": 0,
+          "normal_false_positives": 15,
+          "after30s": {
+            "windows": 20,
+            "confusion_matrix": [
+              [
+                5,
+                15
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.75,
+            "fault_misses": 0,
+            "normal_false_positives": 15
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_29_2019000028",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              42,
+              19
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.3114754098360656,
+          "fault_misses": 0,
+          "normal_false_positives": 19,
+          "after30s": {
+            "windows": 28,
+            "confusion_matrix": [
+              [
+                9,
+                19
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.6785714285714286,
+            "fault_misses": 0,
+            "normal_false_positives": 19
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_2_2019000001",
+          "windows": 59,
+          "confusion_matrix": [
+            [
+              27,
+              32
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.5423728813559322,
+          "fault_misses": 0,
+          "normal_false_positives": 32,
+          "after30s": {
+            "windows": 20,
+            "confusion_matrix": [
+              [
+                0,
+                20
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 1.0,
+            "fault_misses": 0,
+            "normal_false_positives": 20
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_31_2019000030",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              40,
+              21
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.3442622950819672,
+          "fault_misses": 0,
+          "normal_false_positives": 21,
+          "after30s": {
+            "windows": 22,
+            "confusion_matrix": [
+              [
+                1,
+                21
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.9545454545454546,
+            "fault_misses": 0,
+            "normal_false_positives": 21
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_33_2019000032",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              38,
+              22
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.36666666666666664,
+          "fault_misses": 0,
+          "normal_false_positives": 22,
+          "after30s": {
+            "windows": 24,
+            "confusion_matrix": [
+              [
+                2,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.9166666666666666,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_21_1019000020",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              38,
+              22
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.36666666666666664,
+          "fault_misses": 0,
+          "normal_false_positives": 22,
+          "after30s": {
+            "windows": 22,
+            "confusion_matrix": [
+              [
+                0,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 1.0,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_27_1019000026",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              39,
+              22
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.36065573770491804,
+          "fault_misses": 0,
+          "normal_false_positives": 22,
+          "after30s": {
+            "windows": 27,
+            "confusion_matrix": [
+              [
+                5,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.8148148148148148,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_29_1019000028",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              42,
+              19
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.3114754098360656,
+          "fault_misses": 0,
+          "normal_false_positives": 19,
+          "after30s": {
+            "windows": 29,
+            "confusion_matrix": [
+              [
+                10,
+                19
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.6551724137931034,
+            "fault_misses": 0,
+            "normal_false_positives": 19
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_2_1019000001",
+          "windows": 59,
+          "confusion_matrix": [
+            [
+              26,
+              33
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.559322033898305,
+          "fault_misses": 0,
+          "normal_false_positives": 33,
+          "after30s": {
+            "windows": 18,
+            "confusion_matrix": [
+              [
+                0,
+                18
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 1.0,
+            "fault_misses": 0,
+            "normal_false_positives": 18
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_31_1019000030",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              20,
+              40
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.6666666666666666,
+          "fault_misses": 0,
+          "normal_false_positives": 40,
+          "after30s": {
+            "windows": 23,
+            "confusion_matrix": [
+              [
+                1,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.9565217391304348,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_33_1019000032",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              23,
+              38
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.6229508196721312,
+          "fault_misses": 0,
+          "normal_false_positives": 38,
+          "after30s": {
+            "windows": 24,
+            "confusion_matrix": [
+              [
+                3,
+                21
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.875,
+            "fault_misses": 0,
+            "normal_false_positives": 21
+          }
+        }
+      ]
+    },
+    {
+      "variant": "M1",
+      "arm": "uniform_replacement",
+      "epochs": 56,
+      "best_epoch": 48,
+      "parameters": 109106,
+      "accuracy": 0.971279454000803,
+      "macro_f1": 0.971266520348443,
+      "fault_recall": 0.9739968481028003,
+      "normal_fpr": 0.03154315935276711,
+      "original_normal_fpr": 0.11679174484052533,
+      "hover_fpr": 0.36901408450704226,
+      "average_precision_step_integral": 0.9968676893224775,
+      "confusion_matrix": [
+        [
+          15382,
+          501
+        ],
+        [
+          429,
+          16069
+        ]
+      ],
+      "fault_by_case_class": {
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              34,
+              9841
+            ]
+          ],
+          "accuracy": 0.9965569620253164,
+          "macro_f1": 0.4991377561371475,
+          "fault_recall": 0.9965569620253164,
+          "normal_window_fpr": null
+        },
+        "sensor": {
+          "windows": 6623,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              395,
+              6228
+            ]
+          ],
+          "accuracy": 0.9403593537671749,
+          "macro_f1": 0.4846315461831764,
+          "fault_recall": 0.9403593537671749,
+          "normal_window_fpr": null
+        }
+      },
+      "elapsed_s": 555.8461138680577,
+      "source_val_windows": 32381,
+      "best_sha256": "1d01fbc060b071762af4c77b7365ecabf727e13057966526bf32821db0e2feb2",
+      "fixed_threshold": 0.5,
+      "overall_fixed_threshold": {
+        "windows": 32381,
+        "confusion_matrix": [
+          [
+            15382,
+            501
+          ],
+          [
+            429,
+            16069
+          ]
+        ],
+        "precision": 0.9697646348823175,
+        "fault_recall": 0.9739968481028003,
+        "normal_fpr": 0.03154315935276711,
+        "fault_misses": 429,
+        "normal_false_positives": 501
+      },
+      "six_fault_directories": {
+        "GPS": {
+          "windows": 1228,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              56,
+              1172
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9543973941368078,
+          "normal_fpr": null,
+          "fault_misses": 56,
+          "normal_false_positives": 0
+        },
+        "accelerometer": {
+          "windows": 1130,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              32,
+              1098
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9716814159292035,
+          "normal_fpr": null,
+          "fault_misses": 32,
+          "normal_false_positives": 0
+        },
+        "barometer": {
+          "windows": 1046,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              64,
+              982
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9388145315487572,
+          "normal_fpr": null,
+          "fault_misses": 64,
+          "normal_false_positives": 0
+        },
+        "gyroscope": {
+          "windows": 1683,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              52,
+              1631
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9691027926322044,
+          "normal_fpr": null,
+          "fault_misses": 52,
+          "normal_false_positives": 0
+        },
+        "magnetometer": {
+          "windows": 1536,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              191,
+              1345
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.8756510416666666,
+          "normal_fpr": null,
+          "fault_misses": 191,
+          "normal_false_positives": 0
+        },
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              34,
+              9841
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9965569620253164,
+          "normal_fpr": null,
+          "fault_misses": 34,
+          "normal_false_positives": 0
+        }
+      },
+      "all_normal_by_flight_status": {
+        "acce": {
+          "windows": 1383,
+          "confusion_matrix": [
+            [
+              1308,
+              75
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.05422993492407809,
+          "fault_misses": 0,
+          "normal_false_positives": 75
+        },
+        "circling": {
+          "windows": 4467,
+          "confusion_matrix": [
+            [
+              4467,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": null,
+          "fault_recall": null,
+          "normal_fpr": 0.0,
+          "fault_misses": 0,
+          "normal_false_positives": 0
+        },
+        "dece": {
+          "windows": 1520,
+          "confusion_matrix": [
+            [
+              1456,
+              64
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.042105263157894736,
+          "fault_misses": 0,
+          "normal_false_positives": 64
+        },
+        "hover": {
+          "windows": 2602,
+          "confusion_matrix": [
+            [
+              2339,
+              263
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.101076095311299,
+          "fault_misses": 0,
+          "normal_false_positives": 263
+        },
+        "velocity": {
+          "windows": 1757,
+          "confusion_matrix": [
+            [
+              1672,
+              85
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.048377916903813316,
+          "fault_misses": 0,
+          "normal_false_positives": 85
+        },
+        "waypoint": {
+          "windows": 4154,
+          "confusion_matrix": [
+            [
+              4140,
+              14
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.003370245546461242,
+          "fault_misses": 0,
+          "normal_false_positives": 14
+        }
+      },
+      "independent_normal_by_flight_status": {
+        "acce": {
+          "windows": 700,
+          "confusion_matrix": [
+            [
+              625,
+              75
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.10714285714285714,
+          "fault_misses": 0,
+          "normal_false_positives": 75
+        },
+        "circling": {
+          "windows": 729,
+          "confusion_matrix": [
+            [
+              729,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": null,
+          "fault_recall": null,
+          "normal_fpr": 0.0,
+          "fault_misses": 0,
+          "normal_false_positives": 0
+        },
+        "dece": {
+          "windows": 704,
+          "confusion_matrix": [
+            [
+              641,
+              63
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.08948863636363637,
+          "fault_misses": 0,
+          "normal_false_positives": 63
+        },
+        "hover": {
+          "windows": 710,
+          "confusion_matrix": [
+            [
+              448,
+              262
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.36901408450704226,
+          "fault_misses": 0,
+          "normal_false_positives": 262
+        },
+        "velocity": {
+          "windows": 699,
+          "confusion_matrix": [
+            [
+              614,
+              85
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.12160228898426323,
+          "fault_misses": 0,
+          "normal_false_positives": 85
+        },
+        "waypoint": {
+          "windows": 722,
+          "confusion_matrix": [
+            [
+              709,
+              13
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.018005540166204988,
+          "fault_misses": 0,
+          "normal_false_positives": 13
+        }
+      },
+      "independent_normal_hover_crop_time": {
+        "first30s": {
+          "windows": 430,
+          "confusion_matrix": [
+            [
+              392,
+              38
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.08837209302325581,
+          "fault_misses": 0,
+          "normal_false_positives": 38
+        },
+        "after30s": {
+          "windows": 280,
+          "confusion_matrix": [
+            [
+              56,
+              224
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.8,
+          "fault_misses": 0,
+          "normal_false_positives": 224
+        }
+      },
+      "independent_normal_hover_cases": [
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_21_2019000020",
+          "windows": 52,
+          "confusion_matrix": [
+            [
+              51,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.019230769230769232,
+          "fault_misses": 0,
+          "normal_false_positives": 1,
+          "after30s": {
+            "windows": 23,
+            "confusion_matrix": [
+              [
+                22,
+                1
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.043478260869565216,
+            "fault_misses": 0,
+            "normal_false_positives": 1
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_27_2019000026",
+          "windows": 55,
+          "confusion_matrix": [
+            [
+              38,
+              17
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.3090909090909091,
+          "fault_misses": 0,
+          "normal_false_positives": 17,
+          "after30s": {
+            "windows": 20,
+            "confusion_matrix": [
+              [
+                3,
+                17
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.85,
+            "fault_misses": 0,
+            "normal_false_positives": 17
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_29_2019000028",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              42,
+              19
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.3114754098360656,
+          "fault_misses": 0,
+          "normal_false_positives": 19,
+          "after30s": {
+            "windows": 28,
+            "confusion_matrix": [
+              [
+                9,
+                19
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.6785714285714286,
+            "fault_misses": 0,
+            "normal_false_positives": 19
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_2_2019000001",
+          "windows": 59,
+          "confusion_matrix": [
+            [
+              27,
+              32
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.5423728813559322,
+          "fault_misses": 0,
+          "normal_false_positives": 32,
+          "after30s": {
+            "windows": 20,
+            "confusion_matrix": [
+              [
+                0,
+                20
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 1.0,
+            "fault_misses": 0,
+            "normal_false_positives": 20
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_31_2019000030",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              41,
+              20
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.32786885245901637,
+          "fault_misses": 0,
+          "normal_false_positives": 20,
+          "after30s": {
+            "windows": 22,
+            "confusion_matrix": [
+              [
+                2,
+                20
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.9090909090909091,
+            "fault_misses": 0,
+            "normal_false_positives": 20
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_33_2019000032",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              38,
+              22
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.36666666666666664,
+          "fault_misses": 0,
+          "normal_false_positives": 22,
+          "after30s": {
+            "windows": 24,
+            "confusion_matrix": [
+              [
+                2,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.9166666666666666,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_21_1019000020",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              38,
+              22
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.36666666666666664,
+          "fault_misses": 0,
+          "normal_false_positives": 22,
+          "after30s": {
+            "windows": 22,
+            "confusion_matrix": [
+              [
+                0,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 1.0,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_27_1019000026",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              39,
+              22
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.36065573770491804,
+          "fault_misses": 0,
+          "normal_false_positives": 22,
+          "after30s": {
+            "windows": 27,
+            "confusion_matrix": [
+              [
+                5,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.8148148148148148,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_29_1019000028",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              42,
+              19
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.3114754098360656,
+          "fault_misses": 0,
+          "normal_false_positives": 19,
+          "after30s": {
+            "windows": 29,
+            "confusion_matrix": [
+              [
+                10,
+                19
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.6551724137931034,
+            "fault_misses": 0,
+            "normal_false_positives": 19
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_2_1019000001",
+          "windows": 59,
+          "confusion_matrix": [
+            [
+              26,
+              33
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.559322033898305,
+          "fault_misses": 0,
+          "normal_false_positives": 33,
+          "after30s": {
+            "windows": 18,
+            "confusion_matrix": [
+              [
+                0,
+                18
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 1.0,
+            "fault_misses": 0,
+            "normal_false_positives": 18
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_31_1019000030",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              33,
+              27
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.45,
+          "fault_misses": 0,
+          "normal_false_positives": 27,
+          "after30s": {
+            "windows": 23,
+            "confusion_matrix": [
+              [
+                1,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.9565217391304348,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_33_1019000032",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              33,
+              28
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.45901639344262296,
+          "fault_misses": 0,
+          "normal_false_positives": 28,
+          "after30s": {
+            "windows": 24,
+            "confusion_matrix": [
+              [
+                2,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.9166666666666666,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        }
+      ]
+    },
+    {
+      "variant": "M0_matched",
+      "arm": "balanced_source_normal",
+      "epochs": 49,
+      "best_epoch": 45,
+      "parameters": 105938,
+      "accuracy": 0.97300886322226,
+      "macro_f1": 0.9729967790697038,
+      "fault_recall": 0.9756334101103165,
+      "normal_fpr": 0.02971730781338538,
+      "original_normal_fpr": 0.10881801125703565,
+      "hover_fpr": 0.4056338028169014,
+      "average_precision_step_integral": 0.9970261233973178,
+      "confusion_matrix": [
+        [
+          15411,
+          472
+        ],
+        [
+          402,
+          16096
+        ]
+      ],
+      "fault_by_case_class": {
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              35,
+              9840
+            ]
+          ],
+          "accuracy": 0.9964556962025316,
+          "macro_f1": 0.4991123510017753,
+          "fault_recall": 0.9964556962025316,
+          "normal_window_fpr": null
+        },
+        "sensor": {
+          "windows": 6623,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              367,
+              6256
+            ]
+          ],
+          "accuracy": 0.9445870451457044,
+          "macro_f1": 0.4857519993788338,
+          "fault_recall": 0.9445870451457044,
+          "normal_window_fpr": null
+        }
+      },
+      "elapsed_s": 456.8470892980695,
+      "source_val_windows": 32381,
+      "best_sha256": "3dcd8d000cabc76480e7a04917dc9c6fa16b758106c3716dae3b051e5166c71a",
+      "fixed_threshold": 0.5,
+      "overall_fixed_threshold": {
+        "windows": 32381,
+        "confusion_matrix": [
+          [
+            15411,
+            472
+          ],
+          [
+            402,
+            16096
+          ]
+        ],
+        "precision": 0.9715113471752777,
+        "fault_recall": 0.9756334101103165,
+        "normal_fpr": 0.02971730781338538,
+        "fault_misses": 402,
+        "normal_false_positives": 472
+      },
+      "six_fault_directories": {
+        "GPS": {
+          "windows": 1228,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              59,
+              1169
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9519543973941368,
+          "normal_fpr": null,
+          "fault_misses": 59,
+          "normal_false_positives": 0
+        },
+        "accelerometer": {
+          "windows": 1130,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              23,
+              1107
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9796460176991151,
+          "normal_fpr": null,
+          "fault_misses": 23,
+          "normal_false_positives": 0
+        },
+        "barometer": {
+          "windows": 1046,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              37,
+              1009
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9646271510516252,
+          "normal_fpr": null,
+          "fault_misses": 37,
+          "normal_false_positives": 0
+        },
+        "gyroscope": {
+          "windows": 1683,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              64,
+              1619
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9619726678550208,
+          "normal_fpr": null,
+          "fault_misses": 64,
+          "normal_false_positives": 0
+        },
+        "magnetometer": {
+          "windows": 1536,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              184,
+              1352
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.8802083333333334,
+          "normal_fpr": null,
+          "fault_misses": 184,
+          "normal_false_positives": 0
+        },
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              35,
+              9840
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9964556962025316,
+          "normal_fpr": null,
+          "fault_misses": 35,
+          "normal_false_positives": 0
+        }
+      },
+      "all_normal_by_flight_status": {
+        "acce": {
+          "windows": 1383,
+          "confusion_matrix": [
+            [
+              1353,
+              30
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.021691973969631236,
+          "fault_misses": 0,
+          "normal_false_positives": 30
+        },
+        "circling": {
+          "windows": 4467,
+          "confusion_matrix": [
+            [
+              4466,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.00022386389075442132,
+          "fault_misses": 0,
+          "normal_false_positives": 1
+        },
+        "dece": {
+          "windows": 1520,
+          "confusion_matrix": [
+            [
+              1463,
+              57
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.0375,
+          "fault_misses": 0,
+          "normal_false_positives": 57
+        },
+        "hover": {
+          "windows": 2602,
+          "confusion_matrix": [
+            [
+              2310,
+              292
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.11222136817832437,
+          "fault_misses": 0,
+          "normal_false_positives": 292
+        },
+        "velocity": {
+          "windows": 1757,
+          "confusion_matrix": [
+            [
+              1683,
+              74
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.0421172453044963,
+          "fault_misses": 0,
+          "normal_false_positives": 74
+        },
+        "waypoint": {
+          "windows": 4154,
+          "confusion_matrix": [
+            [
+              4136,
+              18
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.004333172845450169,
+          "fault_misses": 0,
+          "normal_false_positives": 18
+        }
+      },
+      "independent_normal_by_flight_status": {
+        "acce": {
+          "windows": 700,
+          "confusion_matrix": [
+            [
+              670,
+              30
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.04285714285714286,
+          "fault_misses": 0,
+          "normal_false_positives": 30
+        },
+        "circling": {
+          "windows": 729,
+          "confusion_matrix": [
+            [
+              728,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.0013717421124828531,
+          "fault_misses": 0,
+          "normal_false_positives": 1
+        },
+        "dece": {
+          "windows": 704,
+          "confusion_matrix": [
+            [
+              648,
+              56
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.07954545454545454,
+          "fault_misses": 0,
+          "normal_false_positives": 56
+        },
+        "hover": {
+          "windows": 710,
+          "confusion_matrix": [
+            [
+              422,
+              288
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.4056338028169014,
+          "fault_misses": 0,
+          "normal_false_positives": 288
+        },
+        "velocity": {
+          "windows": 699,
+          "confusion_matrix": [
+            [
+              625,
+              74
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.10586552217453506,
+          "fault_misses": 0,
+          "normal_false_positives": 74
+        },
+        "waypoint": {
+          "windows": 722,
+          "confusion_matrix": [
+            [
+              707,
+              15
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.02077562326869806,
+          "fault_misses": 0,
+          "normal_false_positives": 15
+        }
+      },
+      "independent_normal_hover_crop_time": {
+        "first30s": {
+          "windows": 430,
+          "confusion_matrix": [
+            [
+              362,
+              68
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.15813953488372093,
+          "fault_misses": 0,
+          "normal_false_positives": 68
+        },
+        "after30s": {
+          "windows": 280,
+          "confusion_matrix": [
+            [
+              60,
+              220
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.7857142857142857,
+          "fault_misses": 0,
+          "normal_false_positives": 220
+        }
+      },
+      "independent_normal_hover_cases": [
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_21_2019000020",
+          "windows": 52,
+          "confusion_matrix": [
+            [
+              52,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": null,
+          "fault_recall": null,
+          "normal_fpr": 0.0,
+          "fault_misses": 0,
+          "normal_false_positives": 0,
+          "after30s": {
+            "windows": 23,
+            "confusion_matrix": [
+              [
+                23,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": null,
+            "fault_recall": null,
+            "normal_fpr": 0.0,
+            "fault_misses": 0,
+            "normal_false_positives": 0
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_27_2019000026",
+          "windows": 55,
+          "confusion_matrix": [
+            [
+              38,
+              17
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.3090909090909091,
+          "fault_misses": 0,
+          "normal_false_positives": 17,
+          "after30s": {
+            "windows": 20,
+            "confusion_matrix": [
+              [
+                4,
+                16
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.8,
+            "fault_misses": 0,
+            "normal_false_positives": 16
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_29_2019000028",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              41,
+              20
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.32786885245901637,
+          "fault_misses": 0,
+          "normal_false_positives": 20,
+          "after30s": {
+            "windows": 28,
+            "confusion_matrix": [
+              [
+                8,
+                20
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.7142857142857143,
+            "fault_misses": 0,
+            "normal_false_positives": 20
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_2_2019000001",
+          "windows": 59,
+          "confusion_matrix": [
+            [
+              27,
+              32
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.5423728813559322,
+          "fault_misses": 0,
+          "normal_false_positives": 32,
+          "after30s": {
+            "windows": 20,
+            "confusion_matrix": [
+              [
+                0,
+                20
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 1.0,
+            "fault_misses": 0,
+            "normal_false_positives": 20
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_31_2019000030",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              37,
+              24
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.39344262295081966,
+          "fault_misses": 0,
+          "normal_false_positives": 24,
+          "after30s": {
+            "windows": 22,
+            "confusion_matrix": [
+              [
+                0,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 1.0,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_33_2019000032",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              38,
+              22
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.36666666666666664,
+          "fault_misses": 0,
+          "normal_false_positives": 22,
+          "after30s": {
+            "windows": 24,
+            "confusion_matrix": [
+              [
+                3,
+                21
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.875,
+            "fault_misses": 0,
+            "normal_false_positives": 21
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_21_1019000020",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              36,
+              24
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.4,
+          "fault_misses": 0,
+          "normal_false_positives": 24,
+          "after30s": {
+            "windows": 22,
+            "confusion_matrix": [
+              [
+                0,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 1.0,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_27_1019000026",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              42,
+              19
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.3114754098360656,
+          "fault_misses": 0,
+          "normal_false_positives": 19,
+          "after30s": {
+            "windows": 27,
+            "confusion_matrix": [
+              [
+                8,
+                19
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.7037037037037037,
+            "fault_misses": 0,
+            "normal_false_positives": 19
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_29_1019000028",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              42,
+              19
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.3114754098360656,
+          "fault_misses": 0,
+          "normal_false_positives": 19,
+          "after30s": {
+            "windows": 29,
+            "confusion_matrix": [
+              [
+                10,
+                19
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.6551724137931034,
+            "fault_misses": 0,
+            "normal_false_positives": 19
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_2_1019000001",
+          "windows": 59,
+          "confusion_matrix": [
+            [
+              26,
+              33
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.559322033898305,
+          "fault_misses": 0,
+          "normal_false_positives": 33,
+          "after30s": {
+            "windows": 18,
+            "confusion_matrix": [
+              [
+                0,
+                18
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 1.0,
+            "fault_misses": 0,
+            "normal_false_positives": 18
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_31_1019000030",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              19,
+              41
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.6833333333333333,
+          "fault_misses": 0,
+          "normal_false_positives": 41,
+          "after30s": {
+            "windows": 23,
+            "confusion_matrix": [
+              [
+                1,
+                22
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.9565217391304348,
+            "fault_misses": 0,
+            "normal_false_positives": 22
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_33_1019000032",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              24,
+              37
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.6065573770491803,
+          "fault_misses": 0,
+          "normal_false_positives": 37,
+          "after30s": {
+            "windows": 24,
+            "confusion_matrix": [
+              [
+                3,
+                21
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.875,
+            "fault_misses": 0,
+            "normal_false_positives": 21
+          }
+        }
+      ]
+    },
+    {
+      "variant": "M1",
+      "arm": "balanced_source_normal",
+      "epochs": 59,
+      "best_epoch": 58,
+      "parameters": 109106,
+      "accuracy": 0.9734103332200982,
+      "macro_f1": 0.9734057734960182,
+      "fault_recall": 0.9681173475572796,
+      "normal_fpr": 0.021091733299754455,
+      "original_normal_fpr": 0.07809568480300187,
+      "hover_fpr": 0.27605633802816903,
+      "average_precision_step_integral": 0.997365283181988,
+      "confusion_matrix": [
+        [
+          15548,
+          335
+        ],
+        [
+          526,
+          15972
+        ]
+      ],
+      "fault_by_case_class": {
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              44,
+              9831
+            ]
+          ],
+          "accuracy": 0.9955443037974684,
+          "macro_f1": 0.498883588754694,
+          "fault_recall": 0.9955443037974684,
+          "normal_window_fpr": null
+        },
+        "sensor": {
+          "windows": 6623,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              482,
+              6141
+            ]
+          ],
+          "accuracy": 0.927223312698173,
+          "macro_f1": 0.48111877154497024,
+          "fault_recall": 0.927223312698173,
+          "normal_window_fpr": null
+        }
+      },
+      "elapsed_s": 575.1101063787937,
+      "source_val_windows": 32381,
+      "best_sha256": "debbe73385a5be4fa123a1af1a9d4774c041ef4bf23a035431008ec86bb78b6c",
+      "fixed_threshold": 0.5,
+      "overall_fixed_threshold": {
+        "windows": 32381,
+        "confusion_matrix": [
+          [
+            15548,
+            335
+          ],
+          [
+            526,
+            15972
+          ]
+        ],
+        "precision": 0.9794566750475256,
+        "fault_recall": 0.9681173475572796,
+        "normal_fpr": 0.021091733299754455,
+        "fault_misses": 526,
+        "normal_false_positives": 335
+      },
+      "six_fault_directories": {
+        "GPS": {
+          "windows": 1228,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              117,
+              1111
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9047231270358306,
+          "normal_fpr": null,
+          "fault_misses": 117,
+          "normal_false_positives": 0
+        },
+        "accelerometer": {
+          "windows": 1130,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              50,
+              1080
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9557522123893806,
+          "normal_fpr": null,
+          "fault_misses": 50,
+          "normal_false_positives": 0
+        },
+        "barometer": {
+          "windows": 1046,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              46,
+              1000
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9560229445506692,
+          "normal_fpr": null,
+          "fault_misses": 46,
+          "normal_false_positives": 0
+        },
+        "gyroscope": {
+          "windows": 1683,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              81,
+              1602
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9518716577540107,
+          "normal_fpr": null,
+          "fault_misses": 81,
+          "normal_false_positives": 0
+        },
+        "magnetometer": {
+          "windows": 1536,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              188,
+              1348
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.8776041666666666,
+          "normal_fpr": null,
+          "fault_misses": 188,
+          "normal_false_positives": 0
+        },
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              44,
+              9831
+            ]
+          ],
+          "precision": 1.0,
+          "fault_recall": 0.9955443037974684,
+          "normal_fpr": null,
+          "fault_misses": 44,
+          "normal_false_positives": 0
+        }
+      },
+      "all_normal_by_flight_status": {
+        "acce": {
+          "windows": 1383,
+          "confusion_matrix": [
+            [
+              1349,
+              34
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.024584237165582067,
+          "fault_misses": 0,
+          "normal_false_positives": 34
+        },
+        "circling": {
+          "windows": 4467,
+          "confusion_matrix": [
+            [
+              4467,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": null,
+          "fault_recall": null,
+          "normal_fpr": 0.0,
+          "fault_misses": 0,
+          "normal_false_positives": 0
+        },
+        "dece": {
+          "windows": 1520,
+          "confusion_matrix": [
+            [
+              1481,
+              39
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.025657894736842105,
+          "fault_misses": 0,
+          "normal_false_positives": 39
+        },
+        "hover": {
+          "windows": 2602,
+          "confusion_matrix": [
+            [
+              2405,
+              197
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.07571099154496541,
+          "fault_misses": 0,
+          "normal_false_positives": 197
+        },
+        "velocity": {
+          "windows": 1757,
+          "confusion_matrix": [
+            [
+              1697,
+              60
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.03414911781445646,
+          "fault_misses": 0,
+          "normal_false_positives": 60
+        },
+        "waypoint": {
+          "windows": 4154,
+          "confusion_matrix": [
+            [
+              4149,
+              5
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.001203659123736158,
+          "fault_misses": 0,
+          "normal_false_positives": 5
+        }
+      },
+      "independent_normal_by_flight_status": {
+        "acce": {
+          "windows": 700,
+          "confusion_matrix": [
+            [
+              666,
+              34
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.04857142857142857,
+          "fault_misses": 0,
+          "normal_false_positives": 34
+        },
+        "circling": {
+          "windows": 729,
+          "confusion_matrix": [
+            [
+              729,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": null,
+          "fault_recall": null,
+          "normal_fpr": 0.0,
+          "fault_misses": 0,
+          "normal_false_positives": 0
+        },
+        "dece": {
+          "windows": 704,
+          "confusion_matrix": [
+            [
+              665,
+              39
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.05539772727272727,
+          "fault_misses": 0,
+          "normal_false_positives": 39
+        },
+        "hover": {
+          "windows": 710,
+          "confusion_matrix": [
+            [
+              514,
+              196
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.27605633802816903,
+          "fault_misses": 0,
+          "normal_false_positives": 196
+        },
+        "velocity": {
+          "windows": 699,
+          "confusion_matrix": [
+            [
+              640,
+              59
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.0844062947067239,
+          "fault_misses": 0,
+          "normal_false_positives": 59
+        },
+        "waypoint": {
+          "windows": 722,
+          "confusion_matrix": [
+            [
+              717,
+              5
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.006925207756232687,
+          "fault_misses": 0,
+          "normal_false_positives": 5
+        }
+      },
+      "independent_normal_hover_crop_time": {
+        "first30s": {
+          "windows": 430,
+          "confusion_matrix": [
+            [
+              396,
+              34
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.07906976744186046,
+          "fault_misses": 0,
+          "normal_false_positives": 34
+        },
+        "after30s": {
+          "windows": 280,
+          "confusion_matrix": [
+            [
+              118,
+              162
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.5785714285714286,
+          "fault_misses": 0,
+          "normal_false_positives": 162
+        }
+      },
+      "independent_normal_hover_cases": [
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_21_2019000020",
+          "windows": 52,
+          "confusion_matrix": [
+            [
+              52,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": null,
+          "fault_recall": null,
+          "normal_fpr": 0.0,
+          "fault_misses": 0,
+          "normal_false_positives": 0,
+          "after30s": {
+            "windows": 23,
+            "confusion_matrix": [
+              [
+                23,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": null,
+            "fault_recall": null,
+            "normal_fpr": 0.0,
+            "fault_misses": 0,
+            "normal_false_positives": 0
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_27_2019000026",
+          "windows": 55,
+          "confusion_matrix": [
+            [
+              46,
+              9
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.16363636363636364,
+          "fault_misses": 0,
+          "normal_false_positives": 9,
+          "after30s": {
+            "windows": 20,
+            "confusion_matrix": [
+              [
+                11,
+                9
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.45,
+            "fault_misses": 0,
+            "normal_false_positives": 9
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_29_2019000028",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              45,
+              16
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.26229508196721313,
+          "fault_misses": 0,
+          "normal_false_positives": 16,
+          "after30s": {
+            "windows": 28,
+            "confusion_matrix": [
+              [
+                12,
+                16
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.5714285714285714,
+            "fault_misses": 0,
+            "normal_false_positives": 16
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_2_2019000001",
+          "windows": 59,
+          "confusion_matrix": [
+            [
+              38,
+              21
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.3559322033898305,
+          "fault_misses": 0,
+          "normal_false_positives": 21,
+          "after30s": {
+            "windows": 20,
+            "confusion_matrix": [
+              [
+                10,
+                10
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.5,
+            "fault_misses": 0,
+            "normal_false_positives": 10
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_31_2019000030",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              49,
+              12
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.19672131147540983,
+          "fault_misses": 0,
+          "normal_false_positives": 12,
+          "after30s": {
+            "windows": 22,
+            "confusion_matrix": [
+              [
+                10,
+                12
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.5454545454545454,
+            "fault_misses": 0,
+            "normal_false_positives": 12
+          }
+        },
+        {
+          "case_uid": "HIL/hover/no_fault/TestCase_33_2019000032",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              45,
+              15
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.25,
+          "fault_misses": 0,
+          "normal_false_positives": 15,
+          "after30s": {
+            "windows": 24,
+            "confusion_matrix": [
+              [
+                9,
+                15
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.625,
+            "fault_misses": 0,
+            "normal_false_positives": 15
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_21_1019000020",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              43,
+              17
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.2833333333333333,
+          "fault_misses": 0,
+          "normal_false_positives": 17,
+          "after30s": {
+            "windows": 22,
+            "confusion_matrix": [
+              [
+                5,
+                17
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.7727272727272727,
+            "fault_misses": 0,
+            "normal_false_positives": 17
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_27_1019000026",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              47,
+              14
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.22950819672131148,
+          "fault_misses": 0,
+          "normal_false_positives": 14,
+          "after30s": {
+            "windows": 27,
+            "confusion_matrix": [
+              [
+                13,
+                14
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.5185185185185185,
+            "fault_misses": 0,
+            "normal_false_positives": 14
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_29_1019000028",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              43,
+              18
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.29508196721311475,
+          "fault_misses": 0,
+          "normal_false_positives": 18,
+          "after30s": {
+            "windows": 29,
+            "confusion_matrix": [
+              [
+                11,
+                18
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.6206896551724138,
+            "fault_misses": 0,
+            "normal_false_positives": 18
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_2_1019000001",
+          "windows": 59,
+          "confusion_matrix": [
+            [
+              28,
+              31
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.5254237288135594,
+          "fault_misses": 0,
+          "normal_false_positives": 31,
+          "after30s": {
+            "windows": 18,
+            "confusion_matrix": [
+              [
+                1,
+                17
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.9444444444444444,
+            "fault_misses": 0,
+            "normal_false_positives": 17
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_31_1019000030",
+          "windows": 60,
+          "confusion_matrix": [
+            [
+              37,
+              23
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.38333333333333336,
+          "fault_misses": 0,
+          "normal_false_positives": 23,
+          "after30s": {
+            "windows": 23,
+            "confusion_matrix": [
+              [
+                4,
+                19
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.8260869565217391,
+            "fault_misses": 0,
+            "normal_false_positives": 19
+          }
+        },
+        {
+          "case_uid": "SIL/hover/no_fault/TestCase_33_1019000032",
+          "windows": 61,
+          "confusion_matrix": [
+            [
+              41,
+              20
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "precision": 0.0,
+          "fault_recall": null,
+          "normal_fpr": 0.32786885245901637,
+          "fault_misses": 0,
+          "normal_false_positives": 20,
+          "after30s": {
+            "windows": 24,
+            "confusion_matrix": [
+              [
+                9,
+                15
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "precision": 0.0,
+            "fault_recall": null,
+            "normal_fpr": 0.625,
+            "fault_misses": 0,
+            "normal_false_positives": 15
+          }
+        }
+      ]
+    }
+  ],
+  "paired_differences": [
+    {
+      "arm": "uniform_replacement",
+      "M1_minus_M0": {
+        "accuracy": -0.003088230752601784,
+        "macro_f1": -0.0030871480044165622,
+        "fault_recall": -0.00515213965329131,
+        "normal_fpr": 0.0009444059686457215,
+        "original_normal_fpr": 0.0035178236397748613,
+        "hover_fpr": -0.02957746478873241,
+        "average_precision_step_integral": -0.0003619394182295954
+      },
+      "fault_directory_recall_differences": {
+        "GPS": -0.02687296416938112,
+        "accelerometer": 0.023893805309734506,
+        "barometer": -0.026768642447418722,
+        "gyroscope": -0.0148544266191325,
+        "magnetometer": -0.01041666666666674,
+        "motor": -0.0010126582278481289
+      },
+      "normal_false_positive_count_difference": 15,
+      "fault_miss_count_difference": 85
+    },
+    {
+      "arm": "balanced_source_normal",
+      "M1_minus_M0": {
+        "accuracy": 0.0004014699978381886,
+        "macro_f1": 0.00040899442631436855,
+        "fault_recall": -0.007516062553036829,
+        "normal_fpr": -0.008625574513630926,
+        "original_normal_fpr": -0.030722326454033777,
+        "hover_fpr": -0.1295774647887324,
+        "average_precision_step_integral": 0.000339159784670251
+      },
+      "fault_directory_recall_differences": {
+        "GPS": -0.04723127035830621,
+        "accelerometer": -0.023893805309734506,
+        "barometer": -0.008604206500956058,
+        "gyroscope": -0.010101010101010055,
+        "magnetometer": -0.0026041666666667407,
+        "motor": -0.0009113924050632161
+      },
+      "normal_false_positive_count_difference": -137,
+      "fault_miss_count_difference": 124
+    }
+  ],
+  "scope": "Frozen0.5 only, source-val common150 IDs, same arm pretraining. AP already computed by independent verifier. No threshold selection, new training, independent-seed significance or final test/Real."
+}

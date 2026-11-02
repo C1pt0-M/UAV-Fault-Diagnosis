@@ -1,0 +1,2904 @@
+{
+  "status": "COMPLETE_NATIVE_AVAILABILITY_LATENCY_DIAGNOSTIC",
+  "completed_at": "2026-11-02T14:59:01.985766+00:00",
+  "plan_sha256": "026bf88bd7c39d66cd3285ff27d01b130ca88faeec42bf6432de327912c695f4",
+  "main_replay_summary_sha256": "ce1ee3074e48a09c99b3f76adc5bedfd5505b3da6fcc08bf1130978edada7128",
+  "rows": [
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_21_1019000020",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "SIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 19.392,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2056,
+        "median": 0.9905189999999999,
+        "p90": 1.0128405,
+        "max": 229.845451
+      },
+      "valid_prediction_windows": 2056,
+      "normal_exposure_s": 41.12,
+      "window_normal_fpr": 0.3433852140077821,
+      "window_fault_recall": null,
+      "false_events": 1,
+      "false_events_per_hour": 87.54863813229572,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 49.272,
+            "confirmed_t": 49.312
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 49.272,
+            "end_t": 60.492,
+            "confirmed_t": 49.312,
+            "emitted_t": 60.492,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 49.312,
+              "emitted_t": 60.492,
+              "confirmed_at_unix_s": 1793631446.1424053,
+              "emitted_at_unix_s": 1793631446.150701,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1947,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_21_1019000020",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "SIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 19.392,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2056,
+        "median": 0.9952535,
+        "p90": 1.029397,
+        "max": 1.327168
+      },
+      "valid_prediction_windows": 2056,
+      "normal_exposure_s": 41.12,
+      "window_normal_fpr": 0.365272373540856,
+      "window_fault_recall": null,
+      "false_events": 1,
+      "false_events_per_hour": 87.54863813229572,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 49.792,
+            "confirmed_t": 49.832
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 49.792,
+            "end_t": 60.492,
+            "confirmed_t": 49.832,
+            "emitted_t": 60.492,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 49.832,
+              "emitted_t": 60.492,
+              "confirmed_at_unix_s": 1793631448.5667374,
+              "emitted_at_unix_s": 1793631448.5746646,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1947,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_27_1019000026",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "SIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 19.428,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2344,
+        "median": 0.995023,
+        "p90": 1.0356613000000001,
+        "max": 1.779371
+      },
+      "valid_prediction_windows": 2344,
+      "normal_exposure_s": 46.88,
+      "window_normal_fpr": 0.3366040955631399,
+      "window_fault_recall": null,
+      "false_events": 1,
+      "false_events_per_hour": 76.79180887372013,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 63.248,
+            "confirmed_t": 63.288
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 63.248,
+            "end_t": 66.288,
+            "confirmed_t": 63.288,
+            "emitted_t": 66.288,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 63.288,
+              "emitted_t": 66.288,
+              "confirmed_at_unix_s": 1793631451.3631258,
+              "emitted_at_unix_s": 1793631451.3653746,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2236,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_27_1019000026",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "SIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 19.428,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2344,
+        "median": 0.9981685,
+        "p90": 1.0258703,
+        "max": 1.751339
+      },
+      "valid_prediction_windows": 2344,
+      "normal_exposure_s": 46.88,
+      "window_normal_fpr": 0.3084470989761092,
+      "window_fault_recall": null,
+      "false_events": 1,
+      "false_events_per_hour": 76.79180887372013,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 63.268,
+            "confirmed_t": 63.308
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 63.268,
+            "end_t": 66.288,
+            "confirmed_t": 63.308,
+            "emitted_t": 66.288,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 63.308,
+              "emitted_t": 66.288,
+              "confirmed_at_unix_s": 1793631454.128535,
+              "emitted_at_unix_s": 1793631454.1308098,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2236,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_29_1019000028",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "SIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 19.337,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2438,
+        "median": 0.997063,
+        "p90": 1.028468,
+        "max": 2.474081
+      },
+      "valid_prediction_windows": 2438,
+      "normal_exposure_s": 48.76,
+      "window_normal_fpr": 0.29901558654634947,
+      "window_fault_recall": null,
+      "false_events": 1,
+      "false_events_per_hour": 73.83100902378999,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 56.437,
+            "confirmed_t": 56.477
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 56.437,
+            "end_t": 68.077,
+            "confirmed_t": 56.477,
+            "emitted_t": 68.077,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 56.477,
+              "emitted_t": 68.077,
+              "confirmed_at_unix_s": 1793631457.0143025,
+              "emitted_at_unix_s": 1793631457.0228822,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2330,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/no_fault/TestCase_29_1019000028",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "SIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 19.337,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2438,
+        "median": 0.9944124999999999,
+        "p90": 1.0189943,
+        "max": 1.23681
+      },
+      "valid_prediction_windows": 2438,
+      "normal_exposure_s": 48.76,
+      "window_normal_fpr": 0.29942575881870387,
+      "window_fault_recall": null,
+      "false_events": 1,
+      "false_events_per_hour": 73.83100902378999,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 54.277,
+            "confirmed_t": 54.317
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 54.277,
+            "end_t": 68.077,
+            "confirmed_t": 54.317,
+            "emitted_t": 68.077,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 54.317,
+              "emitted_t": 68.077,
+              "confirmed_at_unix_s": 1793631459.8766541,
+              "emitted_at_unix_s": 1793631459.8869452,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2330,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/motor/TestCase_114_1000000113",
+      "kind": "fault",
+      "subtype": "motor",
+      "domain": "SIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 20.706,
+      "post_onset_first_prediction_s": 37.186,
+      "cross05_s": 37.486,
+      "confirmed_s": 38.526,
+      "final_event_s": 97.186,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 37.17,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 3825,
+        "median": 0.998823,
+        "p90": 1.0261799999999999,
+        "max": 2.392072
+      },
+      "valid_prediction_windows": 3825,
+      "normal_exposure_s": 16.48,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9953333333333333,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 38.486,
+            "confirmed_t": 38.526
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 38.486,
+            "end_t": 97.186,
+            "confirmed_t": 38.526,
+            "emitted_t": 97.186,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 38.526,
+              "emitted_t": 97.186,
+              "confirmed_at_unix_s": 1793631464.38163,
+              "emitted_at_unix_s": 1793631464.4255002,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 3694,
+      "M1_cross05_s": 37.486,
+      "M1_final_event_s": 97.186,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.0,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/motor/TestCase_114_1000000113",
+      "kind": "fault",
+      "subtype": "motor",
+      "domain": "SIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 20.706,
+      "post_onset_first_prediction_s": 37.186,
+      "cross05_s": 37.426,
+      "confirmed_s": 38.506,
+      "final_event_s": 97.186,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 37.17,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 3825,
+        "median": 1.004952,
+        "p90": 1.067132,
+        "max": 1.38995
+      },
+      "valid_prediction_windows": 3825,
+      "normal_exposure_s": 16.48,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9963333333333333,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 38.466,
+            "confirmed_t": 38.506
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 38.466,
+            "end_t": 97.186,
+            "confirmed_t": 38.506,
+            "emitted_t": 97.186,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 38.506,
+              "emitted_t": 97.186,
+              "confirmed_at_unix_s": 1793631468.9756246,
+              "emitted_at_unix_s": 1793631469.0188477,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 3694,
+      "M1_cross05_s": 37.406,
+      "M1_final_event_s": 97.186,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": -0.020000000000003126,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/accelerometer/TestCase_14_1002000013",
+      "kind": "fault",
+      "subtype": "accelerometer",
+      "domain": "SIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 20.96,
+      "post_onset_first_prediction_s": 37.42,
+      "cross05_s": 37.56,
+      "confirmed_s": 37.7,
+      "final_event_s": 62.4,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 37.409,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2073,
+        "median": 0.999961,
+        "p90": 1.025376,
+        "max": 1.380988
+      },
+      "valid_prediction_windows": 2073,
+      "normal_exposure_s": 16.46,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9671474358974359,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 37.66,
+            "confirmed_t": 37.7
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 37.66,
+            "end_t": 62.4,
+            "confirmed_t": 37.7,
+            "emitted_t": 62.4,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 37.7,
+              "emitted_t": 62.4,
+              "confirmed_at_unix_s": 1793631471.467573,
+              "emitted_at_unix_s": 1793631471.485912,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1944,
+      "M1_cross05_s": 37.62,
+      "M1_final_event_s": 62.4,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.05999999999999517,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/accelerometer/TestCase_14_1002000013",
+      "kind": "fault",
+      "subtype": "accelerometer",
+      "domain": "SIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 20.96,
+      "post_onset_first_prediction_s": 37.42,
+      "cross05_s": 37.58,
+      "confirmed_s": 37.72,
+      "final_event_s": 62.4,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 37.409,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2073,
+        "median": 0.989699,
+        "p90": 1.005573,
+        "max": 1.367006
+      },
+      "valid_prediction_windows": 2073,
+      "normal_exposure_s": 16.46,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9807692307692307,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 37.68,
+            "confirmed_t": 37.72
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 37.68,
+            "end_t": 62.4,
+            "confirmed_t": 37.72,
+            "emitted_t": 62.4,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 37.72,
+              "emitted_t": 62.4,
+              "confirmed_at_unix_s": 1793631473.9013948,
+              "emitted_at_unix_s": 1793631473.9203372,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1944,
+      "M1_cross05_s": 37.62,
+      "M1_final_event_s": 62.4,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.03999999999999915,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/gyroscope/TestCase_11_1003000010",
+      "kind": "fault",
+      "subtype": "gyroscope",
+      "domain": "SIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 20.699,
+      "post_onset_first_prediction_s": 37.179,
+      "cross05_s": 37.379,
+      "confirmed_s": 40.599,
+      "final_event_s": 62.199,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 37.177,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2076,
+        "median": 0.99722,
+        "p90": 1.026312,
+        "max": 2.405538
+      },
+      "valid_prediction_windows": 2076,
+      "normal_exposure_s": 16.48,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9936,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 40.559,
+            "confirmed_t": 40.599
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 40.559,
+            "end_t": 62.199,
+            "confirmed_t": 40.599,
+            "emitted_t": 62.199,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 40.599,
+              "emitted_t": 62.199,
+              "confirmed_at_unix_s": 1793631476.3869288,
+              "emitted_at_unix_s": 1793631476.4030802,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1944,
+      "M1_cross05_s": 37.399,
+      "M1_final_event_s": 62.199,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.020000000000003126,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/gyroscope/TestCase_11_1003000010",
+      "kind": "fault",
+      "subtype": "gyroscope",
+      "domain": "SIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 20.699,
+      "post_onset_first_prediction_s": 37.179,
+      "cross05_s": 37.419,
+      "confirmed_s": 40.639,
+      "final_event_s": 62.199,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 37.177,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2076,
+        "median": 0.992294,
+        "p90": 1.01549,
+        "max": 2.460701
+      },
+      "valid_prediction_windows": 2076,
+      "normal_exposure_s": 16.48,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.992,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 40.599,
+            "confirmed_t": 40.639
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 40.599,
+            "end_t": 62.199,
+            "confirmed_t": 40.639,
+            "emitted_t": 62.199,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 40.639,
+              "emitted_t": 62.199,
+              "confirmed_at_unix_s": 1793631478.8350124,
+              "emitted_at_unix_s": 1793631478.8515015,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1944,
+      "M1_cross05_s": 37.419,
+      "M1_final_event_s": 62.199,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.0,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/barometer/TestCase_12_1004000011",
+      "kind": "fault",
+      "subtype": "barometer",
+      "domain": "SIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 21.156,
+      "post_onset_first_prediction_s": 37.636,
+      "cross05_s": 37.836,
+      "confirmed_s": 37.916,
+      "final_event_s": 43.336,
+      "final_emission_reason": "online_update",
+      "onset_reference_s": 37.627,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2075,
+        "median": 0.997579,
+        "p90": 1.0285414,
+        "max": 2.558777
+      },
+      "valid_prediction_windows": 2075,
+      "normal_exposure_s": 16.48,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.4011208967173739,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 37.876,
+            "confirmed_t": 37.916
+          },
+          {
+            "candidate_start_t": 45.836,
+            "confirmed_t": 45.876
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 37.876,
+            "end_t": 42.816,
+            "confirmed_t": 37.916,
+            "emitted_t": 43.336,
+            "emission_reason": "online_update",
+            "deployment_timing": {
+              "confirmed_t": 37.916,
+              "emitted_t": 43.336,
+              "confirmed_at_unix_s": 1793631481.3024452,
+              "emitted_at_unix_s": 1793631481.3066373,
+              "emission_reason": "update"
+            }
+          },
+          {
+            "start_t": 45.836,
+            "end_t": 49.696,
+            "confirmed_t": 45.876,
+            "emitted_t": 50.216,
+            "emission_reason": "online_update",
+            "deployment_timing": {
+              "confirmed_t": 45.876,
+              "emitted_t": 50.216,
+              "confirmed_at_unix_s": 1793631481.3085089,
+              "emitted_at_unix_s": 1793631481.3117437,
+              "emission_reason": "update"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1786,
+      "M1_cross05_s": 37.736,
+      "M1_final_event_s": 42.796,
+      "M1_final_emission_reason": "invalid_gap_flush",
+      "M1_minus_M0_cross05_delay_s": -0.10000000000000142,
+      "M1_minus_M0_final_delay_s": -0.5399999999999991,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/barometer/TestCase_12_1004000011",
+      "kind": "fault",
+      "subtype": "barometer",
+      "domain": "SIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 21.156,
+      "post_onset_first_prediction_s": 37.636,
+      "cross05_s": 37.796,
+      "confirmed_s": 37.916,
+      "final_event_s": 43.396,
+      "final_emission_reason": "online_update",
+      "onset_reference_s": 37.627,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2075,
+        "median": 1.003109,
+        "p90": 1.052268,
+        "max": 1.314801
+      },
+      "valid_prediction_windows": 2075,
+      "normal_exposure_s": 16.48,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.433146517213771,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 37.876,
+            "confirmed_t": 37.916
+          },
+          {
+            "candidate_start_t": 45.636,
+            "confirmed_t": 45.676
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 37.876,
+            "end_t": 42.876,
+            "confirmed_t": 37.916,
+            "emitted_t": 43.396,
+            "emission_reason": "online_update",
+            "deployment_timing": {
+              "confirmed_t": 37.916,
+              "emitted_t": 43.396,
+              "confirmed_at_unix_s": 1793631483.7746623,
+              "emitted_at_unix_s": 1793631483.7787523,
+              "emission_reason": "update"
+            }
+          },
+          {
+            "start_t": 45.636,
+            "end_t": 49.736,
+            "confirmed_t": 45.676,
+            "emitted_t": 50.256,
+            "emission_reason": "online_update",
+            "deployment_timing": {
+              "confirmed_t": 45.676,
+              "emitted_t": 50.256,
+              "confirmed_at_unix_s": 1793631483.7804105,
+              "emitted_at_unix_s": 1793631483.7838333,
+              "emission_reason": "update"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1786,
+      "M1_cross05_s": 37.716,
+      "M1_final_event_s": 42.796,
+      "M1_final_emission_reason": "invalid_gap_flush",
+      "M1_minus_M0_cross05_delay_s": -0.0799999999999983,
+      "M1_minus_M0_final_delay_s": -0.6000000000000014,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/magnetometer/TestCase_11_1005000010",
+      "kind": "fault",
+      "subtype": "magnetometer",
+      "domain": "SIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 20.715,
+      "post_onset_first_prediction_s": 37.175,
+      "cross05_s": 37.435,
+      "confirmed_s": 39.535,
+      "final_event_s": 62.175,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 37.156,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2074,
+        "median": 0.9985740000000001,
+        "p90": 1.0299943,
+        "max": 1.292009
+      },
+      "valid_prediction_windows": 2074,
+      "normal_exposure_s": 16.46,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9776,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 39.495,
+            "confirmed_t": 39.535
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 39.495,
+            "end_t": 62.175,
+            "confirmed_t": 39.535,
+            "emitted_t": 62.175,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 39.535,
+              "emitted_t": 62.175,
+              "confirmed_at_unix_s": 1793631486.2376733,
+              "emitted_at_unix_s": 1793631486.2544365,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1942,
+      "M1_cross05_s": 37.475,
+      "M1_final_event_s": 62.175,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.03999999999999915,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/magnetometer/TestCase_11_1005000010",
+      "kind": "fault",
+      "subtype": "magnetometer",
+      "domain": "SIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 20.715,
+      "post_onset_first_prediction_s": 37.175,
+      "cross05_s": 37.475,
+      "confirmed_s": 39.335,
+      "final_event_s": 62.175,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 37.156,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2074,
+        "median": 0.998623,
+        "p90": 1.02776,
+        "max": 1.425867
+      },
+      "valid_prediction_windows": 2074,
+      "normal_exposure_s": 16.46,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9784,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 39.295,
+            "confirmed_t": 39.335
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 39.295,
+            "end_t": 62.175,
+            "confirmed_t": 39.335,
+            "emitted_t": 62.175,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 39.335,
+              "emitted_t": 62.175,
+              "confirmed_at_unix_s": 1793631488.6861908,
+              "emitted_at_unix_s": 1793631488.70318,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1942,
+      "M1_cross05_s": 37.435,
+      "M1_final_event_s": 62.175,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": -0.03999999999999915,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/GPS/TestCase_10_1006000009",
+      "kind": "fault",
+      "subtype": "GPS",
+      "domain": "SIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 20.468,
+      "post_onset_first_prediction_s": 36.948,
+      "cross05_s": 37.368,
+      "confirmed_s": 38.768,
+      "final_event_s": 61.968,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 36.936,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2076,
+        "median": 0.9970275,
+        "p90": 1.020154,
+        "max": 1.282287
+      },
+      "valid_prediction_windows": 2076,
+      "normal_exposure_s": 16.48,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9831460674157303,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 38.728,
+            "confirmed_t": 38.768
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 38.728,
+            "end_t": 61.968,
+            "confirmed_t": 38.768,
+            "emitted_t": 61.968,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 38.768,
+              "emitted_t": 61.968,
+              "confirmed_at_unix_s": 1793631491.142445,
+              "emitted_at_unix_s": 1793631491.1598997,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1946,
+      "M1_cross05_s": 37.368,
+      "M1_final_event_s": 61.968,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.0,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "SIL/hover/GPS/TestCase_10_1006000009",
+      "kind": "fault",
+      "subtype": "GPS",
+      "domain": "SIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 20.468,
+      "post_onset_first_prediction_s": 36.948,
+      "cross05_s": 37.368,
+      "confirmed_s": 38.768,
+      "final_event_s": 61.968,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 36.936,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2076,
+        "median": 0.989587,
+        "p90": 1.0129484999999998,
+        "max": 1.257475
+      },
+      "valid_prediction_windows": 2076,
+      "normal_exposure_s": 16.48,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9823434991974318,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 38.728,
+            "confirmed_t": 38.768
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 38.728,
+            "end_t": 61.968,
+            "confirmed_t": 38.768,
+            "emitted_t": 61.968,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 38.768,
+              "emitted_t": 61.968,
+              "confirmed_at_unix_s": 1793631493.571267,
+              "emitted_at_unix_s": 1793631493.588545,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1946,
+      "M1_cross05_s": 37.368,
+      "M1_final_event_s": 61.968,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.0,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_21_2019000020",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "HIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 2367.238067,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 1818,
+        "median": 0.9958564999999999,
+        "p90": 1.0202843,
+        "max": 1.314988
+      },
+      "valid_prediction_windows": 1818,
+      "normal_exposure_s": 36.36,
+      "window_normal_fpr": 0.00605060506050605,
+      "window_fault_recall": null,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [],
+        "finalized_events": [],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1687,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_21_2019000020",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "HIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 2367.238067,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 1818,
+        "median": 1.006072,
+        "p90": 1.0683087,
+        "max": 1.225993
+      },
+      "valid_prediction_windows": 1818,
+      "normal_exposure_s": 36.36,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": null,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [],
+        "finalized_events": [],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1687,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_27_2019000026",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "HIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 40.768571,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2086,
+        "median": 1.0070815,
+        "p90": 1.0665355,
+        "max": 1.297677
+      },
+      "valid_prediction_windows": 2086,
+      "normal_exposure_s": 41.72,
+      "window_normal_fpr": 0.2593480345158197,
+      "window_fault_recall": null,
+      "false_events": 2,
+      "false_events_per_hour": 172.5790987535954,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 74.548571,
+            "confirmed_t": 74.588571
+          },
+          {
+            "candidate_start_t": 81.168571,
+            "confirmed_t": 81.208571
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 74.548571,
+            "end_t": 75.488571,
+            "confirmed_t": 74.588571,
+            "emitted_t": 75.508571,
+            "emission_reason": "invalid_gap_flush",
+            "deployment_timing": {
+              "confirmed_t": 74.588571,
+              "emitted_t": 75.488571,
+              "confirmed_at_unix_s": 1793631500.4274516,
+              "emitted_at_unix_s": 1793631500.4281547,
+              "emission_reason": "flush"
+            }
+          },
+          {
+            "start_t": 81.168571,
+            "end_t": 86.768571,
+            "confirmed_t": 81.208571,
+            "emitted_t": 86.768571,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 81.208571,
+              "emitted_t": 86.768571,
+              "confirmed_at_unix_s": 1793631500.4294384,
+              "emitted_at_unix_s": 1793631500.4336002,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1973,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_27_2019000026",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "HIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 40.768571,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2086,
+        "median": 1.0295779999999999,
+        "p90": 1.0830015,
+        "max": 1.247313
+      },
+      "valid_prediction_windows": 2086,
+      "normal_exposure_s": 41.72,
+      "window_normal_fpr": 0.288111217641419,
+      "window_fault_recall": null,
+      "false_events": 2,
+      "false_events_per_hour": 172.5790987535954,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 74.508571,
+            "confirmed_t": 74.548571
+          },
+          {
+            "candidate_start_t": 81.828571,
+            "confirmed_t": 81.868571
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 74.508571,
+            "end_t": 75.488571,
+            "confirmed_t": 74.548571,
+            "emitted_t": 75.508571,
+            "emission_reason": "invalid_gap_flush",
+            "deployment_timing": {
+              "confirmed_t": 74.548571,
+              "emitted_t": 75.488571,
+              "confirmed_at_unix_s": 1793631502.971972,
+              "emitted_at_unix_s": 1793631502.9727147,
+              "emission_reason": "flush"
+            }
+          },
+          {
+            "start_t": 81.828571,
+            "end_t": 86.768571,
+            "confirmed_t": 81.868571,
+            "emitted_t": 86.768571,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 81.868571,
+              "emitted_t": 86.768571,
+              "confirmed_at_unix_s": 1793631502.974464,
+              "emitted_at_unix_s": 1793631502.9781744,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1973,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_29_2019000028",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "HIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 40.752549,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2396,
+        "median": 1.010666,
+        "p90": 1.0739555,
+        "max": 1.454286
+      },
+      "valid_prediction_windows": 2396,
+      "normal_exposure_s": 47.92,
+      "window_normal_fpr": 0.3080133555926544,
+      "window_fault_recall": null,
+      "false_events": 1,
+      "false_events_per_hour": 75.12520868113522,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 76.132549,
+            "confirmed_t": 76.172549
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 76.132549,
+            "end_t": 88.652549,
+            "confirmed_t": 76.172549,
+            "emitted_t": 88.652549,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 76.172549,
+              "emitted_t": 88.652549,
+              "confirmed_at_unix_s": 1793631505.8636827,
+              "emitted_at_unix_s": 1793631505.8730195,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2294,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/no_fault/TestCase_29_2019000028",
+      "kind": "normal",
+      "subtype": "no_fault",
+      "domain": "HIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 40.752549,
+      "post_onset_first_prediction_s": null,
+      "cross05_s": null,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": null,
+      "onset_measurable_in_crop": false,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2396,
+        "median": 1.0075105,
+        "p90": 1.0433085000000002,
+        "max": 1.257443
+      },
+      "valid_prediction_windows": 2396,
+      "normal_exposure_s": 47.92,
+      "window_normal_fpr": 0.30843071786310516,
+      "window_fault_recall": null,
+      "false_events": 1,
+      "false_events_per_hour": 75.12520868113522,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 74.132549,
+            "confirmed_t": 74.172549
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 74.132549,
+            "end_t": 88.652549,
+            "confirmed_t": 74.172549,
+            "emitted_t": 88.652549,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 74.172549,
+              "emitted_t": 88.652549,
+              "confirmed_at_unix_s": 1793631508.718371,
+              "emitted_at_unix_s": 1793631508.72919,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2294,
+      "M1_cross05_s": null,
+      "M1_final_event_s": null,
+      "M1_final_emission_reason": null,
+      "M1_minus_M0_cross05_delay_s": null,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/motor/TestCase_114_2000000113",
+      "kind": "fault",
+      "subtype": "motor",
+      "domain": "HIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 38.603328,
+      "post_onset_first_prediction_s": 53.403328,
+      "cross05_s": 53.603328,
+      "confirmed_s": 53.823328,
+      "final_event_s": 113.403328,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 53.395,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 3741,
+        "median": 0.988844,
+        "p90": 1.012256,
+        "max": 1.593413
+      },
+      "valid_prediction_windows": 3741,
+      "normal_exposure_s": 14.8,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9976651100733822,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 53.783328,
+            "confirmed_t": 53.823328
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 53.783328,
+            "end_t": 113.403328,
+            "confirmed_t": 53.823328,
+            "emitted_t": 113.403328,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 53.823328,
+              "emitted_t": 113.403328,
+              "confirmed_at_unix_s": 1793631513.0710237,
+              "emitted_at_unix_s": 1793631513.1151369,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 3626,
+      "M1_cross05_s": 53.603328,
+      "M1_final_event_s": 113.403328,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.0,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/motor/TestCase_114_2000000113",
+      "kind": "fault",
+      "subtype": "motor",
+      "domain": "HIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 38.603328,
+      "post_onset_first_prediction_s": 53.403328,
+      "cross05_s": 53.563328,
+      "confirmed_s": 53.843328,
+      "final_event_s": 113.403328,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 53.395,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 3741,
+        "median": 0.992794,
+        "p90": 1.007214,
+        "max": 1.308255
+      },
+      "valid_prediction_windows": 3741,
+      "normal_exposure_s": 14.8,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9983322214809873,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 53.803328,
+            "confirmed_t": 53.843328
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 53.803328,
+            "end_t": 113.403328,
+            "confirmed_t": 53.843328,
+            "emitted_t": 113.403328,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 53.843328,
+              "emitted_t": 113.403328,
+              "confirmed_at_unix_s": 1793631517.4464784,
+              "emitted_at_unix_s": 1793631517.490647,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 3626,
+      "M1_cross05_s": 53.603328,
+      "M1_final_event_s": 113.403328,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.03999999999999915,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/accelerometer/TestCase_14_2002000013",
+      "kind": "fault",
+      "subtype": "accelerometer",
+      "domain": "HIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 151.348928,
+      "post_onset_first_prediction_s": 169.508928,
+      "cross05_s": 169.808928,
+      "confirmed_s": 169.908928,
+      "final_event_s": 194.508928,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 169.505,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2159,
+        "median": 0.987713,
+        "p90": 1.0027160000000002,
+        "max": 1.339396
+      },
+      "valid_prediction_windows": 2159,
+      "normal_exposure_s": 18.16,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9743795036028823,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 169.868928,
+            "confirmed_t": 169.908928
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 169.868928,
+            "end_t": 194.508928,
+            "confirmed_t": 169.908928,
+            "emitted_t": 194.508928,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 169.908928,
+              "emitted_t": 194.508928,
+              "confirmed_at_unix_s": 1793631520.0061998,
+              "emitted_at_unix_s": 1793631520.0244434,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2000,
+      "M1_cross05_s": 169.788928,
+      "M1_final_event_s": 194.508928,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": -0.020000000000010232,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/accelerometer/TestCase_14_2002000013",
+      "kind": "fault",
+      "subtype": "accelerometer",
+      "domain": "HIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 151.348928,
+      "post_onset_first_prediction_s": 169.508928,
+      "cross05_s": 169.728928,
+      "confirmed_s": 169.868928,
+      "final_event_s": 194.508928,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 169.505,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2159,
+        "median": 0.988772,
+        "p90": 1.0065058,
+        "max": 1.26535
+      },
+      "valid_prediction_windows": 2159,
+      "normal_exposure_s": 18.16,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9711769415532426,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 169.828928,
+            "confirmed_t": 169.868928
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 169.828928,
+            "end_t": 194.508928,
+            "confirmed_t": 169.868928,
+            "emitted_t": 194.508928,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 169.868928,
+              "emitted_t": 194.508928,
+              "confirmed_at_unix_s": 1793631522.538404,
+              "emitted_at_unix_s": 1793631522.5567124,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2000,
+      "M1_cross05_s": 169.748928,
+      "M1_final_event_s": 194.508928,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.020000000000010232,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/gyroscope/TestCase_11_2003000010",
+      "kind": "fault",
+      "subtype": "gyroscope",
+      "domain": "HIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 1247.944413,
+      "post_onset_first_prediction_s": 1266.564413,
+      "cross05_s": 1266.584413,
+      "confirmed_s": 1266.704413,
+      "final_event_s": 1291.564413,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 1266.555,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2182,
+        "median": 0.9910675,
+        "p90": 1.0103980000000001,
+        "max": 1.364346
+      },
+      "valid_prediction_windows": 2182,
+      "normal_exposure_s": 18.62,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 1.0,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 1266.664413,
+            "confirmed_t": 1266.704413
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 1266.664413,
+            "end_t": 1291.564413,
+            "confirmed_t": 1266.704413,
+            "emitted_t": 1291.564413,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 1266.704413,
+              "emitted_t": 1291.564413,
+              "confirmed_at_unix_s": 1793631525.1185417,
+              "emitted_at_unix_s": 1793631525.1370857,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2023,
+      "M1_cross05_s": 1266.584413,
+      "M1_final_event_s": 1291.564413,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.0,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/gyroscope/TestCase_11_2003000010",
+      "kind": "fault",
+      "subtype": "gyroscope",
+      "domain": "HIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 1247.944413,
+      "post_onset_first_prediction_s": 1266.564413,
+      "cross05_s": 1266.564413,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": 1266.555,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2182,
+        "median": 0.9886170000000001,
+        "p90": 1.005079,
+        "max": 1.26674
+      },
+      "valid_prediction_windows": 2182,
+      "normal_exposure_s": 18.62,
+      "window_normal_fpr": 0.004296455424274973,
+      "window_fault_recall": 1.0,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 1266.544413,
+            "confirmed_t": 1266.584413
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 1266.544413,
+            "end_t": 1291.564413,
+            "confirmed_t": 1266.584413,
+            "emitted_t": 1291.564413,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 1266.584413,
+              "emitted_t": 1291.564413,
+              "confirmed_at_unix_s": 1793631527.6714013,
+              "emitted_at_unix_s": 1793631527.690042,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2023,
+      "M1_cross05_s": 1266.564413,
+      "M1_final_event_s": 1291.564413,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.0,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/barometer/TestCase_12_2004000011",
+      "kind": "fault",
+      "subtype": "barometer",
+      "domain": "HIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 152.551846,
+      "post_onset_first_prediction_s": 171.171846,
+      "cross05_s": 171.271846,
+      "confirmed_s": 171.371846,
+      "final_event_s": 175.131846,
+      "final_emission_reason": "online_update",
+      "onset_reference_s": 171.16,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 1888,
+        "median": 0.986677,
+        "p90": 1.000875,
+        "max": 1.261538
+      },
+      "valid_prediction_windows": 1888,
+      "normal_exposure_s": 18.62,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.4942166140904311,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 171.331846,
+            "confirmed_t": 171.371846
+          },
+          {
+            "candidate_start_t": 175.891846,
+            "confirmed_t": 175.931846
+          },
+          {
+            "candidate_start_t": 179.591846,
+            "confirmed_t": 179.631846
+          },
+          {
+            "candidate_start_t": 195.551846,
+            "confirmed_t": 195.591846
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 171.331846,
+            "end_t": 174.611846,
+            "confirmed_t": 171.371846,
+            "emitted_t": 175.131846,
+            "emission_reason": "online_update",
+            "deployment_timing": {
+              "confirmed_t": 171.371846,
+              "emitted_t": 175.131846,
+              "confirmed_at_unix_s": 1793631529.889411,
+              "emitted_at_unix_s": 1793631529.8922155,
+              "emission_reason": "update"
+            }
+          },
+          {
+            "start_t": 175.891846,
+            "end_t": 176.471846,
+            "confirmed_t": 175.931846,
+            "emitted_t": 176.991846,
+            "emission_reason": "online_update",
+            "deployment_timing": {
+              "confirmed_t": 175.931846,
+              "emitted_t": 176.991846,
+              "confirmed_at_unix_s": 1793631529.892821,
+              "emitted_at_unix_s": 1793631529.8936143,
+              "emission_reason": "update"
+            }
+          },
+          {
+            "start_t": 179.591846,
+            "end_t": 183.331846,
+            "confirmed_t": 179.631846,
+            "emitted_t": 183.551846,
+            "emission_reason": "invalid_gap_flush",
+            "deployment_timing": {
+              "confirmed_t": 179.631846,
+              "emitted_t": 183.531846,
+              "confirmed_at_unix_s": 1793631529.895527,
+              "emitted_at_unix_s": 1793631529.8984373,
+              "emission_reason": "flush"
+            }
+          },
+          {
+            "start_t": 195.551846,
+            "end_t": 196.151846,
+            "confirmed_t": 195.591846,
+            "emitted_t": 196.151846,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 195.591846,
+              "emitted_t": 196.151846,
+              "confirmed_at_unix_s": 1793631529.9031649,
+              "emitted_at_unix_s": 1793631529.9036016,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1560,
+      "M1_cross05_s": 171.291846,
+      "M1_final_event_s": 173.031846,
+      "M1_final_emission_reason": "online_update",
+      "M1_minus_M0_cross05_delay_s": 0.01999999999998181,
+      "M1_minus_M0_final_delay_s": -2.0999999999999943,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/barometer/TestCase_12_2004000011",
+      "kind": "fault",
+      "subtype": "barometer",
+      "domain": "HIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 152.551846,
+      "post_onset_first_prediction_s": 171.171846,
+      "cross05_s": 171.211846,
+      "confirmed_s": 171.311846,
+      "final_event_s": 175.211846,
+      "final_emission_reason": "online_update",
+      "onset_reference_s": 171.16,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 1888,
+        "median": 0.9891315,
+        "p90": 1.005646,
+        "max": 1.502533
+      },
+      "valid_prediction_windows": 1888,
+      "normal_exposure_s": 18.62,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.5509989484752892,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 171.271846,
+            "confirmed_t": 171.311846
+          },
+          {
+            "candidate_start_t": 171.271846,
+            "confirmed_t": 171.311846
+          },
+          {
+            "candidate_start_t": 175.891846,
+            "confirmed_t": 175.931846
+          },
+          {
+            "candidate_start_t": 179.591846,
+            "confirmed_t": 179.631846
+          },
+          {
+            "candidate_start_t": 195.091846,
+            "confirmed_t": 195.131846
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 171.271846,
+            "end_t": 174.691846,
+            "confirmed_t": 171.311846,
+            "emitted_t": 175.211846,
+            "emission_reason": "online_update",
+            "deployment_timing": {
+              "confirmed_t": 171.311846,
+              "emitted_t": 175.211846,
+              "confirmed_at_unix_s": 1793631532.1002243,
+              "emitted_at_unix_s": 1793631532.103172,
+              "emission_reason": "update"
+            }
+          },
+          {
+            "start_t": 175.891846,
+            "end_t": 176.551846,
+            "confirmed_t": 175.931846,
+            "emitted_t": 177.071846,
+            "emission_reason": "online_update",
+            "deployment_timing": {
+              "confirmed_t": 175.931846,
+              "emitted_t": 177.071846,
+              "confirmed_at_unix_s": 1793631532.1037173,
+              "emitted_at_unix_s": 1793631532.1045697,
+              "emission_reason": "update"
+            }
+          },
+          {
+            "start_t": 179.591846,
+            "end_t": 183.351846,
+            "confirmed_t": 179.631846,
+            "emitted_t": 183.551846,
+            "emission_reason": "invalid_gap_flush",
+            "deployment_timing": {
+              "confirmed_t": 179.631846,
+              "emitted_t": 183.531846,
+              "confirmed_at_unix_s": 1793631532.106433,
+              "emitted_at_unix_s": 1793631532.1093554,
+              "emission_reason": "flush"
+            }
+          },
+          {
+            "start_t": 195.091846,
+            "end_t": 196.151846,
+            "confirmed_t": 195.131846,
+            "emitted_t": 196.151846,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 195.131846,
+              "emitted_t": 196.151846,
+              "confirmed_at_unix_s": 1793631532.1138217,
+              "emitted_at_unix_s": 1793631532.1146076,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1560,
+      "M1_cross05_s": 171.211846,
+      "M1_final_event_s": 174.691846,
+      "M1_final_emission_reason": "online_update",
+      "M1_minus_M0_cross05_delay_s": 0.0,
+      "M1_minus_M0_final_delay_s": -0.5200000000000102,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/magnetometer/TestCase_3_2005000002",
+      "kind": "fault",
+      "subtype": "magnetometer",
+      "domain": "HIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 396.365771,
+      "post_onset_first_prediction_s": 415.025771,
+      "cross05_s": 415.125771,
+      "confirmed_s": 415.245771,
+      "final_event_s": 440.025771,
+      "final_emission_reason": "end_of_stream_flush",
+      "onset_reference_s": 415.018,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2184,
+        "median": 0.988366,
+        "p90": 1.002619,
+        "max": 1.249417
+      },
+      "valid_prediction_windows": 2184,
+      "normal_exposure_s": 18.66,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 1.0,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 415.205771,
+            "confirmed_t": 415.245771
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 415.205771,
+            "end_t": 440.025771,
+            "confirmed_t": 415.245771,
+            "emitted_t": 440.025771,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 415.245771,
+              "emitted_t": 440.025771,
+              "confirmed_at_unix_s": 1793631534.6556683,
+              "emitted_at_unix_s": 1793631534.6740048,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2025,
+      "M1_cross05_s": 415.165771,
+      "M1_final_event_s": 440.025771,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.040000000000020464,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/magnetometer/TestCase_3_2005000002",
+      "kind": "fault",
+      "subtype": "magnetometer",
+      "domain": "HIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 396.365771,
+      "post_onset_first_prediction_s": 415.025771,
+      "cross05_s": 415.025771,
+      "confirmed_s": null,
+      "final_event_s": null,
+      "final_emission_reason": null,
+      "onset_reference_s": 415.018,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 2184,
+        "median": 1.0118325000000001,
+        "p90": 1.05959,
+        "max": 1.289459
+      },
+      "valid_prediction_windows": 2184,
+      "normal_exposure_s": 18.66,
+      "window_normal_fpr": 0.00857449088960343,
+      "window_fault_recall": 1.0,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 414.945771,
+            "confirmed_t": 414.985771
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 414.945771,
+            "end_t": 440.025771,
+            "confirmed_t": 414.985771,
+            "emitted_t": 440.025771,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 414.985771,
+              "emitted_t": 440.025771,
+              "confirmed_at_unix_s": 1793631537.2723804,
+              "emitted_at_unix_s": 1793631537.291217,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 2025,
+      "M1_cross05_s": 415.025771,
+      "M1_final_event_s": 440.025771,
+      "M1_final_emission_reason": "end_of_stream_flush",
+      "M1_minus_M0_cross05_delay_s": 0.0,
+      "M1_minus_M0_final_delay_s": null,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/GPS/TestCase_10_2006000009",
+      "kind": "fault",
+      "subtype": "GPS",
+      "domain": "HIL",
+      "arm": "uniform_replacement",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 1145.935573,
+      "post_onset_first_prediction_s": 1164.575573,
+      "cross05_s": 1164.615573,
+      "confirmed_s": 1164.955573,
+      "final_event_s": 1175.055573,
+      "final_emission_reason": "invalid_gap_flush",
+      "onset_reference_s": 1164.564,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 1966,
+        "median": 1.0154325,
+        "p90": 1.06553,
+        "max": 1.251107
+      },
+      "valid_prediction_windows": 1966,
+      "normal_exposure_s": 18.64,
+      "window_normal_fpr": 0.0,
+      "window_fault_recall": 0.9990281827016521,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 1164.915573,
+            "confirmed_t": 1164.955573
+          },
+          {
+            "candidate_start_t": 1179.395573,
+            "confirmed_t": 1179.435573
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 1164.915573,
+            "end_t": 1175.035573,
+            "confirmed_t": 1164.955573,
+            "emitted_t": 1175.055573,
+            "emission_reason": "invalid_gap_flush",
+            "deployment_timing": {
+              "confirmed_t": 1164.955573,
+              "emitted_t": 1175.035573,
+              "confirmed_at_unix_s": 1793631539.6500685,
+              "emitted_at_unix_s": 1793631539.657808,
+              "emission_reason": "flush"
+            }
+          },
+          {
+            "start_t": 1179.395573,
+            "end_t": 1189.575573,
+            "confirmed_t": 1179.435573,
+            "emitted_t": 1189.575573,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 1179.435573,
+              "emitted_t": 1189.575573,
+              "confirmed_at_unix_s": 1793631539.6580548,
+              "emitted_at_unix_s": 1793631539.6657476,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1797,
+      "M1_cross05_s": 1164.615573,
+      "M1_final_event_s": 1175.055573,
+      "M1_final_emission_reason": "invalid_gap_flush",
+      "M1_minus_M0_cross05_delay_s": 0.0,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    },
+    {
+      "case_uid": "HIL/hover/GPS/TestCase_10_2006000009",
+      "kind": "fault",
+      "subtype": "GPS",
+      "domain": "HIL",
+      "arm": "balanced_source_normal",
+      "variant": "M0_matched_natural_base_availability",
+      "first_prediction_s": 1145.935573,
+      "post_onset_first_prediction_s": 1164.575573,
+      "cross05_s": 1164.575573,
+      "confirmed_s": 1164.655573,
+      "final_event_s": 1175.055573,
+      "final_emission_reason": "invalid_gap_flush",
+      "onset_reference_s": 1164.564,
+      "onset_measurable_in_crop": true,
+      "physical_damage_truth": false,
+      "inference_ms": {
+        "count": 1966,
+        "median": 0.99382,
+        "p90": 1.019527,
+        "max": 1.32243
+      },
+      "valid_prediction_windows": 1966,
+      "normal_exposure_s": 18.64,
+      "window_normal_fpr": 0.003218884120171674,
+      "window_fault_recall": 0.9990281827016521,
+      "false_events": 0,
+      "false_events_per_hour": 0.0,
+      "events": {
+        "confirmations": [
+          {
+            "candidate_start_t": 1164.615573,
+            "confirmed_t": 1164.655573
+          },
+          {
+            "candidate_start_t": 1179.455573,
+            "confirmed_t": 1179.495573
+          }
+        ],
+        "finalized_events": [
+          {
+            "start_t": 1164.615573,
+            "end_t": 1175.035573,
+            "confirmed_t": 1164.655573,
+            "emitted_t": 1175.055573,
+            "emission_reason": "invalid_gap_flush",
+            "deployment_timing": {
+              "confirmed_t": 1164.655573,
+              "emitted_t": 1175.035573,
+              "confirmed_at_unix_s": 1793631541.9638226,
+              "emitted_at_unix_s": 1793631541.9717073,
+              "emission_reason": "flush"
+            }
+          },
+          {
+            "start_t": 1179.455573,
+            "end_t": 1189.575573,
+            "confirmed_t": 1179.495573,
+            "emitted_t": 1189.575573,
+            "emission_reason": "end_of_stream_flush",
+            "deployment_timing": {
+              "confirmed_t": 1179.495573,
+              "emitted_t": 1189.575573,
+              "confirmed_at_unix_s": 1793631541.9720016,
+              "emitted_at_unix_s": 1793631541.979647,
+              "emission_reason": "flush"
+            }
+          }
+        ],
+        "policy": {
+          "inference_every": 1,
+          "onset_th": 0.6,
+          "clear_th": 0.4,
+          "k_on": 3,
+          "k_off": 3,
+          "min_event_s": 0.5,
+          "merge_gap_s": 0.5
+        }
+      },
+      "M1_valid_prediction_windows": 1797,
+      "M1_cross05_s": 1164.615573,
+      "M1_final_event_s": 1175.055573,
+      "M1_final_emission_reason": "invalid_gap_flush",
+      "M1_minus_M0_cross05_delay_s": 0.03999999999996362,
+      "M1_minus_M0_final_delay_s": 0.0,
+      "scope": "Identical training population, native runtime availability different and explicitly reported. Not window-population fair FPR ranking; use main common-ID metrics for model increment."
+    }
+  ],
+  "fault_directory_delay_differences": [
+    {
+      "arm": "uniform_replacement",
+      "subtype": "motor",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 2,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    },
+    {
+      "arm": "uniform_replacement",
+      "subtype": "accelerometer",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": 0.019999999999992468,
+        "p90": 0.051999999999994634,
+        "max": 0.05999999999999517
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 2,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    },
+    {
+      "arm": "uniform_replacement",
+      "subtype": "gyroscope",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": 0.010000000000001563,
+        "p90": 0.018000000000002812,
+        "max": 0.020000000000003126
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 2,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    },
+    {
+      "arm": "uniform_replacement",
+      "subtype": "barometer",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": -0.040000000000009805,
+        "p90": 0.007999999999983489,
+        "max": 0.01999999999998181
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 2,
+        "median": -1.3199999999999967,
+        "p90": -0.6959999999999986,
+        "max": -0.5399999999999991
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    },
+    {
+      "arm": "uniform_replacement",
+      "subtype": "magnetometer",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": 0.040000000000009805,
+        "p90": 0.04000000000001833,
+        "max": 0.040000000000020464
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 2,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    },
+    {
+      "arm": "uniform_replacement",
+      "subtype": "GPS",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 2,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    },
+    {
+      "arm": "balanced_source_normal",
+      "subtype": "motor",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": 0.00999999999999801,
+        "p90": 0.03399999999999892,
+        "max": 0.03999999999999915
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 2,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    },
+    {
+      "arm": "balanced_source_normal",
+      "subtype": "accelerometer",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": 0.03000000000000469,
+        "p90": 0.038000000000000256,
+        "max": 0.03999999999999915
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 2,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    },
+    {
+      "arm": "balanced_source_normal",
+      "subtype": "gyroscope",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 1,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    },
+    {
+      "arm": "balanced_source_normal",
+      "subtype": "barometer",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": -0.03999999999999915,
+        "p90": -0.007999999999999828,
+        "max": 0.0
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 2,
+        "median": -0.5600000000000058,
+        "p90": -0.5280000000000094,
+        "max": -0.5200000000000102
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    },
+    {
+      "arm": "balanced_source_normal",
+      "subtype": "magnetometer",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": -0.019999999999999574,
+        "p90": -0.003999999999999914,
+        "max": 0.0
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 1,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    },
+    {
+      "arm": "balanced_source_normal",
+      "subtype": "GPS",
+      "cases": 2,
+      "M1_minus_M0_cross05_delay_s": {
+        "count": 2,
+        "median": 0.01999999999998181,
+        "p90": 0.03599999999996726,
+        "max": 0.03999999999996362
+      },
+      "M1_minus_M0_final_delay_s": {
+        "count": 2,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "M0_score_missed_case_ids": [],
+      "M1_score_missed_case_ids": []
+    }
+  ],
+  "new_training_or_final_test_Real": false,
+  "not_actual_live_deployment": true
+}

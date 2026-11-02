@@ -1,6 +1,6 @@
 # M1全量连续特征与训练准入报告v1
 
-2026-11-02（北京时间）。状态：全量源Train／Val连续四维特征、独立核验、Dataset和CPU门禁已完成；四次正式作业已按本轮授权启动，训练／最终响应结果仍在运行，不提前宣布性能改善。技术时序解释见[m1_streaming_technical_review_v1.md](m1_streaming_technical_review_v1.md)，模型与公共预训练比较见[m1_model_and_experiment_protocol_v1.md](m1_model_and_experiment_protocol_v1.md)。
+2026-11-02（北京时间）。完成更新：四次正式作业、双端完整指标复算、18例共同／自然可用连续回放共108组均已完成。Balanced正常误报降低伴随故障召回下降，Uniform整体正常FPR未降低；详见[正式结果](m1_training_and_response_results_v1.md)与[延迟报告](m1_continuous_latency_v1.md)。下文保留数据生成／训练前阶段的准入记录，章节6中的“未完成结果”为当时状态。技术时序解释见[m1_streaming_technical_review_v1.md](m1_streaming_technical_review_v1.md)，模型与公共预训练比较见[m1_model_and_experiment_protocol_v1.md](m1_model_and_experiment_protocol_v1.md)。
 
 ## 1. 连续流改动和保留边界
 

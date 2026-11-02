@@ -8,9 +8,16 @@ from datetime import datetime,timezone
 import json,subprocess,os
 base=Path('/root/autodl-tmp/causal_m1_continuous_v1_20261102')
 result={'polled_at':datetime.now(timezone.utc).isoformat(),'remote_root':str(base)}
-for name in ['remote_status.json','postrun_status.json','verified_training/summary.json','verified_training/archive_receipt.json']:
+for name in ['remote_status.json','postrun_status.json','recovered_postrun_status.json','corrected_replays_status.json','verified_training/summary.json','verified_training/archive_receipt.json']:
  p=base/name
  if p.exists():result[name]=json.loads(p.read_text())
+replay_state=result.get('corrected_replays_status.json',{})
+verification=result.get('verified_training/summary.json',{})
+if replay_state.get('status')=='COMPLETE_CORRECTED_CONTINUOUS_AND_NATURAL_REPLAYS' and verification.get('status')=='PASS_REGISTERED_M1_AND_MATCHED_SOURCE_RESULTS':
+ result['current_status']='COMPLETE_FOUR_FORMAL_JOBS_AND_BOTH_REPLAYS'
+ result['historical_failure_note']='postrun_status/recovered_postrun_status are preserved earlier failures. Corrected replay completion and verified results supersede them; no formal training rerun.'
+else:
+ result['current_status']=replay_state.get('status') or result.get('recovered_postrun_status.json',{}).get('status') or result.get('remote_status.json',{}).get('phase')
 result['runs']={}
 for path in (base/'runs').glob('*/*/report.json'):
  r=json.loads(path.read_text());name=str(path.parent.relative_to(base/'runs'));row={k:r.get(k) for k in ['status','variant','arm','epochs','best_epoch','gradient_steps','elapsed_s','model_parameters','started_at','finished_at']}
@@ -20,7 +27,7 @@ for path in (base/'runs').glob('*/*/report.json'):
   if history:row['last_epoch']={k:history[-1][k] for k in ['epoch','lr','train_loss','gradient_steps','selection']}
  result['runs'][name]=row
 result['logs']={}
-for name in ['formal_runner.log','postrun_runner.log','training_verification.log','continuous_replay.log']:
+for name in ['formal_runner.log','postrun_runner.log','training_verification.log','continuous_replay.log','verifying_existing_training.log','corrected_replay_runner.log','continuous_replay_v2.log','natural_availability_replay_v2.log']:
  p=base/name
  if p.exists():result['logs'][name]=p.read_text()[-4500:]
 p=subprocess.run(['nvidia-smi','--query-gpu=name,memory.used,utilization.gpu','--format=csv,noheader'],capture_output=True,text=True);result['gpu']=p.stdout.strip()

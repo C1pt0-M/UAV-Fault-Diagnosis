@@ -1,6 +1,6 @@
 # M1：连续200ms四维运动学残差实验
 
-状态：全量特征和GPU前门禁完成，四个授权正式作业运行中；正式成绩和最终故障响应回放尚未完成。
+状态：四个授权正式作业、两端指标复算、固定18例共同有效域72组与自然M0可用性36组回放已全部完成。Balanced正常hover FPR40.56%→27.61%，故障召回97.56%→96.81%；Uniform整体正常FPR3.06%→3.15%。尚不满足保持检出能力同时降低工况误报的目标。详见docs/research/2026-11-02/m1_training_and_response_results_v1.md与m1_continuous_latency_v1.md。
 
 ## 已完成的交付
 
@@ -23,9 +23,9 @@ M1为独立OnlineMSTCAKinematicM1：未改原26维MSTCA骨干；4维Conv4→16(k
 
 运行只读查询：python artifacts/causal_m1_continuous_v1_20261102/poll.py。远端autodl_UAV3:/root/autodl-tmp/causal_m1_continuous_v1_20261102。
 
-execute_formal.py限定4次；postrun_verify_replay.py等待结束后仅执行结果核验及固定18source-val回放，不额外训练。原事件0.6／0.4、k_on/off3、min0.5s／merge0.5s保留，0.5模型越界、候选、确认、最终事件发出／flush分开。GTD及ULog command是不同注入记录参考，不从窗口label猜物理损伤起点。
+execute_formal.py限定4次；原postrun_verify_replay.py因上传缺文件而停止。后续recover_postprocessing.py与finish_corrected_replays.py仅完成原结果核验和纠正后的固定18source-val回放，没有额外训练。原事件0.6／0.4、k_on/off3、min0.5s／merge0.5s保留，0.5模型越界、候选、确认、最终事件发出／flush分开。GTD及ULog command是不同注入记录参考，不从窗口label猜物理损伤起点。
 
-结果完成后需再按SHA取回复算和更新报告／Git提交。当前不宣称悬停误报改善、故障召回保持或实际告警不变慢。没有最终test／Real使用、服务器关机或部署。
+训练及回放结果已完整按SHA取回并本地复算，results/保存4组best／initial／last和全部Val预测；replay_results/保存108份连续数组，source_comparison/和verified_replay_analysis/保存统计及逐故障响应CSV。正式训练共249轮，没有重复训练。首次后处理漏传代码与随后JSON序列化错误已修复，原失败日志保留；修正还包括gap-flush时刻和M0移除无用残差预处理，训练资产／规则不变。104项检查通过。没有最终test／Real、服务器关机或部署。
 
 ## 公开与本地资产区别
 

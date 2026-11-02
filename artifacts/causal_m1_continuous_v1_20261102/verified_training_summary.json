@@ -1,0 +1,267 @@
+{
+  "status": "PASS_REGISTERED_M1_AND_MATCHED_SOURCE_RESULTS",
+  "verified_at": "2026-11-02T14:45:13.246107+00:00",
+  "protocol_sha256": "6f48ef8ad0f36d83fe2e69898efb66730f05a9434d44fdd5180120ef0c7a7fd6",
+  "data_counts": {
+    "train": 151833,
+    "val": 32381
+  },
+  "rows": [
+    {
+      "variant": "M0_matched",
+      "arm": "uniform_replacement",
+      "epochs": 85,
+      "best_epoch": 81,
+      "parameters": 105938,
+      "accuracy": 0.9743676847534047,
+      "macro_f1": 0.9743536683528595,
+      "fault_recall": 0.9791489877560916,
+      "normal_fpr": 0.030598753384121387,
+      "original_normal_fpr": 0.11327392120075047,
+      "hover_fpr": 0.39859154929577467,
+      "average_precision_step_integral": 0.9972296287407072,
+      "confusion_matrix": [
+        [
+          15397,
+          486
+        ],
+        [
+          344,
+          16154
+        ]
+      ],
+      "fault_by_case_class": {
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              24,
+              9851
+            ]
+          ],
+          "accuracy": 0.9975696202531645,
+          "macro_f1": 0.4993916658217581,
+          "fault_recall": 0.9975696202531645,
+          "normal_window_fpr": null
+        },
+        "sensor": {
+          "windows": 6623,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              320,
+              6303
+            ]
+          ],
+          "accuracy": 0.9516835271025215,
+          "macro_f1": 0.4876218474392697,
+          "fault_recall": 0.9516835271025215,
+          "normal_window_fpr": null
+        }
+      },
+      "elapsed_s": 793.9395796209574,
+      "source_val_windows": 32381,
+      "best_sha256": "9a7f9537d8b9548edfe50c61807a4095c253bafd0e85d4e8468db6f8cab09372"
+    },
+    {
+      "variant": "M1",
+      "arm": "uniform_replacement",
+      "epochs": 56,
+      "best_epoch": 48,
+      "parameters": 109106,
+      "accuracy": 0.971279454000803,
+      "macro_f1": 0.971266520348443,
+      "fault_recall": 0.9739968481028003,
+      "normal_fpr": 0.03154315935276711,
+      "original_normal_fpr": 0.11679174484052533,
+      "hover_fpr": 0.36901408450704226,
+      "average_precision_step_integral": 0.9968676893224776,
+      "confusion_matrix": [
+        [
+          15382,
+          501
+        ],
+        [
+          429,
+          16069
+        ]
+      ],
+      "fault_by_case_class": {
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              34,
+              9841
+            ]
+          ],
+          "accuracy": 0.9965569620253164,
+          "macro_f1": 0.4991377561371475,
+          "fault_recall": 0.9965569620253164,
+          "normal_window_fpr": null
+        },
+        "sensor": {
+          "windows": 6623,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              395,
+              6228
+            ]
+          ],
+          "accuracy": 0.9403593537671749,
+          "macro_f1": 0.4846315461831764,
+          "fault_recall": 0.9403593537671749,
+          "normal_window_fpr": null
+        }
+      },
+      "elapsed_s": 555.8461138680577,
+      "source_val_windows": 32381,
+      "best_sha256": "1d01fbc060b071762af4c77b7365ecabf727e13057966526bf32821db0e2feb2"
+    },
+    {
+      "variant": "M0_matched",
+      "arm": "balanced_source_normal",
+      "epochs": 49,
+      "best_epoch": 45,
+      "parameters": 105938,
+      "accuracy": 0.97300886322226,
+      "macro_f1": 0.9729967790697038,
+      "fault_recall": 0.9756334101103165,
+      "normal_fpr": 0.02971730781338538,
+      "original_normal_fpr": 0.10881801125703565,
+      "hover_fpr": 0.4056338028169014,
+      "average_precision_step_integral": 0.9970261233973179,
+      "confusion_matrix": [
+        [
+          15411,
+          472
+        ],
+        [
+          402,
+          16096
+        ]
+      ],
+      "fault_by_case_class": {
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              35,
+              9840
+            ]
+          ],
+          "accuracy": 0.9964556962025316,
+          "macro_f1": 0.4991123510017753,
+          "fault_recall": 0.9964556962025316,
+          "normal_window_fpr": null
+        },
+        "sensor": {
+          "windows": 6623,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              367,
+              6256
+            ]
+          ],
+          "accuracy": 0.9445870451457044,
+          "macro_f1": 0.4857519993788338,
+          "fault_recall": 0.9445870451457044,
+          "normal_window_fpr": null
+        }
+      },
+      "elapsed_s": 456.8470892980695,
+      "source_val_windows": 32381,
+      "best_sha256": "3dcd8d000cabc76480e7a04917dc9c6fa16b758106c3716dae3b051e5166c71a"
+    },
+    {
+      "variant": "M1",
+      "arm": "balanced_source_normal",
+      "epochs": 59,
+      "best_epoch": 58,
+      "parameters": 109106,
+      "accuracy": 0.9734103332200982,
+      "macro_f1": 0.9734057734960182,
+      "fault_recall": 0.9681173475572796,
+      "normal_fpr": 0.021091733299754455,
+      "original_normal_fpr": 0.07809568480300187,
+      "hover_fpr": 0.27605633802816903,
+      "average_precision_step_integral": 0.9973652831819881,
+      "confusion_matrix": [
+        [
+          15548,
+          335
+        ],
+        [
+          526,
+          15972
+        ]
+      ],
+      "fault_by_case_class": {
+        "motor": {
+          "windows": 9875,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              44,
+              9831
+            ]
+          ],
+          "accuracy": 0.9955443037974684,
+          "macro_f1": 0.498883588754694,
+          "fault_recall": 0.9955443037974684,
+          "normal_window_fpr": null
+        },
+        "sensor": {
+          "windows": 6623,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              482,
+              6141
+            ]
+          ],
+          "accuracy": 0.927223312698173,
+          "macro_f1": 0.48111877154497024,
+          "fault_recall": 0.927223312698173,
+          "normal_window_fpr": null
+        }
+      },
+      "elapsed_s": 575.1101063787937,
+      "source_val_windows": 32381,
+      "best_sha256": "debbe73385a5be4fa123a1af1a9d4774c041ef4bf23a035431008ec86bb78b6c"
+    }
+  ],
+  "same_original_IDs_and_pretrained_common_weights_verified": true,
+  "all_metrics_history_schedule_and_early_stop_recomputed": true,
+  "no_test_Real_or_deployment": true,
+  "scope": "Single seed source-val, same pretrained arm starts, matched population. No matched-recall or significance claim. AP explicitly step-integral, not trapezoid PR-AUC."
+}

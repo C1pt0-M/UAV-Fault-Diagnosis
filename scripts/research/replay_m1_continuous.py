@@ -37,13 +37,13 @@ def aggregate_scores(times, probabilities, *, policy=None):
     policy=policy or OnlineDetectionPolicy();agg=policy.make_aggregator();session=OnlineMonitoringSession()
     runner=SimpleNamespace(aggregator=agg,flush=agg.flush);session.start_detection(runner)
     events=[];confirmed=[];previous_available=False
-    def record(ev,reason):
+    def record(ev,reason,emitted_t):
         timing=event_timing(ev)
-        events.append({'start_t':ev.start_t,'end_t':ev.end_t,'confirmed_t':timing.get('confirmed_t'),'emitted_t':timing.get('emitted_t'),'emission_reason':reason,'deployment_timing':timing})
+        events.append({'start_t':ev.start_t,'end_t':ev.end_t,'confirmed_t':timing.get('confirmed_t'),'emitted_t':float(emitted_t),'emission_reason':reason,'deployment_timing':timing})
     for i,(t,p) in enumerate(zip(times,probabilities),1):
         if not np.isfinite(p):
             if previous_available:
-                for ev in agg.flush():record(ev,'invalid_gap_flush')
+                for ev in agg.flush():record(ev,'invalid_gap_flush',t)
                 agg=policy.make_aggregator();runner=SimpleNamespace(aggregator=agg,flush=agg.flush);session=OnlineMonitoringSession();session.start_detection(runner)
             previous_available=False;continue
         previous_available=True
@@ -54,8 +54,8 @@ def aggregate_scores(times, probabilities, *, policy=None):
             confirmed.append({'candidate_start_t':active.start_t,'confirmed_t':active.confirmed_t})
         session.ingest_external(result={'fault_prob':float(p),'label':'fault' if p>=.5 else 'normal'},
             new_events=new,frame_idx=i,time_s=float(t),onset_th=policy.onset_th)
-        for ev in new:record(ev,'online_update')
-    for ev in agg.flush():record(ev,'end_of_stream_flush')
+        for ev in new:record(ev,'online_update',t)
+    for ev in agg.flush():record(ev,'end_of_stream_flush',times[-1])
     return {'confirmations':confirmed,'finalized_events':events,'policy':policy.to_dict()}
 
 
@@ -96,7 +96,9 @@ def replay_case(model,variant,base,residual,normalization,policy,device,*,common
             if not policy.should_infer(frame_idx=i+1,window_length=150,window_size=150):continue
             if not base['row_input_valid'][s:i+1].all() or not common_valid[s:i+1].all():continue
             begun=time.perf_counter_ns();x=canonical_window(base['canonical_rows'][s:i+1],norm['columns'],base['row_input_valid'][s:i+1],mean=norm['mean'],std=norm['std'])
-            xt=torch.from_numpy(x[None]).to(device);r=(residual[s:i+1].astype(np.float32).T-mu)/std;rt=torch.from_numpy(r[None]).to(device)
+            xt=torch.from_numpy(x[None]).to(device)
+            if variant=='M1':
+                r=(residual[s:i+1].astype(np.float32).T-mu)/std;rt=torch.from_numpy(r[None]).to(device)
             pre_ns[i]=time.perf_counter_ns()-begun
             if device.type=='cuda':torch.cuda.synchronize()
             begun=time.perf_counter_ns();z=model(xt,rt) if variant=='M1' else model(xt);p=z.softmax(1)[0,1].item()
@@ -167,7 +169,7 @@ def main():
                 result=replay_case(model,variant,base,side['residual'],norm,policy,device,common_valid=common,residual_ns=residual_ns)
                 times,scores=result['timestamps_s'],result['scores'];finite=np.isfinite(scores);known=base['row_label_valid'];normal=known&(base['reference_state']==0)&finite;active=known&(base['reference_state']==1)&finite
                 raw_events=case.get('gtd_events',[]);command=case.get('command_events',[]);onset=raw_events[0]['start_s'] if len(raw_events)==1 else None
-                in_crop=onset is not None and times[0]<=onset<=times[-1]
+                in_crop=bool(onset is not None and times[0]<=onset<=times[-1])
                 post=np.flatnonzero(finite&(times>=onset)) if in_crop else np.array([],dtype=int);cross=np.flatnonzero(finite&(scores>=.5)&(times>=onset)) if in_crop else np.array([],dtype=int)
                 emitted=[e for e in result['events']['finalized_events'] if in_crop and e['start_t']>=onset]
                 confirmed=[e for e in result['events']['confirmations'] if in_crop and e['candidate_start_t']>=onset]
@@ -220,7 +222,8 @@ def main():
                 rows.append(row);np.savez_compressed(a.output/(key+'__'+arm+'__'+variant+'.npz'),**{k:v for k,v in result.items() if isinstance(v,np.ndarray)})
                 print('REPLAY_CASE',uid,arm,variant,flush=True)
     summary={'status':'COMPLETE_SOURCE_VAL_CONTINUOUS_REPLAY','created_at':datetime.now(timezone.utc).isoformat(),'plan_sha256':sha(a.plan),'policy':p['policy'],'device':str(device),'rows':rows,'latency_by_fault_directory':latency_groups(rows),'scope':'Previously exposed small source-val hover; recorded GTD reference not physical damage; event flush distinguished; no final-test/Real/deployment certification.'}
-    with (a.output/'summary.json').open('x',encoding='utf-8') as f:json.dump(summary,f,ensure_ascii=False,indent=2,allow_nan=False)
+    with (a.output/'summary.partial.json').open('x',encoding='utf-8') as f:json.dump(summary,f,ensure_ascii=False,indent=2,allow_nan=False)
+    (a.output/'summary.partial.json').replace(a.output/'summary.json')
 
 
 if __name__=='__main__':main()

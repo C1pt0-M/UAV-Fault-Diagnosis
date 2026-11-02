@@ -1,0 +1,50 @@
+{
+  "status": "PASS_MISSING_POSTPROCESSING_CODE_RECOVERED_IMPORTS_AND_PINS",
+  "checked_at": "2026-11-02T14:44:27.536217+00:00",
+  "added_files": [
+    "code/packages/uav_fault/uav_fault/__init__.py",
+    "code/packages/uav_fault/uav_fault/causal_pipeline.py",
+    "code/packages/uav_fault/uav_fault/online/decision_engine.py",
+    "code/packages/uav_fault/uav_fault/online/decision_models.py",
+    "code/packages/uav_fault/uav_fault/online/detection_policy.py",
+    "code/packages/uav_fault/uav_fault/online/event_aggregator.py",
+    "code/packages/uav_fault/uav_fault/online/fault_detector.py",
+    "code/packages/uav_fault/uav_fault/online/monitoring_session.py",
+    "code/packages/uav_fault/uav_fault/online/risk_evaluator.py",
+    "code/scripts/data/build_full_causal_input.py",
+    "code/scripts/data/generate_window_manifest.py",
+    "code/scripts/data/rfly_feature_contract.py",
+    "code/scripts/research/audit_rflymad_raw_sources.py",
+    "code/scripts/research/replay_m1_continuous.py",
+    "code/scripts/research/replay_m1_natural_availability.py",
+    "code/scripts/research/validate_kinematic_residuals.py",
+    "code/scripts/research/verify_m1_training_results.py",
+    "postprocess_recovery_manifest.json"
+  ],
+  "existing_identical_files": [
+    "code/packages/uav_fault/uav_fault/causal_input.py",
+    "code/packages/uav_fault/uav_fault/data/causal_cache.py",
+    "code/packages/uav_fault/uav_fault/data/m1_continuous.py",
+    "code/packages/uav_fault/uav_fault/model_contract.py",
+    "code/packages/uav_fault/uav_fault/models/cnn/focal_loss.py",
+    "code/packages/uav_fault/uav_fault/models/cnn/lstm.py",
+    "code/packages/uav_fault/uav_fault/models/cnn/mstca_kinematic_m1.py",
+    "code/packages/uav_fault/uav_fault/models/train_online_detector.py",
+    "code/scripts/research/continuous_kinematic_residuals.py",
+    "code/scripts/research/run_normal_adaptation_v1.py",
+    "code/scripts/research/run_normal_replay_v1.py",
+    "code/scripts/research/smoke_normal_source_sampling.py",
+    "code/scripts/research/train_causal_m1_continuous.py",
+    "code/scripts/research/train_causal_mstca_m0.py",
+    "code/scripts/research/train_causal_source_v1.py",
+    "code/scripts/research/train_source_normal_sampling.py"
+  ],
+  "completed_four_checkpoint_sha256": {
+    "M0_matched__uniform_replacement": "9a7f9537d8b9548edfe50c61807a4095c253bafd0e85d4e8468db6f8cab09372",
+    "M1__uniform_replacement": "1d01fbc060b071762af4c77b7365ecabf727e13057966526bf32821db0e2feb2",
+    "M0_matched__balanced_source_normal": "3dcd8d000cabc76480e7a04917dc9c6fa16b758106c3716dae3b051e5166c71a",
+    "M1__balanced_source_normal": "debbe73385a5be4fa123a1af1a9d4774c041ef4bf23a035431008ec86bb78b6c"
+  },
+  "formal_optimizer_updates_added": 0,
+  "old_protocol_or_training_assets_changed": false
+}
