@@ -1,6 +1,8 @@
 """Independent M3 adapter for controlled preflight; no training entrypoint."""
 from __future__ import annotations
 from collections.abc import Mapping
+from pathlib import Path
+import hashlib
 import torch
 from torch import nn
 from .lstm import OnlineMSTCA
@@ -14,6 +16,16 @@ VARIANTS = {
     'CV': ('N1',), 'CR': ('N2', 'N3', 'N4'),
     'CN': ('N1', 'N2', 'N3', 'N4'),
     'CON': ('O1', 'O3', 'O6', 'O7', 'O8', 'O9', 'N1', 'N2', 'N3', 'N4')}
+ADAPTER_ANCHOR = Path(__file__).resolve().parents[5]/'configs/initialization/m3_adapter_seed42_v1.pt'
+ADAPTER_SHA256 = '9785b21d3e7f68266269f9321f93204fe5fa3f18eb0aebccc24a3066e31efe70'
+
+
+def load_fixed_adapter():
+    if hashlib.sha256(ADAPTER_ANCHOR.read_bytes()).hexdigest() != ADAPTER_SHA256:
+        raise ValueError('Frozen M3 adapter anchor SHA256 mismatch')
+    return torch.load(ADAPTER_ANCHOR, map_location='cpu', weights_only=True)
+
+
 CCAP_COLUMNS = tuple([f'actuator_ctrl_{i}' for i in range(1, 5)]+[f'actuator_out_{i}' for i in range(1, 5)]+
                      ['gyro_x', 'gyro_y', 'gyro_z', 'baro_alt_relative', 'acc_norm'])
 
@@ -35,8 +47,7 @@ class M3AdapterMSTCA(nn.Module):
         self.adapter = nn.Sequential(nn.Conv1d(13, 16, 3, padding=1), nn.ReLU(),
                                      nn.Conv1d(16, 16, 3, padding=1), nn.ReLU(),
                                      nn.AdaptiveAvgPool1d(1), nn.Flatten(), nn.Linear(16, 128))
-        nn.init.zeros_(self.adapter[-1].weight)
-        nn.init.zeros_(self.adapter[-1].bias)
+        self.adapter.load_state_dict(load_fixed_adapter(), strict=True)
         selector = torch.zeros(13, dtype=torch.float32)
         for name in VARIANTS[variant]:selector[CANDIDATE_IDS.index(name)] = 1
         if variant == 'Ccap':selector.fill_(1)
@@ -53,10 +64,10 @@ class M3AdapterMSTCA(nn.Module):
 
 
 def build_m3_model(variant: str, common_untrained_state: Mapping[str, torch.Tensor]):
-    """Shared untrained encoder/head plus deterministic identical adapter seed42.
+    """Shared untrained encoder/head and exact frozen local seed42 adapter.
 
-    Artifact hashes/digest are enforced by the caller; no checkpoint file is
-    read here. Per-build fork_rng avoids consuming caller/sampler RNG state.
+    All auxiliary constructors load the same SHA-pinned complete state_dict.
+    Per-build fork_rng avoids consuming caller/sampler RNG state.
     """
     if variant not in VARIANTS:raise ValueError('Unregistered M3 variant')
     with torch.random.fork_rng(devices=[]):

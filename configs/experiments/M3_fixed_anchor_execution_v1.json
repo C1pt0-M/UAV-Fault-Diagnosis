@@ -1,0 +1,49 @@
+{
+  "protocol_name": "M3_fixed_anchor_execution_v1",
+  "parent_path": "configs/experiments/M3_preflight_v1.json",
+  "parent_sha256": "22963d3eb5028d6a7d7a5e779bdcb752cd1dff2ab6c4392b1ad8e22f50f7c0b5",
+  "authorized_at": "2026-11-03T04:50:24.101864+00:00",
+  "authorized_code_changes": [
+    "packages/uav_fault/uav_fault/models/cnn/mstca_m3.py",
+    "packages/uav_fault/uav_fault/data/m3_features.py"
+  ],
+  "code_identities": {
+    "packages/uav_fault/uav_fault/models/cnn/mstca_m3.py": "937dc783804b5d7c4a56b0dc5a3642de373048235ffbfc77449b172da8c3eab5",
+    "packages/uav_fault/uav_fault/data/m3_features.py": "efa6cf23c38c5c88c1589a9336e656212d1ed0990fdcb30ffbf8a7f9f225178f",
+    "scripts/research/train_causal_m3.py": "39c399fe0c302f8d6a07c6a0a8f02b759b9ddf9a8ebdabb0f9252efff5d44b3f",
+    "scripts/research/replay_causal_m3.py": "680c7286950b76683a40bd2799595042bb12c20368d4eb0552cb36801448f121",
+    "scripts/research/accept_m3_entrypoints.py": "5d7b6e8c99fda1547519c83615a8e227748f6454c0512221adc5faba8c5fd774",
+    "scripts/research/execute_m3_formal.py": "df243e040b88efde678bfead12c6e2701647be90c53469cebcb1964051a16f28"
+  },
+  "jobs": [
+    "C0",
+    "Ccap",
+    "CO",
+    "CO9",
+    "CV",
+    "CR",
+    "CN",
+    "CON"
+  ],
+  "overall_delta_pp": 0.0,
+  "per_fault_delta_pp": {
+    "GPS": 0.0,
+    "accelerometer": 0.0,
+    "barometer": 0.0,
+    "gyroscope": 0.0,
+    "magnetometer": 0.0,
+    "motor": 0.0
+  },
+  "domain_overall_delta_pp": {
+    "SIL": 0.0,
+    "HIL": 0.0
+  },
+  "fault_by_domain_hard_gate": false,
+  "adapter_anchor": "configs/initialization/m3_adapter_seed42_v1.pt",
+  "adapter_anchor_sha256": "9785b21d3e7f68266269f9321f93204fe5fa3f18eb0aebccc24a3066e31efe70",
+  "prior_reproduction_diagnostic": "artifacts/M3_formal_v1_20261103/read_only_diagnosis/diagnostic.json",
+  "prior_reproduction_sha256": "e7735f76a7ec867fa59d02e9446e6d133bcd02e0355989677b3baad187b2ac70",
+  "change_scope": "Explicit user authorization: load exact local frozen Adapter anchor, new train/eval/replay paths. M0 weights, architecture, feature formula/data/normalization/budget unchanged. Prior exact M0 and sampler evidence reused.",
+  "no_extra_jobs": true,
+  "Test_Real_used": false
+}

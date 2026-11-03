@@ -1,0 +1,30 @@
+{
+  "status": "FORMAL_EIGHT_JOB_SEQUENCE_STARTED",
+  "captured_at": "2026-11-03T04:52:54.511847+00:00",
+  "remote": "autodl_UAV3",
+  "remote_root": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103",
+  "gate_status": "PASS_M3_FIXED_ANCHOR_AND_ENTRYPOINTS",
+  "adapter_anchor_path": "configs/initialization/m3_adapter_seed42_v1.pt",
+  "adapter_sha256": "9785b21d3e7f68266269f9321f93204fe5fa3f18eb0aebccc24a3066e31efe70",
+  "adapter_GitHub_commit": "8fe0632",
+  "execution_protocol": "configs/experiments/M3_fixed_anchor_execution_v1.json",
+  "jobs": [
+    "C0",
+    "Ccap",
+    "CO",
+    "CO9",
+    "CV",
+    "CR",
+    "CN",
+    "CON"
+  ],
+  "concurrency": 2,
+  "test_Real_used": false,
+  "automatic_retries": false,
+  "source_train_windows": 151833,
+  "source_val_windows": 32381,
+  "logs": "formal/{variant}.log",
+  "checkpoints": "formal/runs/{variant}/{initial,best,last}.pt",
+  "epoch_metrics_and_sampler_digest": "formal/runs/{variant}/history.json",
+  "epoch_progress": "formal/runs/{variant}/progress.json"
+}

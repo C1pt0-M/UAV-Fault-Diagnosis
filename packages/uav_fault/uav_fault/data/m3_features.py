@@ -69,3 +69,18 @@ class M3CandidateDataset(torch.utils.data.Dataset):
         if features.shape != (13, 150) or not torch.isfinite(features).all() or int(label) not in [0, 1]:
             raise ValueError('All13 valid before any selector or BatchNorm')
         return x, features, label
+
+    def __getitems__(self, indices):
+        """Vectorize the same per-window formulas for DataLoader batches."""
+        positions = torch.as_tensor(indices, dtype=torch.int64)
+        source = self.source
+        compact = source.base_indices[positions]
+        raw_positions = source.base._selected[compact.numpy()]
+        x = (source.base._x[raw_positions]-source.base._mean)/source.base._std
+        residual = (source.residual[positions]-source.mu)/source.std
+        old = old_candidate_features(x)
+        features = torch.cat([(old-self.mean)/self.std, residual], dim=1)
+        labels = source.base._y[raw_positions]
+        if not torch.isfinite(features).all() or not torch.isin(labels, torch.tensor([0, 1])).all():
+            raise ValueError('All13 valid before any selector or BatchNorm')
+        return [(x[i], features[i], labels[i]) for i in range(len(positions))]
