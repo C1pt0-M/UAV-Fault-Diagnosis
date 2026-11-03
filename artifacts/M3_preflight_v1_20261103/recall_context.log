@@ -1,0 +1,265 @@
+{
+  "status": "COMPLETE_RECALL_TOLERANCE_SCENARIOS_NO_LIMIT_ADOPTED",
+  "created_at": "2026-11-03T03:16:46.821358+00:00",
+  "inputs": {
+    "artifacts\\causal_m1_continuous_v1_20261102\\results\\runs\\M0_matched\\balanced_source_normal\\source_validation_predictions.npz": "5ec9ff55073a518d9509e3536f30bbd727ad27e3b6dcf3666620a2ba5bdaf749",
+    "artifacts\\causal_m1_continuous_v1_20261102\\results\\runs\\M1\\balanced_source_normal\\source_validation_predictions.npz": "7507303f9fb3ad4c693cc6b7140371a63e1904f63fe09f9b69c6a16576a04f9b",
+    "artifacts\\causal_pure_mstca_m0_v1_20261101\\results\\runs\\balanced_source_normal\\source_validation_predictions.npz": "ea6b5368958fa89bfa78333590f1b5528e35841cfd1e859cd4a7dab8aa0bb20e",
+    "artifacts\\causal_m1_continuous_v1_20261102\\results\\runs\\M0_matched\\uniform_replacement\\source_validation_predictions.npz": "37f6147b56e082e96b1b2421bb0e1416849cfa3376f9841f6b8c80785be50cb2",
+    "artifacts\\causal_m1_continuous_v1_20261102\\results\\runs\\M1\\uniform_replacement\\source_validation_predictions.npz": "226cf442b15efb7b479c1e3d2d1d9b6f41e474fc58085452234e185547bee443",
+    "artifacts\\causal_pure_mstca_m0_v1_20261101\\results\\runs\\uniform_replacement\\source_validation_predictions.npz": "e5550b2b85d8daefbff82890d196defc20cdecef08c96a45fd77584331e11ed4"
+  },
+  "classification_threshold": 0.5,
+  "threshold_tie_rule": "Historical argmax: exact equal logits/probabilities tie to normal, no threshold search",
+  "saved_equal_probability_counts": {
+    "M0_matched": 0,
+    "M1": 0,
+    "original_M0_full_Val": 0,
+    "M0_matched_Uniform": 0,
+    "M1_Uniform": 0,
+    "original_M0_full_Val_Uniform": 0
+  },
+  "historical_M1_recall_loss_pp_vs_matched_M0": {
+    "GPS": 4.723127035830621,
+    "accelerometer": 2.3893805309734506,
+    "barometer": 0.8604206500956058,
+    "gyroscope": 1.0101010101010055,
+    "magnetometer": 0.26041666666667407,
+    "motor": 0.0911392405063216,
+    "overall": 0.7516062553036829
+  },
+  "scenarios": [
+    {
+      "scenario": "same_delta_all_scopes_0.0pp",
+      "overall_delta_pp": 0.0,
+      "per_fault_delta_pp": {
+        "GPS": 0.0,
+        "accelerometer": 0.0,
+        "barometer": 0.0,
+        "gyroscope": 0.0,
+        "magnetometer": 0.0,
+        "motor": 0.0
+      },
+      "historical_M1_vs_matched_M0": {
+        "status": "FAIL",
+        "pass": false,
+        "failed_recall_scopes": [
+          "overall",
+          "GPS",
+          "accelerometer",
+          "barometer",
+          "gyroscope",
+          "magnetometer",
+          "motor"
+        ]
+      },
+      "adopted": false
+    },
+    {
+      "scenario": "same_delta_all_scopes_0.1pp",
+      "overall_delta_pp": 0.1,
+      "per_fault_delta_pp": {
+        "GPS": 0.1,
+        "accelerometer": 0.1,
+        "barometer": 0.1,
+        "gyroscope": 0.1,
+        "magnetometer": 0.1,
+        "motor": 0.1
+      },
+      "historical_M1_vs_matched_M0": {
+        "status": "FAIL",
+        "pass": false,
+        "failed_recall_scopes": [
+          "overall",
+          "GPS",
+          "accelerometer",
+          "barometer",
+          "gyroscope",
+          "magnetometer"
+        ]
+      },
+      "adopted": false
+    },
+    {
+      "scenario": "same_delta_all_scopes_0.25pp",
+      "overall_delta_pp": 0.25,
+      "per_fault_delta_pp": {
+        "GPS": 0.25,
+        "accelerometer": 0.25,
+        "barometer": 0.25,
+        "gyroscope": 0.25,
+        "magnetometer": 0.25,
+        "motor": 0.25
+      },
+      "historical_M1_vs_matched_M0": {
+        "status": "FAIL",
+        "pass": false,
+        "failed_recall_scopes": [
+          "overall",
+          "GPS",
+          "accelerometer",
+          "barometer",
+          "gyroscope",
+          "magnetometer"
+        ]
+      },
+      "adopted": false
+    },
+    {
+      "scenario": "same_delta_all_scopes_0.5pp",
+      "overall_delta_pp": 0.5,
+      "per_fault_delta_pp": {
+        "GPS": 0.5,
+        "accelerometer": 0.5,
+        "barometer": 0.5,
+        "gyroscope": 0.5,
+        "magnetometer": 0.5,
+        "motor": 0.5
+      },
+      "historical_M1_vs_matched_M0": {
+        "status": "FAIL",
+        "pass": false,
+        "failed_recall_scopes": [
+          "overall",
+          "GPS",
+          "accelerometer",
+          "barometer",
+          "gyroscope"
+        ]
+      },
+      "adopted": false
+    },
+    {
+      "scenario": "same_delta_all_scopes_1.0pp",
+      "overall_delta_pp": 1.0,
+      "per_fault_delta_pp": {
+        "GPS": 1.0,
+        "accelerometer": 1.0,
+        "barometer": 1.0,
+        "gyroscope": 1.0,
+        "magnetometer": 1.0,
+        "motor": 1.0
+      },
+      "historical_M1_vs_matched_M0": {
+        "status": "FAIL",
+        "pass": false,
+        "failed_recall_scopes": [
+          "GPS",
+          "accelerometer",
+          "gyroscope"
+        ]
+      },
+      "adopted": false
+    },
+    {
+      "scenario": "same_delta_all_scopes_2.0pp",
+      "overall_delta_pp": 2.0,
+      "per_fault_delta_pp": {
+        "GPS": 2.0,
+        "accelerometer": 2.0,
+        "barometer": 2.0,
+        "gyroscope": 2.0,
+        "magnetometer": 2.0,
+        "motor": 2.0
+      },
+      "historical_M1_vs_matched_M0": {
+        "status": "FAIL",
+        "pass": false,
+        "failed_recall_scopes": [
+          "GPS",
+          "accelerometer"
+        ]
+      },
+      "adopted": false
+    },
+    {
+      "scenario": "same_delta_all_scopes_5.0pp",
+      "overall_delta_pp": 5.0,
+      "per_fault_delta_pp": {
+        "GPS": 5.0,
+        "accelerometer": 5.0,
+        "barometer": 5.0,
+        "gyroscope": 5.0,
+        "magnetometer": 5.0,
+        "motor": 5.0
+      },
+      "historical_M1_vs_matched_M0": {
+        "status": "PASS",
+        "pass": true,
+        "failed_recall_scopes": []
+      },
+      "adopted": false
+    },
+    {
+      "scenario": "strict_recall_preservation",
+      "overall_delta_pp": 0.0,
+      "per_fault_delta_pp": {
+        "GPS": 0.0,
+        "accelerometer": 0.0,
+        "barometer": 0.0,
+        "gyroscope": 0.0,
+        "magnetometer": 0.0,
+        "motor": 0.0
+      },
+      "historical_M1_vs_matched_M0": {
+        "status": "FAIL",
+        "pass": false,
+        "failed_recall_scopes": [
+          "overall",
+          "GPS",
+          "accelerometer",
+          "barometer",
+          "gyroscope",
+          "magnetometer",
+          "motor"
+        ]
+      },
+      "adopted": false
+    },
+    {
+      "scenario": "suggested_small_exploratory_loss_only",
+      "overall_delta_pp": 0.25,
+      "per_fault_delta_pp": {
+        "GPS": 0.5,
+        "accelerometer": 0.5,
+        "barometer": 0.5,
+        "gyroscope": 0.5,
+        "magnetometer": 0.5,
+        "motor": 0.1
+      },
+      "historical_M1_vs_matched_M0": {
+        "status": "FAIL",
+        "pass": false,
+        "failed_recall_scopes": [
+          "overall",
+          "GPS",
+          "accelerometer",
+          "barometer",
+          "gyroscope"
+        ]
+      },
+      "adopted": false
+    }
+  ],
+  "official_M3_recall_delta": null,
+  "official_M3_per_fault_delta": {
+    "GPS": null,
+    "accelerometer": null,
+    "barometer": null,
+    "gyroscope": null,
+    "magnetometer": null,
+    "motor": null
+  },
+  "relative_reference": "New M3 C0 best selected at fixedMacroF1, same common151833/32381 population, untrained shared start. Old trained matchedM0 illustrates margins only.",
+  "strict_recommendation": "If research claim says maintain fault detection, start with0pp overall and each subtype. This is point-estimate preservation, not statistical noninferiority.",
+  "optional_exploratory_recommendation": "Only if user explicitly accepts bounded loss: illustrative overall0.25pp, six sensors/types0.5pp except motor0.1pp. It is a research tradeoff, not safety/clinical standard and not chosen to admit M1.",
+  "user_must_confirm": [
+    "Overall allowed absolute percentage-point loss",
+    "Each six subtype loss, may be0 or distinct",
+    "Whether per-domain recalls are hard gates or stratified warnings",
+    "Optional absolute per-type recall floors; current magnetometer reference already low",
+    "Recall gate as post-selection acceptance, not checkpoint reselection"
+  ],
+  "no_threshold_search_or_model_training": true,
+  "no_final_test_Real_or_server_GPU": true
+}

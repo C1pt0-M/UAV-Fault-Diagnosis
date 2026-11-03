@@ -1,0 +1,355 @@
+{
+  "status": "PASS_M3_SOURCE_NORMALIZATION_AND_ALL13_FINITE_POPULATION",
+  "checked_at": "2026-11-03T03:20:12.176827+00:00",
+  "inputs": {
+    "D:\\UAV-Data\\causal_input_v1\\norm_stats.json": {
+      "sha256": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+      "bytes": 2702
+    },
+    "D:\\UAV-Data\\causal_input_v1\\input_contract.json": {
+      "sha256": "3ed8b8cd4008384109629dc4c8308839620e170286345e752b227495f4597945",
+      "bytes": 1025
+    },
+    "D:\\UAV-Data\\causal_input_v1\\ledgers\\train_included_windows.csv": {
+      "sha256": "0c491c2ede34534eaba020ae5a9d09257fedb692519863f325c6b0dfeb4afecb",
+      "bytes": 29013941
+    },
+    "D:\\UAV-Data\\causal_input_v1\\ledgers\\val_included_windows.csv": {
+      "sha256": "8b966bc5bfe74a26bd7614ab44c2e8b581b5cc6f66d0f55ea6f545cb253c16d6",
+      "bytes": 5824131
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cache\\train.pt": {
+      "sha256": "d4c3c2c741c67d224547cf604087f45fa4ed371197129fd026ecf475d4de428d",
+      "bytes": 2530871850
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cache\\val.pt": {
+      "sha256": "1cb842b81ef7c8c8f00708add6404b96191d50b97b83aa76f26e27aadedf411f",
+      "bytes": 542033688
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\build_manifest.json": {
+      "sha256": "bda2169adaf48946e46596900a683388597079ee13e599b876d0f0fcde6f204e",
+      "bytes": 1751582
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\residual_norm_stats.json": {
+      "sha256": "504e60d63b847024592440628e6e0622d888a4973dcad4334676fc42469d2941",
+      "bytes": 984
+    },
+    "D:\\UAV-Fault-Diagnosis\\scripts\\research\\prepare_m3_normalization.py": {
+      "sha256": "b8ace744d3fee2fdf135764f5564b66f2e86b2446feae0d85ba5274d89835097",
+      "bytes": 12938
+    },
+    "D:\\UAV-Fault-Diagnosis\\packages\\uav_fault\\uav_fault\\data\\m3_features.py": {
+      "sha256": "95fa0d38c76cb2e67cca94c7519377b0abdda70bcc378ae67bfe2fa3b1dcdca7",
+      "bytes": 4284
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cache\\train.pt": {
+      "sha256": "c26d89e37b654308e2e9633cf1afd8a04a57666e4a2a6deec78d3d8a5b874e19",
+      "bytes": 390821123
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cache\\val.pt": {
+      "sha256": "a3cbd729df572072e2906b0363f8a22eeb910202b34010e102bacfa092df63d9",
+      "bytes": 83351533
+    }
+  },
+  "normalization_sha256": "6fa38a116e3470b1e897147c3be031a9d7ed9c21475fca1e07790fd6d82a2616",
+  "splits": {
+    "train": {
+      "windows_checked_all13": 151833,
+      "raw_min": [
+        0.001724129542708397,
+        0.004500299692153931,
+        0.012210913002490997,
+        0.003360447008162737,
+        -30.17768669128418,
+        0.0,
+        0.0037432920653373003,
+        1.064385287463665e-06,
+        0.06785931438207626,
+        -332.0359191894531,
+        -0.2207343578338623,
+        -0.22306707501411438,
+        -0.0538255050778389
+      ],
+      "raw_max": [
+        4.4753804206848145,
+        11.98086929321289,
+        15.100162506103516,
+        14.659975051879883,
+        75.09471130371094,
+        252.09788513183594,
+        37.34051513671875,
+        41.431575775146484,
+        7.139035701751709,
+        213.0419158935547,
+        0.31837406754493713,
+        0.2687934637069702,
+        0.04436089098453522
+      ],
+      "finite_before_BN": true,
+      "original_normal_windows": 19630,
+      "fault_windows": 77133,
+      "normal_windows": 74700
+    },
+    "val": {
+      "windows_checked_all13": 32381,
+      "raw_min": [
+        0.0019059755140915513,
+        0.005051851272583008,
+        0.033079709857702255,
+        0.008402639999985695,
+        -21.70244026184082,
+        0.0,
+        0.006401633378118277,
+        1.4315592125058174e-05,
+        0.1805610954761505,
+        -331.9977722167969,
+        -0.22025106847286224,
+        -0.22497400641441345,
+        -0.04315695911645889
+      ],
+      "raw_max": [
+        4.188022613525391,
+        11.811007499694824,
+        8.6509370803833,
+        8.966233253479004,
+        53.93757629394531,
+        149.25579833984375,
+        36.35934066772461,
+        36.258697509765625,
+        6.210744857788086,
+        213.0225830078125,
+        0.26772594451904297,
+        0.22388583421707153,
+        0.047259312123060226
+      ],
+      "finite_before_BN": true,
+      "original_normal_windows": 4264,
+      "fault_windows": 16498,
+      "normal_windows": 15883
+    }
+  },
+  "common_case_and_pair_leakage": 0,
+  "source_split_identities": {
+    "train": {
+      "windows": 151833,
+      "original_ids_sha256": "ea4cdc2dd514d473aa33ec5420c5c139ffb57f8a8ad42ad2f40fd25ae547e29f",
+      "labels_sha256": "8794960f3e5533918ec65f5837f8c1f4d5c656c154a8d0dd4a0794eed1e736c9",
+      "residual_cache_sha256": "c26d89e37b654308e2e9633cf1afd8a04a57666e4a2a6deec78d3d8a5b874e19",
+      "base_cache_sha256": "d4c3c2c741c67d224547cf604087f45fa4ed371197129fd026ecf475d4de428d",
+      "base_compact_index_sha256": "d701ec077b2a8db256c18adfbc124e7da38d221fc579999358375d4dabb791c1",
+      "metadata_case_count": 2567,
+      "window_id_time_rows_sha256": "d6db1368c125aff1b277a62d7a2470694d724423b8645e4e3748f0285379079c"
+    },
+    "val": {
+      "windows": 32381,
+      "original_ids_sha256": "6d6b62b68d17a71367e87545910bee897cd29c5d853ca94dc9c660290d6b1524",
+      "labels_sha256": "20e7a2a5916ef6271b5c5349f61c075bec8f8c97e7fc98fc9d52d2b6b5f74b13",
+      "residual_cache_sha256": "a3cbd729df572072e2906b0363f8a22eeb910202b34010e102bacfa092df63d9",
+      "base_cache_sha256": "1cb842b81ef7c8c8f00708add6404b96191d50b97b83aa76f26e27aadedf411f",
+      "base_compact_index_sha256": "56a31b8a39578b3f79bf7ab5917f796dc05c0545d1b3beee89a88f882629c303",
+      "metadata_case_count": 551,
+      "window_id_time_rows_sha256": "d946d872b1662ea42fddf5a460ee099e2129320c8747f4532fb4fddc03fa835e"
+    }
+  },
+  "balanced_sampling": {
+    "total_weight": 151832.99999999997,
+    "normal_probability": 0.4919879077670861,
+    "fault_probability": 0.5080120922329139,
+    "origins": {
+      "fault_endpoint": {
+        "windows": 77133,
+        "probability": 0.5080120922329139
+      },
+      "normal_part_of_fault_case": {
+        "windows": 55070,
+        "probability": 0.24599395388354306
+      },
+      "original_normal_case": {
+        "windows": 19630,
+        "probability": 0.24599395388354295
+      }
+    }
+  },
+  "sampler_weights_sha256": "8d5cbef723c86e1d1b04c4283fc1abd2fb7e4ad0f58d7d976ee7bc513f8ebdcd",
+  "sampler_generator_seed": 53,
+  "loader_generator_seed": 143,
+  "draws_per_epoch": 151833,
+  "gradient_steps_per_epoch": 297,
+  "fault_directory_domain_counts": [
+    {
+      "split": "train",
+      "domain": "HIL",
+      "subtype": "GPS",
+      "fault_windows": 3314,
+      "cases": 93
+    },
+    {
+      "split": "train",
+      "domain": "HIL",
+      "subtype": "accelerometer",
+      "fault_windows": 3240,
+      "cases": 93
+    },
+    {
+      "split": "train",
+      "domain": "HIL",
+      "subtype": "barometer",
+      "fault_windows": 2770,
+      "cases": 90
+    },
+    {
+      "split": "train",
+      "domain": "HIL",
+      "subtype": "gyroscope",
+      "fault_windows": 3233,
+      "cases": 93
+    },
+    {
+      "split": "train",
+      "domain": "HIL",
+      "subtype": "magnetometer",
+      "fault_windows": 2907,
+      "cases": 82
+    },
+    {
+      "split": "train",
+      "domain": "HIL",
+      "subtype": "motor",
+      "fault_windows": 22848,
+      "cases": 633
+    },
+    {
+      "split": "train",
+      "domain": "SIL",
+      "subtype": "GPS",
+      "fault_windows": 3434,
+      "cases": 95
+    },
+    {
+      "split": "train",
+      "domain": "SIL",
+      "subtype": "accelerometer",
+      "fault_windows": 3045,
+      "cases": 94
+    },
+    {
+      "split": "train",
+      "domain": "SIL",
+      "subtype": "barometer",
+      "fault_windows": 2537,
+      "cases": 95
+    },
+    {
+      "split": "train",
+      "domain": "SIL",
+      "subtype": "gyroscope",
+      "fault_windows": 3476,
+      "cases": 97
+    },
+    {
+      "split": "train",
+      "domain": "SIL",
+      "subtype": "magnetometer",
+      "fault_windows": 3475,
+      "cases": 95
+    },
+    {
+      "split": "train",
+      "domain": "SIL",
+      "subtype": "motor",
+      "fault_windows": 22854,
+      "cases": 638
+    },
+    {
+      "split": "val",
+      "domain": "HIL",
+      "subtype": "GPS",
+      "fault_windows": 589,
+      "cases": 17
+    },
+    {
+      "split": "val",
+      "domain": "HIL",
+      "subtype": "accelerometer",
+      "fault_windows": 604,
+      "cases": 17
+    },
+    {
+      "split": "val",
+      "domain": "HIL",
+      "subtype": "barometer",
+      "fault_windows": 541,
+      "cases": 19
+    },
+    {
+      "split": "val",
+      "domain": "HIL",
+      "subtype": "gyroscope",
+      "fault_windows": 839,
+      "cases": 23
+    },
+    {
+      "split": "val",
+      "domain": "HIL",
+      "subtype": "magnetometer",
+      "fault_windows": 662,
+      "cases": 20
+    },
+    {
+      "split": "val",
+      "domain": "HIL",
+      "subtype": "motor",
+      "fault_windows": 4926,
+      "cases": 136
+    },
+    {
+      "split": "val",
+      "domain": "SIL",
+      "subtype": "GPS",
+      "fault_windows": 639,
+      "cases": 18
+    },
+    {
+      "split": "val",
+      "domain": "SIL",
+      "subtype": "accelerometer",
+      "fault_windows": 526,
+      "cases": 18
+    },
+    {
+      "split": "val",
+      "domain": "SIL",
+      "subtype": "barometer",
+      "fault_windows": 505,
+      "cases": 19
+    },
+    {
+      "split": "val",
+      "domain": "SIL",
+      "subtype": "gyroscope",
+      "fault_windows": 844,
+      "cases": 23
+    },
+    {
+      "split": "val",
+      "domain": "SIL",
+      "subtype": "magnetometer",
+      "fault_windows": 874,
+      "cases": 24
+    },
+    {
+      "split": "val",
+      "domain": "SIL",
+      "subtype": "motor",
+      "fault_windows": 4949,
+      "cases": 138
+    }
+  ],
+  "fit_windows": 74700,
+  "fit_cases": 2566,
+  "N_statistics_unchanged": true,
+  "fit_Val_Test_Real_used": false,
+  "all13_data_coverage_shrunk": false,
+  "training_or_GPU_server_used": false,
+  "feature_cache_policy": "old9 computed on demand from base-z to avoid duplicate giant tensors; strict dataset code provided, full new old9 sidecar not required."
+}

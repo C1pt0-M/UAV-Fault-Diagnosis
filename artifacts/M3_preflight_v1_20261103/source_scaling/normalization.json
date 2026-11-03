@@ -1,0 +1,127 @@
+{
+  "status": "FROZEN_SOURCE_TRAIN_NORMAL_M3_SCALING",
+  "version": "m3_old9_secondary_z_and_frozen_N4_v1",
+  "candidate_ids": [
+    "O1",
+    "O2",
+    "O3",
+    "O4",
+    "O5",
+    "O6",
+    "O7",
+    "O8",
+    "O9",
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+  ],
+  "fit_split": "source_train_known_normal_only",
+  "fit_windows": 74700,
+  "fit_frame_contributions": 11205000,
+  "fit_cases": 2566,
+  "fit_original_ID_sha256": "ea4d939a1657f59cfb7d0f576680808656a1edf6b612a390b0651c71795014ae",
+  "weighting": "All150 frames per qualifying original cap64 window, overlap retained, population variance. No Val fitting.",
+  "base_norm_sha256": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+  "residual_stats_sha256": "504e60d63b847024592440628e6e0622d888a4973dcad4334676fc42469d2941",
+  "old9": {
+    "formula": "unchanged OnlineKGMSTCA._relation_features on frozen normalized base26",
+    "mean": [
+      0.2951973555412579,
+      0.6259371902305582,
+      0.5810514892938645,
+      0.497354798917837,
+      -2.084484170882732,
+      0.21089307186713668,
+      0.6857057655651965,
+      0.7400061144157262,
+      0.9552764544054746
+    ],
+    "std": [
+      0.16339499211896286,
+      0.3696089050384663,
+      0.29220544806211113,
+      0.29611028752849405,
+      1.952857948921928,
+      0.5227993576825667,
+      1.4343120221153693,
+      0.5171042158302979,
+      0.8900219720832975
+    ],
+    "reason": "Old9 derived outputs have different offsets/scales and ratios; one common Train-normal secondary affine scale improves optimization comparability without changing definitions. New M3 preprocessing, not historical M2."
+  },
+  "new4": {
+    "mean": [
+      0.0006571460356322342,
+      -8.453983789439151e-06,
+      -0.00014794400527821613,
+      6.074784120070256e-05
+    ],
+    "std": [
+      0.0478383909123426,
+      0.002774148992871336,
+      0.004341781967649567,
+      0.0006533522759711983
+    ],
+    "source": "Exact frozen M1 Train-normal74700 window physical fit",
+    "float32_export_recompute_mean_max_error": 1.8525404734542894e-13,
+    "float32_export_recompute_std_max_error": 8.087996418437715e-13
+  },
+  "mean": [
+    0.2951973555412579,
+    0.6259371902305582,
+    0.5810514892938645,
+    0.497354798917837,
+    -2.084484170882732,
+    0.21089307186713668,
+    0.6857057655651965,
+    0.7400061144157262,
+    0.9552764544054746,
+    0.0006571460356322342,
+    -8.453983789439151e-06,
+    -0.00014794400527821613,
+    6.074784120070256e-05
+  ],
+  "std": [
+    0.16339499211896286,
+    0.3696089050384663,
+    0.29220544806211113,
+    0.29611028752849405,
+    1.952857948921928,
+    0.5227993576825667,
+    1.4343120221153693,
+    0.5171042158302979,
+    0.8900219720832975,
+    0.0478383909123426,
+    0.002774148992871336,
+    0.004341781967649567,
+    0.0006533522759711983
+  ],
+  "source_split_identities": {
+    "train": {
+      "windows": 151833,
+      "original_ids_sha256": "ea4cdc2dd514d473aa33ec5420c5c139ffb57f8a8ad42ad2f40fd25ae547e29f",
+      "labels_sha256": "8794960f3e5533918ec65f5837f8c1f4d5c656c154a8d0dd4a0794eed1e736c9",
+      "residual_cache_sha256": "c26d89e37b654308e2e9633cf1afd8a04a57666e4a2a6deec78d3d8a5b874e19",
+      "base_cache_sha256": "d4c3c2c741c67d224547cf604087f45fa4ed371197129fd026ecf475d4de428d",
+      "base_compact_index_sha256": "d701ec077b2a8db256c18adfbc124e7da38d221fc579999358375d4dabb791c1",
+      "metadata_case_count": 2567,
+      "window_id_time_rows_sha256": "d6db1368c125aff1b277a62d7a2470694d724423b8645e4e3748f0285379079c"
+    },
+    "val": {
+      "windows": 32381,
+      "original_ids_sha256": "6d6b62b68d17a71367e87545910bee897cd29c5d853ca94dc9c660290d6b1524",
+      "labels_sha256": "20e7a2a5916ef6271b5c5349f61c075bec8f8c97e7fc98fc9d52d2b6b5f74b13",
+      "residual_cache_sha256": "a3cbd729df572072e2906b0363f8a22eeb910202b34010e102bacfa092df63d9",
+      "base_cache_sha256": "1cb842b81ef7c8c8f00708add6404b96191d50b97b83aa76f26e27aadedf411f",
+      "base_compact_index_sha256": "56a31b8a39578b3f79bf7ab5917f796dc05c0545d1b3beee89a88f882629c303",
+      "metadata_case_count": 551,
+      "window_id_time_rows_sha256": "d946d872b1662ea42fddf5a460ee099e2129320c8747f4532fb4fddc03fa835e"
+    }
+  },
+  "variance_policy": "population; reject zero/nonfinite scale, no silent epsilon floor",
+  "finite_outliers": "retain; no clipping/winsorization/log/abs/sign change/new residual horizon",
+  "missing_policy": "Reject whole sample before selector/BN, preserve original-ID exclusion. New mismatch/invalid in this frozen population stops preflight; do not silently shrink or refill.",
+  "independent_central_mean_max_error": 5.551115123125783e-16,
+  "independent_central_std_max_error": 1.1102230246251565e-15
+}

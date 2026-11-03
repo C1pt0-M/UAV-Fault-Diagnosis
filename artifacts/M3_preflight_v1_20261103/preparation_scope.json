@@ -1,0 +1,33 @@
+{
+  "status": "PRETRAINING_PROTOCOL_PREPARATION_ONLY_NO_RUNNER",
+  "created_at": "2026-11-03T02:57:53.467481+00:00",
+  "primary_jobs_proposed": [
+    "C0",
+    "Ccap",
+    "CO",
+    "CO9",
+    "CV",
+    "CR",
+    "CN",
+    "CON"
+  ],
+  "maximum_formal_training_jobs_authorized_this_turn": 0,
+  "recall_delta_to_be_user_confirmed": null,
+  "allowed_checks": [
+    "local sourceTrain-normal scaler fit, preserving base/N stats",
+    "sourceTrain/Val originalIDs/hash/finite candidate/normalizer/sampler identity check",
+    "untrained seed42 checkpoint loading and CPU-only forward/backward without optimizer steps",
+    "saved sourceVal metric recall-sensitivity tables at fixed0.5",
+    "independent protocol/configuration and report"
+  ],
+  "normalization_choice": "One new O9 affine scaler, fit full74700 frozen joint-valid known-normal sourceTrain windows with overlap150; reuse frozen N4 original Train-normal float64 physical mean/std; no floors or clipping",
+  "forbidden": [
+    "training server access",
+    "GPU allocation/operations",
+    "any optimizer step or training loop",
+    "test or Real data access",
+    "historical code/data/label/scaler/weights/results mutation",
+    "recall tolerance approval guessed from time or results",
+    "new threshold selection"
+  ]
+}
