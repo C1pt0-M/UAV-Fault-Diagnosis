@@ -1,0 +1,163 @@
+{
+  "captured_at": "2026-11-03T04:54:01.317878+00:00",
+  "scheduler": {
+    "status": "RUNNING",
+    "concurrency": 2,
+    "gate_batch512_peak_bytes": 308279808,
+    "free_GPU_bytes": 24877137920,
+    "started_at": "2026-11-03T04:51:48.394294+00:00",
+    "completed": [],
+    "active": {
+      "C0": 3854,
+      "Ccap": 3855
+    },
+    "pending": [
+      "CO",
+      "CO9",
+      "CV",
+      "CR",
+      "CN",
+      "CON"
+    ],
+    "automatic_retries": false,
+    "updated_at": "2026-11-03T04:51:48.396033+00:00"
+  },
+  "jobs": [
+    {
+      "variant": "C0",
+      "status": "RUNNING_FORMAL_M3",
+      "epoch": 3,
+      "best_epoch": 3,
+      "best_macro_f1": 0.9437688892840497,
+      "optimizer_steps": 891,
+      "latest_overall_metrics": {
+        "windows": 32381,
+        "confusion_matrix": [
+          [
+            14937,
+            946
+          ],
+          [
+            874,
+            15624
+          ]
+        ],
+        "accuracy": 0.9437942003026466,
+        "macro_f1": 0.9437688892840497,
+        "fault_recall": 0.9470238816826282,
+        "normal_window_fpr": 0.05956053642259019
+      },
+      "progress_updated_at": "2026-11-03T04:53:43.626371+00:00",
+      "log": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/C0.log",
+      "checkpoints": {
+        "initial.pt": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/runs/C0/initial.pt",
+        "best.pt": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/runs/C0/best.pt",
+        "last.pt": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/runs/C0/last.pt"
+      }
+    },
+    {
+      "variant": "Ccap",
+      "status": "RUNNING_FORMAL_M3",
+      "epoch": 3,
+      "best_epoch": 3,
+      "best_macro_f1": 0.9425670732467974,
+      "optimizer_steps": 891,
+      "latest_overall_metrics": {
+        "windows": 32381,
+        "confusion_matrix": [
+          [
+            14939,
+            944
+          ],
+          [
+            915,
+            15583
+          ]
+        ],
+        "accuracy": 0.9425897903091319,
+        "macro_f1": 0.9425670732467974,
+        "fault_recall": 0.9445387319675113,
+        "normal_window_fpr": 0.05943461562677076
+      },
+      "progress_updated_at": "2026-11-03T04:53:46.504084+00:00",
+      "log": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/Ccap.log",
+      "checkpoints": {
+        "initial.pt": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/runs/Ccap/initial.pt",
+        "best.pt": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/runs/Ccap/best.pt",
+        "last.pt": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/runs/Ccap/last.pt"
+      }
+    },
+    {
+      "variant": "CO",
+      "status": "QUEUED",
+      "epoch": 0,
+      "best_epoch": null,
+      "best_macro_f1": null,
+      "optimizer_steps": 0,
+      "latest_overall_metrics": null,
+      "progress_updated_at": null,
+      "log": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/CO.log",
+      "checkpoints": {}
+    },
+    {
+      "variant": "CO9",
+      "status": "QUEUED",
+      "epoch": 0,
+      "best_epoch": null,
+      "best_macro_f1": null,
+      "optimizer_steps": 0,
+      "latest_overall_metrics": null,
+      "progress_updated_at": null,
+      "log": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/CO9.log",
+      "checkpoints": {}
+    },
+    {
+      "variant": "CV",
+      "status": "QUEUED",
+      "epoch": 0,
+      "best_epoch": null,
+      "best_macro_f1": null,
+      "optimizer_steps": 0,
+      "latest_overall_metrics": null,
+      "progress_updated_at": null,
+      "log": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/CV.log",
+      "checkpoints": {}
+    },
+    {
+      "variant": "CR",
+      "status": "QUEUED",
+      "epoch": 0,
+      "best_epoch": null,
+      "best_macro_f1": null,
+      "optimizer_steps": 0,
+      "latest_overall_metrics": null,
+      "progress_updated_at": null,
+      "log": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/CR.log",
+      "checkpoints": {}
+    },
+    {
+      "variant": "CN",
+      "status": "QUEUED",
+      "epoch": 0,
+      "best_epoch": null,
+      "best_macro_f1": null,
+      "optimizer_steps": 0,
+      "latest_overall_metrics": null,
+      "progress_updated_at": null,
+      "log": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/CN.log",
+      "checkpoints": {}
+    },
+    {
+      "variant": "CON",
+      "status": "QUEUED",
+      "epoch": 0,
+      "best_epoch": null,
+      "best_macro_f1": null,
+      "optimizer_steps": 0,
+      "latest_overall_metrics": null,
+      "progress_updated_at": null,
+      "log": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/formal/CON.log",
+      "checkpoints": {}
+    }
+  ]
+}
