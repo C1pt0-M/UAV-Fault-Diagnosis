@@ -1,0 +1,10 @@
+{
+  "scope": "CPU-only statistical summaries of existing shared Train151833/Val32381; no model fitting/inference or large new experiments.",
+  "primary_summary": "Signed per-window temporal median, then one median per case/label. Within-window moments and half-window changes supplementary.",
+  "AUC_direction": "Signed feature larger means fault; no flipping, threshold selection or feature deletion.",
+  "population": "All shared windows retained; pure active and known normal distinguished from mixed/unknown.",
+  "case_dependence": "Case counts and association groups; no window-level p-values, no statistical significance claim.",
+  "Base26_control": "Descriptive rank centering within domain/flight/fault/label; nearest normal case on fixed-normalized26 median summaries, with unmatched/outside normal support reported. Not equality of full26 sequences or a proof of independent value.",
+  "native_diagnosis": "All154 target windows in29 cases; six existing raw source-Val ULogs, no full-log rebuild/replay.",
+  "changes_to_formulas_models_configs_data": false
+}
