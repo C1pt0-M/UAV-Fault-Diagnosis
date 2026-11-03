@@ -1,0 +1,184 @@
+{
+  "status": "PASS_COLLECTED_AND_VERIFIED_EIGHT_M3_RESULTS",
+  "created_at": "2026-11-03T09:47:15.252365+00:00",
+  "scope": "Existing saved source-Val results only; no new forward, training, threshold search, Test or Real access. Saved probabilities were used for all reported metrics.",
+  "all_eight_complete": true,
+  "common_validation_windows": 32381,
+  "common_validation_original_ids_sha256": "6d6b62b68d17a71367e87545910bee897cd29c5d853ca94dc9c660290d6b1524",
+  "source_val_residual_cache_sha256": "a3cbd729df572072e2906b0363f8a22eeb910202b34010e102bacfa092df63d9",
+  "best_selection": "Strict maximum source-Val overall Macro-F1, earliest exact tie, original early stop; independently reconstructed from history.",
+  "metrics_precision_recall_definition": "Overall is binary fault-vs-normal. Fault-category rows use that fault directory as positive and the same known-normal pool as negative; other fault directories are excluded from that conditional category metric because the model does not predict fault type.",
+  "missing_metrics": [
+    "Per-epoch Val loss was not saved. Per-epoch Train accuracy/precision/recall/F1 were not saved. Trained continuous replay latency was not part of this collection; static accepted-gate MAC and batch512 peak memory are reported."
+  ],
+  "constraint_reference": "M3 C0 best saved source-Val checkpoint, fixed argmax/0.5. All overall/six fault and SIL/HIL overall checks use integer TP counts on identical IDs.",
+  "hard_constraints": [
+    {
+      "variant": "C0",
+      "pass_overall_and_six_fault_recall": true,
+      "pass_SIL_HIL_overall_recall": true,
+      "pass_all_hard_constraints": true,
+      "violations": "",
+      "overall_recall_delta_pp": 0.0,
+      "overall_fpr_delta_pp": 0.0
+    },
+    {
+      "variant": "Ccap",
+      "pass_overall_and_six_fault_recall": false,
+      "pass_SIL_HIL_overall_recall": false,
+      "pass_all_hard_constraints": false,
+      "violations": "overall;GPS;gyroscope;magnetometer;motor;SIL_overall",
+      "overall_recall_delta_pp": -0.21820826766880685,
+      "overall_fpr_delta_pp": 0.1511049549833155
+    },
+    {
+      "variant": "CO",
+      "pass_overall_and_six_fault_recall": false,
+      "pass_SIL_HIL_overall_recall": true,
+      "pass_all_hard_constraints": false,
+      "violations": "GPS;gyroscope;motor",
+      "overall_recall_delta_pp": 0.09092011152866952,
+      "overall_fpr_delta_pp": 0.02518415916388586
+    },
+    {
+      "variant": "CO9",
+      "pass_overall_and_six_fault_recall": false,
+      "pass_SIL_HIL_overall_recall": false,
+      "pass_all_hard_constraints": false,
+      "violations": "overall;gyroscope;motor;SIL_overall;HIL_overall",
+      "overall_recall_delta_pp": -0.048490726148620045,
+      "overall_fpr_delta_pp": 0.5918277403513191
+    },
+    {
+      "variant": "CV",
+      "pass_overall_and_six_fault_recall": false,
+      "pass_SIL_HIL_overall_recall": false,
+      "pass_all_hard_constraints": false,
+      "violations": "gyroscope;magnetometer;motor;HIL_overall",
+      "overall_recall_delta_pp": 0.2121469269002363,
+      "overall_fpr_delta_pp": 0.5351633822325758
+    },
+    {
+      "variant": "CR",
+      "pass_overall_and_six_fault_recall": false,
+      "pass_SIL_HIL_overall_recall": false,
+      "pass_all_hard_constraints": false,
+      "violations": "accelerometer;magnetometer;motor;HIL_overall",
+      "overall_recall_delta_pp": 0.030306703842897242,
+      "overall_fpr_delta_pp": 0.42813070578606066
+    },
+    {
+      "variant": "CN",
+      "pass_overall_and_six_fault_recall": false,
+      "pass_SIL_HIL_overall_recall": false,
+      "pass_all_hard_constraints": false,
+      "violations": "overall;GPS;accelerometer;gyroscope;magnetometer;motor;SIL_overall;HIL_overall",
+      "overall_recall_delta_pp": -0.5940113953206372,
+      "overall_fpr_delta_pp": -0.01259207958194293
+    },
+    {
+      "variant": "CON",
+      "pass_overall_and_six_fault_recall": false,
+      "pass_SIL_HIL_overall_recall": false,
+      "pass_all_hard_constraints": false,
+      "violations": "motor;HIL_overall",
+      "overall_recall_delta_pp": 0.3394350830403736,
+      "overall_fpr_delta_pp": 0.9003336901089214
+    }
+  ],
+  "best_by_macro_f1": "CO",
+  "best_by_overall_fpr": "CN",
+  "best_by_overall_recall": "CON",
+  "files_verified": 64,
+  "checks": [
+    {
+      "variant": "C0",
+      "status": "PASS",
+      "history_selection": true,
+      "sampler_digests": true,
+      "finite_weights": true,
+      "saved_predictions": true,
+      "test_real_used": false
+    },
+    {
+      "variant": "Ccap",
+      "status": "PASS",
+      "history_selection": true,
+      "sampler_digests": true,
+      "finite_weights": true,
+      "saved_predictions": true,
+      "test_real_used": false
+    },
+    {
+      "variant": "CO",
+      "status": "PASS",
+      "history_selection": true,
+      "sampler_digests": true,
+      "finite_weights": true,
+      "saved_predictions": true,
+      "test_real_used": false
+    },
+    {
+      "variant": "CO9",
+      "status": "PASS",
+      "history_selection": true,
+      "sampler_digests": true,
+      "finite_weights": true,
+      "saved_predictions": true,
+      "test_real_used": false
+    },
+    {
+      "variant": "CV",
+      "status": "PASS",
+      "history_selection": true,
+      "sampler_digests": true,
+      "finite_weights": true,
+      "saved_predictions": true,
+      "test_real_used": false
+    },
+    {
+      "variant": "CR",
+      "status": "PASS",
+      "history_selection": true,
+      "sampler_digests": true,
+      "finite_weights": true,
+      "saved_predictions": true,
+      "test_real_used": false
+    },
+    {
+      "variant": "CN",
+      "status": "PASS",
+      "history_selection": true,
+      "sampler_digests": true,
+      "finite_weights": true,
+      "saved_predictions": true,
+      "test_real_used": false
+    },
+    {
+      "variant": "CON",
+      "status": "PASS",
+      "history_selection": true,
+      "sampler_digests": true,
+      "finite_weights": true,
+      "saved_predictions": true,
+      "test_real_used": false
+    }
+  ],
+  "input_identities": {
+    "D:\\UAV-Data\\causal_input_v1\\cache\\val.pt": "1cb842b81ef7c8c8f00708add6404b96191d50b97b83aa76f26e27aadedf411f",
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cache\\val.pt": "a3cbd729df572072e2906b0363f8a22eeb910202b34010e102bacfa092df63d9",
+    "D:\\UAV-Data\\causal_input_v1\\ledgers\\val_included_windows.csv": "8b966bc5bfe74a26bd7614ab44c2e8b581b5cc6f66d0f55ea6f545cb253c16d6",
+    "D:\\UAV-Data\\causal_input_v1\\norm_stats.json": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\M3_preflight_v1_20261103\\source_scaling_final\\normalization.json": "6fa38a116e3470b1e897147c3be031a9d7ed9c21475fca1e07790fd6d82a2616"
+  },
+  "run_configuration_csv": "run_configuration.csv",
+  "paired_changes_csv": "paired_changes_vs_C0.csv",
+  "archive_receipt": {
+    "archive_path": "/root/autodl-tmp/M3_fixed_anchor_v1_20261103/collection_v1/M3_results.tar.gz",
+    "sha256": "be57c9fa1de0e8d0f2d6aae445c054e1bde67e5322c2e1cc151dd9b8a53950d0",
+    "bytes": 12902709,
+    "members": 82
+  },
+  "test_or_real_used": false,
+  "weights_or_prediction_files_overwritten": false
+}

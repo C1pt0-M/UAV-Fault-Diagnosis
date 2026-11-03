@@ -1,0 +1,627 @@
+{
+  "protocol_name": "M3_preflight_v1",
+  "status": "FROZEN_TECHNICAL_PROTOCOL_PENDING_USER_RECALL_AND_EXECUTION_CLEARANCE",
+  "ready_for_formal_training": false,
+  "authorization": {
+    "formal_training_authorized": false,
+    "authorized_training_jobs": 0,
+    "server_connection_authorized_this_turn": false,
+    "basis": "User requested pretraining protocol review and freeze only; final recall tolerances reserved to user."
+  },
+  "input_identities": {
+    "docs/research/2026-11-03/13_feature_screening_analysis_v1.md": "95dab71009655b111d646f56d71238e5a6b276b796ed413b97fa6bcfee19520d",
+    "artifacts/13_feature_screening_v1_20261103/M3_controlled_design.json": "a8d7ca2b7038cc3c9a86f91c73eecda144f96547a58c223aa8fe924f82f38a0a",
+    "artifacts/13_feature_screening_v1_20261103/feature_screening_summary.json": "98af86ad79a413da699041d0152042f38ac671247dc296ebd8e5315d536e01dc",
+    "configs/experiments/causal_pure_mstca_m0_v1.json": "6ef47aead15fea51e4c7d4b53289383ecd038d67b82e3cae8c07ddcd8b450fe6",
+    "configs/experiments/causal_m1_continuous150_v1.json": "6f48ef8ad0f36d83fe2e69898efb66730f05a9434d44fdd5180120ef0c7a7fd6",
+    "artifacts/causal_m1_continuous_v1_20261102/replay_plan.json": "026bf88bd7c39d66cd3285ff27d01b130ca88faeec42bf6432de327912c695f4",
+    "artifacts/causal_m1_continuous_v1_20261102/pretraining_replay_basic.json": "c9c20f6ce0dbf7a20b7585335629c6694277708e90c13206376fee758eb6823e"
+  },
+  "code_identities": {
+    "scripts/research/train_causal_source_v1.py": "5ff7d43bcf1b0118154b32511c085839de300f25b7c267d5aafed9bf8f088e62",
+    "scripts/research/smoke_normal_source_sampling.py": "bca9d170fd967284d6ea914c4fb3ae459e9fc13aaf0005f06f2fe5307e54968c",
+    "scripts/research/train_source_normal_sampling.py": "ec26de4cda06ed3feb2360fc42a8469a2146950cdbd95201551fad20c4a5e4e2",
+    "scripts/research/run_normal_adaptation_v1.py": "932d6b57189c76c6bd3738bf19d65648d9809081794da3309dd1942bc48d29e4",
+    "scripts/research/run_normal_replay_v1.py": "86995e1f972f1cc418091ff4e0bcd4311fe4d79947ca946a4b8410cd2b98cafc",
+    "packages/uav_fault/uav_fault/models/cnn/lstm.py": "c01d5c1c37175f2bcbac2654d2bec43898d814073d465122afe515a825bcb369",
+    "packages/uav_fault/uav_fault/models/cnn/focal_loss.py": "8fb99a31dd838bafdbad20591313d7bef6766b5b6b64cc73cda8620ed0b3771a",
+    "packages/uav_fault/uav_fault/models/train_online_detector.py": "aa4d64f6c79a8b568e8a5f3f79953dd9572d9d074b7f7ee7d699d4894e5eddc3",
+    "packages/uav_fault/uav_fault/data/causal_cache.py": "c60774c78609381dac87ce264dc837fcc0ad414be767c0ad67ff19849c5e2a05",
+    "scripts/research/train_causal_mstca_m0.py": "5b14a00a0dc83e37d39d9c9524133fdd5cba53963f3dfbe77a48a79dae73c9cf",
+    "packages/uav_fault/uav_fault/model_contract.py": "8980d99a9a6a61876d71db8d2e2103b436f886dc8f8162d1bda85b96e58be017",
+    "packages/uav_fault/uav_fault/causal_input.py": "9c875d6aed2ac04b410afb564e3309b3be84f9578d354e3790fcf6c985320408",
+    "scripts/research/train_causal_m1_continuous.py": "9f45ce9a4aa80186bd5edc527f8f4b9eee051f80ca2c9e70aac9c55bdad58c58",
+    "packages/uav_fault/uav_fault/data/m1_continuous.py": "85930d14eca80108dc85d6571467d558a9b4379b4f443e5a4a188c5f8eab0c5c",
+    "packages/uav_fault/uav_fault/models/cnn/mstca_kinematic_m1.py": "7a34a8808ce8640583a241ccc6c8ddd2a420139406d594acda785f60f73f8feb",
+    "scripts/research/continuous_kinematic_residuals.py": "61afd23f90f64442df8ce0d38009f32451d7024538456835c5180d3c57fdba2a",
+    "scripts/data/build_m1_continuous_features.py": "1442f04f48d07875481a7c4be6cafa5704877011665d43255fc370ef3009d37d",
+    "scripts/data/finalize_m1_continuous_features.py": "8ebc097992d3239b9fa3f464a04cfa7cdc4e003907846df5d4f98c7e1b8bd604",
+    "scripts/data/explain_m1_invalid_positions.py": "4ae928db09acd5404f884cf6aee7bf5812e3c2aa2e315b8cba05be63ef074ee6",
+    "packages/uav_fault/uav_fault/data/m3_features.py": "95fa0d38c76cb2e67cca94c7519377b0abdda70bcc378ae67bfe2fa3b1dcdca7",
+    "packages/uav_fault/uav_fault/models/cnn/mstca_m3.py": "9804e1dcf731ba0d971a247386bef7b02b62235f38b4faf9f470031c9d0bbf2d",
+    "scripts/research/prepare_m3_normalization.py": "b8ace744d3fee2fdf135764f5564b66f2e86b2446feae0d85ba5274d89835097",
+    "scripts/research/check_m3_models.py": "a860592e5b631d91df5a93e4ee1cbe2b74b208818eb6ad7ec3a3369e4e2b0f3a",
+    "scripts/research/analyze_m3_recall_constraints.py": "d937dfcca187dcb25b9060330d83dd045a74b9c391f1e2bd39503ccd4ea4e0b8",
+    "scripts/research/analyze_13_feature_screening.py": "733b22e275c66fe2a836da95fcb9920349e087d4e2dbace16144009899120cd9",
+    "scripts/research/replay_m1_continuous.py": "1a49e5f57f3687d464f7f75823caafa587426500458e6187f274b98eba40fc6e",
+    "packages/uav_fault/uav_fault/online/detection_policy.py": "fe1a4afab0a57998d8e9222b9d60aaee10cbd94e1d829caa9ffd71af777fea44"
+  },
+  "data": {
+    "version": "rflymad_causal_publication_replay_v1",
+    "permitted_splits": [
+      "train",
+      "val"
+    ],
+    "base_channels": 26,
+    "window_frames": 150,
+    "grid_step_us": 20000,
+    "residual_horizon_us": 200000,
+    "candidate_order": [
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O6",
+      "O7",
+      "O8",
+      "O9",
+      "N1",
+      "N2",
+      "N3",
+      "N4"
+    ],
+    "population": "All8 use identical frozen joint150 N1..N4-eligible originalIDs, including C0/Ccap/CV/CO9. No variant-specific refill or widening.",
+    "source_split_identities": {
+      "train": {
+        "windows": 151833,
+        "original_ids_sha256": "ea4cdc2dd514d473aa33ec5420c5c139ffb57f8a8ad42ad2f40fd25ae547e29f",
+        "labels_sha256": "8794960f3e5533918ec65f5837f8c1f4d5c656c154a8d0dd4a0794eed1e736c9",
+        "residual_cache_sha256": "c26d89e37b654308e2e9633cf1afd8a04a57666e4a2a6deec78d3d8a5b874e19",
+        "base_cache_sha256": "d4c3c2c741c67d224547cf604087f45fa4ed371197129fd026ecf475d4de428d",
+        "base_compact_index_sha256": "d701ec077b2a8db256c18adfbc124e7da38d221fc579999358375d4dabb791c1",
+        "metadata_case_count": 2567,
+        "window_id_time_rows_sha256": "d6db1368c125aff1b277a62d7a2470694d724423b8645e4e3748f0285379079c"
+      },
+      "val": {
+        "windows": 32381,
+        "original_ids_sha256": "6d6b62b68d17a71367e87545910bee897cd29c5d853ca94dc9c660290d6b1524",
+        "labels_sha256": "20e7a2a5916ef6271b5c5349f61c075bec8f8c97e7fc98fc9d52d2b6b5f74b13",
+        "residual_cache_sha256": "a3cbd729df572072e2906b0363f8a22eeb910202b34010e102bacfa092df63d9",
+        "base_cache_sha256": "1cb842b81ef7c8c8f00708add6404b96191d50b97b83aa76f26e27aadedf411f",
+        "base_compact_index_sha256": "56a31b8a39578b3f79bf7ab5917f796dc05c0545d1b3beee89a88f882629c303",
+        "metadata_case_count": 551,
+        "window_id_time_rows_sha256": "d946d872b1662ea42fddf5a460ee099e2129320c8747f4532fb4fddc03fa835e"
+      }
+    },
+    "coverage": {
+      "train": {
+        "original_window_denominator": 168800,
+        "original_base_admitted": 162069,
+        "M1_common_eligible": 151833,
+        "newly_excluded": 10236,
+        "new_exclusion_fraction": 0.06315828443440756,
+        "reason_bit_combinations": {
+          "8": 10040,
+          "12": 47,
+          "4": 34,
+          "2": 95,
+          "10": 15,
+          "6": 3,
+          "14": 2
+        },
+        "by_label": [
+          {
+            "qualified_y": 0,
+            "original_admitted": 83051,
+            "M1_eligible": 74700,
+            "excluded": 8351
+          },
+          {
+            "qualified_y": 1,
+            "original_admitted": 79018,
+            "M1_eligible": 77133,
+            "excluded": 1885
+          }
+        ]
+      },
+      "val": {
+        "original_window_denominator": 35520,
+        "original_base_admitted": 34710,
+        "M1_common_eligible": 32381,
+        "newly_excluded": 2329,
+        "new_exclusion_fraction": 0.06709881878421205,
+        "reason_bit_combinations": {
+          "8": 2283,
+          "12": 10,
+          "4": 14,
+          "10": 4,
+          "2": 17,
+          "6": 1
+        },
+        "by_label": [
+          {
+            "qualified_y": 0,
+            "original_admitted": 17740,
+            "M1_eligible": 15883,
+            "excluded": 1857
+          },
+          {
+            "qualified_y": 1,
+            "original_admitted": 16970,
+            "M1_eligible": 16498,
+            "excluded": 472
+          }
+        ]
+      }
+    },
+    "unavailable_policy": "Reject entire full150 window before selector and BatchNorm; preserve missing-ID/reason ledgers. No zero/mean fill,140fallback or per-candidate coverage change. Newly invalid frozen admitted input stops execution.",
+    "old9_calculation": "Historical26-z function evaluated on demand per full window. O8 prepend is recomputed at each window start. Native continuous N histories never restart per window.",
+    "base_columns": [
+      "actuator_ctrl_1",
+      "actuator_ctrl_2",
+      "actuator_ctrl_3",
+      "actuator_ctrl_4",
+      "actuator_out_1",
+      "actuator_out_2",
+      "actuator_out_3",
+      "actuator_out_4",
+      "gyro_x",
+      "gyro_y",
+      "gyro_z",
+      "accel_x",
+      "accel_y",
+      "accel_z",
+      "baro_alt_relative",
+      "att_q_w",
+      "att_q_x",
+      "att_q_y",
+      "att_q_z",
+      "vel_x",
+      "vel_y",
+      "vel_z",
+      "mag_x",
+      "mag_y",
+      "mag_z",
+      "acc_norm"
+    ]
+  },
+  "normalization": {
+    "path": "artifacts/M3_preflight_v1_20261103/source_scaling_final/normalization.json",
+    "sha256": "6fa38a116e3470b1e897147c3be031a9d7ed9c21475fca1e07790fd6d82a2616",
+    "Base26": "Frozen source-Train norm_stats.json, SHA cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30; no refit",
+    "old9": "One new secondary affine z-score on74700 joint-valid all150-known-normal sourceTrain windows. Original formulas and O5 clamp retained. New M3 preprocessing, not historical M2.",
+    "new4": "Exact existing signed physical sourceTrain-normal74700-window mean/std, native200ms; independently verified, not replaced by float32 export recomputation.",
+    "fit_windows": 74700,
+    "fit_frame_contributions": 11205000,
+    "fit_cases": 2566,
+    "fit_original_ID_sha256": "ea4d939a1657f59cfb7d0f576680808656a1edf6b612a390b0651c71795014ae",
+    "finite_tail_policy": "No clipping/log/abs/sign flip or per-variant scale. Keep finite tails. Zero/nonfinite std blocks; no epsilon fallback.",
+    "Ccap": "Fixed normalized Base26 slices, no old9 secondary scaling",
+    "Val_Test_Real_used_to_fit": false
+  },
+  "models": {
+    "C0": "Actual original OnlineMSTCA(in_channels=26,hidden_size=64,num_layers=1,num_classes=2,dropout=.2)",
+    "adapter": "Conv1d13to16k3p1-ReLU-Conv1d16to16k3p1-ReLU-AdaptiveAvgPool1d1-Flatten-Linear16to128",
+    "fusion": "One128D addition to pooled original encoder output before original Dropout.2 and Linear128to2 head",
+    "backbone_parameters": 105938,
+    "adapter_parameters": 3600,
+    "auxiliary_total_parameters": 109538,
+    "Ccap_base_columns": [
+      "actuator_ctrl_1",
+      "actuator_ctrl_2",
+      "actuator_ctrl_3",
+      "actuator_ctrl_4",
+      "actuator_out_1",
+      "actuator_out_2",
+      "actuator_out_3",
+      "actuator_out_4",
+      "gyro_x",
+      "gyro_y",
+      "gyro_z",
+      "baro_alt_relative",
+      "acc_norm"
+    ],
+    "selector": "Fixed experimental13slot multiplier only after full13 validity; excluded valid features set to zero. Never missing-value filling.",
+    "nominal_parameters_do_not_prove_equal_effective_capacity": true,
+    "dense_conv_linear_MACs_C0": 6764928,
+    "dense_conv_linear_MACs_auxiliary": 6975776,
+    "MAC_limits": "Dense Conv/Linear MAC only; excludes BatchNorm/activation/pooling and feature calculations. No speed, VRAM or end-to-end guarantee."
+  },
+  "initialization": {
+    "source": {
+      "source_path_for_preparation": "artifacts/causal_source_longbudget_v1_20261101/results/runs/uniform_replacement/initial.pt",
+      "sha256": "b666b8a28129319f0b58e1c62ab7fa0e8698d61ec6aa32243824cda243f3e956",
+      "state_digest": "7772ccc1a20ce8b6d97c7ce83fc4927a8ff9a5dc7bef17038ca767806e561c55",
+      "m0_mapped_state_digest": "a68551099cba00575f1eec6edc31ccf47b39ca8e0fa204ae2fe065d3400be646",
+      "kind": "Archived random untrained initialization; not best.pt or trained model",
+      "mapping": "raw_encoder.* -> encoder.*; head.* -> head.*; no relation/gate/proj keys loaded",
+      "formal_fresh_seed_reproduction_required": true
+    },
+    "actual_mapped_untrained_file": "artifacts/causal_pure_mstca_m0_v1_20261101/results/runs/uniform_replacement/initial.pt",
+    "actual_mapped_untrained_file_sha256": "1dbec39e71d9a7a01e8e97b9222583f5a23d7e0cc39b105f08674c27f1b1f195",
+    "shared_state_digest": "a68551099cba00575f1eec6edc31ccf47b39ca8e0fa204ae2fe065d3400be646",
+    "common_state_tensors": 41,
+    "adapter_seed": 42,
+    "adapter_initial_state_digest_local": "1edd07581437d47f930040d325d6a22ee34a9a28b095d9c8c40703ca134cebe2",
+    "zero_final_projection_weight_and_bias": true,
+    "CPU_initial_eval_equal_all8": true,
+    "first_backward": "Encoder/head/final projection receive gradients; Conv gradients initially0 because final projection is0. Isolated nonzero-projection copy verifies input connectivity without optimizer steps.",
+    "formal_environment_seed_reproduction_status": "PENDING: local torch2.8.0+cpu/numpy2.5.1 differs from required formal2.5.1+cu124/2.1.3. Do not silently accept different tensors or update historical pins.",
+    "trained_checkpoint_used": false
+  },
+  "seed": 42,
+  "primary_arm": "balanced_source_normal",
+  "sampling": {
+    "helper": "Existing sampling_weights(labels,origins,balanced=True)",
+    "counts": {
+      "fault_endpoint": 77133,
+      "original_normal_case": 19630,
+      "normal_part_of_fault_case": 55070
+    },
+    "weights": "fault=1; original=74700/(2*19630); prefault=74700/(2*55070). No extra RflySim or class rebalance.",
+    "expected_probabilities": {
+      "fault_endpoint": 0.5080120922329139,
+      "original_normal_case": 0.24599395388354295,
+      "normal_part_of_fault_case": 0.24599395388354306
+    },
+    "draws_per_epoch": 151833,
+    "replacement": true,
+    "sampler_generator_seed": 53,
+    "loader_generator_seed": 143,
+    "model_global_rng_seed": 42,
+    "weights_sha256": "8d5cbef723c86e1d1b04c4283fc1abd2fb7e4ad0f58d7d976ee7bc513f8ebdcd",
+    "all8_identical_draw_order_required": true,
+    "epoch_original_ID_digests": "PASS for all8,100epochs in local CPU torch2.8.0; reproduce/recheck on formal torch2.5.1 before future jobs, compare same-arm IDs throughout.",
+    "Val": "Sequential all32381 same IDs, no replacement/reweight/subset",
+    "local_sampler_check_path": "artifacts/M3_preflight_v1_20261103/sampler_cpu_check.json",
+    "local_sampler_check_sha256": "a668a6ce7e9bb1f9d6893bcb174a74ea5da5c414a82424cab9662c0e1d8e1046"
+  },
+  "training": {
+    "hidden_size": 64,
+    "num_layers": 1,
+    "dropout": 0.2,
+    "max_epochs": 100,
+    "batch_size": 512,
+    "cpu_threads": 4,
+    "optimizer": "AdamW",
+    "lr": 0.0003,
+    "weight_decay": 0.0001,
+    "loss_gamma": 2.0,
+    "loss_alpha": null,
+    "gradient_clip": 1.0,
+    "augmentation": false,
+    "mixed_precision": false,
+    "warmup_epochs": 5,
+    "min_lr": 1e-06,
+    "schedule": "Existing get_warmup_cosine_lr zero-based epoch, fixed100 epoch horizon",
+    "initialization": "Same exact untrained seed42 mappedM0 encoder/head for all8; identical seed42 adapter, zero final projection. No trained checkpoint.",
+    "formal_device": "cuda:0 required, never silently fall back or allocate GPU",
+    "draws_per_epoch": 151833,
+    "num_workers": 0,
+    "steps_per_epoch": 297,
+    "last_batch_windows": 281,
+    "drop_last": false,
+    "max_steps_per_job": 29700
+  },
+  "loss": {
+    "name": "FocalLoss",
+    "gamma": 2.0,
+    "alpha": null,
+    "class_weights": [
+      1.0,
+      1.0
+    ],
+    "reason": "Sampler isolates normal-origin mass; no additional class-weight adjustment"
+  },
+  "formal_environment": {
+    "torch": "2.5.1+cu124",
+    "numpy": "2.1.3",
+    "torch_cuda": "12.4"
+  },
+  "reproducibility": {
+    "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+    "deterministic_algorithms": true,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "cudnn_allow_tf32": true,
+    "cuda_matmul_allow_tf32": false,
+    "numpy_seed": 42,
+    "torch_seed": 42,
+    "CUDA_seed_all": 42,
+    "model_builder_restores_caller_rng": true
+  },
+  "validation": {
+    "population": "All frozen full150-continuous eligible source val original IDs, no sampling/reweighting; original34710 denominator and exclusions reported",
+    "batch_size": 512,
+    "prediction_rule": "Historical argmax two logits; exact equality normal. Fixed0.5 only, no threshold scan.",
+    "checkpoint": "Strict maximum overall source val Macro-F1; earliest exact tie wins; save any strict improvement",
+    "early_stop": {
+      "min_epochs": 30,
+      "patience": 20,
+      "significant_delta": 0.002,
+      "rule": "Reuse selection_step separate significant_reference; strict improvements always checkpoint, patience counts only from min_epochs"
+    },
+    "stratified_reports": [
+      "confusion counts, Macro-F1, overall faultRecall/Precision/normalFPR/step-integralAP",
+      "Each six faultRecall with counts; SIL/HIL and each subtype by domain",
+      "allnormal, independentnormal and prefaultnormalFPR, per-case and paired-group distributions",
+      "six log-scenario normalFPR and physical observed-state-proxy normalFPR; distinguish meanings",
+      "independent normalhover first30 vs after30 crop seconds; fixed window_end_row rule",
+      "eligibility coverage by originalID, label, domain, subtype, case and scenario",
+      "newlymissed/recovered and corrected/newfalsealarm pairedIDs against bothC0/Ccap"
+    ],
+    "selection_not_from": [
+      "internal_test",
+      "Real",
+      "hover FPR",
+      "best seed"
+    ],
+    "interpretation": "Repeatedly exposed sourceVal, seed42 exploratory; not blind test or statistical noninferiority."
+  },
+  "recall_acceptance": {
+    "status": "PENDING_USER_DECISION_BLOCKS_LAUNCH",
+    "units": "absolute percentage points, never relative percent",
+    "reference": "Same-batch M3 C0 selected by strictVal Macro-F1 at fixed0.5 on identical originalIDs",
+    "overall_allowed_loss_pp": null,
+    "per_fault_allowed_loss_pp": {
+      "GPS": null,
+      "accelerometer": null,
+      "barometer": null,
+      "gyroscope": null,
+      "magnetometer": null,
+      "motor": null
+    },
+    "per_domain_gate_role": null,
+    "absolute_recall_floors": {
+      "overall": null,
+      "GPS": null,
+      "accelerometer": null,
+      "barometer": null,
+      "gyroscope": null,
+      "magnetometer": null,
+      "motor": null
+    },
+    "scope_rule": "All overall plus six-fault inequalities simultaneously; motor cannot compensate sensor loss",
+    "Ccap_comparison": "Report pairedCcap differences. Claim candidate-specific increment only if same declared recall constraints and FPR benefit hold against bothC0 andCcap.",
+    "selection_conflict": "Keep strictMacroF1 best. Recall failure means configuration fails. No substitute epoch, changed threshold, relaxed margin, extra seed or budget. Recall-constrained checkpoint selection requires a new protocol before new experiments.",
+    "recommendations_not_adopted": [
+      {
+        "id": "A_strict_preferred",
+        "overall_allowed_loss_pp": 0.0,
+        "per_fault_allowed_loss_pp": {
+          "GPS": 0.0,
+          "accelerometer": 0.0,
+          "barometer": 0.0,
+          "gyroscope": 0.0,
+          "magnetometer": 0.0,
+          "motor": 0.0
+        },
+        "claim": "point-estimate recall preserved; no statistical certification"
+      },
+      {
+        "id": "B_small_loss_exploration_only",
+        "overall_allowed_loss_pp": 0.25,
+        "per_fault_allowed_loss_pp": {
+          "GPS": 0.5,
+          "accelerometer": 0.5,
+          "barometer": 0.5,
+          "gyroscope": 0.5,
+          "magnetometer": 0.5,
+          "motor": 0.1
+        },
+        "claim": "explicit bounded tradeoff; cannot claim unchanged recall"
+      }
+    ]
+  },
+  "primary_configurations": [
+    {
+      "features": [],
+      "parameters": 105938,
+      "adapter_parameters": 0,
+      "effective_input_channels": 0,
+      "dense_conv_linear_MACs_single_window": 6764928,
+      "id": "C0",
+      "adapter": "none"
+    },
+    {
+      "features": [],
+      "parameters": 109538,
+      "adapter_parameters": 3600,
+      "effective_input_channels": 13,
+      "structurally_input_connected_adapter_parameters": 3600,
+      "dense_conv_linear_MACs_single_window": 6975776,
+      "id": "Ccap",
+      "adapter": "fixed13_Base26"
+    },
+    {
+      "features": [
+        "O1",
+        "O3",
+        "O6",
+        "O7",
+        "O8",
+        "O9"
+      ],
+      "parameters": 109538,
+      "adapter_parameters": 3600,
+      "effective_input_channels": 6,
+      "structurally_input_connected_adapter_parameters": 3264,
+      "dense_conv_linear_MACs_single_window": 6975776,
+      "id": "CO",
+      "adapter": "unified13slots"
+    },
+    {
+      "features": [
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9"
+      ],
+      "parameters": 109538,
+      "adapter_parameters": 3600,
+      "effective_input_channels": 9,
+      "structurally_input_connected_adapter_parameters": 3408,
+      "dense_conv_linear_MACs_single_window": 6975776,
+      "id": "CO9",
+      "adapter": "unified13slots"
+    },
+    {
+      "features": [
+        "N1"
+      ],
+      "parameters": 109538,
+      "adapter_parameters": 3600,
+      "effective_input_channels": 1,
+      "structurally_input_connected_adapter_parameters": 3024,
+      "dense_conv_linear_MACs_single_window": 6975776,
+      "id": "CV",
+      "adapter": "unified13slots"
+    },
+    {
+      "features": [
+        "N2",
+        "N3",
+        "N4"
+      ],
+      "parameters": 109538,
+      "adapter_parameters": 3600,
+      "effective_input_channels": 3,
+      "structurally_input_connected_adapter_parameters": 3120,
+      "dense_conv_linear_MACs_single_window": 6975776,
+      "id": "CR",
+      "adapter": "unified13slots"
+    },
+    {
+      "features": [
+        "N1",
+        "N2",
+        "N3",
+        "N4"
+      ],
+      "parameters": 109538,
+      "adapter_parameters": 3600,
+      "effective_input_channels": 4,
+      "structurally_input_connected_adapter_parameters": 3168,
+      "dense_conv_linear_MACs_single_window": 6975776,
+      "id": "CN",
+      "adapter": "unified13slots"
+    },
+    {
+      "features": [
+        "O1",
+        "O3",
+        "O6",
+        "O7",
+        "O8",
+        "O9",
+        "N1",
+        "N2",
+        "N3",
+        "N4"
+      ],
+      "parameters": 109538,
+      "adapter_parameters": 3600,
+      "effective_input_channels": 10,
+      "structurally_input_connected_adapter_parameters": 3456,
+      "dense_conv_linear_MACs_single_window": 6975776,
+      "id": "CON",
+      "adapter": "unified13slots"
+    }
+  ],
+  "job_budget": {
+    "proposed_primary_count": 8,
+    "proposed_primary_order": [
+      "C0",
+      "Ccap",
+      "CO",
+      "CO9",
+      "CV",
+      "CR",
+      "CN",
+      "CON"
+    ],
+    "authorized_now": 0,
+    "conditional_count_max_separate_authorization": 4,
+    "Uniform_confirmation_max_separate_authorization": 3,
+    "total_theoretical_limit_only": 15,
+    "no_auto_followups": true,
+    "conditional_choices": "Retain original design; exact feature/axis removals separately preregister before followups. No8192subsets or extra seeds/retries."
+  },
+  "evaluation": {
+    "classification_boundary": 0.5,
+    "prediction_rule": "Historical argmax two logits; exact equality normal. Fixed0.5 only, no threshold scan.",
+    "all_metrics_at_saved_strict_macroF1_best": true,
+    "required_window_metrics": [
+      "confusion counts, Macro-F1, overall faultRecall/Precision/normalFPR/step-integralAP",
+      "Each six faultRecall with counts; SIL/HIL and each subtype by domain",
+      "allnormal, independentnormal and prefaultnormalFPR, per-case and paired-group distributions",
+      "six log-scenario normalFPR and physical observed-state-proxy normalFPR; distinguish meanings",
+      "independent normalhover first30 vs after30 crop seconds; fixed window_end_row rule",
+      "eligibility coverage by originalID, label, domain, subtype, case and scenario",
+      "newlymissed/recovered and corrected/newfalsealarm pairedIDs against bothC0/Ccap"
+    ],
+    "AP_policy": "Full saved scores sorted for step-integralAP with ties grouped; no classifier threshold selection. Avoid all-positive subtype Precision/AP. Supplementary typePR uses type positives plus same normalpool with denominators disclosed.",
+    "normal_state_function": "Existing analyze_13_feature_screening.observed_motion on past150 physical vel/gyro with fixed thresholds. No labels/directory/crop-progress/future in state function. Only labels restrict normal evaluation; no state input added to model.",
+    "continuous_replay": {
+      "status": "PROTOCOL_FROZEN_M3_RUNNER_NOT_IMPLEMENTED_OR_RUN",
+      "plan_path": "artifacts/causal_m1_continuous_v1_20261102/replay_plan.json",
+      "plan_sha256": "026bf88bd7c39d66cd3285ff27d01b130ca88faeec42bf6432de327912c695f4",
+      "sourceVal_cases": 18,
+      "normal_cases": 6,
+      "fault_cases": 12,
+      "case_list_frozen_no_resampling": true,
+      "default_event_policy": {
+        "inference_every": 1,
+        "onset_th": 0.6,
+        "clear_th": 0.4,
+        "k_on": 3,
+        "k_off": 3,
+        "min_event_s": 0.5,
+        "merge_gap_s": 0.5
+      },
+      "event_policy_is_not_classifier_threshold_search": true,
+      "measure": [
+        "GTD andULog command references separately; neither physical damage truth",
+        "first available afterreference; first p>=.5 crossing; candidate/confirmation/final-emission times separately",
+        "cross-onset preexisting event, no crossing, no confirmation, no final notice, unavailable/censored as distinct outcomes",
+        "online versus gap/endflush counts, using actual emission/discovery time",
+        "normal false confirmations/finalevents, effective and full knownnormal exposure, no windowFPR-to-alert/h conversion",
+        "coldstart without unavailable prehistory versus ongoing actual history coverage",
+        "old9/scaler, Nstream andCPU/GPU costs separately; model median/P90/max,20ms queuebacklog/budgetmisses"
+      ],
+      "comparison_domains": [
+        "All8 identical all13 inference opportunities",
+        "C0/Ccap natural Base26 coverage separately named availability supplement; no mixed-denominator headline"
+      ]
+    },
+    "computation_limits": "Parameter/MAC counts verified. Formal speed/VRAM and physical flight end-to-end unmeasured. No invented timing acceptance limits."
+  },
+  "launch_blockers": [
+    "User overall/per-fault recall deltas, per-domain gate role and optional absolute floor decisions",
+    "User separate authorization for finite formal jobs and training-server access",
+    "Dedicated M3 trainer/replay/evaluator implementation plus CPU no-update integration and output hash/order checks",
+    "FullTrain/Val dataset interface and paired100epoch sampler-ID digest gates in future runner",
+    "Untrained anchor and identical13slot adapter reproduction in registered formal environment",
+    "M3 per-windowO8/nativeN stream, coldstart and invalidgap/flush integration acceptance; inheritedM1 pass is not M3 end-to-end pass"
+  ],
+  "this_turn_prohibited": [
+    "training/server/GPU",
+    "optimizer steps",
+    "finalTest/Real reads",
+    "historical model/data/label/norm/result mutation",
+    "threshold search or automatic recall decision",
+    "automatic publication of this new batch"
+  ],
+  "preflight_evidence": {
+    "source_scaling": "artifacts/M3_preflight_v1_20261103/source_scaling_final/data_preflight.json",
+    "model_structure_and_focal_gradients": "artifacts/M3_preflight_v1_20261103/model_checks_focal/model_preflight.json",
+    "recall_sensitivity": "artifacts/M3_preflight_v1_20261103/recall_context/recall_sensitivity.json",
+    "sampler_identity": "artifacts/M3_preflight_v1_20261103/sampler_cpu_check.json"
+  }
+}
