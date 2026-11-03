@@ -1,0 +1,137 @@
+{
+  "status": "CONFIRMED_EXACT_ADAPTER_INITIALIZATION_GATE_FAILURE",
+  "local_environment": {
+    "torch": "2.8.0+cpu",
+    "numpy": "2.5.1"
+  },
+  "remote_environment": {
+    "torch": "2.5.1+cu124",
+    "numpy": "2.1.3",
+    "torch_cuda": "12.4"
+  },
+  "local_adapter_digest": "1edd07581437d47f930040d325d6a22ee34a9a28b095d9c8c40703ca134cebe2",
+  "remote_adapter_digest": "5b3f69c1f04497b529e61f03ac670ae85bb5eab81dd98c9223cce8d650c6486b",
+  "tensors": [
+    {
+      "tensor": "0.weight",
+      "shape": [
+        16,
+        13,
+        3
+      ],
+      "coordinates": 624,
+      "different_coordinates": 312,
+      "max_abs_difference": 1.4901161193847656e-08,
+      "local_sha256": "1ab3d8269935a07994d881544262d867f2cb415e16da6f9041b7232cd2d6ba43",
+      "remote_sha256": "1ac9a251c6e4b83c314c107a33a305719de9d2529cbb0551a6f15b81a22bb8f0",
+      "example_max_difference": {
+        "index": [
+          0,
+          0,
+          0
+        ],
+        "local": 0.11565929651260376,
+        "remote": 0.11565931141376495
+      }
+    },
+    {
+      "tensor": "0.bias",
+      "shape": [
+        16
+      ],
+      "coordinates": 16,
+      "different_coordinates": 9,
+      "max_abs_difference": 1.4901161193847656e-08,
+      "local_sha256": "4bd9016b996088b667776f9f785bf97c48835b4b4d127416f9391e2400beb8fe",
+      "remote_sha256": "cdedb33c33ad2a064b663de243bbe0dbe8e5862af7346fd00037c392b79f6a23",
+      "example_max_difference": {
+        "index": [
+          8
+        ],
+        "local": 0.13692578673362732,
+        "remote": 0.13692577183246613
+      }
+    },
+    {
+      "tensor": "2.weight",
+      "shape": [
+        16,
+        16,
+        3
+      ],
+      "coordinates": 768,
+      "different_coordinates": 400,
+      "max_abs_difference": 1.4901161193847656e-08,
+      "local_sha256": "f7fa0cea1345ac7587d76813325664398cdb9e70833bbc4e41a3543f95404857",
+      "remote_sha256": "8d7374b460479ce507b49dd5679fa761935b555c5485d1748b6e092a3fad1c8e",
+      "example_max_difference": {
+        "index": [
+          0,
+          6,
+          1
+        ],
+        "local": 0.11307963728904724,
+        "remote": 0.11307965219020844
+      }
+    },
+    {
+      "tensor": "2.bias",
+      "shape": [
+        16
+      ],
+      "coordinates": 16,
+      "different_coordinates": 13,
+      "max_abs_difference": 7.450580596923828e-09,
+      "local_sha256": "a645a415a6cc92506a427388964a782f6cc7dd8f75792c8dbd18dfac45ae85bf",
+      "remote_sha256": "fa27905c2f54810a0d45d5220fdc899e5eba52edbe3d40afdb18756d2895b46c",
+      "example_max_difference": {
+        "index": [
+          0
+        ],
+        "local": 0.03829397261142731,
+        "remote": 0.03829396516084671
+      }
+    },
+    {
+      "tensor": "6.weight",
+      "shape": [
+        128,
+        16
+      ],
+      "coordinates": 2048,
+      "different_coordinates": 0,
+      "max_abs_difference": 0.0,
+      "local_sha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+      "remote_sha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+      "example_max_difference": {
+        "index": [
+          0,
+          0
+        ],
+        "local": 0.0,
+        "remote": 0.0
+      }
+    },
+    {
+      "tensor": "6.bias",
+      "shape": [
+        128
+      ],
+      "coordinates": 128,
+      "different_coordinates": 0,
+      "max_abs_difference": 0.0,
+      "local_sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560",
+      "remote_sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560",
+      "example_max_difference": {
+        "index": [
+          0
+        ],
+        "local": 0.0,
+        "remote": 0.0
+      }
+    }
+  ],
+  "zero_projection_preserves_initial_logits_but_does_not_restore_later_training_trajectory": true,
+  "formal_jobs_started": 0,
+  "no_automatic_anchor_replacement_or_tolerance_relaxation": true
+}

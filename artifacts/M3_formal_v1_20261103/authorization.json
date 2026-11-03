@@ -1,0 +1,41 @@
+{
+  "status": "AUTHORIZED_EIGHT_FORMAL_M3_JOBS_CONDITIONAL_ON_ALL_GATES",
+  "authorized_at": "2026-11-03T04:27:01.421642+00:00",
+  "parent_protocol": "configs/experiments/M3_preflight_v1.json",
+  "parent_protocol_sha256": "22963d3eb5028d6a7d7a5e779bdcb752cd1dff2ab6c4392b1ad8e22f50f7c0b5",
+  "formal_jobs": [
+    "C0",
+    "Ccap",
+    "CO",
+    "CO9",
+    "CV",
+    "CR",
+    "CN",
+    "CON"
+  ],
+  "arm": "balanced_source_normal",
+  "seed": 42,
+  "overall_recall_allowed_loss_pp": 0.0,
+  "per_fault_allowed_loss_pp": {
+    "GPS": 0.0,
+    "accelerometer": 0.0,
+    "barometer": 0.0,
+    "gyroscope": 0.0,
+    "magnetometer": 0.0,
+    "motor": 0.0
+  },
+  "per_domain_overall_hard_constraints": {
+    "SIL": 0.0,
+    "HIL": 0.0
+  },
+  "per_fault_by_domain_report_only": true,
+  "reference": "This batch C0 strict sourceVal MacroF1 best, fixed0.5",
+  "absolute_recall_floors_added": false,
+  "no_change_to_frozen_features_models_or_training": true,
+  "stop_on_any_gate_or_nonfinite_failure": true,
+  "extra_jobs_retries_or_followups_authorized": false,
+  "server": "autodl_UAV3",
+  "remote_root": "/root/autodl-tmp/M3_formal_v1_20261103",
+  "final_GitHub_publication_authorized": true,
+  "Test_Real_used": false
+}
