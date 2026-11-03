@@ -1,0 +1,682 @@
+[
+  {
+    "scope": "train_case_medians",
+    "method": "spearman",
+    "rows": 28,
+    "cases": 28,
+    "aggregation": "One median13-vector per case, same150 population; primary exploratory matrix",
+    "constant_features": []
+  },
+  {
+    "scope": "train_case_medians",
+    "method": "pearson",
+    "rows": 28,
+    "cases": 28,
+    "aggregation": "One median13-vector per case, same150 population; primary exploratory matrix",
+    "constant_features": []
+  },
+  {
+    "scope": "val_case_medians",
+    "method": "spearman",
+    "rows": 18,
+    "cases": 18,
+    "aggregation": "One median vector per exposed-Val case, descriptive confirmation",
+    "constant_features": []
+  },
+  {
+    "scope": "val_case_medians",
+    "method": "pearson",
+    "rows": 18,
+    "cases": 18,
+    "aggregation": "One median vector per exposed-Val case, descriptive confirmation",
+    "constant_features": []
+  },
+  {
+    "scope": "all_case_medians",
+    "method": "spearman",
+    "rows": 46,
+    "cases": 46,
+    "aggregation": "One median vector per case; mixes splits and classes, supplementary only",
+    "constant_features": []
+  },
+  {
+    "scope": "all_case_medians",
+    "method": "pearson",
+    "rows": 46,
+    "cases": 46,
+    "aggregation": "One median vector per case; mixes splits and classes, supplementary only",
+    "constant_features": []
+  },
+  {
+    "scope": "train_pair_group_medians",
+    "method": "spearman",
+    "rows": 14,
+    "cases": 14,
+    "aggregation": "Collapse SIL/HIL pair group before correlation; no independent-window confidence",
+    "constant_features": []
+  },
+  {
+    "scope": "train_pair_group_medians",
+    "method": "pearson",
+    "rows": 14,
+    "cases": 14,
+    "aggregation": "Collapse SIL/HIL pair group before correlation; no independent-window confidence",
+    "constant_features": []
+  },
+  {
+    "scope": "train_SIL_case_medians",
+    "method": "spearman",
+    "rows": 14,
+    "cases": 14,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "train_SIL_case_medians",
+    "method": "pearson",
+    "rows": 14,
+    "cases": 14,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "train_HIL_case_medians",
+    "method": "spearman",
+    "rows": 14,
+    "cases": 14,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "train_HIL_case_medians",
+    "method": "pearson",
+    "rows": 14,
+    "cases": 14,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "train_normal_case_medians",
+    "method": "spearman",
+    "rows": 16,
+    "cases": 16,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "train_normal_case_medians",
+    "method": "pearson",
+    "rows": 16,
+    "cases": 16,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "train_fault_case_medians",
+    "method": "spearman",
+    "rows": 12,
+    "cases": 12,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "train_fault_case_medians",
+    "method": "pearson",
+    "rows": 12,
+    "cases": 12,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "train_motor_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "train_motor_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "train_accelerometer_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "train_accelerometer_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "train_gyroscope_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "train_gyroscope_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "train_barometer_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "train_barometer_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "train_magnetometer_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": [
+      "O2"
+    ]
+  },
+  {
+    "scope": "train_magnetometer_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": [
+      "O2"
+    ]
+  },
+  {
+    "scope": "train_GPS_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": [
+      "O2"
+    ]
+  },
+  {
+    "scope": "train_GPS_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": [
+      "O2"
+    ]
+  },
+  {
+    "scope": "train_normal_climb_proxy",
+    "method": "spearman",
+    "rows": 16,
+    "cases": 16,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "train_normal_climb_proxy",
+    "method": "pearson",
+    "rows": 16,
+    "cases": 16,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "train_normal_descent_proxy",
+    "method": "spearman",
+    "rows": 0,
+    "cases": 0,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": [
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O6",
+      "O7",
+      "O8",
+      "O9",
+      "N1",
+      "N2",
+      "N3",
+      "N4"
+    ]
+  },
+  {
+    "scope": "train_normal_descent_proxy",
+    "method": "pearson",
+    "rows": 0,
+    "cases": 0,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": [
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O6",
+      "O7",
+      "O8",
+      "O9",
+      "N1",
+      "N2",
+      "N3",
+      "N4"
+    ]
+  },
+  {
+    "scope": "train_normal_low_motion_proxy",
+    "method": "spearman",
+    "rows": 15,
+    "cases": 15,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "train_normal_low_motion_proxy",
+    "method": "pearson",
+    "rows": 15,
+    "cases": 15,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "train_normal_maneuver_proxy",
+    "method": "spearman",
+    "rows": 7,
+    "cases": 7,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "train_normal_maneuver_proxy",
+    "method": "pearson",
+    "rows": 7,
+    "cases": 7,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "train_normal_translation_proxy",
+    "method": "spearman",
+    "rows": 11,
+    "cases": 11,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "train_normal_translation_proxy",
+    "method": "pearson",
+    "rows": 11,
+    "cases": 11,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "train_normal_other_motion",
+    "method": "spearman",
+    "rows": 15,
+    "cases": 15,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "train_normal_other_motion",
+    "method": "pearson",
+    "rows": 15,
+    "cases": 15,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "val_SIL_case_medians",
+    "method": "spearman",
+    "rows": 9,
+    "cases": 9,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "val_SIL_case_medians",
+    "method": "pearson",
+    "rows": 9,
+    "cases": 9,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "val_HIL_case_medians",
+    "method": "spearman",
+    "rows": 9,
+    "cases": 9,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "val_HIL_case_medians",
+    "method": "pearson",
+    "rows": 9,
+    "cases": 9,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "val_normal_case_medians",
+    "method": "spearman",
+    "rows": 6,
+    "cases": 6,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "val_normal_case_medians",
+    "method": "pearson",
+    "rows": 6,
+    "cases": 6,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "val_fault_case_medians",
+    "method": "spearman",
+    "rows": 12,
+    "cases": 12,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "val_fault_case_medians",
+    "method": "pearson",
+    "rows": 12,
+    "cases": 12,
+    "aggregation": "One median vector per case",
+    "constant_features": []
+  },
+  {
+    "scope": "val_motor_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "val_motor_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "val_accelerometer_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": [
+      "O2"
+    ]
+  },
+  {
+    "scope": "val_accelerometer_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": [
+      "O2"
+    ]
+  },
+  {
+    "scope": "val_gyroscope_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "val_gyroscope_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "val_barometer_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": [
+      "O2"
+    ]
+  },
+  {
+    "scope": "val_barometer_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": [
+      "O2"
+    ]
+  },
+  {
+    "scope": "val_magnetometer_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "val_magnetometer_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": []
+  },
+  {
+    "scope": "val_GPS_active_case_medians",
+    "method": "spearman",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": [
+      "O2"
+    ]
+  },
+  {
+    "scope": "val_GPS_active_case_medians",
+    "method": "pearson",
+    "rows": 2,
+    "cases": 2,
+    "aggregation": "Only2 SIL/HIL cases: correlation intentionally undefined with min_periods4",
+    "constant_features": [
+      "O2"
+    ]
+  },
+  {
+    "scope": "val_normal_climb_proxy",
+    "method": "spearman",
+    "rows": 6,
+    "cases": 6,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "val_normal_climb_proxy",
+    "method": "pearson",
+    "rows": 6,
+    "cases": 6,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "val_normal_descent_proxy",
+    "method": "spearman",
+    "rows": 0,
+    "cases": 0,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": [
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O6",
+      "O7",
+      "O8",
+      "O9",
+      "N1",
+      "N2",
+      "N3",
+      "N4"
+    ]
+  },
+  {
+    "scope": "val_normal_descent_proxy",
+    "method": "pearson",
+    "rows": 0,
+    "cases": 0,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": [
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O6",
+      "O7",
+      "O8",
+      "O9",
+      "N1",
+      "N2",
+      "N3",
+      "N4"
+    ]
+  },
+  {
+    "scope": "val_normal_low_motion_proxy",
+    "method": "spearman",
+    "rows": 6,
+    "cases": 6,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "val_normal_low_motion_proxy",
+    "method": "pearson",
+    "rows": 6,
+    "cases": 6,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "val_normal_maneuver_proxy",
+    "method": "spearman",
+    "rows": 6,
+    "cases": 6,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "val_normal_maneuver_proxy",
+    "method": "pearson",
+    "rows": 6,
+    "cases": 6,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "val_normal_translation_proxy",
+    "method": "spearman",
+    "rows": 0,
+    "cases": 0,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": [
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O6",
+      "O7",
+      "O8",
+      "O9",
+      "N1",
+      "N2",
+      "N3",
+      "N4"
+    ]
+  },
+  {
+    "scope": "val_normal_translation_proxy",
+    "method": "pearson",
+    "rows": 0,
+    "cases": 0,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": [
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O6",
+      "O7",
+      "O8",
+      "O9",
+      "N1",
+      "N2",
+      "N3",
+      "N4"
+    ]
+  },
+  {
+    "scope": "val_normal_other_motion",
+    "method": "spearman",
+    "rows": 5,
+    "cases": 5,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  },
+  {
+    "scope": "val_normal_other_motion",
+    "method": "pearson",
+    "rows": 5,
+    "cases": 5,
+    "aggregation": "One case-state median; signal proxy not online truth",
+    "constant_features": []
+  }
+]

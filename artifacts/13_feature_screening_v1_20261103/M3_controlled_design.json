@@ -1,0 +1,153 @@
+{
+  "status": "DESIGN_ONLY_NOT_AUTHORIZED_FOR_EXECUTION",
+  "proposed_primary_arm": "balanced_source_normal",
+  "seed": 42,
+  "primary_configurations": [
+    {
+      "id": "C0",
+      "features": [],
+      "adapter": "none"
+    },
+    {
+      "id": "Ccap",
+      "features": [],
+      "adapter": "fixed13_base_channels_equal3600params"
+    },
+    {
+      "id": "CO",
+      "features": [
+        "O1",
+        "O3",
+        "O6",
+        "O7",
+        "O8",
+        "O9"
+      ],
+      "adapter": "unified13slots"
+    },
+    {
+      "id": "CO9",
+      "features": [
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9"
+      ],
+      "adapter": "unified13slots"
+    },
+    {
+      "id": "CV",
+      "features": [
+        "N1"
+      ],
+      "adapter": "unified13slots"
+    },
+    {
+      "id": "CR",
+      "features": [
+        "N2",
+        "N3",
+        "N4"
+      ],
+      "adapter": "unified13slots"
+    },
+    {
+      "id": "CN",
+      "features": [
+        "N1",
+        "N2",
+        "N3",
+        "N4"
+      ],
+      "adapter": "unified13slots"
+    },
+    {
+      "id": "CON",
+      "features": [
+        "O1",
+        "O3",
+        "O6",
+        "O7",
+        "O8",
+        "O9",
+        "N1",
+        "N2",
+        "N3",
+        "N4"
+      ],
+      "adapter": "unified13slots"
+    }
+  ],
+  "primary_training_count": 8,
+  "conditional_training_count_max": 4,
+  "Uniform_confirmation_max": 3,
+  "total_theoretical_limit_with_separate_authorization": 15,
+  "data_proposal": {
+    "train_windows": 151833,
+    "Val_windows": 32381,
+    "window_frames": 150,
+    "population": "exact same frozen joint N1..N4 continuous full150 original IDs for every comparator; disclose full-original denominator/exclusions"
+  },
+  "backbone": "unchanged OnlineMSTCA26,105938parameters",
+  "common_initialization": "Prefer verified untrained pure26 seed42 shared state for all new comparators; not mixed historical trained best. Not implemented.",
+  "adapter": {
+    "input_slots": 13,
+    "temporal": "Conv13to16k3-ReLU-Conv16to16k3-ReLU-pool-Linear16to128",
+    "extra_parameters_proposed": 3600,
+    "total_parameters_proposed": 109538,
+    "fusion": "single additive pooled feature fusion before same linear head",
+    "mask": "Experimental feature selector only on fully valid data, never missing data fill",
+    "capacity_caution": "Nominal architecture equal; effective input gradient degrees differ. Ccap is same-size base-channel representation control, not perfect removal of induction bias."
+  },
+  "Ccap_base_columns": [
+    "actuator_ctrl_1",
+    "actuator_ctrl_2",
+    "actuator_ctrl_3",
+    "actuator_ctrl_4",
+    "actuator_out_1",
+    "actuator_out_2",
+    "actuator_out_3",
+    "actuator_out_4",
+    "gyro_x",
+    "gyro_y",
+    "gyro_z",
+    "baro_alt_relative",
+    "acc_norm"
+  ],
+  "O1_O2_if_old_core_works": [
+    [
+      "O2",
+      "O3",
+      "O6",
+      "O7",
+      "O8",
+      "O9"
+    ],
+    [
+      "O1",
+      "O2",
+      "O3",
+      "O6",
+      "O7",
+      "O8",
+      "O9"
+    ]
+  ],
+  "remaining2_conditional_choices": "At most2 preregistered single-dimension removals in successful group, or2 designated attitude-axis removals; not both. Exact choices require new pre-registration after block results. O3/O4 alternative triplet outside this budget.",
+  "normalization": "Base26 unchanged; native N stats frozen. If needed new old9 scaler fit only full eligible sourceTrain known-normal data, independent version, no changes to historicalM2 or use of diagnostic923IQR.",
+  "evaluation": "Fixed0.5, all overall/six-directory recall, FPR by source/domain/observed-state/hover late, precision/AP, coverage and streaming event timing. No threshold sweep in this task.",
+  "formal_launch_blockers": [
+    "User authorization for actual jobs",
+    "Predeclared allowable overall and per-fault recall loss delta or recall target; currently null",
+    "Full source-only feature data/interface and exactly shared parameter mapping checks",
+    "Fair old9 scaling policy and independent dataset hashes",
+    "Pretraining CPU/stream gates and actual parameter counts"
+  ],
+  "recall_delta": null,
+  "trained_or_GPU_resources_used": false
+}

@@ -1,0 +1,50 @@
+{
+  "status": "COMPLETE_SAVED_EVIDENCE_ONLY13_CANDIDATE_REVIEW",
+  "candidate_count": 13,
+  "normal_summary_rows": 26,
+  "fault_summary_rows": 156,
+  "input_sha256": {
+    "artifacts/kinematic_residual_discrimination_v1_20261101/results/summary.json": "9acdc7b41785c8b88fe9fc10ccdac31b899ea613a2dfbca4cb2b221ebd9ae563",
+    "artifacts/kinematic_residual_discrimination_v1_20261101/results/normal_case_stage_stability.json": "9f322d43db3acc1a050a08f200d7dd108d18f255e909331ede986a4975455d98",
+    "artifacts/kinematic_residual_discrimination_v1_20261101/results/matched_fault_responses.json": "2097009455a1026d237a99c14a928d3450f509eddd47b237095fd60155a5988a",
+    "artifacts/kinematic_residual_discrimination_v1_20261101/results/diagnostic_reference_train_normal.json": "b17aed43eb08d24a73ff4c4fe64f0f07c29712395861ca83359c892569ace47c",
+    "artifacts/kinematic_residual_discrimination_v1_20261101/independent_verification.json": "8d51074b8d7c23a4a066c561506c92350fb7abcb85d2469a89ff563641f3033a",
+    "artifacts/kinematic_residual_validation_v1_20261101/completion.json": "f8a802021719b1db69539f1b3e2d59e251c5678c8eb988ee1d8a2be9ae444d2a",
+    "packages/uav_fault/uav_fault/models/cnn/lstm.py": "c01d5c1c37175f2bcbac2654d2bec43898d814073d465122afe515a825bcb369",
+    "scripts/research/check_kinematic_feature_response.py": "2e351354ff9efd58016fdfa0605401f0b96027bb4c19e3778b6ff9baa5aa7ece",
+    "scripts/research/validate_kinematic_residuals.py": "78e44f3cfeb6ddbc29755af07d2e5c74891fa6e98cf165658364dcddc8758b7f",
+    "artifacts/candidate_feature_evidence_v1_20261101/build_evidence.py": "dcebd062b924b94baa032b056fb9639100f21570d183c4c41206725fc593ee59"
+  },
+  "output_identities": {
+    "feature_cards.json": {
+      "bytes": 104567,
+      "sha256": "0b2a32bbae5e6b9d33ee009eb0e62b1524d5bab011c09590a26254284b71bbf0"
+    },
+    "matched_fault_auc.csv": {
+      "bytes": 26306,
+      "sha256": "7224837437a2854ff5290e8a6be4d444c8bde15b6efa98008a1ab76582266f58"
+    },
+    "normal_stage_shifts.csv": {
+      "bytes": 4431,
+      "sha256": "b566dceb0c9ba8476b512b66e4dec81d4393d5794f7c2121b83b126c8858df5f"
+    },
+    "numeric_appendix.md": {
+      "bytes": 4469,
+      "sha256": "f38a416bf99f3e22aa068186d1647908829459aaa72dd53cfc6623aa44d2e33d"
+    }
+  },
+  "aggregation_verified_against_existing_summaries": true,
+  "minimal_checks_passed": true,
+  "training_model_inference_or_GPU": false,
+  "raw_logs_or_data_cache_read": false,
+  "final_test_or_Real_read": false,
+  "new_normalization_fitted": false,
+  "incremental_M0_value_unknown_for_all13": true,
+  "coverage": {
+    "original_cap64": 2304,
+    "original_admitted": 2258,
+    "common": 2072,
+    "new_residual_unavailable_among_admitted": 186
+  },
+  "prior_feasibility_status": "COMPLETE_CPU_SYNTHETIC_AND12_SOURCE_NORMAL_KINEMATIC_RESIDUAL_FEASIBILITY_WITH_INDEPENDENT_CHECK"
+}

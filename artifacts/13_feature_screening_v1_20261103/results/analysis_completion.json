@@ -1,0 +1,877 @@
+{
+  "status": "COMPLETE_BOUNDED46_CASE13_FEATURE_CPU_ANALYSIS",
+  "completed_at": "2026-11-02T19:18:41.854926+00:00",
+  "plan_sha256": "9bd0f22e8d0b42db565f9a4c98fb1fe3b891673fbe07cba04fcc59ba57223bfb",
+  "inputs": {
+    "D:\\UAV-Data\\causal_input_v1\\norm_stats.json": {
+      "sha256": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+      "bytes": 2702
+    },
+    "D:\\UAV-Data\\causal_input_v1\\input_contract.json": {
+      "sha256": "3ed8b8cd4008384109629dc4c8308839620e170286345e752b227495f4597945",
+      "bytes": 1025
+    },
+    "D:\\UAV-Data\\causal_input_v1\\ledgers\\train_included_windows.csv": {
+      "sha256": "0c491c2ede34534eaba020ae5a9d09257fedb692519863f325c6b0dfeb4afecb",
+      "bytes": 29013941
+    },
+    "D:\\UAV-Data\\causal_input_v1\\ledgers\\val_included_windows.csv": {
+      "sha256": "8b966bc5bfe74a26bd7614ab44c2e8b581b5cc6f66d0f55ea6f545cb253c16d6",
+      "bytes": 5824131
+    },
+    "artifacts\\13_feature_screening_v1_20261103\\plan.json": {
+      "sha256": "9bd0f22e8d0b42db565f9a4c98fb1fe3b891673fbe07cba04fcc59ba57223bfb",
+      "bytes": 11377
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\build_manifest.json": {
+      "sha256": "bda2169adaf48946e46596900a683388597079ee13e599b876d0f0fcde6f204e",
+      "bytes": 1751582
+    },
+    "D:\\UAV-Fault-Diagnosis\\scripts\\research\\analyze_13_feature_screening.py": {
+      "sha256": "733b22e275c66fe2a836da95fcb9920349e087d4e2dbace16144009899120cd9",
+      "bytes": 24602
+    },
+    "D:\\UAV-Fault-Diagnosis\\scripts\\research\\check_kinematic_feature_response.py": {
+      "sha256": "2e351354ff9efd58016fdfa0605401f0b96027bb4c19e3778b6ff9baa5aa7ece",
+      "bytes": 22257
+    },
+    "D:\\UAV-Fault-Diagnosis\\packages\\uav_fault\\uav_fault\\models\\cnn\\lstm.py": {
+      "sha256": "c01d5c1c37175f2bcbac2654d2bec43898d814073d465122afe515a825bcb369",
+      "bytes": 15987
+    },
+    "artifacts\\candidate_feature_evidence_v1_20261101\\results\\feature_cards.json": {
+      "sha256": "0b2a32bbae5e6b9d33ee009eb0e62b1524d5bab011c09590a26254284b71bbf0",
+      "bytes": 104567
+    },
+    "artifacts\\candidate_feature_evidence_v1_20261101\\results\\matched_fault_auc.csv": {
+      "sha256": "7224837437a2854ff5290e8a6be4d444c8bde15b6efa98008a1ab76582266f58",
+      "bytes": 26306
+    },
+    "artifacts\\candidate_feature_evidence_v1_20261101\\results\\normal_stage_shifts.csv": {
+      "sha256": "b566dceb0c9ba8476b512b66e4dec81d4393d5794f7c2121b83b126c8858df5f",
+      "bytes": 4431
+    },
+    "artifacts\\candidate_feature_evidence_v1_20261101\\results\\numeric_appendix.md": {
+      "sha256": "f38a416bf99f3e22aa068186d1647908829459aaa72dd53cfc6623aa44d2e33d",
+      "bytes": 4469
+    },
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\kinematic_residual_discrimination_v1_20261101\\results\\summary.json": {
+      "sha256": "9acdc7b41785c8b88fe9fc10ccdac31b899ea613a2dfbca4cb2b221ebd9ae563",
+      "bytes": 235099
+    },
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\kinematic_residual_discrimination_v1_20261101\\results\\normal_case_stage_stability.json": {
+      "sha256": "9f322d43db3acc1a050a08f200d7dd108d18f255e909331ede986a4975455d98",
+      "bytes": 95062
+    },
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\kinematic_residual_discrimination_v1_20261101\\results\\matched_fault_responses.json": {
+      "sha256": "2097009455a1026d237a99c14a928d3450f509eddd47b237095fd60155a5988a",
+      "bytes": 889666
+    },
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\kinematic_residual_discrimination_v1_20261101\\results\\diagnostic_reference_train_normal.json": {
+      "sha256": "b17aed43eb08d24a73ff4c4fe64f0f07c29712395861ca83359c892569ace47c",
+      "bytes": 3165
+    },
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\kinematic_residual_discrimination_v1_20261101\\independent_verification.json": {
+      "sha256": "8d51074b8d7c23a4a066c561506c92350fb7abcb85d2469a89ff563641f3033a",
+      "bytes": 715
+    },
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\kinematic_residual_validation_v1_20261101\\completion.json": {
+      "sha256": "f8a802021719b1db69539f1b3e2d59e251c5678c8eb988ee1d8a2be9ae444d2a",
+      "bytes": 1989
+    },
+    "D:\\UAV-Fault-Diagnosis\\scripts\\research\\validate_kinematic_residuals.py": {
+      "sha256": "78e44f3cfeb6ddbc29755af07d2e5c74891fa6e98cf165658364dcddc8758b7f",
+      "bytes": 21738
+    },
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\candidate_feature_evidence_v1_20261101\\build_evidence.py": {
+      "sha256": "dcebd062b924b94baa032b056fb9639100f21570d183c4c41206725fc593ee59",
+      "bytes": 14064
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__acce__no_fault__TestCase_161_2419000160.json": {
+      "sha256": "62f92dfd1f4d6e0426c43af8a5d905e2d684795189237199a1f29852f7b08319",
+      "bytes": 2407
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__acce__no_fault__TestCase_161_2419000160.npz": {
+      "sha256": "c034da1e8827eac579a5a2b2ad686be80f0c0e1f829e57ad1bb860d5ac3be3cc",
+      "bytes": 303681
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__acce__no_fault__TestCase_161_2419000160.npz": {
+      "sha256": "3376a32fc4af557a1a000f5e6c7a3750a0d83ac4595bd81a53c1df4c81502d83",
+      "bytes": 430012
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__circling__no_fault__TestCase_101_2319000100.json": {
+      "sha256": "49b3723e745e167142fc133fe98e06ff66c65a4c48e59c2ca9ce8c46556abd66",
+      "bytes": 2868
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__circling__no_fault__TestCase_101_2319000100.npz": {
+      "sha256": "f7e05b68722388e0a6bc502c8122f182c105f260c21427178fe507b909466c19",
+      "bytes": 564220
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__circling__no_fault__TestCase_101_2319000100.npz": {
+      "sha256": "03f786bb94d3e24cd47f78c98d5486312bb190e410eb21177d8d7679f1c80407",
+      "bytes": 808218
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__dece__no_fault__TestCase_202_2519000201.json": {
+      "sha256": "39a3df92aefed5dfebd0dc494b15839d1aed46cbd136000edfc8a0e7a80f4aab",
+      "bytes": 2406
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__dece__no_fault__TestCase_202_2519000201.npz": {
+      "sha256": "77b826a783d90b5c27d7edd28815161be673eab94d04ebdd14b01a66784237d9",
+      "bytes": 347550
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__dece__no_fault__TestCase_202_2519000201.npz": {
+      "sha256": "6d6ee8e90ac633648b13bfb65de8a37cfc1bb00c7b21f625ffa629e46c0d47c4",
+      "bytes": 480493
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__GPS__TestCase_10_2006000009.json": {
+      "sha256": "3202ab135e0851b075dc36d3881f696d871169658b39a0990c3eab761df1e0b8",
+      "bytes": 3229
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__GPS__TestCase_10_2006000009.npz": {
+      "sha256": "1b072b082c50b8d697bf1739cc9099a9fc35ee9c2a13d9d4b99648ec6b160504",
+      "bytes": 415144
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__GPS__TestCase_10_2006000009.npz": {
+      "sha256": "8b5a33baa3ea249f387712495f6a63b7411007e3f0b63e62efe1394e6ded6755",
+      "bytes": 561409
+    },
+    "D:\\RflyMAD\\HIL\\hover\\GPS\\TestCase_10_2006000009\\TestInfo.csv": {
+      "sha256": "bf6fe74968f74fec0b64a1ae1fc8db21b32217989edc497c38773dd286a0c3fa",
+      "bytes": 236
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__GPS__TestCase_11_2006000010.json": {
+      "sha256": "f189377b2dc90fdf60a8b36490443f89748678895300b4f57079622d79704b53",
+      "bytes": 2370
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__GPS__TestCase_11_2006000010.npz": {
+      "sha256": "54647597b48e83b20b12a599d450e6db33c15ad4914a781c67c7cefb17783631",
+      "bytes": 423261
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__GPS__TestCase_11_2006000010.npz": {
+      "sha256": "ce4c5009dd35536b7cf6c37afa3dc65881eec8bd77a9be710beff37850ce949b",
+      "bytes": 585597
+    },
+    "D:\\RflyMAD\\HIL\\hover\\GPS\\TestCase_11_2006000010\\TestInfo.csv": {
+      "sha256": "6451b6717de88bafe094968349931dfcab7e5e8723235aeaf0b01ef7fd20afa1",
+      "bytes": 236
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__accelerometer__TestCase_10_2002000009.json": {
+      "sha256": "3c3b42a7895a08d4aacb83779c4871b13b58ce827ed2811a569d665f1ab7b0b9",
+      "bytes": 2439
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__accelerometer__TestCase_10_2002000009.npz": {
+      "sha256": "ed22e03546709bf7a6514ff24e67fbe88898ec7670cc8839ae699ca9ab72f123",
+      "bytes": 366545
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__accelerometer__TestCase_10_2002000009.npz": {
+      "sha256": "52babe363c0debd450b5b1a90a783ad5e56275466ca91642a58cdf460a1737cf",
+      "bytes": 503310
+    },
+    "D:\\RflyMAD\\HIL\\hover\\accelerometer\\TestCase_10_2002000009\\TestInfo.csv": {
+      "sha256": "cab821a06f8391f01da126789cb992cb67f95f03ccdf5fe5103c55c720cde92b",
+      "bytes": 236
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__accelerometer__TestCase_14_2002000013.json": {
+      "sha256": "64a36acc433935e595833ef8cae973680c586a08588887d21e78b817a269fbf7",
+      "bytes": 2434
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__accelerometer__TestCase_14_2002000013.npz": {
+      "sha256": "a71e5e9e2797c48ca50024afd25345f57f0f6bc7869796b90a299bf827fd1adb",
+      "bytes": 419529
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__accelerometer__TestCase_14_2002000013.npz": {
+      "sha256": "fc3283f757f244f08458ee9ac4f1f59a03ff0269f976c55de30149d2e4a14b41",
+      "bytes": 581867
+    },
+    "D:\\RflyMAD\\HIL\\hover\\accelerometer\\TestCase_14_2002000013\\TestInfo.csv": {
+      "sha256": "e9c448228b6ccb56c96aa8e028345957cdb6438e9d1ab4fb4c159f39f29313ee",
+      "bytes": 232
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__barometer__TestCase_10_2004000009.json": {
+      "sha256": "ff7ba29346e9fe0cd0ac6a893d9b5eee2ce24261ea2afa276d2cbc4de4af9a28",
+      "bytes": 2474
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__barometer__TestCase_10_2004000009.npz": {
+      "sha256": "d9e8bfa7c62a83ede08091e6b1defbb3d9d4da6f32fcf737de73f9733f00dba2",
+      "bytes": 361006
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__barometer__TestCase_10_2004000009.npz": {
+      "sha256": "0d93e3c2ff9e441813cf8684a1308e06b7693cee2e207b6cfbf0a28ace4f1467",
+      "bytes": 481926
+    },
+    "D:\\RflyMAD\\HIL\\hover\\barometer\\TestCase_10_2004000009\\TestInfo.csv": {
+      "sha256": "6de1f7863f53cd2b60b1a0f3569d87939ae94aea4429a6d3738fd9ae56b66f7b",
+      "bytes": 229
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__barometer__TestCase_12_2004000011.json": {
+      "sha256": "d8582128ff80dda3d3794fe6517aef8867047df28c2b908ad2eeb11560371962",
+      "bytes": 3579
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__barometer__TestCase_12_2004000011.npz": {
+      "sha256": "f4241ee9408833024c66ce68caba8adabd77faaaa8664c55a20ba9f17866c330",
+      "bytes": 411593
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__barometer__TestCase_12_2004000011.npz": {
+      "sha256": "ac8ec5e1c4f75832cbb8a7897ba4ed855c87a209846b368f4294f1cbae4419f9",
+      "bytes": 556499
+    },
+    "D:\\RflyMAD\\HIL\\hover\\barometer\\TestCase_12_2004000011\\TestInfo.csv": {
+      "sha256": "849aca52dd8c4ea51d23932e06ab0ceeaeb4e4d746cdba45a39bc5cf21322470",
+      "bytes": 229
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__gyroscope__TestCase_11_2003000010.json": {
+      "sha256": "c87fb590533bd628141b9b45e82001cb2043c2dcbc2d885bfe6a0bfe6527bcbc",
+      "bytes": 2469
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__gyroscope__TestCase_11_2003000010.npz": {
+      "sha256": "0cfe3602e3b96963be23107a05775efb64d034aef18df5ad9d3817c4c61bda92",
+      "bytes": 423584
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__gyroscope__TestCase_11_2003000010.npz": {
+      "sha256": "01e15e8730495c85616ab6bbafe33fa1e6cc203e8c0ea7752dae3e8cf2ac540d",
+      "bytes": 578937
+    },
+    "D:\\RflyMAD\\HIL\\hover\\gyroscope\\TestCase_11_2003000010\\TestInfo.csv": {
+      "sha256": "8a04c172371fb4fb23db23e1d745f514fe5637b1a3ac8ac03f4b0c31e456b46d",
+      "bytes": 236
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__gyroscope__TestCase_127_2003000126.json": {
+      "sha256": "13af551b4fc0fbcdcdcf2eff1d4fb79d01963728eececd1e763da2912da3e620",
+      "bytes": 2421
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__gyroscope__TestCase_127_2003000126.npz": {
+      "sha256": "3eb4bd271746b6845ddb7414a89d10c20868f452f0031f2550e5a75ee4de6bfc",
+      "bytes": 565154
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__gyroscope__TestCase_127_2003000126.npz": {
+      "sha256": "7027c7ba8ad3eef2ea7a8920a671d84668ee12dc2b2ea478bc891daadeced83d",
+      "bytes": 809210
+    },
+    "D:\\RflyMAD\\HIL\\hover\\gyroscope\\TestCase_127_2003000126\\TestInfo.csv": {
+      "sha256": "03b53d0b2b5327b232987458a9c9deeaaa044a747c85ad67f9b75c955897e7fc",
+      "bytes": 254
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__magnetometer__TestCase_127_2005000126.json": {
+      "sha256": "5fad984d3d75ad242167d391c235213494c6639887c0896e19c6191ea1ec2339",
+      "bytes": 2942
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__magnetometer__TestCase_127_2005000126.npz": {
+      "sha256": "6fd721c7ecd8f8fb27552056225efde0934f0b8f5e0569acea91ed21235f370b",
+      "bytes": 560897
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__magnetometer__TestCase_127_2005000126.npz": {
+      "sha256": "673b5b7884ed8bba1fb8886cfc41a91d05280dc8d1bc6c863a32bae75a14fdad",
+      "bytes": 798861
+    },
+    "D:\\RflyMAD\\HIL\\hover\\magnetometer\\TestCase_127_2005000126\\TestInfo.csv": {
+      "sha256": "b623b496645debeba1044267bfb3c145fd2ac4d2bfca3d014bde0d5b29446544",
+      "bytes": 254
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__magnetometer__TestCase_3_2005000002.json": {
+      "sha256": "b7a839006892aa92dbda571fd484058209f2047aecfaea9b4e84993f5c61473d",
+      "bytes": 2483
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__magnetometer__TestCase_3_2005000002.npz": {
+      "sha256": "ef70afaa526d2f8534a33ace4f80ab23d35fe85fb07a4d19d04989063d4dffce",
+      "bytes": 425236
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__magnetometer__TestCase_3_2005000002.npz": {
+      "sha256": "811a708915fbf8caf7a761712e57ddea66b74cbfd5e39e2bad1acb59df4c3816",
+      "bytes": 575039
+    },
+    "D:\\RflyMAD\\HIL\\hover\\magnetometer\\TestCase_3_2005000002\\TestInfo.csv": {
+      "sha256": "02441bcac85876ce67266390a2422a2fcf26cc2dcd58b29a7467c9eea13fb7eb",
+      "bytes": 235
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__motor__TestCase_100_2000000099.json": {
+      "sha256": "fccd222a1b8245b8c30eb53369f09c3a598413534b8e3b7cebd8dafd747854ec",
+      "bytes": 3299
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__motor__TestCase_100_2000000099.npz": {
+      "sha256": "1613dc28bda5e9a306b8da050f6e3d9a93348ac2f3c025e733b07775fc0eb42a",
+      "bytes": 672141
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__motor__TestCase_100_2000000099.npz": {
+      "sha256": "07bb19d7f9a659e034b58a1f8fed2f994030ad81bcecadafe65e2da5310bdb07",
+      "bytes": 985019
+    },
+    "D:\\RflyMAD\\HIL\\hover\\motor\\TestCase_100_2000000099\\TestInfo.csv": {
+      "sha256": "5dc171ff5164a2213473d5b636d43f9ae3d43b8f44cd0a519d46dfcb952115fc",
+      "bytes": 332
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__motor__TestCase_114_2000000113.json": {
+      "sha256": "d1b09210586a0ba0de39b94e2ff9f5a1c4403aab61ee4cc3ae6b0157db163246",
+      "bytes": 2385
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__motor__TestCase_114_2000000113.npz": {
+      "sha256": "51d517d8175b3a526bcd6e46e249ee999c55f0459a928c2d2715a5778758427f",
+      "bytes": 684566
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__motor__TestCase_114_2000000113.npz": {
+      "sha256": "25717839cbc8bd051c92a94d50d61470c65f31de55e8820abb03b9fefb36dc5c",
+      "bytes": 1005720
+    },
+    "D:\\RflyMAD\\HIL\\hover\\motor\\TestCase_114_2000000113\\TestInfo.csv": {
+      "sha256": "dfc8d7b20b03520010ae31cb281665e33bc05919304ab1fb3658ac51e5d46b3c",
+      "bytes": 330
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__no_fault__TestCase_10_2019000009.json": {
+      "sha256": "4302956717aa65cb3da7bc99519ef2f2410f584304a8af2fa592edb4559ef3ba",
+      "bytes": 2405
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__no_fault__TestCase_10_2019000009.npz": {
+      "sha256": "83e656ede7180926b3494f9effb22236392b9c4955a49c8c5338b854503eb176",
+      "bytes": 453375
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__no_fault__TestCase_10_2019000009.npz": {
+      "sha256": "0682f6fa1d28256b5260c6263b20c1adfc571b2caf61420b6742aa00952a7a4a",
+      "bytes": 629744
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__no_fault__TestCase_11_2019000010.json": {
+      "sha256": "6b17dd499b2cc3a866e9acf69183c0746a3d7aa6fe127b21c05dad78823d7d05",
+      "bytes": 2406
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__no_fault__TestCase_11_2019000010.npz": {
+      "sha256": "7942216292a4708cba08e0f3a486367aae4eec358e7202b23ccf03ea6e54da76",
+      "bytes": 461629
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__no_fault__TestCase_11_2019000010.npz": {
+      "sha256": "7684f5665b52a6f2406ea64a13c61f1637bb6f679904c9e28b84704f63b4496e",
+      "bytes": 638028
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__no_fault__TestCase_12_2019000011.json": {
+      "sha256": "513aed891efca37794b195591e2abbb8db1e02d3569782f1f0f39d170635a706",
+      "bytes": 2405
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__no_fault__TestCase_12_2019000011.npz": {
+      "sha256": "dc70edbe6ca3ff944f7153452af966f1fbb37595436b4355af32370bf700002b",
+      "bytes": 141311
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__no_fault__TestCase_12_2019000011.npz": {
+      "sha256": "c616bafc6c1228ee9c40169f5df64335602709daabc4f1f8878f61c154b368cc",
+      "bytes": 185719
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__no_fault__TestCase_21_2019000020.json": {
+      "sha256": "980387d3fc383f0a188c3dca098099fdbb162fbe223160472e218d52a5a3fc39",
+      "bytes": 3410
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__no_fault__TestCase_21_2019000020.npz": {
+      "sha256": "8fc226182f87e1dd40b516916a633b2ff3af6bdb037cbf911ec8ac50426a8547",
+      "bytes": 395880
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__no_fault__TestCase_21_2019000020.npz": {
+      "sha256": "07e190d17614feb1ae66c00ab710b2835d856cea9bec4f99806e422b4cd80b4e",
+      "bytes": 541173
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__no_fault__TestCase_27_2019000026.json": {
+      "sha256": "a3e150ba711d90f663902b0759f72bbb6dbc0cb8f08b0eae3f824dec6188fe4b",
+      "bytes": 3206
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__no_fault__TestCase_27_2019000026.npz": {
+      "sha256": "59ad74978abf94fe47404503ca737ea39eb5c99a4ac7e8bf4be02aac2320fd52",
+      "bytes": 436729
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__no_fault__TestCase_27_2019000026.npz": {
+      "sha256": "1ef25d41ae78ae1e9eebf9b3d8272f3539ffe1c6b336d30e5da42c4396ce9840",
+      "bytes": 605529
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__hover__no_fault__TestCase_29_2019000028.json": {
+      "sha256": "8f937035443c9d156be736464e83e6a0d4ff814a1c2c475d6e6cb52489bd98ef",
+      "bytes": 2400
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__hover__no_fault__TestCase_29_2019000028.npz": {
+      "sha256": "78857c944403abaa5cad1819f7013730af68d5a01c7839ab65619df71b9eb249",
+      "bytes": 460201
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__hover__no_fault__TestCase_29_2019000028.npz": {
+      "sha256": "62490588574a614b27c2e61a161f4ed4302bf9edae3aae39e366d74f8878ffb1",
+      "bytes": 648101
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__velocity__no_fault__TestCase_121_2219000120.json": {
+      "sha256": "250b377302a3d1c02445e20fdd9fd915f5b0afc5f0d65af313b6e7d3ea15b8b5",
+      "bytes": 2435
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__velocity__no_fault__TestCase_121_2219000120.npz": {
+      "sha256": "572254b2de3fd0e775618062013c6b845dcc0b06fbbc6b12a2ffe889c930363f",
+      "bytes": 388399
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__velocity__no_fault__TestCase_121_2219000120.npz": {
+      "sha256": "99fba518a41ceb8c11a9d72cc35826ffdad1430f6ee03c58b365a145021463da",
+      "bytes": 550923
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\HIL__waypoint__no_fault__TestCase_41_2119000040.json": {
+      "sha256": "9f5452caffcb39b98e7bbbeb70a07b6499c0633ecbce7d54be71ce6a66260488",
+      "bytes": 3131
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\HIL__waypoint__no_fault__TestCase_41_2119000040.npz": {
+      "sha256": "dfe2c9a17cfed2d08a607a8c7f97eb93cbbba9acb1a0e58eda83c355709337bd",
+      "bytes": 605397
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\HIL__waypoint__no_fault__TestCase_41_2119000040.npz": {
+      "sha256": "a25d44cd220b0a87ddb597317228ca678e3ccdc185c278164d9134bf9913c077",
+      "bytes": 864797
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__acce__no_fault__TestCase_161_1419000160.json": {
+      "sha256": "a8ca6c54076a690ec41c1799a986dd903fa0e453b0ec3b1b97985483eb688a33",
+      "bytes": 2388
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__acce__no_fault__TestCase_161_1419000160.npz": {
+      "sha256": "168f6fcf000173a62be16b61d2facc31158b658000dd97ae1b0842516632c256",
+      "bytes": 213474
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__acce__no_fault__TestCase_161_1419000160.npz": {
+      "sha256": "f307041091f30cfdea8d7b142620687faed8dabc3f636707bc0d1d42cb2aaaa9",
+      "bytes": 210434
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__circling__no_fault__TestCase_101_1319000100.json": {
+      "sha256": "3888a5a7dbe78a8731c248fd0704d257b4c73c71b13e7095e3dda94ed80c2c93",
+      "bytes": 2416
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__circling__no_fault__TestCase_101_1319000100.npz": {
+      "sha256": "7d99d2c6e9136b83a6fc8e686b5cfde6e008f197c999da862f1ca23e84a0ebea",
+      "bytes": 388793
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__circling__no_fault__TestCase_101_1319000100.npz": {
+      "sha256": "59ab59edbd7a7dbbb844309ea2d7e7651ba3762d797d1297e9a3433ba88a8dac",
+      "bytes": 391547
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__dece__no_fault__TestCase_202_1519000201.json": {
+      "sha256": "76cb35f2fd87230818673b1a2001a4b2c91e429cc6d7df151f8133aa9a086851",
+      "bytes": 2388
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__dece__no_fault__TestCase_202_1519000201.npz": {
+      "sha256": "113fbc85849a9b749319cda403317d9247eb313c91e50f68cc1209cd864b7bf3",
+      "bytes": 242092
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__dece__no_fault__TestCase_202_1519000201.npz": {
+      "sha256": "020587f677991c5ffe7f708d763b64f8040a7868011adf574c91df9cabab8f1f",
+      "bytes": 239910
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__GPS__TestCase_10_1006000009.json": {
+      "sha256": "c3310dca4ce19a2eea8aa55bd5dad632a781115ddf6d1aca97be9f6488cba74b",
+      "bytes": 2411
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__GPS__TestCase_10_1006000009.npz": {
+      "sha256": "45e9f87c0859c2679c5d73044ddf040c22d9dedb5f6fe4b3fb06ed0f27f7dd53",
+      "bytes": 269927
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__GPS__TestCase_10_1006000009.npz": {
+      "sha256": "fe151c3e333d54a7a138d79d33012fc336139f695e64ffe7fe6b60420a5796a6",
+      "bytes": 263737
+    },
+    "D:\\RflyMAD\\SIL\\hover\\GPS\\TestCase_10_1006000009\\TestInfo.csv": {
+      "sha256": "ae0b06fef85d96cb77df1787f960ecd5d5ea35fe281d99fd22f42efc40d8e359",
+      "bytes": 236
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__GPS__TestCase_11_1006000010.json": {
+      "sha256": "e80060cece7067231bc912cad5faac8ac1c4cb6f40df69f7cef70590c64bcf0a",
+      "bytes": 2354
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__GPS__TestCase_11_1006000010.npz": {
+      "sha256": "f70d95e6ba1e988bafa8e59c77aa495a732f8fa1cfe97e21c1ab3d88bb5fcdf2",
+      "bytes": 269892
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__GPS__TestCase_11_1006000010.npz": {
+      "sha256": "73bff185078b75a165a1f02d35c03da77c675819d5ed42e4d07e72da3914d794",
+      "bytes": 264653
+    },
+    "D:\\RflyMAD\\SIL\\hover\\GPS\\TestCase_11_1006000010\\TestInfo.csv": {
+      "sha256": "400f80afeb5ad5c7dc6c9c801a29c7681fc343cc2a48c4e3f467a8fae903fb17",
+      "bytes": 236
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__accelerometer__TestCase_10_1002000009.json": {
+      "sha256": "c8f819cfec5f19452b639eb486ba59ef2731be0ce5a1e1d4b79f688d961c2ecb",
+      "bytes": 2424
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__accelerometer__TestCase_10_1002000009.npz": {
+      "sha256": "6fdca35292695a847fc9c136f773fc17be24437fa47219b5b3b59ca58762f331",
+      "bytes": 272243
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__accelerometer__TestCase_10_1002000009.npz": {
+      "sha256": "154e20270ea2b14e195a11661e22a64316a777a770e6c38e0fd65b5dc563be0b",
+      "bytes": 265491
+    },
+    "D:\\RflyMAD\\SIL\\hover\\accelerometer\\TestCase_10_1002000009\\TestInfo.csv": {
+      "sha256": "a161a83392e3c34c033d832d23b4a91f1ebe76205e816d4f420ee1040e92dbb3",
+      "bytes": 236
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__accelerometer__TestCase_14_1002000013.json": {
+      "sha256": "7bf119b33693901ce0e919ce6cd39b4de7ef026b4815792f402fe245dd296a53",
+      "bytes": 2418
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__accelerometer__TestCase_14_1002000013.npz": {
+      "sha256": "6c92cdd5cd6f61241883d83838d4d93c9a44976f615bdfa3030bbdb42dae1f39",
+      "bytes": 269839
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__accelerometer__TestCase_14_1002000013.npz": {
+      "sha256": "4c93296ac734c2113ef70dbae2e2ea46075f096855ee34e1b7eb9013249fb21c",
+      "bytes": 262624
+    },
+    "D:\\RflyMAD\\SIL\\hover\\accelerometer\\TestCase_14_1002000013\\TestInfo.csv": {
+      "sha256": "a58ad496c49e05add99536ac3b69f3fea90e40760da3d380c681dad067342348",
+      "bytes": 232
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__barometer__TestCase_10_1004000009.json": {
+      "sha256": "7f7eba4c293e5e5ed4a70f10a94725d774217192d8d57c87141d3d75c973a9d3",
+      "bytes": 2396
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__barometer__TestCase_10_1004000009.npz": {
+      "sha256": "7cb5da92b84422b31cf2887524b21fe66e3c65081026fec5d2167572b9fa4ddf",
+      "bytes": 255519
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__barometer__TestCase_10_1004000009.npz": {
+      "sha256": "7c2df7b32a19d32ed8ecb89c9a074866a620ac22b24623a80bafa234dda54753",
+      "bytes": 252055
+    },
+    "D:\\RflyMAD\\SIL\\hover\\barometer\\TestCase_10_1004000009\\TestInfo.csv": {
+      "sha256": "3513ed2e8f96f6bf38203055ad50e2359e924ccd60c132db45d679e5476b8011",
+      "bytes": 229
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__barometer__TestCase_12_1004000011.json": {
+      "sha256": "f384cf9ece0970557a9770c5ddb2f141ff3d8d6fb3dd978e366625b8168e7832",
+      "bytes": 2390
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__barometer__TestCase_12_1004000011.npz": {
+      "sha256": "182dfcd05f64bed1e1b0f0be728cf0b9fa56ba1a4dd9a6c01233b04ab0a769f2",
+      "bytes": 271926
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__barometer__TestCase_12_1004000011.npz": {
+      "sha256": "08a96c4068d3b1cb25f7f57404893afe33ec6c55ef2f3e85203a9c6cb381711d",
+      "bytes": 263568
+    },
+    "D:\\RflyMAD\\SIL\\hover\\barometer\\TestCase_12_1004000011\\TestInfo.csv": {
+      "sha256": "194487515aae91fe34bac83dcd01e99b22c1f04bc15acbd8c9e7a5ac70b8a6ba",
+      "bytes": 229
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__gyroscope__TestCase_11_1003000010.json": {
+      "sha256": "b61a0a428ede591bb247c0021dd93a623da40a460bba52784345ba5c890581b9",
+      "bytes": 2453
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__gyroscope__TestCase_11_1003000010.npz": {
+      "sha256": "0d6717c1ef9b1e323f4edd85329f462b4b6badb7b14fc2e1e79d2f11356a9c09",
+      "bytes": 270984
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__gyroscope__TestCase_11_1003000010.npz": {
+      "sha256": "aaa135157a44f6b7dd87fd2b8aaa162dd1f50f879c47d5201874201de4074aee",
+      "bytes": 264779
+    },
+    "D:\\RflyMAD\\SIL\\hover\\gyroscope\\TestCase_11_1003000010\\TestInfo.csv": {
+      "sha256": "5cd6ef27200c74f5fa667879308c2006b4102ecce94e66b92b1ace2073f5c187",
+      "bytes": 236
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__gyroscope__TestCase_127_1003000126.json": {
+      "sha256": "afbbebb91cb5c2a99f467105418a30e2f2f68385fa727b069df44b85a5f16d58",
+      "bytes": 2403
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__gyroscope__TestCase_127_1003000126.npz": {
+      "sha256": "a9a57935504eab8e59bbf8009c6e52d6ff0e68b71dc6be7883885d3611b4af67",
+      "bytes": 388723
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__gyroscope__TestCase_127_1003000126.npz": {
+      "sha256": "499b09fbf872622548fbf493694404a989365714041df0117152ea3dcabd27ad",
+      "bytes": 391517
+    },
+    "D:\\RflyMAD\\SIL\\hover\\gyroscope\\TestCase_127_1003000126\\TestInfo.csv": {
+      "sha256": "e103ee5cd07e629b1f8a68f544486e2bc2304643eee24759b4beb66727df8c14",
+      "bytes": 255
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__magnetometer__TestCase_11_1005000010.json": {
+      "sha256": "32c7fa42085284dd0e3fa9538267c42efeb4b16485497ac5aaeefb9008ce170d",
+      "bytes": 2411
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__magnetometer__TestCase_11_1005000010.npz": {
+      "sha256": "52eb2319b4d7317cfd6bd2a9bb92c5b5a3f5c1d22ff1aedc09b46f4a5cd26429",
+      "bytes": 270668
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__magnetometer__TestCase_11_1005000010.npz": {
+      "sha256": "fe681d2f361b665217db7da5a4f930fe7e62a75283c47209398f4a5b2584dff9",
+      "bytes": 262770
+    },
+    "D:\\RflyMAD\\SIL\\hover\\magnetometer\\TestCase_11_1005000010\\TestInfo.csv": {
+      "sha256": "c5b54f54d7814e854b50ba906ce38bdf0150e888f4644dee6a89eedb09ffa5a8",
+      "bytes": 236
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__magnetometer__TestCase_127_1005000126.json": {
+      "sha256": "50953a365a0317d137820f60fe1279753b6edb9fe8475b6c2cb69b81c538b593",
+      "bytes": 2424
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__magnetometer__TestCase_127_1005000126.npz": {
+      "sha256": "9743df9e9a9ab142fcd9bb4cb8a86996de636c430132ddf6f38e7168b6a14a54",
+      "bytes": 382036
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__magnetometer__TestCase_127_1005000126.npz": {
+      "sha256": "7f1a9b68a3b8696a1a0298e005900a66c76588b94de79bf835a75854f35a35b1",
+      "bytes": 373529
+    },
+    "D:\\RflyMAD\\SIL\\hover\\magnetometer\\TestCase_127_1005000126\\TestInfo.csv": {
+      "sha256": "73bfdcf4d9921bbb58ed065ac646d8ab8afd8a68092d2dd6a10f6e398eed7682",
+      "bytes": 255
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__motor__TestCase_100_1000000099.json": {
+      "sha256": "a5eae4d433a21c8e8cff3edb8c27e77c3abf5c5c651778bfa910b01f6c446c36",
+      "bytes": 2374
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__motor__TestCase_100_1000000099.npz": {
+      "sha256": "1b340a40618c0123e0fec5bcfeb1f557b64d7234b6f7c8d0111931f29a60f06a",
+      "bytes": 465442
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__motor__TestCase_100_1000000099.npz": {
+      "sha256": "a4ef4d95529cdc573bf83c427aa90f6a2e8cf3f3cb139035f8d0260079d63290",
+      "bytes": 464942
+    },
+    "D:\\RflyMAD\\SIL\\hover\\motor\\TestCase_100_1000000099\\TestInfo.csv": {
+      "sha256": "329f91811724625b7ff3706e42ca1e93ee094db734b38314d9dbaab1863304bb",
+      "bytes": 332
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__motor__TestCase_114_1000000113.json": {
+      "sha256": "010cd0606cb26254d16dfe4b7091ff62371558f4ff3e4ecdfb12cca431b4fd15",
+      "bytes": 2368
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__motor__TestCase_114_1000000113.npz": {
+      "sha256": "215d40d7ada8f7b7c2baf9a22110f6a909c36b868fc286b7ec6bbc7a17f71c28",
+      "bytes": 471171
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__motor__TestCase_114_1000000113.npz": {
+      "sha256": "63eaadfdbc09e7a611ffeb55e0732d332a163131b5c96edf1b03dbcaf833252e",
+      "bytes": 467730
+    },
+    "D:\\RflyMAD\\SIL\\hover\\motor\\TestCase_114_1000000113\\TestInfo.csv": {
+      "sha256": "97589b66140de9950f67fdc0ea49273e645107656737cadd7313026a5f5a334e",
+      "bytes": 330
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__no_fault__TestCase_10_1019000009.json": {
+      "sha256": "b96f974ca5d9a421d496c7b51127e3afe1e54d693e3aed38451a64ef85bac498",
+      "bytes": 2388
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__no_fault__TestCase_10_1019000009.npz": {
+      "sha256": "63e5cab45297edb888e4163103aa7a8dc7b3380767ce0aeffe464e5561cc509f",
+      "bytes": 292746
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__no_fault__TestCase_10_1019000009.npz": {
+      "sha256": "3911edaee438e90803378ecf6120c96280236da51bacefa73c6b4f8d16fcc5ce",
+      "bytes": 279438
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__no_fault__TestCase_11_1019000010.json": {
+      "sha256": "cbcfd0fe3359470aec14181b37a43aee76f48b64cea8f2b7f926bad13aa2aedb",
+      "bytes": 2388
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__no_fault__TestCase_11_1019000010.npz": {
+      "sha256": "013d842777be209f0fab0fc9bccad92c725729cb848e8fa0cb9e9e851a9b0f99",
+      "bytes": 300223
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__no_fault__TestCase_11_1019000010.npz": {
+      "sha256": "dfdb2e2a59edd238e60dada08c8ae9dd0cc6f5be1295e8bbc8e81679a645b90e",
+      "bytes": 288512
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__no_fault__TestCase_12_1019000011.json": {
+      "sha256": "5df2cebb4c0ba8c4f1348c656425207522638e6c7de35d9665da00626f79e57c",
+      "bytes": 2388
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__no_fault__TestCase_12_1019000011.npz": {
+      "sha256": "34752f5b55b21d8307c41b5f90b67f36075fd1c5641f95302e31e17277775236",
+      "bytes": 230142
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__no_fault__TestCase_12_1019000011.npz": {
+      "sha256": "51d42c2d26bb885d2dacf22f9d7a2885d1a48815aab51eb090a7daa8356bd6f9",
+      "bytes": 226424
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__no_fault__TestCase_21_1019000020.json": {
+      "sha256": "d8cf5d6b4b822fcb0b64f836dc168d99336ad32ffacee2a56eeb6aec74fdbd57",
+      "bytes": 2382
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__no_fault__TestCase_21_1019000020.npz": {
+      "sha256": "fffc1fbd4fb0af570afe7aec1987768a4e973f14a7b829097624c6b71e2c6f02",
+      "bytes": 268841
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__no_fault__TestCase_21_1019000020.npz": {
+      "sha256": "94a886c59d48f8fb9a76c78bf07ff8c1dc4515456e4b71881d362b372998e3b4",
+      "bytes": 262773
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__no_fault__TestCase_27_1019000026.json": {
+      "sha256": "925053e8ce4f7654a13ae377c8d7a10c7c2df5455e24bf8675d116f4f2adc7f3",
+      "bytes": 2382
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__no_fault__TestCase_27_1019000026.npz": {
+      "sha256": "b930a35252c65ad284e43563448c2ea2d51dd00e263050fe567003fcb03f7a0d",
+      "bytes": 299875
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__no_fault__TestCase_27_1019000026.npz": {
+      "sha256": "c280a0a2395d63c9cd3496f800c98733dc488199cd7a28ad0675acf78999c66c",
+      "bytes": 292926
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__hover__no_fault__TestCase_29_1019000028.json": {
+      "sha256": "70250f899101e5b2bbc011d152e0a13565ac8297ade0346783c8f1495f8c9460",
+      "bytes": 2382
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__hover__no_fault__TestCase_29_1019000028.npz": {
+      "sha256": "026e4eabdf99ddbbe21299c5e6d691dd82c2ffd9b997baccd27ed0ebdc98f128",
+      "bytes": 311215
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__hover__no_fault__TestCase_29_1019000028.npz": {
+      "sha256": "33fe3d8b6931f2db0a5952f01de1cc857251fde8b20a9ceb2cb2aac854be9a2f",
+      "bytes": 306341
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__velocity__no_fault__TestCase_121_1219000120.json": {
+      "sha256": "c20a2bbd8ba381961c8fcf7ab2f8f670235fa2a93a1cef02f49fa0747f5a857e",
+      "bytes": 2416
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__velocity__no_fault__TestCase_121_1219000120.npz": {
+      "sha256": "92bcd23caaa72e94df3f15552204586b53b7b8d67041a13ac441161e16fc6fb5",
+      "bytes": 274192
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__velocity__no_fault__TestCase_121_1219000120.npz": {
+      "sha256": "5b3c9196f4663ba0feb46d8aca45d38ba84801e62b0cfdb9b31f258b4903ada8",
+      "bytes": 270025
+    },
+    "D:\\UAV-Data\\causal_input_v1\\case_records\\SIL__waypoint__no_fault__TestCase_41_1119000040.json": {
+      "sha256": "ba786b7ddc3517b50a620701d93ca2da08cae43544b9bfc91707ae8b43ee50b5",
+      "bytes": 2409
+    },
+    "D:\\UAV-Data\\causal_input_v1\\cases\\SIL__waypoint__no_fault__TestCase_41_1119000040.npz": {
+      "sha256": "21480f49ab6b7098925dc95796fc715fa07943e1151135519fa231ce97a5bf34",
+      "bytes": 421396
+    },
+    "D:\\UAV-Data\\causal_m1_continuous_v1\\cases\\SIL__waypoint__no_fault__TestCase_41_1119000040.npz": {
+      "sha256": "567cfc9244acc8a9a207504f058987c4b39e9c27e36001d6f82b53c813cbd4ee",
+      "bytes": 424064
+    }
+  },
+  "features": {
+    "O1": "old_output_std",
+    "O2": "old_output_range",
+    "O3": "old_ctrl_output_gap_mean",
+    "O4": "old_ctrl_output_gap_std",
+    "O5": "old_effort",
+    "O6": "old_acc_deviation",
+    "O7": "old_gyro_norm",
+    "O8": "old_vertical_consistency",
+    "O9": "old_attitude_energy",
+    "N1": "rh_signed_m",
+    "N2": "rR_x_rad",
+    "N3": "rR_y_rad",
+    "N4": "rR_z_rad"
+  },
+  "cases": 46,
+  "train_cases": 28,
+  "windows": 2644,
+  "qualification_windows": 2944,
+  "base_admitted_windows": 2890,
+  "own_N1_windows": 2829,
+  "own_attitude_windows": 2664,
+  "normal_windows": 1273,
+  "train_reference_windows": 923,
+  "train_reference_cases": 16,
+  "window_labels": [
+    {
+      "split": "train",
+      "kind": "fault",
+      "label_group": "active",
+      "windows": 434
+    },
+    {
+      "split": "train",
+      "kind": "fault",
+      "label_group": "mixed_or_unknown",
+      "windows": 44
+    },
+    {
+      "split": "train",
+      "kind": "fault",
+      "label_group": "normal",
+      "windows": 205
+    },
+    {
+      "split": "train",
+      "kind": "normal",
+      "label_group": "normal",
+      "windows": 923
+    },
+    {
+      "split": "val",
+      "kind": "fault",
+      "label_group": "active",
+      "windows": 402
+    },
+    {
+      "split": "val",
+      "kind": "fault",
+      "label_group": "mixed_or_unknown",
+      "windows": 46
+    },
+    {
+      "split": "val",
+      "kind": "fault",
+      "label_group": "normal",
+      "windows": 240
+    },
+    {
+      "split": "val",
+      "kind": "normal",
+      "label_group": "normal",
+      "windows": 350
+    }
+  ],
+  "normal_states": [
+    {
+      "split": "train",
+      "observed_state": "climb_proxy",
+      "windows": 316,
+      "cases": 16
+    },
+    {
+      "split": "train",
+      "observed_state": "low_motion_proxy",
+      "windows": 208,
+      "cases": 15
+    },
+    {
+      "split": "train",
+      "observed_state": "maneuver_proxy",
+      "windows": 29,
+      "cases": 7
+    },
+    {
+      "split": "train",
+      "observed_state": "other_motion",
+      "windows": 51,
+      "cases": 15
+    },
+    {
+      "split": "train",
+      "observed_state": "translation_proxy",
+      "windows": 319,
+      "cases": 11
+    },
+    {
+      "split": "val",
+      "observed_state": "climb_proxy",
+      "windows": 157,
+      "cases": 6
+    },
+    {
+      "split": "val",
+      "observed_state": "low_motion_proxy",
+      "windows": 170,
+      "cases": 6
+    },
+    {
+      "split": "val",
+      "observed_state": "maneuver_proxy",
+      "windows": 17,
+      "cases": 6
+    },
+    {
+      "split": "val",
+      "observed_state": "other_motion",
+      "windows": 6,
+      "cases": 5
+    }
+  ],
+  "O5_acc_z_denominator_clipped_frame_contributions": 336198,
+  "O5_total_old_admitted_frame_contributions": 433500,
+  "no_training_classifier_inference_GPU_or_server": true,
+  "raw_ULog_read": false,
+  "final_test_Real_read": false,
+  "no_old_assets_or_normalization_changed": true,
+  "source_script_sha256": "733b22e275c66fe2a836da95fcb9920349e087d4e2dbace16144009899120cd9"
+}
