@@ -1,0 +1,64 @@
+{
+  "name": "M3_conditioned_residual_statistical_validation_v1",
+  "frozen_at": "2026-11-03T15:04:52.969286+00:00",
+  "scope": "Only this comparison of unconditional versus state-conditioned normal N1..N4 references. No model experiment, new direction, threshold/state search, Test/Real or historical changes.",
+  "features": [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+  ],
+  "units": [
+    "m",
+    "rad",
+    "rad",
+    "rad"
+  ],
+  "summary": "Signed temporal median over the same complete150 frames, calculated from original continuous residual cache. No old9 features.",
+  "states": [
+    "maneuver_proxy",
+    "climb_proxy",
+    "descent_proxy",
+    "low_motion_proxy",
+    "translation_proxy",
+    "other_motion"
+  ],
+  "state_rule": "Unchanged existing observed_states(raw, columns): past150 physical vel_xyz and gyro_xyz only. Maneuver gyro norm P90>=0.3rad/s OR speed std>=0.5m/s; otherwise vz<=-0.5 for>=80% climb, vz>=0.5 for>=80% descent; otherwise speed<=0.3 AND rotation<=0.15 for>=80% low; remaining speed>0.3 for>=80% translation; otherwise other.",
+  "state_rules_source": "scripts/research/collect_m3_formal_results.py::observed_states",
+  "state_input_prohibitions": [
+    "labels",
+    "fault class",
+    "dataset directory",
+    "domain",
+    "future frames"
+  ],
+  "fit_population": "Train known-normal whole150 frames only: qualified_y=0, whole_window_label_valid=true, fault_fraction=0. Both independent normal and known-normal portions of fault cases. Labels only select reference-fitting rows, never condition state.",
+  "fit_weights": "Within each reference pool, each case has equal total mass; within case windows equal mass. No domain conditioning or feature normalization fit.",
+  "reference": "Per N feature weighted empirical inverse-CDF Q0.005,Q0.5,Q0.995. Marginal central99% bounds; any of4 outside means abnormal. NOT a calibrated1% joint false alarm guarantee.",
+  "quantile_algorithm": "Stable sort; smallest observed value whose cumulative weight / total weight >= q. No interpolation, winsorizing or filling.",
+  "score": "max over N1..N4 of signed deviation from weighted median divided by corresponding positive-side/negative-side99% reference width; abnormal strictly >1. Exact boundary ties normal. Score is statistical distance, not a probability or new physical feature.",
+  "quantiles": [
+    0.005,
+    0.5,
+    0.995
+  ],
+  "anomaly_score_boundary": 1.0,
+  "Train_state_reference_minimum": {
+    "normal_windows": 1000,
+    "cases": 30,
+    "association_groups": 15,
+    "cases_per_domain": 10
+  },
+  "Val_descriptive_cell_minimum": {
+    "normal_windows": 20,
+    "fault_windows": 20,
+    "normal_cases": 4,
+    "fault_cases": 4,
+    "normal_association_groups": 2,
+    "fault_association_groups": 2
+  },
+  "unsupported_state_policy": "No conditional fallback or filling. Keep every original ID; unavailable marked explicitly. Primary paired comparisons restrict BOTH methods to identical supported states; unconditional all-Val supplementary separately named.",
+  "Val_evaluation": "Same frozen32381 IDs/order/labels; all qualified endpoint labels primary, full150 known-fault supplementary. Report six faults, SIL/HIL, observed states, Hover GPS/Gyro/Mag and normal origin. Case-balanced AUC/rates and association-group-balanced rate sensitivity, not IID p-values.",
+  "acceptance_interpretation": "Evidence for technical hypothesis requires lower normal FP without net detection loss overall, six classes and each domain, with adequate priority cells. Mixed results are not generalized support. No absolute recall floor or statistical noninferiority claim added.",
+  "no_Val_rule_revision_or_scope_expansion": true
+}
