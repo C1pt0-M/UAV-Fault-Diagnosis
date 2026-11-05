@@ -95,3 +95,21 @@ _Avoid_: Model trainer, simulator operator
 **RflySim/PX4 extension interface**:
 An experimental or future integration boundary for simulator or PX4 telemetry sources; it is excluded from V1.0 copyright documentation, screenshots, and source-code excerpt materials.
 _Avoid_: Core diagnosis capability, required runtime dependency, V1.0 documented feature
+
+## Research Language
+
+**Window operating state**:
+The local flight behavior represented by an available history window, such as climbing, near-steady flight, or maneuvering. It is distinct from a log-level scenario category and is not established by the window position in a retained crop.
+_Avoid_: Hover directory as proof of steady hover, elapsed crop fraction as flight-phase truth
+
+**Condition-dependent normal behavior**:
+The range of healthy behavior expected under a particular operating state. Different operating states may have different healthy distributions; a state-dependent change alone is neither a fault nor proof that a feature is unusable.
+_Avoid_: One universal healthy point, treating an unexplained new state as automatically normal
+
+**Fault-preserving false-alarm reduction**:
+The research objective of reducing erroneous fault declarations on normal operating states while retaining a predeclared level of fault detection, including relevant fault subgroups. It is a comparison objective, not a claim that a current model or software release already meets it.
+_Avoid_: Lower scores as proof of better detection, zero false alarms as an added graduation requirement
+
+**Candidate feature incremental value**:
+The additional predictive benefit a candidate contributes beyond a fixed base detector under comparable data coverage and fault-detection requirements. Physical interpretability or strong standalone discrimination does not by itself establish this benefit.
+_Avoid_: Treating the thirteen-feature pool as an approved input set, standalone feature accuracy as proof of model improvement
