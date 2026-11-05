@@ -25,8 +25,26 @@ def fold_of(group):
     return int(hashlib.sha256(('h1cv|' + group).encode()).hexdigest(), 16) % 3
 
 
+def build_seed_model(p, seed):
+    """Non-42 seeds: same procedure that produced the seed-42 anchor."""
+    from uav_fault.models.cnn.lstm import OnlineMSTCA, OnlineKGMSTCA
+    cfg = p['training']
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(seed)
+        legacy = OnlineKGMSTCA(in_channels=26, hidden_size=cfg['hidden_size'], num_layers=cfg['num_layers'],
+                               num_classes=2, dropout=cfg['dropout'], columns=p['data']['columns'])
+        model = OnlineMSTCA(in_channels=26, hidden_size=cfg['hidden_size'], num_layers=cfg['num_layers'],
+                            num_classes=2, dropout=cfg['dropout']).float()
+    state = legacy.state_dict()
+    mapping = {k: state['raw_encoder.' + k[len('encoder.'):] if k.startswith('encoder.') else k].clone()
+               for k in model.state_dict()}
+    model.load_state_dict(mapping, strict=True)
+    return model, {'m0_initial_state_digest': m0.state_digest(model.state_dict()), 'seed': seed}
+
+
 def run(args):
     p = m0.load_protocol(args.protocol)
+    seed = args.seed
     out = args.output
     if out.exists():
         raise FileExistsError('New run directory required')
@@ -50,14 +68,17 @@ def run(args):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.allow_tf32 = True
     torch.backends.cuda.matmul.allow_tf32 = False
-    np.random.seed(42); torch.manual_seed(42); torch.cuda.manual_seed_all(42)
-    model, init = m0.build_model(p, 42, args.initial_anchor)
+    np.random.seed(seed); torch.manual_seed(seed); torch.cuda.manual_seed_all(seed)
+    if seed == 42:
+        model, init = m0.build_model(p, 42, args.initial_anchor)
+    else:
+        model, init = build_seed_model(p, seed)
     out.mkdir(parents=True)
     device = torch.device('cuda:0'); model.to(device)
     sub = Subset(source.IndexedSource(ds['train']), keep.tolist())
-    sampler = WeightedRandomSampler(weights, len(keep), replacement=True, generator=torch.Generator().manual_seed(42 + 11))
+    sampler = WeightedRandomSampler(weights, len(keep), replacement=True, generator=torch.Generator().manual_seed(seed + 11))
     trainloader = DataLoader(sub, batch_size=cfg['batch_size'], sampler=sampler, num_workers=0,
-                             generator=torch.Generator().manual_seed(42 + 101))
+                             generator=torch.Generator().manual_seed(seed + 101))
     meta = frame['val']
     valloader = DataLoader(source.IndexedSource(ds['val'], meta.cache_index.to_numpy()), batch_size=512, shuffle=False)
     heldloader = DataLoader(source.IndexedSource(ds['train'], held), batch_size=512, shuffle=False)
@@ -94,7 +115,7 @@ def run(args):
     probs = np.concatenate(probs)
     np.savez_compressed(out / 'heldout_predictions.npz', probabilities=probs,
                         original_indices=train.original_cache_index.to_numpy()[held])
-    json.dump({'fold': args.fold, 'train_windows': len(keep), 'heldout_windows': len(held), 'best_epoch': sel['best_epoch'],
+    json.dump({'fold': args.fold, 'seed': seed, 'train_windows': len(keep), 'heldout_windows': len(held), 'best_epoch': sel['best_epoch'],
                'epochs': len(history), 'initial_digest': init['m0_initial_state_digest'], 'history': history,
                'elapsed_s': time.perf_counter() - start, 'status': 'COMPLETE'}, open(out / 'report.json', 'w'), indent=2)
 
@@ -106,6 +127,7 @@ def main():
     ap.add_argument('--initial-anchor', type=Path, required=True)
     ap.add_argument('--fold', type=int, choices=[0, 1, 2], required=True)
     ap.add_argument('--output', type=Path, required=True)
+    ap.add_argument('--seed', type=int, default=42)
     run(ap.parse_args())
 
 

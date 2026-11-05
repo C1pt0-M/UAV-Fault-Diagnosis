@@ -1,0 +1,14 @@
+{
+  "name": "ens_groupcv_seed43_v1",
+  "status": "FROZEN_BEFORE_RUN",
+  "frozen_at": "2026-11-05",
+  "purpose": "Independent confirmation of the M0+GBT average (ENS) after its post hoc pass under the revised rule.",
+  "folds": "same as feature_groupcv_v1 (sha256('h1cv|'+association_group) % 3)",
+  "M0": "frozen M0 B recipe, seed 43. Initialization: torch.manual_seed(43), build legacy OnlineKGMSTCA(26, hidden 64), map raw_encoder.* -> encoder.*, head.* -> head.* (same procedure as the seed-42 anchor). Sampler generator seed 43+11, loader 43+101.",
+  "GBT": "same 130 window statistics and hyperparameters as feature_groupcv_v1, random_state=1 (affects the internal early-stopping validation split)",
+  "ENS": "mean of M0 and GBT fault probabilities, threshold 0.5",
+  "comparator": "seed-43 M0 held-out predictions",
+  "pass_rule": "m0s_stats_branch_v1 rule a-d unchanged; e reported",
+  "decision": "ENS confirmed if a-d all pass at seed 43. If any fails, ENS stays a post hoc candidate only.",
+  "forbidden": ["internal test", "Real", "changing features, fusion, threshold or rule after seeing results"]
+}
