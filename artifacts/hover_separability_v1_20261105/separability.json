@@ -1,0 +1,376 @@
+{
+  "val": {
+    "normal_windows": 280,
+    "normal_cases": 12,
+    "classes": {
+      "GPS": {
+        "n_fault": 178,
+        "n_normal": 280,
+        "fault_cases": 8,
+        "best_channel_auc": 0.6271268057784911,
+        "top5": [
+          [
+            "att_q_z_std",
+            0.627
+          ],
+          [
+            "mag_x_mean",
+            0.626
+          ],
+          [
+            "mag_y_mean",
+            0.613
+          ],
+          [
+            "gyro_z_mean",
+            0.606
+          ],
+          [
+            "att_q_w_mean",
+            0.604
+          ]
+        ]
+      },
+      "accelerometer": {
+        "n_fault": 166,
+        "n_normal": 280,
+        "fault_cases": 8,
+        "best_channel_auc": 0.8760327022375215,
+        "top5": [
+          [
+            "actuator_out_2_std",
+            0.876
+          ],
+          [
+            "actuator_ctrl_4_std",
+            0.875
+          ],
+          [
+            "actuator_out_3_std",
+            0.871
+          ],
+          [
+            "actuator_out_1_std",
+            0.863
+          ],
+          [
+            "actuator_out_4_std",
+            0.861
+          ]
+        ]
+      },
+      "barometer": {
+        "n_fault": 153,
+        "n_normal": 280,
+        "fault_cases": 8,
+        "best_channel_auc": 0.9652427637721755,
+        "top5": [
+          [
+            "baro_alt_relative_std",
+            0.965
+          ],
+          [
+            "actuator_ctrl_3_std",
+            0.742
+          ],
+          [
+            "actuator_out_3_mean",
+            0.739
+          ],
+          [
+            "actuator_ctrl_4_mean",
+            0.738
+          ],
+          [
+            "actuator_out_4_mean",
+            0.735
+          ]
+        ]
+      },
+      "gyroscope": {
+        "n_fault": 227,
+        "n_normal": 280,
+        "fault_cases": 10,
+        "best_channel_auc": 0.6955947136563876,
+        "top5": [
+          [
+            "actuator_ctrl_3_std",
+            0.696
+          ],
+          [
+            "actuator_ctrl_2_std",
+            0.677
+          ],
+          [
+            "actuator_out_1_std",
+            0.669
+          ],
+          [
+            "actuator_out_2_std",
+            0.664
+          ],
+          [
+            "actuator_out_3_std",
+            0.646
+          ]
+        ]
+      },
+      "magnetometer": {
+        "n_fault": 152,
+        "n_normal": 280,
+        "fault_cases": 8,
+        "best_channel_auc": 0.8236372180451128,
+        "top5": [
+          [
+            "mag_y_mean",
+            0.824
+          ],
+          [
+            "mag_x_mean",
+            0.772
+          ],
+          [
+            "mag_x_std",
+            0.654
+          ],
+          [
+            "mag_z_std",
+            0.636
+          ],
+          [
+            "mag_z_mean",
+            0.633
+          ]
+        ]
+      },
+      "motor": {
+        "n_fault": 2447,
+        "n_normal": 280,
+        "fault_cases": 73,
+        "best_channel_auc": 0.961346254889369,
+        "top5": [
+          [
+            "att_q_w_std",
+            0.961
+          ],
+          [
+            "actuator_ctrl_4_std",
+            0.892
+          ],
+          [
+            "actuator_out_2_std",
+            0.881
+          ],
+          [
+            "actuator_out_1_std",
+            0.881
+          ],
+          [
+            "actuator_out_3_std",
+            0.879
+          ]
+        ]
+      }
+    }
+  },
+  "train": {
+    "normal_windows": 1237,
+    "normal_cases": 55,
+    "classes": {
+      "GPS": {
+        "n_fault": 942,
+        "n_normal": 1237,
+        "fault_cases": 40,
+        "best_channel_auc": 0.626337262090497,
+        "top5": [
+          [
+            "att_q_x_std",
+            0.626
+          ],
+          [
+            "vel_y_std",
+            0.615
+          ],
+          [
+            "gyro_x_std",
+            0.601
+          ],
+          [
+            "gyro_y_std",
+            0.588
+          ],
+          [
+            "baro_alt_relative_std",
+            0.581
+          ]
+        ]
+      },
+      "accelerometer": {
+        "n_fault": 851,
+        "n_normal": 1237,
+        "fault_cases": 39,
+        "best_channel_auc": 0.8720460117774799,
+        "top5": [
+          [
+            "actuator_out_3_std",
+            0.872
+          ],
+          [
+            "actuator_ctrl_4_std",
+            0.868
+          ],
+          [
+            "actuator_out_4_std",
+            0.861
+          ],
+          [
+            "actuator_out_2_std",
+            0.861
+          ],
+          [
+            "actuator_out_1_std",
+            0.861
+          ]
+        ]
+      },
+      "barometer": {
+        "n_fault": 866,
+        "n_normal": 1237,
+        "fault_cases": 41,
+        "best_channel_auc": 0.9323486196396331,
+        "top5": [
+          [
+            "baro_alt_relative_std",
+            0.932
+          ],
+          [
+            "gyro_y_std",
+            0.753
+          ],
+          [
+            "att_q_x_std",
+            0.734
+          ],
+          [
+            "gyro_x_std",
+            0.728
+          ],
+          [
+            "vel_y_std",
+            0.724
+          ]
+        ]
+      },
+      "gyroscope": {
+        "n_fault": 880,
+        "n_normal": 1237,
+        "fault_cases": 40,
+        "best_channel_auc": 0.7295743918571324,
+        "top5": [
+          [
+            "actuator_ctrl_3_std",
+            0.73
+          ],
+          [
+            "actuator_out_4_std",
+            0.693
+          ],
+          [
+            "actuator_ctrl_2_std",
+            0.687
+          ],
+          [
+            "actuator_out_3_std",
+            0.687
+          ],
+          [
+            "actuator_out_1_std",
+            0.678
+          ]
+        ]
+      },
+      "magnetometer": {
+        "n_fault": 670,
+        "n_normal": 1237,
+        "fault_cases": 28,
+        "best_channel_auc": 0.6726197227283148,
+        "top5": [
+          [
+            "mag_x_std",
+            0.673
+          ],
+          [
+            "mag_x_mean",
+            0.652
+          ],
+          [
+            "mag_y_std",
+            0.624
+          ],
+          [
+            "accel_x_std",
+            0.617
+          ],
+          [
+            "gyro_z_mean",
+            0.609
+          ]
+        ]
+      },
+      "motor": {
+        "n_fault": 10766,
+        "n_normal": 1237,
+        "fault_cases": 337,
+        "best_channel_auc": 0.8935627535471635,
+        "top5": [
+          [
+            "att_q_w_std",
+            0.894
+          ],
+          [
+            "actuator_out_1_mean",
+            0.89
+          ],
+          [
+            "actuator_out_2_mean",
+            0.889
+          ],
+          [
+            "actuator_out_4_mean",
+            0.888
+          ],
+          [
+            "actuator_out_3_mean",
+            0.888
+          ]
+        ]
+      }
+    }
+  },
+  "model_score_auc_val": {
+    "M0_B": {
+      "GPS": 0.585,
+      "accelerometer": 0.914,
+      "barometer": 0.54,
+      "gyroscope": 0.704,
+      "magnetometer": 0.923,
+      "motor": 0.984
+    },
+    "H1_best": {
+      "GPS": 0.526,
+      "accelerometer": 0.903,
+      "barometer": 0.54,
+      "gyroscope": 0.634,
+      "magnetometer": 0.874,
+      "motor": 0.95
+    },
+    "H1_ep49": {
+      "GPS": 0.646,
+      "accelerometer": 0.917,
+      "barometer": 0.81,
+      "gyroscope": 0.786,
+      "magnetometer": 0.911,
+      "motor": 0.989
+    }
+  }
+}
