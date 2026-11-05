@@ -1,0 +1,27 @@
+{
+  "name": "m0s_stats_branch_v1",
+  "status": "FROZEN_BEFORE_RUN",
+  "frozen_at": "2026-11-05",
+  "model": {
+    "name": "M0S",
+    "encoder_and_head": "frozen M0 OnlineMSTCA, same untrained anchor mapping as M0 B",
+    "stats_branch": "on the normalized input window, per channel: mean, log(std+1e-4), min, max, log(mean|diff|+1e-4) -> 130-d; standardized with fixed mean/std fitted on 20000 fold-train windows (seed 4242), clamped to [-10,10]; Linear(130,64)-ReLU-Linear(64,128), last layer zero-initialized; output added to the 128-d encoder output before the head",
+    "initial_function": "identical to M0 at step 0 (zero-init last layer)",
+    "extra_parameters": 16704
+  },
+  "training": "frozen M0 B recipe: Balanced sampler formula, draws = fold-train windows, AdamW 3e-4/1e-4, batch 512, Focal gamma 2, clip 1, warmup 5 + cosine 100, best by full source val Macro-F1, early stop min30/patience20/delta0.002, seed 42",
+  "runs": {
+    "fold0/fold1/fold2": "train on the other two folds (fold rule of feature_groupcv_v1), predict held-out fold; comparator = M0 fold predictions from feature_groupcv_v1",
+    "full": "train on full train; comparator = M0 B source val predictions (secondary, val is also used for checkpoint selection)"
+  },
+  "pass_rule_on_pooled_heldout_train": {
+    "a": "all-normal FP lower than M0 in each of 3 folds",
+    "b": "fault TP >= M0 TP - 0.5% of fold fault windows in each fold",
+    "c": "independent-normal hover >30 s FP lower than M0 (pooled)",
+    "d": "per-class fault recall drop <= 1.0 pp for each of six classes, computed on windows outside hover >30 s (pooled)",
+    "e": "hover >30 s GPS and barometer recall reported separately, no threshold (known weak observability)",
+    "verdict": "PASS if a, b, c, d all hold"
+  },
+  "change_from_feature_groupcv_v1": "rule d excludes hover >30 s windows, decided after feature_groupcv_v1 failed rule d; feature_groupcv_v1 verdict stays FAIL",
+  "forbidden": ["internal test", "Real", "threshold change", "changing branch design or rule after seeing results"]
+}
