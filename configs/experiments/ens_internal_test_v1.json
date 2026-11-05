@@ -1,0 +1,24 @@
+{
+  "name": "ens_internal_test_v1",
+  "status": "FROZEN_BEFORE_TEST_ACCESS",
+  "frozen_at": "2026-11-05",
+  "purpose": "Single confirmatory evaluation of the frozen ENS on the causal internal SIL/HIL test. No model change after this run.",
+  "test_population": "causal_input_v1 test via CausalCacheDataset(split='test', purpose='evaluation'): 34802 supervised windows, 553 cases; excluded windows reported but not scored",
+  "models": {
+    "M0": "artifacts/causal_pure_mstca_m0_v1_20261101/results/runs/balanced_source_normal/best.pt (sha256 recorded at run time), unchanged",
+    "GBT": "130 window statistics, HistGradientBoosting max_iter 400, lr 0.05, max_leaf_nodes 31, l2 1.0, random_state 0, M0-equivalent Balanced weights, fit once on full source train 162069; fit before reading test",
+    "ENS": "mean of M0 and GBT fault probabilities, fault if >= 0.5",
+    "M0_rule": "argmax (fault if p1 > p0), as in all M0 reports"
+  },
+  "primary_comparison": "ENS vs M0 on test",
+  "pass_rule": {
+    "a": "all-normal FP lower than M0",
+    "b": "fault TP >= M0 TP - 0.5% of test fault windows",
+    "c": "independent-normal hover >30 s FP lower than M0",
+    "d": "per-class fault recall drop <= 1.0 pp for each of six classes, on windows outside hover >30 s",
+    "e": "report hover >30 s GPS and barometer recall, SIL/HIL split, per-flight-status independent-normal FP; no threshold",
+    "case_level": "report case-level independent-normal false-alarm rate (case with any FP window) and fault-case detection (case with any TP window) for both models; no threshold"
+  },
+  "verdict": "PASS if a-d hold. Result is final for the internal test; failures are reported, not retried.",
+  "forbidden": ["Real", "any re-fit, re-threshold, re-fusion or second test evaluation", "excluding cases after seeing results"]
+}
