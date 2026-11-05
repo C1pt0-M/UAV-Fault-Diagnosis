@@ -1,0 +1,286 @@
+{
+  "M0": {
+    "independent_normal": {
+      "cases": 72,
+      "cases_with_false_event": 12,
+      "false_events": 12,
+      "exposure_h": 0.901,
+      "events_per_h": 13.31,
+      "alarm_occupancy_pct": 3.03
+    },
+    "independent_normal_by_domain": {
+      "HIL": {
+        "cases": 36,
+        "cases_with_false_event": 6,
+        "false_events": 6,
+        "exposure_h": 0.434,
+        "events_per_h": 13.81,
+        "alarm_occupancy_pct": 4.06
+      },
+      "SIL": {
+        "cases": 36,
+        "cases_with_false_event": 6,
+        "false_events": 6,
+        "exposure_h": 0.467,
+        "events_per_h": 12.85,
+        "alarm_occupancy_pct": 2.08
+      }
+    },
+    "independent_normal_by_flight": {
+      "acce": {
+        "cases": 12,
+        "cases_with_false_event": 3,
+        "false_events": 3,
+        "exposure_h": 0.1,
+        "events_per_h": 29.98,
+        "alarm_occupancy_pct": 1.02
+      },
+      "circling": {
+        "cases": 12,
+        "cases_with_false_event": 0,
+        "false_events": 0,
+        "exposure_h": 0.191,
+        "events_per_h": 0.0,
+        "alarm_occupancy_pct": 0.0
+      },
+      "dece": {
+        "cases": 12,
+        "cases_with_false_event": 3,
+        "false_events": 3,
+        "exposure_h": 0.117,
+        "events_per_h": 25.59,
+        "alarm_occupancy_pct": 3.79
+      },
+      "hover": {
+        "cases": 12,
+        "cases_with_false_event": 6,
+        "false_events": 6,
+        "exposure_h": 0.141,
+        "events_per_h": 42.44,
+        "alarm_occupancy_pct": 15.47
+      },
+      "velocity": {
+        "cases": 12,
+        "cases_with_false_event": 0,
+        "false_events": 0,
+        "exposure_h": 0.136,
+        "events_per_h": 0.0,
+        "alarm_occupancy_pct": 0.0
+      },
+      "waypoint": {
+        "cases": 12,
+        "cases_with_false_event": 0,
+        "false_events": 0,
+        "exposure_h": 0.216,
+        "events_per_h": 0.0,
+        "alarm_occupancy_pct": 0.0
+      }
+    },
+    "prefault_normal_in_fault_cases": {
+      "cases": 483,
+      "cases_with_false_event": 3,
+      "false_events": 3,
+      "exposure_h": 4.492,
+      "events_per_h": 0.67,
+      "alarm_occupancy_pct": 0.02
+    },
+    "fault": {
+      "cases_with_onset": 483,
+      "cases_scored_after_onset": 472,
+      "cases_event_spanning_onset": 157,
+      "detected_new_confirmation": 344,
+      "clean_cases": 315,
+      "clean_detected": 307,
+      "confirm_latency_s_clean": {
+        "median": 0.22,
+        "p90": 3.9,
+        "max": 23.46
+      },
+      "final_emit_reason_counts": {
+        "end_of_stream_flush": 262,
+        "invalid_gap_flush": 50,
+        "online_update": 30
+      }
+    },
+    "fault_by_class": {
+      "GPS": {
+        "cases": 35,
+        "detected": 33,
+        "spans_onset": 1,
+        "confirm_latency_median_s": 0.96
+      },
+      "accelerometer": {
+        "cases": 35,
+        "detected": 26,
+        "spans_onset": 8,
+        "confirm_latency_median_s": 0.15
+      },
+      "barometer": {
+        "cases": 38,
+        "detected": 28,
+        "spans_onset": 11,
+        "confirm_latency_median_s": 0.08
+      },
+      "gyroscope": {
+        "cases": 46,
+        "detected": 41,
+        "spans_onset": 4,
+        "confirm_latency_median_s": 1.1
+      },
+      "magnetometer": {
+        "cases": 44,
+        "detected": 39,
+        "spans_onset": 1,
+        "confirm_latency_median_s": 0.28
+      },
+      "motor": {
+        "cases": 274,
+        "detected": 177,
+        "spans_onset": 132,
+        "confirm_latency_median_s": 0.12
+      }
+    }
+  },
+  "ENS": {
+    "independent_normal": {
+      "cases": 72,
+      "cases_with_false_event": 21,
+      "false_events": 29,
+      "exposure_h": 0.901,
+      "events_per_h": 32.17,
+      "alarm_occupancy_pct": 5.22
+    },
+    "independent_normal_by_domain": {
+      "HIL": {
+        "cases": 36,
+        "cases_with_false_event": 11,
+        "false_events": 16,
+        "exposure_h": 0.434,
+        "events_per_h": 36.82,
+        "alarm_occupancy_pct": 4.02
+      },
+      "SIL": {
+        "cases": 36,
+        "cases_with_false_event": 10,
+        "false_events": 13,
+        "exposure_h": 0.467,
+        "events_per_h": 27.85,
+        "alarm_occupancy_pct": 6.35
+      }
+    },
+    "independent_normal_by_flight": {
+      "acce": {
+        "cases": 12,
+        "cases_with_false_event": 2,
+        "false_events": 2,
+        "exposure_h": 0.1,
+        "events_per_h": 19.98,
+        "alarm_occupancy_pct": 1.45
+      },
+      "circling": {
+        "cases": 12,
+        "cases_with_false_event": 0,
+        "false_events": 0,
+        "exposure_h": 0.191,
+        "events_per_h": 0.0,
+        "alarm_occupancy_pct": 0.0
+      },
+      "dece": {
+        "cases": 12,
+        "cases_with_false_event": 3,
+        "false_events": 6,
+        "exposure_h": 0.117,
+        "events_per_h": 51.18,
+        "alarm_occupancy_pct": 4.9
+      },
+      "hover": {
+        "cases": 12,
+        "cases_with_false_event": 11,
+        "false_events": 14,
+        "exposure_h": 0.141,
+        "events_per_h": 99.02,
+        "alarm_occupancy_pct": 23.7
+      },
+      "velocity": {
+        "cases": 12,
+        "cases_with_false_event": 3,
+        "false_events": 5,
+        "exposure_h": 0.136,
+        "events_per_h": 36.86,
+        "alarm_occupancy_pct": 4.49
+      },
+      "waypoint": {
+        "cases": 12,
+        "cases_with_false_event": 2,
+        "false_events": 2,
+        "exposure_h": 0.216,
+        "events_per_h": 9.25,
+        "alarm_occupancy_pct": 0.14
+      }
+    },
+    "prefault_normal_in_fault_cases": {
+      "cases": 483,
+      "cases_with_false_event": 0,
+      "false_events": 0,
+      "exposure_h": 4.492,
+      "events_per_h": 0.0,
+      "alarm_occupancy_pct": 0.0
+    },
+    "fault": {
+      "cases_with_onset": 483,
+      "cases_scored_after_onset": 472,
+      "cases_event_spanning_onset": 159,
+      "detected_new_confirmation": 339,
+      "clean_cases": 313,
+      "clean_detected": 309,
+      "confirm_latency_s_clean": {
+        "median": 0.26,
+        "p90": 1.444,
+        "max": 23.46
+      },
+      "final_emit_reason_counts": {
+        "end_of_stream_flush": 248,
+        "invalid_gap_flush": 54,
+        "online_update": 35
+      }
+    },
+    "fault_by_class": {
+      "GPS": {
+        "cases": 35,
+        "detected": 35,
+        "spans_onset": 0,
+        "confirm_latency_median_s": 0.46
+      },
+      "accelerometer": {
+        "cases": 35,
+        "detected": 26,
+        "spans_onset": 9,
+        "confirm_latency_median_s": 0.17
+      },
+      "barometer": {
+        "cases": 38,
+        "detected": 23,
+        "spans_onset": 18,
+        "confirm_latency_median_s": 0.06
+      },
+      "gyroscope": {
+        "cases": 46,
+        "detected": 41,
+        "spans_onset": 5,
+        "confirm_latency_median_s": 0.4
+      },
+      "magnetometer": {
+        "cases": 44,
+        "detected": 38,
+        "spans_onset": 2,
+        "confirm_latency_median_s": 0.28
+      },
+      "motor": {
+        "cases": 274,
+        "detected": 176,
+        "spans_onset": 125,
+        "confirm_latency_median_s": 0.16
+      }
+    }
+  }
+}
