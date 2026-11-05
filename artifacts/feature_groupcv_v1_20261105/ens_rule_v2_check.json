@@ -1,0 +1,50 @@
+{
+  "a": true,
+  "b": true,
+  "c": true,
+  "d": true,
+  "class_drop_outside_late_pp": {
+    "GPS": -0.666,
+    "accelerometer": -1.248,
+    "barometer": 0.3,
+    "gyroscope": -3.481,
+    "magnetometer": -1.435,
+    "motor": -0.087
+  },
+  "e_late_GPS_baro": {
+    "M0": {
+      "GPS": [
+        915,
+        942
+      ],
+      "barometer": [
+        847,
+        866
+      ]
+    },
+    "ENS": {
+      "GPS": [
+        724,
+        942
+      ],
+      "barometer": [
+        775,
+        866
+      ]
+    }
+  },
+  "PASS": true,
+  "pooled": {
+    "M0": {
+      "nfp": 3717,
+      "tp": 77311,
+      "late": 1129
+    },
+    "ENS": {
+      "nfp": 2384,
+      "tp": 77453,
+      "late": 726
+    }
+  },
+  "rule": "m0s_stats_branch_v1 pass rule applied to feature_groupcv_v1 ENS held-out predictions (no new training)"
+}
