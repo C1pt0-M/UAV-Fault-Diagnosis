@@ -1,0 +1,27 @@
+{
+  "name": "feature_groupcv_v1",
+  "status": "FROZEN_BEFORE_RUN",
+  "frozen_at": "2026-11-05",
+  "purpose": "Check on train-internal held-out association groups whether window-statistics GBT and M0+GBT average beat M0, without reusing source val for the decision.",
+  "folds": {
+    "rule": "fold = int(sha256('h1cv|' + association_group), 16) % 3 over train_included_windows.csv",
+    "unit": "association_group (SIL/HIL pair kept together)",
+    "windows": [54177, 52756, 55136]
+  },
+  "arms": {
+    "M0": "frozen M0 B training (protocol causal_pure_mstca_m0_v1, seed 42, same anchor, sampler formula, budget, draws per epoch = number of fold-train windows). Train on 2 folds; checkpoint selection on full source val (unchanged M0 rule); predict held-out fold.",
+    "GBT": "130 window statistics (per channel mean, std, min, max, mean |diff|); HistGradientBoosting max_iter 400, lr 0.05, max_leaf_nodes 31, l2 1.0, random_state 0; M0-equivalent Balanced weights with normal mass = fold-train normal count. No val use.",
+    "ENS": "mean of M0 and GBT fault probabilities"
+  },
+  "threshold": 0.5,
+  "primary_comparison": "ENS vs M0 and GBT vs M0, per held-out fold",
+  "pass_rule": {
+    "a": "all-normal FP lower than M0 in all 3 folds",
+    "b": "fault TP >= M0 TP - 0.5% of fold fault windows in all 3 folds",
+    "c": "independent-normal hover >30s FP lower than M0 in pooled held-out (sum over folds)",
+    "d": "pooled per-class fault recall drop <= 1.0 pp for each of six classes",
+    "verdict": "candidate passes if a, b, c and d all hold"
+  },
+  "then": "If ENS or GBT passes, build the neural M0+statistics-branch model under a separately frozen protocol. If neither passes, report and stop this branch.",
+  "forbidden": ["internal test", "Real", "changing GBT hyperparameters or fusion after seeing held-out results"]
+}
