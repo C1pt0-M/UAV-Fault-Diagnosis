@@ -1,0 +1,9 @@
+{
+  "script": "analyze_v2_parallel.py",
+  "workers": 4,
+  "BLAS_threads_per_worker": 1,
+  "purpose": "bounded CPU parallel independent query batches; exact algebra and all IDs unchanged",
+  "prior_attempts": "original string comparisons interrupted; integer version interrupted before first query file completed; restart guard reconciles all already written CSVs",
+  "schema_reconciliation_fix": "serialize expected table before comparing so unavailable AUC blanks retain same type; no AUC filled or recalculated",
+  "no_v1_outputs_changed": true
+}

@@ -1,0 +1,66 @@
+{
+  "status": "REVIEW_PROPOSAL_NOT_AUTHORIZED_NO_IMPLEMENTATION",
+  "base_commit": "694e62694000e974e73efa0fdc4961323c27716a",
+  "primary_reference_proposal": "D1 inner-fit known normal, group/case/window equal; retain v1 population; D2 only sensitivity, D3 explanatory control, no data-driven winner",
+  "split": "unchanged v1 nested_group_assignments_3.csv",
+  "refit": "NO_REFIT conservative research probe; no claims about fully trained final model",
+  "input_transform": "fit only inner-fit all qualified Base26 windows; never historical full-Train stats",
+  "encoder": "fresh fold-specific M0 trained inner-fit only, strict overall inner-dev Macro-F1 selects common anchor; freeze encoder and BN for every head",
+  "reference_fit": "inner-fit D1 only, same IDs/weights for U/C/CF; h128 not available now; h/c weighted scale floor1e-8; reject degenerate IQR",
+  "conditions": ["vz_median_mps", "speed_median_mps", "speed_std_mps", "gyro_p90_radps"],
+  "conditions_status": "mixed background and possible fault response; keep original4 for falsifiable hypothesis, no new subset search",
+  "support": {
+    "bandwidth_c": 1,
+    "kernel_dimension": 4,
+    "fit_query_exclusion": "all references from same association_group excluded for any inner-fit query",
+    "dev_outer_reference": "all inner-fit reference windows only",
+    "primary_proposal": "groupESS>=15 and caseESS>=30 and within-SIL caseESS>=10 and within-HIL caseESS>=10 and each domain mass>=0.05 and nearest-group-representative distance<=weighted inner-fit normal LOO Q99 and state!=descent_proxy",
+    "distance_representation": "case mean physical c; group mean of case means; transform by population/fold inner-fit scaler",
+    "sensitivity": "predeclared ESS(8,16,5)/(15,30,10)/(30,60,20) crossed Q95/Q99; no best gate selection",
+    "fair_support_mask": "U/C/CF share same c-support mask for primary comparison; U reference weights themselves unconditional; this is a masked-reference probe, not unrestricted U efficacy",
+    "unsupported": "r=0; base head fallback; reference_supported=false; preserve all evaluation IDs",
+    "meaning": "normal-context local support only, not h support or diagnostic correctness; engineering thresholds not validated safety or confidence levels"
+  },
+  "calibration": {
+    "recommended": "B separate U/C normal leave-group median/IQR",
+    "source": "inner-fit D1 whole-known normal only, same shared-support mask and group/case/window weights; held-out group excluded from reference, but encoder still inner-fit exposed",
+    "formulas": {"U": "(a_U-q_U)/IQR_U", "C": "(a_C-q_C)/IQR_C"},
+    "CF": "use C scale, never fit separate CF scale",
+    "degeneracy": "IQR<=1e-8 or insufficient supported normal calibration population blocks that reference; no outer rescue",
+    "alternatives_reviewed_only": ["A common U scale as mechanistic diagnostic", "C weighted empirical normal tail distribution; not simultaneous formal arms"],
+    "choice_rule": "fixed by nuisance-score-location/scale interpretation before future h/U/C exists, never choose by fault Recall/FPR",
+    "numeric_validation": "NOT_PERFORMED_NO_h_OR_U_C_SCORES"
+  },
+  "arms": {
+    "M0-matched": {"head": "copied common anchor,258 parameters, fresh AdamW", "loss": "Focal", "reference": "none"},
+    "M4-U": {"head": "same copied anchor and budget", "loss": "Focal on m_theta+r_U", "reference": "D1 unified kernel similarity"},
+    "M4-C": {"head": "same copied anchor and budget", "loss": "Focal on m_theta+r_C", "reference": "same D1 centers, conditional weights"},
+    "M4-CF": {
+      "revision": "CF-infer-only, owner approval required; replaces v1 gate+training protection loss proposal",
+      "head": "exact copy of selected C head, equal training opportunity via sharing; no additional optimization or checkpoint choice",
+      "loss": "C training loss only; no in-sample anchor margin or TP mask enters training objective",
+      "inference": "m_theta+r_C_positive+(1-sigmoid(m_A))*r_C_negative; frozen common M0 anchor",
+      "calibration": "exact C scale and support mask",
+      "claim_limit": "tests fixed post-selection gating only, cannot claim v1 gate+loss combination efficacy or proven robustness"
+    }
+  },
+  "CF_alternatives_reviewed": {
+    "A": "v1 in-sample gate/protection loss has train-vs-unseen margin distribution risk, not automatically outer leakage",
+    "B": "inner-fit group cross-fit entire encoder+head and preprocessing to produce honest OOF margins; head-only crossfit on exposed encoder insufficient; additional3 anchor trainings per outer fold, distribution mismatch still needs validation",
+    "C_recommendation": "infer-only finite ablation removes anchor-conditioned training loss dependence, retains inference error/FP protection risks; if v1 full CF required, defer until group crossfit budget/protocol approved"
+  },
+  "training_inheritance": {"seed": 42, "sampler": "uniform replacement, common IDs and draws per epoch=inner-fit population", "optimizer": "new AdamW lr3e-4 wd1e-4", "batch_size": 512, "Focal_gamma": 2, "Focal_alpha": null, "clip": 1, "max_epochs": 100, "warmup": 5, "min_lr": 0.000001, "schedule": "fixed100 warmup cosine", "strict_best": "inner-dev overall Macro-F1; earliest exact tie", "early_stop": "min30/patience20/significant_delta0.002", "CF_selection": "same selected C checkpoint; no additional CF-specific selection", "threshold": "fault>0.5, tie normal", "budget_estimate_not_authorization": "3 outer folds*(1 common M0 +3 head optimizations)=12 training jobs; CF uses C weights, no extra job"},
+  "evaluation": {
+    "master": "162069 IDs,83051 normal,79018 endpoint fault; no support-based removal",
+    "relative_recall": "default TP>=M0-matched for overall,6 faults,SIL overall,HIL overall per fold and pooled OOF, integer comparisons",
+    "cross_fault_domain": "all12 cells reported withTP/FN; additional hard gates require prior owner decision",
+    "FPR": "per fold and pooled OOF after recall/coverage gates, all-normal and independent-normal FP strictly lower; independent-normal Hover-directory FPR, all-normal low-motion FPR, maximum per-case known-normal FPR, case-equal normal FPR and association-group-equal normal FPR all nonworse; all other strata reported; same denominators, no post-result changing gate roles",
+    "coverage": "input/reference/fallback/final-decision separate, no unknown-as-normal; conditional support not diagnostic Recall",
+    "migration": ["FP->TN", "TN->FP", "FN->TP", "TP->FN"],
+    "absolute_R_star": "unset overall,6 faults,SIL,HIL; owner task-risk basis required, exploration only in absence",
+    "events_and_latency": "post-window phase separately authorized; no new event results here"
+  },
+  "authorization": "NOT_GRANTED",
+  "admission": "DEFER pending support review, calibration numerical degeneracy checks after separately authorized representation phase, CF revision approval, scope/R* or exploration-only decision and explicit future training authorization",
+  "forbidden_now": ["models/weights/forward", "h or U/C scores", "GPU/server", "source tensors/raw data", "Val experiments", "Test/Real", "v1 mutations", "automatic commit/push"]
+}

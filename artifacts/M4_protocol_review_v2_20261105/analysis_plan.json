@@ -1,0 +1,56 @@
+{
+  "status": "PREDECLARED_C_ONLY_STATIC_AUDIT_NO_MODELS",
+  "input_root": "../M4_design_preflight_v1_20261105",
+  "features": [
+    "vz_median_mps",
+    "speed_median_mps",
+    "speed_std_mps",
+    "gyro_p90_radps"
+  ],
+  "populations": {
+    "D1": "known_normal",
+    "D2": "known_normal and normal_origin=normal_flight",
+    "D3": "known_normal and normal_origin=normal_part_of_fault_case"
+  },
+  "folds": "frozen nested_group_assignments_3.csv",
+  "fit": "corresponding inner_fit normal population only",
+  "weight": "group equal -> eligible case equal -> normal window equal",
+  "scale": "weighted population mean/std, floor1e-8 in native units; record zero variance",
+  "kernel": "exp(-squared standardized distance/(2*4*1^2)); float64 stable log weights; exact all reference windows",
+  "query_policy": "all162069 IDs for each fold/population; inner_fit all queries exclude whole association_group, others full inner_fit reference",
+  "distances": "case representative mean(window c), group representative mean(case means), standardized with same fit stats; nearest case, nearest group, mean of nearest5 cases; exclude group on inner_fit queries",
+  "calibration": "distance q95/q99 from inner_fit normal leave-group queries, group/case/window equal weights; no labels used to choose threshold",
+  "ESS_candidates": [
+    [
+      8,
+      16,
+      5
+    ],
+    [
+      15,
+      30,
+      10
+    ],
+    [
+      30,
+      60,
+      20
+    ]
+  ],
+  "domain_mass_min": 0.05,
+  "joint_primary_proposal": "G15,C30,within-domain C10 both, domain mass>=.05 both, group representative distance<=fit-normal LOO weightedQ99, and state!=descent_proxy",
+  "sensitivity": "all three ESS candidates crossed with q95/q99; no winner selection",
+  "statistics": "window coverage plus case/group equal summaries; percentile descriptive not IID inference",
+  "forbidden": [
+    "source tensors/raw data",
+    "weights",
+    "model construction/forward",
+    "latent/h kernel/U C scores",
+    "GPU",
+    "server",
+    "Val experiments",
+    "Test/Real",
+    "v1 changes",
+    "commit/push"
+  ]
+}
