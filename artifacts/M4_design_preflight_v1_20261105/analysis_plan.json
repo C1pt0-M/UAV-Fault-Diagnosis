@@ -1,0 +1,56 @@
+{
+  "task": "M4_design_preflight_v1",
+  "stage": "SOURCE_TRAIN_ONLY_STATIC_STATISTICS_NO_MODEL_FORWARD",
+  "data_root": "D:/UAV-Data/causal_input_v1",
+  "input_allowlist": [
+    "train_cache_complete.json",
+    "input_contract.json",
+    "norm_stats.json",
+    "ledgers/train_included_windows.csv",
+    "ledgers/train_all_windows.csv",
+    "cache/train.pt"
+  ],
+  "forbidden": [
+    "Test/Real tensors and ledgers",
+    "GPU",
+    "model construction/loading/forward",
+    "training servers",
+    "historical changes",
+    "dependency installation"
+  ],
+  "population": "All162069 qualified source Train Base26 windows, no residual eligibility restriction",
+  "normal_reference_eligibility": "qualified_y0 AND whole_window_label_valid AND fault_fraction0",
+  "pure_fault_description": "qualified_y1 AND whole_window_label_valid AND fault_fraction1",
+  "state_rule": "Unmodified collect_m3_formal_results.py::observed_states; exact AST function only, not importing parent module",
+  "folds": [
+    5,
+    3
+  ],
+  "fold_seed": "M4-group-preflight-v1-20261105",
+  "fold_algorithm": "One deterministic SHA order within fault-directory x historical-flight-directory association-group strata, round-robin from least-populated fold. No state/outcome-optimized retries. Frozen association_group unchanged.",
+  "support_threshold_provenance": "Reuse prior conditioned-residual descriptive support thresholds as engineering gates only, not statistical power or application safety standards",
+  "normal_reference_train_minimum": {
+    "windows": 1000,
+    "cases": 30,
+    "association_groups": 15,
+    "cases_per_domain": 10
+  },
+  "heldout_description_minimum": {
+    "normal_windows": 20,
+    "fault_windows": 20,
+    "normal_cases": 4,
+    "fault_cases": 4,
+    "normal_association_groups": 2,
+    "fault_association_groups": 2
+  },
+  "core_heldout_fault_domain_minimum": {
+    "fault_windows": 20,
+    "fault_cases": 4,
+    "fault_association_groups": 2
+  },
+  "no_normal_state_policy": "Keep all IDs, mark unsupported. No reference fill or interpreting unavailable as normal. No generalization claim for unsupported state.",
+  "pre_post_pair": "Same case latest whole-known pre_fault window and earliest whole-known stable_fault window; gaps retained. Observational, not causal or continuous-event latency.",
+  "distribution_unit": "One case x state x known label median of per-window physical summaries. Fixed-direction signed AUC against independent normal cases only, no sign flipping, thresholds, or classifier fit.",
+  "normal_domain_comparison": "Case and association-group descriptions, no IID-window p-values",
+  "historical_encoder_exposure": "Full Train-supervised M0 features cannot support independent unseen-case validation. Future outer fold encoder and all fitted stats must exclude outer-held-out groups."
+}

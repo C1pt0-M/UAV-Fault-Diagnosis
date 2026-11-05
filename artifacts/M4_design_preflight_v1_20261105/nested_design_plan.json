@@ -1,0 +1,10 @@
+{
+  "status": "DESIGN_ONLY_NOT_AUTHORIZATION_TO_TRAIN",
+  "outer_design": "fold_assignments_3.csv",
+  "inner_seed": "M4-inner-group-v1-20261105",
+  "inner_dev_target_fraction": 0.2,
+  "strata": ["fault_directory", "flight_directory"],
+  "allocation": "Within each outer-training stratum order groups by SHA256(seed|outer_fold|association_group); take round(0.2*n), half-up, bounded to [1,n-1] when n>=2 as inner_dev. A singleton stays inner_fit and is reported. No outcome/state-driven retries.",
+  "ownership": "Encoder, input normalization, condition normalization and normal reference fit only on inner_fit; inner_dev selects checkpoint without fitting statistics; outer_held_out evaluates once after design frozen.",
+  "scope": "Metadata and support counts only; no model, forward, optimizer, GPU or Test/Real reads."
+}

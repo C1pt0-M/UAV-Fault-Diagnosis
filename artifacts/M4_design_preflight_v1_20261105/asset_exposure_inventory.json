@@ -1,0 +1,114 @@
+{
+  "scope": "TRAIN_ASSET_METADATA_ONLY_NO_MODEL_OR_VAL_PREDICTIONS_LOADED",
+  "M0_run_directory": "artifacts/causal_pure_mstca_m0_v1_20261101/results/runs/uniform_replacement",
+  "M0_run_files": [
+    {
+      "name": "best.pt",
+      "bytes": 439899,
+      "contents_loaded": false
+    },
+    {
+      "name": "history.json",
+      "bytes": 506817,
+      "contents_loaded": false
+    },
+    {
+      "name": "initial.pt",
+      "bytes": 438434,
+      "contents_loaded": false
+    },
+    {
+      "name": "last.pt",
+      "bytes": 439899,
+      "contents_loaded": false
+    },
+    {
+      "name": "norm_stats.json",
+      "bytes": 2702,
+      "contents_loaded": false
+    },
+    {
+      "name": "protocol.json",
+      "bytes": 10986,
+      "contents_loaded": false
+    },
+    {
+      "name": "report.json",
+      "bytes": 9200,
+      "contents_loaded": false
+    },
+    {
+      "name": "source_validation_predictions.npz",
+      "bytes": 318994,
+      "contents_loaded": false
+    },
+    {
+      "name": "trainer.py",
+      "bytes": 15259,
+      "contents_loaded": false
+    }
+  ],
+  "M0_training_population_from_read_report": {
+    "source_Train_windows": 162069,
+    "source_Train_cases": 2570,
+    "source_Val_used_historically_for_selection": 34710
+  },
+  "M0_encoder_exposure": "Every current source Train case was available to historical supervised M0; later normal-reference group holdout is not independent unseen-case encoder validation. No h generated now.",
+  "physical_summary_npz": {
+    "path": "artifacts/M3_physical_diagnosis_v1_20261103/local_summaries/train.npz",
+    "sha256": "e066280046bee760e980401a7cd39be1cba174b3d308d66f46517067a6c5aa16",
+    "keys_shapes_dtypes": {
+      "original_ids": {
+        "shape": [
+          151833
+        ],
+        "dtype": "int64"
+      },
+      "names": {
+        "shape": [
+          39
+        ],
+        "dtype": "<U17"
+      },
+      "o5_clamp": {
+        "shape": [
+          151833
+        ],
+        "dtype": "float32"
+      },
+      "median": {
+        "shape": [
+          151833,
+          39
+        ],
+        "dtype": "float32"
+      },
+      "mean": {
+        "shape": [
+          151833,
+          39
+        ],
+        "dtype": "float32"
+      },
+      "variance": {
+        "shape": [
+          151833,
+          39
+        ],
+        "dtype": "float32"
+      },
+      "drift": {
+        "shape": [
+          151833,
+          13
+        ],
+        "dtype": "float32"
+      }
+    },
+    "interpretation": "Base26+O9+N4 physical summaries; not MSTCA128 latent features"
+  },
+  "saved_M0_Train_h_found_in_checked_assets": false,
+  "search_limit": "Only listed asset scope checked, not proof of absence in all archives",
+  "model_weight_contents_read": false,
+  "model_forward": false
+}

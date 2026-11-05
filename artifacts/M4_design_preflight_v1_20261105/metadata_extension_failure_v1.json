@@ -1,0 +1,13 @@
+{
+  "status": "FAILED_AFTER_FOUR_NEW_CSV_WRITES_BEFORE_PAIR_RECONCILIATION",
+  "script": "extend_design_metadata.py",
+  "error": "AttributeError: DataFrame has no attribute qualified_y; case_state_feature_summaries uses known_label",
+  "retained_outputs": [
+    "nested_group_assignments_3.csv",
+    "nested_populations_3.csv",
+    "nested_normal_state_support_3.csv",
+    "nested_fault_domain_support_3.csv"
+  ],
+  "correction": "design_metadata_reproduce_v2.py reconstructs and reconciles all four CSVs and pair table without overwrite; see nested_design_verification.json",
+  "historical_or_source_data_modified": false
+}

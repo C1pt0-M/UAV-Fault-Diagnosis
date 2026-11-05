@@ -1,0 +1,196 @@
+{
+  "status": "COMPLETE_SOURCE_TRAIN_ONLY_NO_MODEL_FORWARD",
+  "population": {
+    "windows": 162069,
+    "cases": 2570,
+    "groups": 1296,
+    "normal_endpoint_windows": 83051,
+    "normal_endpoint_cases": 2570,
+    "normal_endpoint_groups": 1296,
+    "fault_endpoint_windows": 79018,
+    "fault_endpoint_cases": 2200,
+    "fault_endpoint_groups": 1128,
+    "known_normal_windows": 83051,
+    "known_normal_cases": 2570,
+    "known_normal_groups": 1296,
+    "pure_fault_windows": 73098,
+    "pure_fault_cases": 2198,
+    "pure_fault_groups": 1127
+  },
+  "original_cases": 2580,
+  "admitted_cases": 2570,
+  "original_groups": 1296,
+  "admitted_groups": 1296,
+  "all_excluded_cases": [
+    "SIL/waypoint/motor/TestCase_138_1100000137",
+    "SIL/circling/motor/TestCase_139_1300000138",
+    "HIL/hover/magnetometer/TestCase_1_2005000000",
+    "HIL/hover/magnetometer/TestCase_2_2005000001",
+    "HIL/hover/magnetometer/TestCase_12_2005000011",
+    "HIL/hover/magnetometer/TestCase_13_2005000012",
+    "HIL/hover/magnetometer/TestCase_17_2005000016",
+    "HIL/hover/magnetometer/TestCase_18_2005000017",
+    "HIL/hover/magnetometer/TestCase_26_2005000025",
+    "HIL/hover/magnetometer/TestCase_27_2005000026"
+  ],
+  "pair_group_sizes_admitted": {
+    "1": 22,
+    "2": 1274
+  },
+  "known_normal_support_states": [
+    "maneuver_proxy",
+    "climb_proxy",
+    "low_motion_proxy",
+    "translation_proxy",
+    "other_motion"
+  ],
+  "unsupported_state_population": {
+    "windows": 1344,
+    "cases": 108,
+    "groups": 62,
+    "normal_endpoint_windows": 0,
+    "normal_endpoint_cases": 0,
+    "normal_endpoint_groups": 0,
+    "fault_endpoint_windows": 1344,
+    "fault_endpoint_cases": 108,
+    "fault_endpoint_groups": 62,
+    "known_normal_windows": 0,
+    "known_normal_cases": 0,
+    "known_normal_groups": 0,
+    "pure_fault_windows": 1343,
+    "pure_fault_cases": 107,
+    "pure_fault_groups": 61
+  },
+  "pre_post_pairs": 2198,
+  "pre_post_groups": 1127,
+  "pre_post_changed": 692,
+  "pre_post_changed_fraction": 0.3148316651501365,
+  "normal_case_state_dynamics": {
+    "cases": 2570,
+    "multi_state_cases": 2566
+  },
+  "fold_designs": [
+    {
+      "k": 5,
+      "groups_per_fold": [
+        260,
+        259,
+        259,
+        259,
+        259
+      ],
+      "core_fault_domain_all_pass": true,
+      "failed_core_cells": 0,
+      "failed_state_cells": 167,
+      "total_state_cells": 360,
+      "all_states_normal_supported": false,
+      "state_summary": [
+        {
+          "state": "climb_proxy",
+          "train_reference_all_folds_pass": true,
+          "heldout_all_fault_domain_cells_pass": false,
+          "passing_heldout_cells": 23,
+          "total_heldout_cells": 60
+        },
+        {
+          "state": "descent_proxy",
+          "train_reference_all_folds_pass": false,
+          "heldout_all_fault_domain_cells_pass": false,
+          "passing_heldout_cells": 0,
+          "total_heldout_cells": 60
+        },
+        {
+          "state": "low_motion_proxy",
+          "train_reference_all_folds_pass": true,
+          "heldout_all_fault_domain_cells_pass": false,
+          "passing_heldout_cells": 39,
+          "total_heldout_cells": 60
+        },
+        {
+          "state": "maneuver_proxy",
+          "train_reference_all_folds_pass": true,
+          "heldout_all_fault_domain_cells_pass": true,
+          "passing_heldout_cells": 60,
+          "total_heldout_cells": 60
+        },
+        {
+          "state": "other_motion",
+          "train_reference_all_folds_pass": true,
+          "heldout_all_fault_domain_cells_pass": false,
+          "passing_heldout_cells": 11,
+          "total_heldout_cells": 60
+        },
+        {
+          "state": "translation_proxy",
+          "train_reference_all_folds_pass": true,
+          "heldout_all_fault_domain_cells_pass": true,
+          "passing_heldout_cells": 60,
+          "total_heldout_cells": 60
+        }
+      ]
+    },
+    {
+      "k": 3,
+      "groups_per_fold": [
+        432,
+        432,
+        432
+      ],
+      "core_fault_domain_all_pass": true,
+      "failed_core_cells": 0,
+      "failed_state_cells": 87,
+      "total_state_cells": 216,
+      "all_states_normal_supported": false,
+      "state_summary": [
+        {
+          "state": "climb_proxy",
+          "train_reference_all_folds_pass": true,
+          "heldout_all_fault_domain_cells_pass": false,
+          "passing_heldout_cells": 18,
+          "total_heldout_cells": 36
+        },
+        {
+          "state": "descent_proxy",
+          "train_reference_all_folds_pass": false,
+          "heldout_all_fault_domain_cells_pass": false,
+          "passing_heldout_cells": 0,
+          "total_heldout_cells": 36
+        },
+        {
+          "state": "low_motion_proxy",
+          "train_reference_all_folds_pass": true,
+          "heldout_all_fault_domain_cells_pass": false,
+          "passing_heldout_cells": 30,
+          "total_heldout_cells": 36
+        },
+        {
+          "state": "maneuver_proxy",
+          "train_reference_all_folds_pass": true,
+          "heldout_all_fault_domain_cells_pass": true,
+          "passing_heldout_cells": 36,
+          "total_heldout_cells": 36
+        },
+        {
+          "state": "other_motion",
+          "train_reference_all_folds_pass": true,
+          "heldout_all_fault_domain_cells_pass": false,
+          "passing_heldout_cells": 9,
+          "total_heldout_cells": 36
+        },
+        {
+          "state": "translation_proxy",
+          "train_reference_all_folds_pass": true,
+          "heldout_all_fault_domain_cells_pass": true,
+          "passing_heldout_cells": 36,
+          "total_heldout_cells": 36
+        }
+      ]
+    }
+  ],
+  "model_construction_forward_training_GPU_server": false,
+  "Test_Real_data_read": false,
+  "encoder_latent_features_generated": false,
+  "interpretation": "Descriptive Train statistics and split-support feasibility only. No unseen-case performance, diagnostic efficacy or causal fault attribution.",
+  "elapsed_s": 78.9028572999814,
+  "source_input_hashes_unchanged": true
+}
