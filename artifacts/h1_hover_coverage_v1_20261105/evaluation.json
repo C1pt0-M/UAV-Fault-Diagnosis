@@ -1,0 +1,173 @@
+{
+  "summaries": {
+    "M0_B": {
+      "late_hover_FP": 222,
+      "late_hover_n": 280,
+      "late_hover_case_fpr": {
+        "HIL/hover/no_fault/TestCase_21_2019000020": 0.0,
+        "HIL/hover/no_fault/TestCase_27_2019000026": 0.85,
+        "HIL/hover/no_fault/TestCase_29_2019000028": 0.7142857142857143,
+        "HIL/hover/no_fault/TestCase_2_2019000001": 1.0,
+        "HIL/hover/no_fault/TestCase_31_2019000030": 1.0,
+        "HIL/hover/no_fault/TestCase_33_2019000032": 0.9583333333333334,
+        "SIL/hover/no_fault/TestCase_21_1019000020": 0.9545454545454546,
+        "SIL/hover/no_fault/TestCase_27_1019000026": 0.7037037037037037,
+        "SIL/hover/no_fault/TestCase_29_1019000028": 0.6896551724137931,
+        "SIL/hover/no_fault/TestCase_2_1019000001": 0.9444444444444444,
+        "SIL/hover/no_fault/TestCase_31_1019000030": 1.0,
+        "SIL/hover/no_fault/TestCase_33_1019000032": 0.8333333333333334
+      },
+      "hover_le30_FP": 48,
+      "fault_TP": 16428,
+      "fault_n": 16970,
+      "class_TP": {
+        "GPS": 1135,
+        "accelerometer": 1178,
+        "barometer": 1196,
+        "gyroscope": 1584,
+        "magnetometer": 1340,
+        "motor": 9995
+      },
+      "class_n": {
+        "GPS": 1240,
+        "accelerometer": 1229,
+        "barometer": 1237,
+        "gyroscope": 1683,
+        "magnetometer": 1543,
+        "motor": 10038
+      },
+      "domain_TP": {
+        "HIL": 7967,
+        "SIL": 8461
+      },
+      "domain_n": {
+        "HIL": 8237,
+        "SIL": 8733
+      },
+      "hover_late_fault_TP": 3245,
+      "hover_late_fault_n": 3323,
+      "indep_FP_by_flight": {
+        "acce": 26,
+        "circling": 1,
+        "dece": 43,
+        "hover": 270,
+        "velocity": 67,
+        "waypoint": 1
+      },
+      "indep_nonhover_FP": 138,
+      "all_normal_FP": 417,
+      "all_normal_n": 17740,
+      "prefault_FP": 9,
+      "normal_FP_by_domain": {
+        "HIL": 194,
+        "SIL": 223
+      }
+    },
+    "H1": {
+      "late_hover_FP": 247,
+      "late_hover_n": 280,
+      "late_hover_case_fpr": {
+        "HIL/hover/no_fault/TestCase_21_2019000020": 0.08695652173913043,
+        "HIL/hover/no_fault/TestCase_27_2019000026": 0.95,
+        "HIL/hover/no_fault/TestCase_29_2019000028": 0.9285714285714286,
+        "HIL/hover/no_fault/TestCase_2_2019000001": 0.95,
+        "HIL/hover/no_fault/TestCase_31_2019000030": 1.0,
+        "HIL/hover/no_fault/TestCase_33_2019000032": 0.875,
+        "SIL/hover/no_fault/TestCase_21_1019000020": 1.0,
+        "SIL/hover/no_fault/TestCase_27_1019000026": 0.9629629629629629,
+        "SIL/hover/no_fault/TestCase_29_1019000028": 0.8620689655172413,
+        "SIL/hover/no_fault/TestCase_2_1019000001": 1.0,
+        "SIL/hover/no_fault/TestCase_31_1019000030": 1.0,
+        "SIL/hover/no_fault/TestCase_33_1019000032": 1.0
+      },
+      "hover_le30_FP": 121,
+      "fault_TP": 16453,
+      "fault_n": 16970,
+      "class_TP": {
+        "GPS": 1185,
+        "accelerometer": 1162,
+        "barometer": 1208,
+        "gyroscope": 1636,
+        "magnetometer": 1359,
+        "motor": 9903
+      },
+      "class_n": {
+        "GPS": 1240,
+        "accelerometer": 1229,
+        "barometer": 1237,
+        "gyroscope": 1683,
+        "magnetometer": 1543,
+        "motor": 10038
+      },
+      "domain_TP": {
+        "HIL": 7959,
+        "SIL": 8494
+      },
+      "domain_n": {
+        "HIL": 8237,
+        "SIL": 8733
+      },
+      "hover_late_fault_TP": 3184,
+      "hover_late_fault_n": 3323,
+      "indep_FP_by_flight": {
+        "acce": 154,
+        "circling": 5,
+        "dece": 146,
+        "hover": 368,
+        "velocity": 141,
+        "waypoint": 54
+      },
+      "indep_nonhover_FP": 500,
+      "all_normal_FP": 960,
+      "all_normal_n": 17740,
+      "prefault_FP": 92,
+      "normal_FP_by_domain": {
+        "HIL": 492,
+        "SIL": 468
+      }
+    }
+  },
+  "checks": {
+    "1_late_hover_FP<=140": {
+      "value": 247,
+      "pass": false
+    },
+    "2_cases_lower>=8_pairs_both>=4": {
+      "value": [
+        2,
+        0
+      ],
+      "pass": false
+    },
+    "3_fault_TP>=16343": {
+      "value": 16453,
+      "pass": true
+    },
+    "4_class_drop<=1pp_domain<=0.5pp": {
+      "value": {
+        "GPS": -4.032,
+        "accelerometer": 1.302,
+        "barometer": -0.97,
+        "gyroscope": -3.09,
+        "magnetometer": -1.231,
+        "motor": 0.917,
+        "HIL": 0.097,
+        "SIL": -0.378
+      },
+      "pass": false
+    },
+    "5_hover_late_fault_drop<=1pp": {
+      "value": 1.836,
+      "pass": false
+    },
+    "6_indep_nonhover_FP<=168": {
+      "value": 500,
+      "pass": false
+    },
+    "7_all_normal_FP<=417": {
+      "value": 960,
+      "pass": false
+    }
+  },
+  "all_pass": false
+}

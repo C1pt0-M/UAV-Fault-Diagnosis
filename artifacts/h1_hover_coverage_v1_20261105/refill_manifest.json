@@ -1,0 +1,26 @@
+{
+  "name": "h1_hover_refill_v1",
+  "source_data_version": "rflymad_causal_publication_replay_v1",
+  "rule": "train independent-normal hover cases; all stride-5 150-frame windows with all rows input-valid, endpoint label valid and reference 0; cap64 starts excluded",
+  "transform": "canonical_window with identity normalization (unnormalized, same as cache/train.pt)",
+  "cases": 56,
+  "windows": 19573,
+  "late_gt30s_windows": 7074,
+  "by_domain": {
+    "SIL": 10041,
+    "HIL": 9532
+  },
+  "x_shape": [
+    19573,
+    26,
+    150
+  ],
+  "x_sha256": "0d39b9c676da1dbf662430f0a9e9506416353889339584ea37cd7b923c9c3999",
+  "windows_csv_sha256": "3321f11e7f542e8a589b016922cc5c89534e228ef23ee55aeebb2c288ba45523",
+  "source_identities": {
+    "input_contract.json": "3ed8b8cd4008384109629dc4c8308839620e170286345e752b227495f4597945",
+    "norm_stats.json": "cd61a134842d0322d9e4bc76962ac0a8c0ff90566786c423d3096721cd856a30",
+    "ledgers/train_included_windows.csv": "0c491c2ede34534eaba020ae5a9d09257fedb692519863f325c6b0dfeb4afecb"
+  },
+  "builder_sha256": "4c358656c8d781873287061b4ef495629e7abdcb356f45a3c1b57710a2b846af"
+}

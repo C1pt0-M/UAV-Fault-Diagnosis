@@ -1,0 +1,31 @@
+{
+  "name": "h1_hover_normal_coverage_v1",
+  "status": "FROZEN_BEFORE_TRAINING",
+  "frozen_at": "2026-11-05",
+  "protocol_doc": "docs/research/2026-11-05/H1_hover_normal_coverage_protocol_draft.md",
+  "base_protocol": "configs/experiments/causal_pure_mstca_m0_v1.json",
+  "base_protocol_sha256": "6ef47aead15fea51e4c7d4b53289383ecd038d67b82e3cae8c07ddcd8b450fe6",
+  "comparator": "artifacts/causal_pure_mstca_m0_v1_20261101/results/runs/balanced_source_normal",
+  "arm": "balanced_source_normal",
+  "seed": 42,
+  "draws_per_epoch": 162069,
+  "class_prior": "Normal weights rescaled so total normal mass = 83051 (M0); fault probability stays 0.48756. normal_flight and prefault pools each keep half of normal mass; refill only redistributes inside normal_flight. Target hover>30s normal mass 1.50% -> ~5.2%.",
+  "single_change": "Append 19573 refill windows (train independent-normal hover cases, stride-5, cap64 starts excluded) as normal_flight before Balanced weights",
+  "refill_x_sha256": "0d39b9c676da1dbf662430f0a9e9506416353889339584ea37cd7b923c9c3999",
+  "refill_windows_sha256": "3321f11e7f542e8a589b016922cc5c89534e228ef23ee55aeebb2c288ba45523",
+  "success_criteria": {
+    "primary_1": "independent normal hover >30s FP <= 140/280",
+    "primary_2": ">=8/12 late hover cases lower >30s FPR than M0 B, and >=4/6 pair groups lower in both domains",
+    "constraint_3": "overall fault TP >= 16343 (16428-85)",
+    "constraint_4": "each of six fault classes recall drop <= 1.0pp; SIL and HIL recall drop <= 0.5pp each",
+    "constraint_5": "hover >30s fault recall drop <= 1.0pp (M0 B 3245/3323)",
+    "constraint_6": "independent normal FP in non-hover directories <= 168 (M0 B 138 + 30)",
+    "constraint_7": "all-normal FP <= 417"
+  },
+  "decisions_taken_without_explicit_reply": [
+    "draws option (a) 162069",
+    "small-tolerance recall constraints instead of zero-drop",
+    "primary target 50%"
+  ],
+  "forbidden": ["internal test", "Real", "threshold change", "checkpoint reselection", "extra seeds before result review"]
+}
