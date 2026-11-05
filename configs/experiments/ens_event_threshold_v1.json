@@ -1,0 +1,23 @@
+{
+  "name": "ens_event_threshold_v1",
+  "status": "FROZEN_BEFORE_RUN",
+  "frozen_at": "2026-11-06",
+  "purpose": "Choose the ENS event onset threshold on train held-out continuous replay so that ENS false-event rate does not exceed M0 at the deployment default; confirm on source val; only then evaluate Real.",
+  "models": {
+    "train_heldout": "each train case scored by models that did not see it: M0 fold best.pt from feature_groupcv_v1 (seed 42) and GBT refit per fold with the frozen feature_groupcv_v1 recipe (random_state 0; must reproduce gbt_heldout.npz)",
+    "val": "M0 B best.pt and full-train GBT pkl, as in ens_event_replay_val_v1"
+  },
+  "frame_scoring": "same as ens_event_replay_val_v1: every frame with a fully input-valid 150-frame history",
+  "policy": {
+    "M0": "deployment default: onset 0.60, clear 0.40, k_on 3, k_off 3, min_event 0.5 s, merge 0.5 s",
+    "ENS": "same except onset chosen from grid [0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95]; clear stays 0.40"
+  },
+  "selection_rule": "on pooled train held-out independent-normal cases (normal_origin normal_flight), ENS onset = smallest grid value whose final false events per valid-exposure hour <= M0's at 0.60. If none qualifies, stop and report.",
+  "metrics": "as ens_event_replay_val_v1: independent-normal false events, per hour, cases with false event, alarm occupancy; fault cases scored after onset: detected = new confirmation with candidate_start >= onset, plus count of events spanning onset; paired confirmation latency on cases detected by both",
+  "pass_rule": {
+    "a": "ENS independent-normal false events <= M0 (train held-out pooled, and val)",
+    "b": "ENS fault cases detected (new confirmation) >= M0 minus 1% of fault cases scored after onset (train held-out pooled, and val)",
+    "verdict": "PASS if a and b hold on both populations; then ENS with the chosen onset is the candidate for Real"
+  },
+  "forbidden": ["internal test", "Real", "changing grid, rule or other policy parameters after seeing results", "choosing threshold on val"]
+}
