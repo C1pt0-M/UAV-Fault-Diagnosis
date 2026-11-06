@@ -1,0 +1,12 @@
+{
+  "name": "common_fa_target_v1",
+  "status": "FROZEN_BEFORE_RUN",
+  "frozen_at": "2026-11-06",
+  "purpose": "Pick event onset thresholds for M0 and ENS with one shared false-alarm target, so the Real comparison does not credit ENS for threshold tuning.",
+  "target": "train held-out independent-normal final false events per valid-exposure hour <= 20",
+  "grid": [0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95],
+  "rule": "for each model separately: smallest grid onset meeting the target. Other event parameters fixed (clear 0.4, k_on 3, k_off 3, min_event 0.5 s, merge 0.5 s).",
+  "data": "events_per_case.csv and m0_sweep_supplement results from ens_event_threshold_v1 (train held-out rows only); val not used for selection",
+  "outputs": "chosen onset per model; these, plus M0 at the deployment default 0.60, are the three arms for Real",
+  "forbidden": ["using val, internal test or Real for selection", "changing target or grid after seeing selection"]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "real_event_eval_v1",
+  "status": "FROZEN_BEFORE_REAL_ACCESS",
+  "frozen_at": "2026-11-06",
+  "relation_to_v1_protocol": "Uses the frozen roles of rflymad_online_normal_adapt_v1 (real_case_roles_v1.csv) and its event-level primary metrics. No target-domain adaptation (A0 only); no Real data used for training, adaptation, thresholds or selection. Real was viewed in earlier rounds with other models and the legacy input; this run is reported as a frozen confirmatory evaluation, not a blind test.",
+  "population": {
+    "main": "test_normal (33 cases) and test_fault (392: 223 motor, 169 sensor)",
+    "supplemental": "supplemental_normal_test (25 normal-only segments), reported separately",
+    "not_used": "adapt_normal, calibrate_normal",
+    "label_quarantine": "9 cases flagged in tasks.json: fault detection metrics exclude them and report the count; normal metrics unaffected"
+  },
+  "timeline": "causal_input_v1 cases, full crop, 20 ms grid, frame scored when the 150-frame history is fully input-valid (same as ens_event_replay_val_v1)",
+  "arms": {
+    "M0@0.60": "M0 B best.pt, deployment default onset",
+    "M0@0.70": "M0 B best.pt, onset chosen by common_fa_target_v1",
+    "ENS@0.75": "mean of M0 B and full-train GBT pkl, onset chosen by common_fa_target_v1"
+  },
+  "event_policy_fixed": "clear 0.4, k_on 3, k_off 3, min_event 0.5 s, merge 0.5 s",
+  "onset_reference": "first frame with row_label_valid and reference_state == 1 (Real ROS-based reference from causal_input_v1); not physical damage truth",
+  "metrics": {
+    "normal_case_event_false_alarm_rate": "cases with >=1 final event lying entirely in label-valid normal time / cases",
+    "false_alarm_events_per_hour": "such events / valid normal exposure hours; also alarm occupancy",
+    "fault_case_event_recall": "fault cases with a new confirmation at or after onset / fault cases scored after onset; motor and sensor separately",
+    "pre_onset_alarm": "fault cases with an event spanning onset, reported separately, never as negative latency",
+    "latency": "confirmation time minus onset, median/P90, and paired on cases detected by both arms",
+    "secondary": "window-level FPR/recall at 0.5 on the cap64 supervised windows (Real role windows)"
+  },
+  "decision": "Descriptive comparison, no pass/fail. ENS is credited only for differences versus M0@0.70 (same false-alarm target).",
+  "forbidden": ["changing arms, thresholds or policy after Real access", "a second Real evaluation", "using adapt/calibrate roles"]
+}
