@@ -1,0 +1,81 @@
+..................EEEEE....x                                             [100%]
+=================================== ERRORS ====================================
+_____________ ERROR at setup of test_pure_anchor_tamper_rejected ______________
+
+self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/mstca_ablation_factory_v1_20261106/pytest_run1/tmp')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\UAV-Fault-Diagnosis\\artifacts\\mstca_ablation_factory_v1_20261106\\pytest_run1\\tmp'
+
+D:\python3.12.4\Lib\pathlib.py:1311: FileNotFoundError
+_____________ ERROR at setup of test_conversion_refuses_overwrite _____________
+
+self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/mstca_ablation_factory_v1_20261106/pytest_run1/tmp')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\UAV-Fault-Diagnosis\\artifacts\\mstca_ablation_factory_v1_20261106\\pytest_run1\\tmp'
+
+D:\python3.12.4\Lib\pathlib.py:1311: FileNotFoundError
+_ ERROR at setup of test_conversion_rejects_bad_source_identity_or_mapping[sha256] _
+
+self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/mstca_ablation_factory_v1_20261106/pytest_run1/tmp')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\UAV-Fault-Diagnosis\\artifacts\\mstca_ablation_factory_v1_20261106\\pytest_run1\\tmp'
+
+D:\python3.12.4\Lib\pathlib.py:1311: FileNotFoundError
+_ ERROR at setup of test_conversion_rejects_bad_source_identity_or_mapping[state_digest] _
+
+self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/mstca_ablation_factory_v1_20261106/pytest_run1/tmp')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\UAV-Fault-Diagnosis\\artifacts\\mstca_ablation_factory_v1_20261106\\pytest_run1\\tmp'
+
+D:\python3.12.4\Lib\pathlib.py:1311: FileNotFoundError
+_ ERROR at setup of test_conversion_rejects_bad_source_identity_or_mapping[m0_mapped_state_digest] _
+
+self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/mstca_ablation_factory_v1_20261106/pytest_run1/tmp')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\UAV-Fault-Diagnosis\\artifacts\\mstca_ablation_factory_v1_20261106\\pytest_run1\\tmp'
+
+D:\python3.12.4\Lib\pathlib.py:1311: FileNotFoundError
+- generated xml file: D:\UAV-Fault-Diagnosis\artifacts\mstca_ablation_factory_v1_20261106\pytest_run1\junit.xml -
+=========================== short test summary info ===========================
+XFAIL tests/test_mstca_ablation_factory.py::test_p3_changing_altitude_batch_inputs_equal_single_window_inputs - P3: batch baro_alt_relative uses file origin, not each window origin
+ERROR tests/test_mstca_ablation_factory.py::test_pure_anchor_tamper_rejected
+ERROR tests/test_mstca_ablation_factory.py::test_conversion_refuses_overwrite
+ERROR tests/test_mstca_ablation_factory.py::test_conversion_rejects_bad_source_identity_or_mapping[sha256]
+ERROR tests/test_mstca_ablation_factory.py::test_conversion_rejects_bad_source_identity_or_mapping[state_digest]
+ERROR tests/test_mstca_ablation_factory.py::test_conversion_rejects_bad_source_identity_or_mapping[m0_mapped_state_digest]
+22 passed, 1 xfailed, 5 errors in 4.49s
