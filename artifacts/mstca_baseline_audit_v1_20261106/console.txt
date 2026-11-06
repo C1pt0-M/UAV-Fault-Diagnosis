@@ -1,0 +1,971 @@
+{
+  "scope": {
+    "device": "cpu",
+    "optimizer_steps": 0,
+    "feature_windows_per_split": 64,
+    "full_source_label_metadata_only": true,
+    "production_dataset_full_scan": false,
+    "trained_checkpoint_used": false,
+    "opened_external_data_files": [
+      "D:\\UAV-Data\\causal_input_v1\\cache\\train.pt",
+      "D:\\UAV-Data\\causal_input_v1\\cache\\val.pt",
+      "D:\\UAV-Data\\causal_input_v1\\input_contract.json",
+      "D:\\UAV-Data\\causal_input_v1\\ledgers\\train_included_windows.csv",
+      "D:\\UAV-Data\\causal_input_v1\\ledgers\\val_included_windows.csv",
+      "D:\\UAV-Data\\causal_input_v1\\norm_stats.json"
+    ]
+  },
+  "environment": {
+    "python": "3.12.4 (tags/v3.12.4:8e8a4ba, Jun  6 2024, 19:30:16) [MSC v.1940 64 bit (AMD64)]",
+    "torch": "2.8.0+cpu",
+    "numpy": "2.5.1",
+    "pandas": "2.3.1",
+    "threads": 4
+  },
+  "initialization": {
+    "anchor_sha256": "b666b8a28129319f0b58e1c62ab7fa0e8698d61ec6aa32243824cda243f3e956",
+    "anchor_state_digest": "7772ccc1a20ce8b6d97c7ce83fc4927a8ff9a5dc7bef17038ca767806e561c55",
+    "m0_initial_state_digest": "a68551099cba00575f1eec6edc31ccf47b39ca8e0fa204ae2fe065d3400be646",
+    "common_encoder_and_head_exact_anchor_match": true,
+    "legacy_fresh_seed_reproduction_checked_in_matching_environment": false,
+    "local_environment_matches_formal": false,
+    "common_state_tensors": 41,
+    "parameters": 105938,
+    "whole_models_identical": false,
+    "trained_checkpoint_used": false,
+    "direct_digest": "727d8c8785d008c8c8283816dc12f946287a7502b2e1e08e728f0281ddb2b16b",
+    "direct_repeated_digest_equal": true,
+    "direct_repeated_forward_bitwise": true,
+    "mapped_repeated_forward_bitwise": true,
+    "direct_changed_keys": [
+      "encoder.branch_s.0.weight",
+      "encoder.branch_s.0.bias",
+      "encoder.branch_m.0.weight",
+      "encoder.branch_m.0.bias",
+      "encoder.branch_l.0.weight",
+      "encoder.branch_l.0.bias",
+      "encoder.block2.0.weight",
+      "encoder.block2.0.bias",
+      "encoder.block3.0.weight",
+      "encoder.block3.0.bias",
+      "head.1.weight",
+      "head.1.bias"
+    ],
+    "discarded_keys": [
+      "relation_encoder.branch_s.0.weight",
+      "relation_encoder.branch_s.0.bias",
+      "relation_encoder.branch_s.1.weight",
+      "relation_encoder.branch_s.1.bias",
+      "relation_encoder.branch_s.1.running_mean",
+      "relation_encoder.branch_s.1.running_var",
+      "relation_encoder.branch_s.1.num_batches_tracked",
+      "relation_encoder.branch_m.0.weight",
+      "relation_encoder.branch_m.0.bias",
+      "relation_encoder.branch_m.1.weight",
+      "relation_encoder.branch_m.1.bias",
+      "relation_encoder.branch_m.1.running_mean",
+      "relation_encoder.branch_m.1.running_var",
+      "relation_encoder.branch_m.1.num_batches_tracked",
+      "relation_encoder.branch_l.0.weight",
+      "relation_encoder.branch_l.0.bias",
+      "relation_encoder.branch_l.1.weight",
+      "relation_encoder.branch_l.1.bias",
+      "relation_encoder.branch_l.1.running_mean",
+      "relation_encoder.branch_l.1.running_var",
+      "relation_encoder.branch_l.1.num_batches_tracked",
+      "relation_encoder.se.fc.0.weight",
+      "relation_encoder.se.fc.0.bias",
+      "relation_encoder.se.fc.2.weight",
+      "relation_encoder.se.fc.2.bias",
+      "relation_encoder.block2.0.weight",
+      "relation_encoder.block2.0.bias",
+      "relation_encoder.block2.1.weight",
+      "relation_encoder.block2.1.bias",
+      "relation_encoder.block2.1.running_mean",
+      "relation_encoder.block2.1.running_var",
+      "relation_encoder.block2.1.num_batches_tracked",
+      "relation_encoder.block3.0.weight",
+      "relation_encoder.block3.0.bias",
+      "relation_encoder.block3.1.weight",
+      "relation_encoder.block3.1.bias",
+      "relation_encoder.block3.1.running_mean",
+      "relation_encoder.block3.1.running_var",
+      "relation_encoder.block3.1.num_batches_tracked",
+      "relation_proj.weight",
+      "relation_proj.bias",
+      "gate.0.weight",
+      "gate.0.bias",
+      "gate.2.weight",
+      "gate.2.bias"
+    ],
+    "mapped_keys": [
+      "encoder.branch_s.0.weight",
+      "encoder.branch_s.0.bias",
+      "encoder.branch_s.1.weight",
+      "encoder.branch_s.1.bias",
+      "encoder.branch_s.1.running_mean",
+      "encoder.branch_s.1.running_var",
+      "encoder.branch_s.1.num_batches_tracked",
+      "encoder.branch_m.0.weight",
+      "encoder.branch_m.0.bias",
+      "encoder.branch_m.1.weight",
+      "encoder.branch_m.1.bias",
+      "encoder.branch_m.1.running_mean",
+      "encoder.branch_m.1.running_var",
+      "encoder.branch_m.1.num_batches_tracked",
+      "encoder.branch_l.0.weight",
+      "encoder.branch_l.0.bias",
+      "encoder.branch_l.1.weight",
+      "encoder.branch_l.1.bias",
+      "encoder.branch_l.1.running_mean",
+      "encoder.branch_l.1.running_var",
+      "encoder.branch_l.1.num_batches_tracked",
+      "encoder.se.fc.0.weight",
+      "encoder.se.fc.0.bias",
+      "encoder.se.fc.2.weight",
+      "encoder.se.fc.2.bias",
+      "encoder.block2.0.weight",
+      "encoder.block2.0.bias",
+      "encoder.block2.1.weight",
+      "encoder.block2.1.bias",
+      "encoder.block2.1.running_mean",
+      "encoder.block2.1.running_var",
+      "encoder.block2.1.num_batches_tracked",
+      "encoder.block3.0.weight",
+      "encoder.block3.0.bias",
+      "encoder.block3.1.weight",
+      "encoder.block3.1.bias",
+      "encoder.block3.1.running_mean",
+      "encoder.block3.1.running_var",
+      "encoder.block3.1.num_batches_tracked",
+      "head.1.weight",
+      "head.1.bias"
+    ]
+  },
+  "structure": {
+    "parameters": 105938,
+    "state_tensors": 41,
+    "shapes": {
+      "encoder.branch_s.0": [
+        1,
+        24,
+        150
+      ],
+      "encoder.branch_s.1": [
+        1,
+        24,
+        150
+      ],
+      "encoder.branch_s.2": [
+        1,
+        24,
+        150
+      ],
+      "encoder.branch_s": [
+        1,
+        24,
+        150
+      ],
+      "encoder.branch_m.0": [
+        1,
+        24,
+        150
+      ],
+      "encoder.branch_m.1": [
+        1,
+        24,
+        150
+      ],
+      "encoder.branch_m.2": [
+        1,
+        24,
+        150
+      ],
+      "encoder.branch_m": [
+        1,
+        24,
+        150
+      ],
+      "encoder.branch_l.0": [
+        1,
+        16,
+        150
+      ],
+      "encoder.branch_l.1": [
+        1,
+        16,
+        150
+      ],
+      "encoder.branch_l.2": [
+        1,
+        16,
+        150
+      ],
+      "encoder.branch_l": [
+        1,
+        16,
+        150
+      ],
+      "encoder.se.fc.0": [
+        1,
+        16
+      ],
+      "encoder.se.fc.1": [
+        1,
+        16
+      ],
+      "encoder.se.fc.2": [
+        1,
+        64
+      ],
+      "encoder.se.fc.3": [
+        1,
+        64
+      ],
+      "encoder.se.fc": [
+        1,
+        64
+      ],
+      "encoder.se": [
+        1,
+        64,
+        150
+      ],
+      "encoder.pool1": [
+        1,
+        64,
+        75
+      ],
+      "encoder.block2.0": [
+        1,
+        128,
+        75
+      ],
+      "encoder.block2.1": [
+        1,
+        128,
+        75
+      ],
+      "encoder.block2.2": [
+        1,
+        128,
+        75
+      ],
+      "encoder.block2.3": [
+        1,
+        128,
+        37
+      ],
+      "encoder.block2": [
+        1,
+        128,
+        37
+      ],
+      "encoder.block3.0": [
+        1,
+        128,
+        37
+      ],
+      "encoder.block3.1": [
+        1,
+        128,
+        37
+      ],
+      "encoder.block3.2": [
+        1,
+        128,
+        37
+      ],
+      "encoder.block3.3": [
+        1,
+        128,
+        1
+      ],
+      "encoder.block3": [
+        1,
+        128,
+        1
+      ],
+      "encoder": [
+        1,
+        128
+      ],
+      "head.0": [
+        1,
+        128
+      ],
+      "head.1": [
+        1,
+        2
+      ],
+      "head": [
+        1,
+        2
+      ]
+    },
+    "macs_by_layer": {
+      "encoder.branch_s.0": 280800,
+      "encoder.branch_m.0": 655200,
+      "encoder.branch_l.0": 936000,
+      "encoder.se.fc.0": 1024,
+      "encoder.se.fc.2": 1024,
+      "encoder.block2.0": 3072000,
+      "encoder.block3.0": 1818624,
+      "head.1": 256
+    },
+    "conv_linear_macs": 6764928
+  },
+  "tail_probe": [
+    {
+      "k": 1,
+      "start": {
+        "logit_l2_mean": 2.9483946491382085e-05,
+        "logit_l2_median": 2.522679824323859e-05,
+        "fault_probability_abs_mean": 7.499009370803833e-06
+      },
+      "end": {
+        "logit_l2_mean": 1.9585420886869542e-05,
+        "logit_l2_median": 1.8838611140381545e-05,
+        "fault_probability_abs_mean": 5.139969289302826e-06
+      },
+      "end_start_mean_ratio": 0.664274061567511
+    },
+    {
+      "k": 3,
+      "start": {
+        "logit_l2_mean": 5.562063597608358e-05,
+        "logit_l2_median": 5.939490074524656e-05,
+        "fault_probability_abs_mean": 1.3832002878189087e-05
+      },
+      "end": {
+        "logit_l2_mean": 5.0061320507666096e-05,
+        "logit_l2_median": 4.178903691354208e-05,
+        "fault_probability_abs_mean": 1.2024305760860443e-05
+      },
+      "end_start_mean_ratio": 0.9000494084460318
+    },
+    {
+      "k": 5,
+      "start": {
+        "logit_l2_mean": 7.551546150352806e-05,
+        "logit_l2_median": 7.270169589901343e-05,
+        "fault_probability_abs_mean": 1.6080215573310852e-05
+      },
+      "end": {
+        "logit_l2_mean": 6.340248364722356e-05,
+        "logit_l2_median": 5.6181554100476205e-05,
+        "fault_probability_abs_mean": 1.3752840459346771e-05
+      },
+      "end_start_mean_ratio": 0.8395960560243867
+    },
+    {
+      "k": 10,
+      "start": {
+        "logit_l2_mean": 0.00011476680811028928,
+        "logit_l2_median": 0.00010781835590023547,
+        "fault_probability_abs_mean": 2.5237910449504852e-05
+      },
+      "end": {
+        "logit_l2_mean": 0.0001238581899087876,
+        "logit_l2_median": 0.00011475545761641115,
+        "fault_probability_abs_mean": 3.148522228002548e-05
+      },
+      "end_start_mean_ratio": 1.079216124837781
+    }
+  ],
+  "gradient": {
+    "per_frame_abs_channel_sum_mean": [
+      0.0013848863309249282,
+      0.0015361307887360454,
+      0.0018323821714147925,
+      0.001991088269278407,
+      0.0020322492346167564,
+      0.002293319907039404,
+      0.0021530534140765667,
+      0.0023032655008137226,
+      0.0023662762250751257,
+      0.0022807330824434757,
+      0.0022419127635657787,
+      0.002294908044859767,
+      0.002245851792395115,
+      0.002250741934403777,
+      0.002269796095788479,
+      0.002191303763538599,
+      0.0022473097778856754,
+      0.002251503523439169,
+      0.0021925647743046284,
+      0.002213697414845228,
+      0.002092387992888689,
+      0.002279421780258417,
+      0.0023456942290067673,
+      0.002144560217857361,
+      0.0022975774481892586,
+      0.002306924667209387,
+      0.0021913349628448486,
+      0.0023232223466038704,
+      0.002194697503000498,
+      0.002248042728751898,
+      0.002065502805635333,
+      0.002224822761490941,
+      0.002284657210111618,
+      0.002277899533510208,
+      0.0022490392439067364,
+      0.002213825937360525,
+      0.002278425730764866,
+      0.002384407911449671,
+      0.0022509084083139896,
+      0.0023455098271369934,
+      0.0022463323548436165,
+      0.0022481651976704597,
+      0.0022193663753569126,
+      0.0021659955382347107,
+      0.0021294737234711647,
+      0.00232967222109437,
+      0.002106961328536272,
+      0.002204274758696556,
+      0.002175296889618039,
+      0.0022962051443755627,
+      0.002123626647517085,
+      0.0022396694403141737,
+      0.002208311576396227,
+      0.0022117416374385357,
+      0.0021674090530723333,
+      0.0023491347674280405,
+      0.0022366917692124844,
+      0.0023412806913256645,
+      0.0021970318630337715,
+      0.0022831219248473644,
+      0.002255283296108246,
+      0.0022007692605257034,
+      0.0022832886315882206,
+      0.0022321215365082026,
+      0.002214745618402958,
+      0.0021950392983853817,
+      0.002171006053686142,
+      0.002161282580345869,
+      0.0021218007896095514,
+      0.00228281132876873,
+      0.0022932467982172966,
+      0.002330605173483491,
+      0.002234888495877385,
+      0.0023463405668735504,
+      0.002251269528642297,
+      0.002331995638087392,
+      0.0021548583172261715,
+      0.0023521981202065945,
+      0.0022522290237247944,
+      0.0022232220508158207,
+      0.002144554629921913,
+      0.0021209917031228542,
+      0.002193775959312916,
+      0.0023337341845035553,
+      0.002249196171760559,
+      0.0022109132260084152,
+      0.0022342256270349026,
+      0.002240215428173542,
+      0.002319573424756527,
+      0.0021969927474856377,
+      0.0021561835892498493,
+      0.002286525908857584,
+      0.002358165569603443,
+      0.002285216934978962,
+      0.0022106945980340242,
+      0.002291986020281911,
+      0.0021818082313984632,
+      0.002261688932776451,
+      0.0021543449256569147,
+      0.002317285630851984,
+      0.002266327850520611,
+      0.0023957276716828346,
+      0.0023838351480662823,
+      0.002239096211269498,
+      0.002280348213389516,
+      0.0023321514017879963,
+      0.002212892286479473,
+      0.002131091896444559,
+      0.0022952789440751076,
+      0.002271376084536314,
+      0.0022538751363754272,
+      0.0022977886255830526,
+      0.0022896844893693924,
+      0.0023434674367308617,
+      0.0021846587769687176,
+      0.002327193971723318,
+      0.0022040638141334057,
+      0.0022728508338332176,
+      0.0022449514362961054,
+      0.0023039025254547596,
+      0.002256369683891535,
+      0.002206677570939064,
+      0.0023342594504356384,
+      0.0023846144322305918,
+      0.0022715015802532434,
+      0.002255091443657875,
+      0.002192416228353977,
+      0.0023237066343426704,
+      0.00222308118827641,
+      0.0023120553232729435,
+      0.0022144196555018425,
+      0.002316433237865567,
+      0.0023016389459371567,
+      0.002337157027795911,
+      0.002264763228595257,
+      0.0021904248278588057,
+      0.002256282139569521,
+      0.002324487082660198,
+      0.002279421780258417,
+      0.00232678628526628,
+      0.002086120191961527,
+      0.0021469881758093834,
+      0.0020962075795978308,
+      0.0020148397888988256,
+      0.0019553890451788902,
+      0.0018092069076374173,
+      0.0016652647173032165,
+      0.0015017729019746184,
+      0.0013018620666116476,
+      0.001056300476193428
+    ],
+    "first": 0.0013848863309249282,
+    "middle": 0.002331995638087392,
+    "last": 0.001056300476193428
+  },
+  "pool2_probe": {
+    "output_length": 37,
+    "last_direct_input_gradient": 0.0
+  },
+  "step_probe": [
+    {
+      "position": "start",
+      "span": [
+        0,
+        30
+      ],
+      "logits": [
+        0.02623075246810913,
+        0.0036125555634498596
+      ],
+      "fault_probability": 0.4943457245826721,
+      "logit_l2_from_zero": 0.008119083940982819
+    },
+    {
+      "position": "middle",
+      "span": [
+        60,
+        90
+      ],
+      "logits": [
+        0.02638992667198181,
+        0.005044298246502876
+      ],
+      "fault_probability": 0.4946637749671936,
+      "logit_l2_from_zero": 0.009533998556435108
+    },
+    {
+      "position": "end",
+      "span": [
+        120,
+        150
+      ],
+      "logits": [
+        0.025756575167179108,
+        0.0028943829238414764
+      ],
+      "fault_probability": 0.4942846894264221,
+      "logit_l2_from_zero": 0.007292736321687698
+    }
+  ],
+  "batchnorm": {
+    "dropout_modules": [
+      "head.0"
+    ],
+    "eval_b1_finite": true,
+    "eval_b1_vs_b32_max_abs": 7.450580596923828e-09,
+    "train_b1_forward_backward_finite": true
+  },
+  "loss": {
+    "gamma0_ce_abs_diff": 0.0,
+    "gamma2_formula_abs_diff": 0.0,
+    "gamma0_gradient_max_abs_diff": 0.0
+  },
+  "source_batch": {
+    "train": {
+      "feature_indices": [
+        0,
+        2573,
+        5145,
+        7718,
+        10290,
+        12863,
+        15435,
+        18008,
+        20580,
+        23153,
+        25725,
+        28298,
+        30870,
+        33443,
+        36015,
+        38588,
+        41160,
+        43733,
+        46305,
+        48878,
+        51450,
+        54023,
+        56595,
+        59168,
+        61740,
+        64313,
+        66885,
+        69458,
+        72030,
+        74603,
+        77175,
+        79748,
+        82320,
+        84893,
+        87465,
+        90038,
+        92610,
+        95183,
+        97755,
+        100328,
+        102900,
+        105473,
+        108045,
+        110618,
+        113190,
+        115763,
+        118335,
+        120908,
+        123480,
+        126053,
+        128625,
+        131198,
+        133770,
+        136343,
+        138915,
+        141488,
+        144060,
+        146633,
+        149205,
+        151778,
+        154350,
+        156923,
+        159495,
+        162068
+      ],
+      "batch_shape": [
+        32,
+        26,
+        150
+      ],
+      "batch_labels": [
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1
+      ],
+      "all_metadata_supervised_valid": true,
+      "raw_baro_first_abs_max": 0.0,
+      "population": 162069
+    },
+    "val": {
+      "feature_indices": [
+        0,
+        551,
+        1102,
+        1653,
+        2204,
+        2755,
+        3306,
+        3857,
+        4407,
+        4958,
+        5509,
+        6060,
+        6611,
+        7162,
+        7713,
+        8264,
+        8815,
+        9366,
+        9917,
+        10468,
+        11019,
+        11570,
+        12121,
+        12672,
+        13222,
+        13773,
+        14324,
+        14875,
+        15426,
+        15977,
+        16528,
+        17079,
+        17630,
+        18181,
+        18732,
+        19283,
+        19834,
+        20385,
+        20936,
+        21487,
+        22037,
+        22588,
+        23139,
+        23690,
+        24241,
+        24792,
+        25343,
+        25894,
+        26445,
+        26996,
+        27547,
+        28098,
+        28649,
+        29200,
+        29751,
+        30302,
+        30852,
+        31403,
+        31954,
+        32505,
+        33056,
+        33607,
+        34158,
+        34709
+      ],
+      "batch_shape": [
+        32,
+        26,
+        150
+      ],
+      "batch_labels": [
+        0,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0
+      ],
+      "all_metadata_supervised_valid": true,
+      "raw_baro_first_abs_max": 0.0,
+      "population": 34710
+    }
+  },
+  "parity": {
+    "columns_exact": true,
+    "val_tensor_max_abs_diff": 0.0,
+    "val_logit_max_abs_diff": 0.0,
+    "detector_model_eval": true,
+    "fixture_untrained": true,
+    "raw_publication_reconstruction_not_attempted": true
+  },
+  "online_edge_cases": {
+    "canonical_vs_detector_absolute_baro_max_abs_diff": 0.430851012468338,
+    "canonical_vs_detector_baro_max_abs_diff": 4.202127456665039e-06,
+    "batch_vs_window": [
+      {
+        "end": 150,
+        "input_max_abs_diff": 0.0,
+        "baro_z_offset_first": 0.0,
+        "logit_max_abs_diff": 1.862645149230957e-09
+      },
+      {
+        "end": 160,
+        "input_max_abs_diff": 0.028626620769500732,
+        "baro_z_offset_first": 0.028626609593629837,
+        "logit_max_abs_diff": 0.00020921695977449417
+      },
+      {
+        "end": 170,
+        "input_max_abs_diff": 0.057253241539001465,
+        "baro_z_offset_first": 0.057253219187259674,
+        "logit_max_abs_diff": 0.00042349426075816154
+      }
+    ],
+    "missing_required_channel_silently_filled": 0.0
+  },
+  "sampling": {
+    "uniform_replacement": {
+      "theory": {
+        "total_weight": 162069.0,
+        "normal_probability": 0.5124422313952699,
+        "fault_probability": 0.4875577686047301,
+        "origins": {
+          "fault_endpoint": {
+            "windows": 79018,
+            "probability": 0.4875577686047301
+          },
+          "normal_part_of_fault_case": {
+            "windows": 61906,
+            "probability": 0.3819731102184872
+          },
+          "original_normal_case": {
+            "windows": 21145,
+            "probability": 0.13046912117678272
+          }
+        }
+      },
+      "draw_counts": {
+        "normal_part_of_fault_case": 38108,
+        "fault_endpoint": 48984,
+        "original_normal_case": 12908
+      },
+      "empirical_original_fraction_within_normal": 0.2530186608122942,
+      "empirical_fault_fraction": 0.48984
+    },
+    "balanced_source_normal": {
+      "theory": {
+        "total_weight": 162069.0,
+        "normal_probability": 0.51244223139527,
+        "fault_probability": 0.4875577686047301,
+        "origins": {
+          "fault_endpoint": {
+            "windows": 79018,
+            "probability": 0.4875577686047301
+          },
+          "normal_part_of_fault_case": {
+            "windows": 61906,
+            "probability": 0.25622111569763495
+          },
+          "original_normal_case": {
+            "windows": 21145,
+            "probability": 0.2562211156976351
+          }
+        }
+      },
+      "draw_counts": {
+        "fault_endpoint": 48915,
+        "original_normal_case": 25643,
+        "normal_part_of_fault_case": 25442
+      },
+      "empirical_original_fraction_within_normal": 0.501967309386317,
+      "empirical_fault_fraction": 0.48915
+    }
+  },
+  "selection_probe": [
+    {
+      "epoch": 1,
+      "score": 0.8,
+      "state": {
+        "best_score": 0.8,
+        "best_epoch": 1,
+        "significant_reference": 0.8,
+        "bad_epochs": 0
+      },
+      "save_best": true,
+      "stop": false
+    },
+    {
+      "epoch": 30,
+      "score": 0.8,
+      "state": {
+        "best_score": 0.8,
+        "best_epoch": 1,
+        "significant_reference": 0.8,
+        "bad_epochs": 1
+      },
+      "save_best": false,
+      "stop": false
+    },
+    {
+      "epoch": 31,
+      "score": 0.801,
+      "state": {
+        "best_score": 0.801,
+        "best_epoch": 31,
+        "significant_reference": 0.8,
+        "bad_epochs": 2
+      },
+      "save_best": true,
+      "stop": false
+    },
+    {
+      "epoch": 32,
+      "score": 0.803,
+      "state": {
+        "best_score": 0.803,
+        "best_epoch": 32,
+        "significant_reference": 0.803,
+        "bad_epochs": 0
+      },
+      "save_best": true,
+      "stop": false
+    }
+  ],
+  "prediction": {
+    "argmax": [
+      0,
+      1,
+      0
+    ],
+    "softmax_argmax": [
+      0,
+      1,
+      0
+    ],
+    "strict_fault_prob_gt_half": [
+      0,
+      1,
+      0
+    ]
+  }
+}
