@@ -1,0 +1,140 @@
+{
+  "name": "s_ablation_mstca_v1",
+  "status": "FROZEN_BEFORE_RUN",
+  "frozen_at": "2026-11-06",
+  "purpose": "Source-domain structural ablation of the MSTCA baseline: is SE needed, is multi-scale needed, does MSTCA beat a parameter-matched plain CNN1D. KG branch is out of scope (abandoned by decision, not by this experiment).",
+  "design_doc": "docs/research/2026-11-06/S组结构消融协议_v1.md",
+  "arms": {
+    "S0": {"variant": "mstca", "role": "reference"},
+    "S1": {"variant": "mstca_no_se", "question": "Is SE necessary?"},
+    "S2": {"variant": "mstca_single_k7", "question": "Is multi-scale (k3/k7/k15) necessary?"},
+    "S3": {"variant": "cnn1d_matched", "question": "Does MSTCA beat a parameter-matched plain CNN1D?"}
+  },
+  "seeds": [42, 43, 44],
+  "initialization": {
+    "factory": "packages/uav_fault/uav_fault/models/cnn/ablation_factory.py: build_variant(variant, 26, 2, 0.2) then initialize_variant(model, variant, seed, policy='module_seed_v1')",
+    "historical_anchor": "Not used. S0 is a new-policy M0, not the historical seed42 M0.",
+    "receipt": "Save the factory receipt (full_state_digest, shared_subset_digest, key lists) in every run directory and assert full_state_digest equals the golden value in tests/test_mstca_ablation_factory.py for that (variant, seed)."
+  },
+  "data": {
+    "root": "causal_input_v1 (same data_identities SHA256 as configs/experiments/causal_pure_mstca_m0_v1.json; verify all nine before any run)",
+    "population": "source train qualified windows only (ledgers/train_included_windows.csv, 162069 windows). association_group must be read as string (dtype=str) to keep leading zeros.",
+    "outer_folds": {
+      "rule": "fold = int(sha256('h1cv|' + association_group).hexdigest(), 16) % 3",
+      "expected_windows": [54177, 52756, 55136],
+      "note": "Same folds as feature_groupcv_v1 / ens_groupcv_seed43_v1, so S-arm held-out predictions can later be paired with existing GBT held-out predictions."
+    },
+    "inner_selection": {
+      "rule": "inner = int(sha256('s_ablation_inner_v1|' + association_group).hexdigest(), 16) % 10 == 0, applied inside the two training folds",
+      "expected": {
+        "fold0": {"fit": 95142, "inner": 12750},
+        "fold1": {"fit": 97156, "inner": 12157},
+        "fold2": {"fit": 95122, "inner": 11811}
+      },
+      "use": "Inner windows never receive gradients; they are used only for checkpoint selection and early stopping."
+    },
+    "never_read": ["source val (until phase 2)", "internal test", "any Real data"]
+  },
+  "training": {
+    "recipe": "Identical to the frozen M0 B recipe (causal_pure_mstca_m0_v1 'balanced_source_normal' arm) except fit population, initialization and selection.",
+    "sampler": "WeightedRandomSampler, replacement=True, balanced_source_normal weights recomputed on the fit population with the existing source.sampling_weights(labels, normal_origin, True); draws per epoch = number of fit windows; sampler generator seed+11, loader generator seed+101; num_workers 0",
+    "loss": "FocalLoss gamma=2.0, alpha=None",
+    "optimizer": "AdamW lr 3e-4, weight_decay 1e-4, batch 512, gradient clip 1.0 (error_if_nonfinite)",
+    "schedule": "existing get_warmup_cosine_lr, warmup 5, horizon 100 epochs, min_lr 1e-6",
+    "max_epochs": 100,
+    "augmentation": false,
+    "mixed_precision": false,
+    "determinism": "torch.use_deterministic_algorithms(True); cudnn.benchmark False; cudnn.deterministic True; cudnn.allow_tf32 True; matmul.allow_tf32 False; CUBLAS_WORKSPACE_CONFIG=:4096:8 asserted (not setdefault); np/torch/cuda seeds = seed",
+    "model_rng": "Model construction and initialization only via the factory; global RNG must be unchanged by it."
+  },
+  "selection": {
+    "metric": "class-balanced cross-entropy on inner windows: 0.5*mean(-log p_y | y=0) + 0.5*mean(-log p_y | y=1), from softmax of eval-mode logits, float64 accumulation; lower is better",
+    "checkpoint": "save best on strict decrease; earliest epoch wins exact ties",
+    "early_stop": "min_epochs 30; stop when 20 consecutive epochs (counted after min_epochs) give no significant improvement, where significant = loss < reference * (1 - 0.005); the reference is updated only on significant improvement",
+    "also_save": "last-epoch weights and held-out predictions (sensitivity analysis only)",
+    "forbidden": "Do not evaluate the outer held-out fold during training. Held-out predictions are produced once, after training stops, for best and last weights."
+  },
+  "runs": {
+    "phase1_cv": "4 arms x 3 seeds x 3 outer folds = 36 runs. Each run trains on fit windows of the other two folds and predicts every window of its held-out fold.",
+    "order": "for seed in [42, 43, 44]: for fold in [0, 1, 2]: for arm in [S0, S1, S2, S3]. A seed is analysable only when all 12 of its runs are COMPLETE.",
+    "phase2_val": "Only after phase-1 verdicts are written and their file SHA256 recorded: 4 arms x 3 seeds = 12 runs on all train fit windows (all three folds minus inner), same selection on inner, then one prediction pass over all 34710 source val windows.",
+    "maximum_formal_jobs": 48,
+    "rerun_policy": "A run may be repeated with identical configuration only after an infrastructure failure (OOM, disconnect, node loss); log the failure. Never change seed, arm or settings to replace a completed run."
+  },
+  "evaluation": {
+    "population": "phase 1: pooled outer held-out predictions per (arm, seed) = all 162069 train windows, each predicted by the model that did not train on its fold",
+    "strata": {
+      "flight": "case_uid.split('/')[1]",
+      "fault_class": "case_uid.split('/')[2] for qualified_y == 1 (six classes)",
+      "independent_normal": "qualified_y == 0 and normal_origin == 'normal_flight'",
+      "late_hover": "independent_normal and flight == 'hover' and window_end_row * 0.02 > 30"
+    },
+    "primary": {
+      "name": "FP@R97",
+      "definition": "Per (arm, seed): t* = largest fault-probability value t among fault windows such that the fraction of fault windows with p >= t is >= 0.97; FP@R97 = number of normal windows (qualified_y == 0) with p >= t*.",
+      "comparison": "ratio = FP@R97(arm) / FP@R97(S0), paired by seed; seed aggregate = geometric mean of the three per-seed ratios"
+    },
+    "secondary": [
+      "AP (fault positive), pooled held-out",
+      "FP@R95; FP@R97 excluding late_hover",
+      "at fixed threshold p_fault > 0.5: all-normal FP, fault TP, late_hover FP (by SIL/HIL), independent non-hover FP, per-class recall outside late_hover, late_hover GPS and barometer recall",
+      "per-class fault recall at t* (matched-recall operating point), outside late_hover",
+      "class-balanced CE and Brier score on held-out",
+      "best epoch, epochs run, wall time, param count, Conv/Linear MAC",
+      "last-epoch versions of the primary metric and AP (sensitivity)",
+      "sanity only, not a controlled comparison: S0 seed 42/43 at p>0.5 vs historical M0 fold predictions of feature_groupcv_v1 and ens_groupcv_seed43_v1"
+    ],
+    "uncertainty": {
+      "method": "association_group cluster bootstrap, 2000 replicates, rng seed 20261106. In each replicate resample groups with replacement over the pooled held-out population once and apply the same resample to every arm and seed; recompute t* per arm inside the replicate.",
+      "report": "95% percentile interval for the seed-aggregate ratio and for each per-seed ratio; same for delta AP"
+    }
+  },
+  "decision_rules": {
+    "margin": "non-inferiority margin 1.10 on the FP@R97 ratio (arm may have at most 10% more false positives than S0)",
+    "class_constraint": "At t*, no fault class (outside late_hover) may lose more than 1.0 pp recall versus S0 (seed-mean). If violated, verdict is TRADE_OFF regardless of the ratio.",
+    "seed_consistency": "The per-seed ratio point estimates must fall on the same side of 1 in at least 2 of 3 seeds for any non-INCONCLUSIVE verdict.",
+    "S1_S2": {
+      "COMPONENT_HELPS": "lower 95% bound of the seed-aggregate ratio > 1.0",
+      "REMOVABLE": "upper 95% bound < 1.10 (and class constraint holds)",
+      "INCONCLUSIVE": "otherwise"
+    },
+    "S3": {
+      "MSTCA_BETTER": "lower 95% bound of the S3/S0 ratio > 1.0",
+      "NO_ADVANTAGE": "upper 95% bound < 1.10 (and class constraint holds)",
+      "INCONCLUSIVE": "otherwise"
+    },
+    "AP_consistency": "If the AP difference CI points the other way from the FP@R97 verdict (e.g. REMOVABLE but delta AP upper bound < 0), downgrade to INCONCLUSIVE and report both.",
+    "late_hover": "Reported separately, never a veto (as frozen in m0s_stats_branch_v1).",
+    "phase2_confirmation": "On source val (same metrics, no bootstrap re-selection): a phase-1 verdict is CONFIRMED if the val point-estimate ratio lies on the same side of 1.0 (for HELPS/BETTER) or below 1.10 (for REMOVABLE/NO_ADVANTAGE); otherwise NOT_CONFIRMED and both results are reported. Val never changes the phase-1 verdict."
+  },
+  "preflight_gates": [
+    "SSH alias autodl_UAV reachable; record GPU model, driver, CUDA",
+    "formal environment torch 2.5.1+cu124, numpy 2.1.3, CUDA available; mismatch stops",
+    "pytest tests/test_mstca_ablation_factory.py passes on the formal environment, in particular all 12 golden digests. On mismatch: STOP and report; never regenerate goldens.",
+    "this protocol file matches its .sha256 lock; code SHA256 match code_identities",
+    "nine data_identities SHA256 match; outer fold and inner sizes match the expected numbers",
+    "GPU determinism: S0 seed 42 fold 0 for 2 epochs run twice from scratch gives identical state_digest; otherwise STOP and report",
+    "CPU smoke (already done locally before server): every arm trains 2 epochs on <= 2048 fit windows, selection and prediction files written"
+  ],
+  "code_identities": {
+    "packages/uav_fault/uav_fault/models/cnn/ablation_factory.py": "c1b84ecb3d89ecbe222f2757448252a0e26b7615c041ffa996212fba71940408",
+    "tests/test_mstca_ablation_factory.py": "e2d118791c9daacd72cd45f9d7950fc1c5d40e8384f0006ebbf8db38f84cfe88",
+    "packages/uav_fault/uav_fault/models/cnn/lstm.py": "c01d5c1c37175f2bcbac2654d2bec43898d814073d465122afe515a825bcb369",
+    "packages/uav_fault/uav_fault/models/cnn/focal_loss.py": "8fb99a31dd838bafdbad20591313d7bef6766b5b6b64cc73cda8620ed0b3771a",
+    "packages/uav_fault/uav_fault/data/causal_cache.py": "c60774c78609381dac87ce264dc837fcc0ad414be767c0ad67ff19849c5e2a05",
+    "scripts/research/train_causal_source_v1.py": "5ff7d43bcf1b0118154b32511c085839de300f25b7c267d5aafed9bf8f088e62",
+    "scripts/research/train_causal_mstca_m0.py": "5b14a00a0dc83e37d39d9c9524133fdd5cba53963f3dfbe77a48a79dae73c9cf",
+    "configs/experiments/causal_pure_mstca_m0_v1.json": "6ef47aead15fea51e4c7d4b53289383ecd038d67b82e3cae8c07ddcd8b450fe6",
+    "new_scripts": "scripts/research/train_s_ablation.py and scripts/research/evaluate_s_ablation.py are written after this freeze; their SHA256 are recorded in the run manifest before the first formal run and must not change during phase 1."
+  },
+  "outputs": "artifacts/s_ablation_mstca_v1/<phase>/<arm>_seed<seed>_fold<fold>/ with report.json, factory_receipt.json, best.pt, last.pt, heldout_predictions_best.npz, heldout_predictions_last.npz (probabilities + original_cache_index). Fresh directories only; refuse to overwrite.",
+  "forbidden": [
+    "internal test or any Real data",
+    "source val in phase 1",
+    "Macro-F1 or any val-based checkpoint selection",
+    "evaluating the outer held-out fold during training",
+    "changing arms, margin, metric, recall level, bootstrap or decision rules after any phase-1 result is seen",
+    "dropping or replacing a seed; reporting only the best seed",
+    "regenerating golden digests on the formal environment"
+  ]
+}
