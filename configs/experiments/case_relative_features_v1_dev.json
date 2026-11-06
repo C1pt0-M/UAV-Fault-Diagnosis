@@ -1,0 +1,16 @@
+{
+  "name": "case_relative_features_v1_dev",
+  "status": "FROZEN_BEFORE_RUN",
+  "frozen_at": "2026-11-06",
+  "motivation": "Real frame-level noise is about 20x simulation (gyro_z sd 0.065 vs 0.003) and steady within a case (first 10 s vs 10-20 s nearly equal). Normalizing window statistics by the case's own early baseline may remove the domain gap while keeping fault-induced change.",
+  "baseline": "per case: input-valid frames in [t0, t0+10 s), t0 = first input-valid frame. Per channel (acc_norm recomputed): frame mean bm, frame sd bsd, mean |diff| over consecutive valid frames bad. Floors: bsd and bad >= 1e-3 * source norm_stats std of the channel. Causal: a window is eligible only if its last frame time >= t0 + 10 s.",
+  "features": "130-d: (win_mean-bm)/bsd, win_std/bsd, (win_min-bm)/bsd, (win_max-bm)/bsd, win_absdiff/bad. No raw-scale features.",
+  "model": "GBT frozen recipe (HistGradientBoosting max_iter 400, lr 0.05, max_leaf_nodes 31, l2 1.0, random_state 0, balanced normal_origin weights), fit on train eligible windows only. No Real data in fitting.",
+  "dev_evaluation": {
+    "source_val": "window normal FPR and fault recall at 0.5 overall, by class, and for independent normals in hover >30 s; reference = raw-feature full-train GBT on the same eligible val windows",
+    "real_normal": "adapt_normal + calibrate_normal (15 cases) supervised windows that are eligible: FPR at 0.5; frame fraction >= 0.5 on full timelines. Both unseen by this source-only model.",
+    "domain_probe": "same group 5-fold domain classifier as the v2 dev probe (20000 train windows vs Real adapt+calibrate normal), on relative features; reference AUC 1.0 for raw features"
+  },
+  "gate_to_test_protocol": "all of: Real normal window FPR <= 20%; val fault recall >= 95%; val normal FPR <= 3%. If passed, onset selection and a Real test protocol are frozen separately before any Real test access.",
+  "forbidden": ["Real test_normal, test_fault, supplemental", "internal test", "changing baseline length, floors or features after seeing results"]
+}
