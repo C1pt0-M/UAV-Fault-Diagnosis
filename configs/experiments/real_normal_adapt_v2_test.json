@@ -1,0 +1,17 @@
+{
+  "name": "real_normal_adapt_v2_test",
+  "status": "FROZEN_BEFORE_REAL_TEST_ACCESS",
+  "frozen_at": "2026-11-06",
+  "label": "Exploratory. Real test was viewed in real_event_eval_v1 and earlier rounds; this is the only further Real test access for the v2 adaptation line.",
+  "arms": {
+    "GBT_D2": "artifacts/real_normal_adapt_v2_dev_20261106/gbt_D2.pkl on raw causal Real input",
+    "GBT_D3": "artifacts/real_normal_adapt_v2_dev_20261106/gbt_D3.pkl on Real input aligned with affine_alignment.json (fit on adapt_normal only)"
+  },
+  "reference": "M0@0.70 and ENS@0.75 rows from real_event_eval_v1 per_case.csv (no rerun)",
+  "onset": "0.75 for both arms, fixed a priori (same value as ENS); no tuning on calibrate or test",
+  "event_policy_fixed": "clear 0.4, k_on 3, k_off 3, min_event 0.5 s, merge 0.5 s, every frame with full valid 150-frame history",
+  "population_and_metrics": "identical to real_event_eval_v1 (test_normal 33, test_fault 392 minus 7 quarantined, supplemental 25 separate; normal case false-alarm rate, events/h, occupancy; fault new-confirmation recall at/after onset, pre-onset spans, latency; window FPR/recall at 0.5)",
+  "key_question": "Does target-normal GBT keep Real fault detection, or does it call all Real data normal?",
+  "reading_rule": "Report as is. Fault recall far below M0@0.70 (e.g. new-confirmation recall under 50%) is read as the adaptation learning domain rather than fault; no rescue by retuning on Real test.",
+  "forbidden": ["changing arms, onset or policy after Real test access", "another Real test evaluation in this line"]
+}
