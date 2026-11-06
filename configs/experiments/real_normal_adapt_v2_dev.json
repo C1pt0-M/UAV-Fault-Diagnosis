@@ -1,0 +1,20 @@
+{
+  "name": "real_normal_adapt_v2_dev",
+  "status": "FROZEN_BEFORE_RUN",
+  "frozen_at": "2026-11-06",
+  "purpose": "Development stage for target-normal adaptation of M0/ENS to causal Real. Find whether Real-normal-only information can remove the saturated false alarms seen in real_event_eval_v1, before any further Real test access.",
+  "allowed_data": {
+    "fit": "Real adapt_normal (10 cases, 598 supervised windows; full-timeline frames allowed)",
+    "check": "Real calibrate_normal (5 cases, 301 windows; full-timeline frames allowed)",
+    "source": "train/val as before; val used to check source fault recall is unchanged for arms that alter the models"
+  },
+  "forbidden": ["Real test_normal, test_fault, supplemental_normal_test in this stage", "internal test"],
+  "candidate_arms": {
+    "D0": "M0, GBT, ENS unchanged (reference)",
+    "D1_affine": "per-channel affine input alignment fit on adapt_normal input-valid frames: x' = (x - mu_R) / sd_R * sd_S + mu_S, with mu_S/sd_S from train independent-normal (normal_flight) input-valid frames; channel 25 (acc_norm) recomputed from aligned accel; applied to Real only, before both models",
+    "D2_gbt_target_normal": "GBT refit with frozen recipe plus adapt_normal windows (all valid frame-ends stride 5) labelled normal, total weight equal to 0.1 of source normal weight; M0 unchanged; ENS = mean",
+    "D3": "D1 alignment + D2 GBT"
+  },
+  "dev_metrics": "window FPR at 0.5 and frame-level fraction >= ENS/M0 chosen onsets on calibrate_normal; event replay (same policy, onsets 0.70 M0 / 0.75 ENS) on calibrate_normal full timelines; adapt numbers reported as in-sample; val window fault recall and normal FPR for D2",
+  "decision": "No pass/fail in dev. Arms that do not bring calibrate_normal window FPR below 20% are dropped. Any arm kept must be frozen in a separate v2 test protocol before Real test access, and that test is labelled exploratory because Real was already viewed."
+}
