@@ -1,16 +1,32 @@
 {
   "name": "s_ablation_mstca_v1",
-  "status": "FROZEN_BEFORE_RUN",
+  "status": "FROZEN_BEFORE_RUN (revision r1, before any run)",
   "frozen_at": "2026-11-06",
   "purpose": "Source-domain structural ablation of the MSTCA baseline: is SE needed, is multi-scale needed, does MSTCA beat a parameter-matched plain CNN1D. KG branch is out of scope (abandoned by decision, not by this experiment).",
   "design_doc": "docs/research/2026-11-06/S组结构消融协议_v1.md",
   "arms": {
-    "S0": {"variant": "mstca", "role": "reference"},
-    "S1": {"variant": "mstca_no_se", "question": "Is SE necessary?"},
-    "S2": {"variant": "mstca_single_k7", "question": "Is multi-scale (k3/k7/k15) necessary?"},
-    "S3": {"variant": "cnn1d_matched", "question": "Does MSTCA beat a parameter-matched plain CNN1D?"}
+    "S0": {
+      "variant": "mstca",
+      "role": "reference"
+    },
+    "S1": {
+      "variant": "mstca_no_se",
+      "question": "Is SE necessary?"
+    },
+    "S2": {
+      "variant": "mstca_single_k7",
+      "question": "Is multi-scale (k3/k7/k15) necessary?"
+    },
+    "S3": {
+      "variant": "cnn1d_matched",
+      "question": "Does MSTCA beat a parameter-matched plain CNN1D?"
+    }
   },
-  "seeds": [42, 43, 44],
+  "seeds": [
+    42,
+    43,
+    44
+  ],
   "initialization": {
     "factory": "packages/uav_fault/uav_fault/models/cnn/ablation_factory.py: build_variant(variant, 26, 2, 0.2) then initialize_variant(model, variant, seed, policy='module_seed_v1')",
     "historical_anchor": "Not used. S0 is a new-policy M0, not the historical seed42 M0.",
@@ -21,19 +37,37 @@
     "population": "source train qualified windows only (ledgers/train_included_windows.csv, 162069 windows). association_group must be read as string (dtype=str) to keep leading zeros.",
     "outer_folds": {
       "rule": "fold = int(sha256('h1cv|' + association_group).hexdigest(), 16) % 3",
-      "expected_windows": [54177, 52756, 55136],
+      "expected_windows": [
+        54177,
+        52756,
+        55136
+      ],
       "note": "Same folds as feature_groupcv_v1 / ens_groupcv_seed43_v1, so S-arm held-out predictions can later be paired with existing GBT held-out predictions."
     },
     "inner_selection": {
       "rule": "inner = int(sha256('s_ablation_inner_v1|' + association_group).hexdigest(), 16) % 10 == 0, applied inside the two training folds",
       "expected": {
-        "fold0": {"fit": 95142, "inner": 12750},
-        "fold1": {"fit": 97156, "inner": 12157},
-        "fold2": {"fit": 95122, "inner": 11811}
+        "fold0": {
+          "fit": 95142,
+          "inner": 12750
+        },
+        "fold1": {
+          "fit": 97156,
+          "inner": 12157
+        },
+        "fold2": {
+          "fit": 95122,
+          "inner": 11811
+        }
       },
       "use": "Inner windows never receive gradients; they are used only for checkpoint selection and early stopping."
     },
-    "never_read": ["source val (until phase 2)", "internal test", "any Real data"]
+    "never_read": [
+      "source val contents (until phase 2)",
+      "internal test",
+      "any Real data"
+    ],
+    "identity_check": "Byte-level SHA256 of all nine data_identities files, including the three val files (val_cache_complete.json, cache/val.pt, ledgers/val_included_windows.csv), is required in every phase. Hashing reads bytes only; the val files must not be parsed, loaded or deserialised in phase 1."
   },
   "training": {
     "recipe": "Identical to the frozen M0 B recipe (causal_pure_mstca_m0_v1 'balanced_source_normal' arm) except fit population, initialization and selection.",
@@ -67,7 +101,9 @@
       "flight": "case_uid.split('/')[1]",
       "fault_class": "case_uid.split('/')[2] for qualified_y == 1 (six classes)",
       "independent_normal": "qualified_y == 0 and normal_origin == 'normal_flight'",
-      "late_hover": "independent_normal and flight == 'hover' and window_end_row * 0.02 > 30"
+      "late_hover_window": "flight == 'hover' and window_end_row * 0.02 > 30, any label (same as evaluate_seed43.py 'late')",
+      "late_hover_normal": "independent_normal and late_hover_window",
+      "late_hover_fault": "qualified_y == 1 and late_hover_window"
     },
     "primary": {
       "name": "FP@R97",
@@ -76,9 +112,9 @@
     },
     "secondary": [
       "AP (fault positive), pooled held-out",
-      "FP@R95; FP@R97 excluding late_hover",
-      "at fixed threshold p_fault > 0.5: all-normal FP, fault TP, late_hover FP (by SIL/HIL), independent non-hover FP, per-class recall outside late_hover, late_hover GPS and barometer recall",
-      "per-class fault recall at t* (matched-recall operating point), outside late_hover",
+      "FP@R95; FP@R97 counting only normal windows outside late_hover_normal (t* unchanged)",
+      "at fixed threshold p_fault > 0.5: all-normal FP, fault TP, late_hover_normal FP (by SIL/HIL), independent non-hover FP, per-class recall on fault windows outside late_hover_fault, GPS and barometer recall on late_hover_fault",
+      "per-class fault recall at t* (matched-recall operating point) on fault windows outside late_hover_fault",
       "class-balanced CE and Brier score on held-out",
       "best epoch, epochs run, wall time, param count, Conv/Linear MAC",
       "last-epoch versions of the primary metric and AP (sensitivity)",
@@ -91,7 +127,7 @@
   },
   "decision_rules": {
     "margin": "non-inferiority margin 1.10 on the FP@R97 ratio (arm may have at most 10% more false positives than S0)",
-    "class_constraint": "At t*, no fault class (outside late_hover) may lose more than 1.0 pp recall versus S0 (seed-mean). If violated, verdict is TRADE_OFF regardless of the ratio.",
+    "class_constraint": "At t*, no fault class may lose more than 1.0 pp recall versus S0 (seed-mean), computed on fault windows outside late_hover_fault. If violated, verdict is TRADE_OFF regardless of the ratio.",
     "seed_consistency": "The per-seed ratio point estimates must fall on the same side of 1 in at least 2 of 3 seeds for any non-INCONCLUSIVE verdict.",
     "S1_S2": {
       "COMPONENT_HELPS": "lower 95% bound of the seed-aggregate ratio > 1.0",
@@ -104,8 +140,9 @@
       "INCONCLUSIVE": "otherwise"
     },
     "AP_consistency": "If the AP difference CI points the other way from the FP@R97 verdict (e.g. REMOVABLE but delta AP upper bound < 0), downgrade to INCONCLUSIVE and report both.",
-    "late_hover": "Reported separately, never a veto (as frozen in m0s_stats_branch_v1).",
-    "phase2_confirmation": "On source val (same metrics, no bootstrap re-selection): a phase-1 verdict is CONFIRMED if the val point-estimate ratio lies on the same side of 1.0 (for HELPS/BETTER) or below 1.10 (for REMOVABLE/NO_ADVANTAGE); otherwise NOT_CONFIRMED and both results are reported. Val never changes the phase-1 verdict."
+    "late_hover": "late_hover_normal FP and late_hover_fault GPS/barometer recall are reported separately, never a veto (as frozen in m0s_stats_branch_v1).",
+    "phase2_confirmation": "On source val (same metrics, no bootstrap re-selection): a phase-1 verdict is CONFIRMED if the val point-estimate ratio lies on the same side of 1.0 (for HELPS/BETTER) or below 1.10 (for REMOVABLE/NO_ADVANTAGE); otherwise NOT_CONFIRMED and both results are reported. Val never changes the phase-1 verdict.",
+    "precedence": "Evaluate in this order and take the first that holds: INCONCLUSIVE by seed_consistency -> TRADE_OFF (class constraint) -> COMPONENT_HELPS / MSTCA_BETTER (lower bound > 1.0) -> REMOVABLE / NO_ADVANTAGE (upper bound < 1.10) -> INCONCLUSIVE. AP_consistency downgrades any non-INCONCLUSIVE verdict to INCONCLUSIVE. When HELPS/BETTER holds and the upper bound is also < 1.10, add flag effect_below_margin=true (statistically worse but by less than 10%)."
   },
   "preflight_gates": [
     "SSH alias autodl_UAV reachable; record GPU model, driver, CUDA",
@@ -136,5 +173,18 @@
     "changing arms, margin, metric, recall level, bootstrap or decision rules after any phase-1 result is seen",
     "dropping or replacing a seed; reporting only the best seed",
     "regenerating golden digests on the formal environment"
+  ],
+  "revisions": [
+    {
+      "id": "r1",
+      "date": "2026-11-06",
+      "before_any_run": true,
+      "by": "architect, answering implementer ambiguity questions",
+      "changes": [
+        "decision_rules.precedence added: overlapping HELPS/REMOVABLE intervals resolve to HELPS with effect_below_margin flag",
+        "late_hover split into late_hover_window / late_hover_normal / late_hover_fault, matching evaluate_seed43.py; fault-side exclusions use late_hover_fault",
+        "byte-level SHA256 of the three val identity files explicitly allowed in phase 1 (no parsing/loading)"
+      ]
+    }
   ]
 }

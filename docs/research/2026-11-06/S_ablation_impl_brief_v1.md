@@ -13,7 +13,7 @@
 
 ## 硬性边界
 
-- 禁止：读取 source val、内部 test、任何 Real 数据；修改已有文件（包括冻结协议 JSON、factory、已有测试）；GPU；git commit/push。
+- 禁止：读取 source val 的内容（例外：协议修订 r1 允许对 3 个 val 身份文件做字节级 SHA256，但不得解析或加载）、内部 test、任何 Real 数据；修改已有文件（包括冻结协议 JSON、factory、已有测试）；GPU；git commit/push。
 - 允许：新建 `scripts/research/train_s_ablation.py`、`scripts/research/evaluate_s_ablation.py`、`scripts/research/preflight_s_ablation.py`、`tests/test_s_ablation.py`；输出到 `artifacts/s_ablation_mstca_v1_smoke_20261106/`。
 - 读取 source train 时只读冒烟所需的窗口（每臂不超过 2048 个 fit 窗口、不超过 1024 个 inner 窗口、不超过 1024 个留出窗口），以及 train ledger 的全部元数据列。
 
