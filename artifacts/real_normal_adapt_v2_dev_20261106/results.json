@@ -1,0 +1,103 @@
+{
+  "real_dev": {
+    "D0|adapt_normal": {
+      "M0_win_fpr05": 0.9983,
+      "GBT_win_fpr05": 0.9983,
+      "ENS_win_fpr05": 1.0,
+      "M0_events": 27,
+      "ENS_events": 25,
+      "M0_occupancy": 0.9982,
+      "ENS_occupancy": 1.0,
+      "cases": 10
+    },
+    "D0|calibrate_normal": {
+      "M0_win_fpr05": 0.9967,
+      "GBT_win_fpr05": 1.0,
+      "ENS_win_fpr05": 0.9967,
+      "M0_events": 15,
+      "ENS_events": 13,
+      "M0_occupancy": 0.9959,
+      "ENS_occupancy": 1.0,
+      "cases": 5
+    },
+    "D1_affine|adapt_normal": {
+      "M0_win_fpr05": 0.9448,
+      "GBT_win_fpr05": 0.9047,
+      "ENS_win_fpr05": 0.9498,
+      "M0_events": 29,
+      "ENS_events": 28,
+      "M0_occupancy": 0.9433,
+      "ENS_occupancy": 0.9526,
+      "cases": 10
+    },
+    "D1_affine|calibrate_normal": {
+      "M0_win_fpr05": 0.9502,
+      "GBT_win_fpr05": 0.9369,
+      "ENS_win_fpr05": 0.9535,
+      "M0_events": 14,
+      "ENS_events": 13,
+      "M0_occupancy": 0.948,
+      "ENS_occupancy": 0.9505,
+      "cases": 5
+    },
+    "D2_gbt_target_normal|adapt_normal": {
+      "M0_win_fpr05": 0.9983,
+      "GBT_win_fpr05": 0.0,
+      "ENS_win_fpr05": 0.9465,
+      "M0_events": 27,
+      "ENS_events": 0,
+      "M0_occupancy": 0.9982,
+      "ENS_occupancy": 0.0,
+      "cases": 10
+    },
+    "D2_gbt_target_normal|calibrate_normal": {
+      "M0_win_fpr05": 0.9967,
+      "GBT_win_fpr05": 0.0,
+      "ENS_win_fpr05": 0.9568,
+      "M0_events": 15,
+      "ENS_events": 0,
+      "M0_occupancy": 0.9959,
+      "ENS_occupancy": 0.0,
+      "cases": 5
+    },
+    "D3|adapt_normal": {
+      "M0_win_fpr05": 0.9448,
+      "GBT_win_fpr05": 0.0,
+      "ENS_win_fpr05": 0.9047,
+      "M0_events": 29,
+      "ENS_events": 0,
+      "M0_occupancy": 0.9433,
+      "ENS_occupancy": 0.0,
+      "cases": 10
+    },
+    "D3|calibrate_normal": {
+      "M0_win_fpr05": 0.9502,
+      "GBT_win_fpr05": 0.0,
+      "ENS_win_fpr05": 0.9103,
+      "M0_events": 14,
+      "ENS_events": 0,
+      "M0_occupancy": 0.948,
+      "ENS_occupancy": 0.0,
+      "cases": 5
+    }
+  },
+  "source_val_gbt": {
+    "D0": {
+      "gbt_normal_fpr05": 0.0171,
+      "gbt_fault_recall05": 0.9691
+    },
+    "D2": {
+      "gbt_normal_fpr05": 0.0164,
+      "gbt_fault_recall05": 0.9687
+    },
+    "D3": {
+      "gbt_normal_fpr05": 0.0156,
+      "gbt_fault_recall05": 0.9679
+    }
+  },
+  "adapt_windows_added": {
+    "D2": 7662,
+    "D3": 7662
+  },
+  "note": "adapt rows are in-sample for all arms; calibrate rows are held out"
+}
