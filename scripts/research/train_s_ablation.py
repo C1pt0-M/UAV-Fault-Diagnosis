@@ -1,4 +1,4 @@
-"""Frozen S-ablation r1 runner. Local use: --phase cv --cpu-smoke only.
+"""Frozen S-ablation r2 runner. Local use: --phase cv --cpu-smoke only.
 
 No source.prepare/CausalCacheDataset: those would load val or scan full X.
 Val identity files are byte-hashed only in CV; held-out X is accessed only after
@@ -30,7 +30,7 @@ from uav_fault.models.cnn.focal_loss import FocalLoss
 from uav_fault.models.train_online_detector import get_warmup_cosine_lr
 from uav_fault.model_contract import RFLY_SEQ_COLUMNS_V2
 
-PROTOCOL_SHA = '0764635a75de22963b573180d1616b6da97e038b76565c247d12a2b0a6f61005'
+PROTOCOL_SHA = 'e3a5f9d1257953b0ca075570888a6b2218d38fa9c8d4688adcff664236e25b80'
 DEFAULT_PROTOCOL = ROOT/'configs/experiments/s_ablation_mstca_v1.json'
 BASELINE = ROOT/'configs/experiments/causal_pure_mstca_m0_v1.json'
 VERSION = 'rflymad_causal_publication_replay_v1'

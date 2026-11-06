@@ -1,8 +1,9 @@
 """S-ablation gates. --local never connects remotely, uses CUDA or parses val.
 
 Formal use (future server): assert environment first, run pinned golden tests,
-verify all nine data hashes/folds, record a pre-run implementation manifest,
-then two fresh S0/seed42/fold0 two-epoch GPU probes. No golden regeneration.
+verify all nine data hashes/folds, record host/nvidia-smi evidence and a pre-run
+implementation manifest, then two fresh S0/seed42/fold0 two-epoch GPU probes.
+SSH login is operator-side only. No golden regeneration.
 """
 from __future__ import annotations
 
@@ -10,6 +11,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import socket
 import subprocess
 import sys
 from types import SimpleNamespace
@@ -24,8 +26,6 @@ def preflight(args):
     output=Path(args.output)
     if output.exists():
         raise FileExistsError('Fresh preflight output required')
-    if args.local and args.check_ssh:
-        raise RuntimeError('Local preflight may never connect remotely')
     if args.local and not output.resolve().is_relative_to(train.SMOKE_ROOT.resolve()):
         raise ValueError('Local preflight output must be under smoke artifact root')
     actual=train.environment()
@@ -35,7 +35,8 @@ def preflight(args):
     output.mkdir(parents=True,exist_ok=False)
     report={'status':'RUNNING_PREFLIGHT','local':args.local,'formal_clearance':False,
             'protocol_sha256':train.PROTOCOL_SHA,'code_sha256':pins,'environment':actual,
-            'remote_connection':'NOT_RUN','gpu_determinism':'NOT_RUN','val_access':'HASH_BYTES_ONLY'}
+            'hostname':socket.gethostname(),'remote_connection':'OPERATOR_SIDE_ONLY_NOT_RUN',
+            'nvidia_smi':'NOT_RUN','gpu_determinism':'NOT_RUN','val_access':'HASH_BYTES_ONLY'}
     try:
         report['data_identities']=train.verify_data(args.data,smoke=args.local)
         report['fold_sizes']=train.fold_sizes(train.read_ledger(args.data),p)
@@ -68,18 +69,20 @@ def preflight(args):
             report['cpu_smoke'][arm]=r.get('status')=='COMPLETE_CPU_SMOKE_NOT_FORMAL' and r.get('epochs')==2
         if args.local:
             report['status']='LOCAL_GATES_PASS_FORMAL_NOT_AUTHORIZED'
-            report['formal_gates_not_run']=['SSH alias autodl_UAV','registered CUDA environment','GPU deterministic two-run check','full train.pt SHA']
+            report['formal_gates_not_run']=['formal host nvidia-smi evidence','registered CUDA environment','GPU deterministic two-run check','full train.pt SHA']
         else:
-            if not args.check_ssh:
-                raise RuntimeError('Formal clearance requires explicit --check-ssh for the frozen SSH gate')
-            ssh=subprocess.run(['ssh','-o','BatchMode=yes','-o','ConnectTimeout=10','autodl_UAV',
-                'nvidia-smi --query-gpu=name,driver_version --format=csv,noheader'],
+            # Run locally on the formal host. The full banner records the
+            # driver-supported CUDA version; the query preserves full GPU names.
+            smi=subprocess.run(['nvidia-smi'],capture_output=True,text=True,timeout=30)
+            report['nvidia_smi']={'returncode':smi.returncode,'stdout':smi.stdout,'stderr':smi.stderr}
+            if smi.returncode:
+                raise RuntimeError('nvidia-smi host evidence failed')
+            query=subprocess.run(['nvidia-smi','--query-gpu=name,driver_version','--format=csv,noheader'],
                 capture_output=True,text=True,timeout=30)
-            report['remote_connection']={'returncode':ssh.returncode,'stdout':ssh.stdout,'stderr':ssh.stderr}
-            if ssh.returncode:
-                raise RuntimeError('SSH alias gate failed')
-            import torch
-            report['gpu']={'model':torch.cuda.get_device_name(0),'cuda':torch.version.cuda}
+            report['gpu']={'returncode':query.returncode,'model_driver_csv':query.stdout,
+                           'stderr':query.stderr,'torch_cuda':actual['torch_cuda']}
+            if query.returncode:
+                raise RuntimeError('nvidia-smi GPU/driver query failed')
             digests=[]
             for repeat in (1,2):
                 run_args=SimpleNamespace(protocol=args.protocol,data=args.data,arm='S0',seed=42,fold=0,phase='cv',
@@ -107,7 +110,6 @@ def parser():
     p.add_argument('--data',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--local',action='store_true')
-    p.add_argument('--check-ssh',action='store_true')
     return p
 
 

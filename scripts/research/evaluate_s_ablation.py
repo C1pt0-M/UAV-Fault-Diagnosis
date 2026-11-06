@@ -165,16 +165,26 @@ def decide(arm,ratios,ratio_ci,ap_ci,class_drops_pp):
     if arm not in ARMS[1:]:
         raise ValueError('Only S1/S2/S3 comparisons have verdicts')
     result={'verdict':'INCONCLUSIVE','effect_below_margin':False,'reason':None}
-    if any(r is None for r in ratios) or max(sum(r<1 for r in ratios),sum(r>1 for r in ratios))<2:
-        result['reason']='seed_consistency'
+    # r2 undefined_policy overrides directional verdicts, including TRADE_OFF.
+    # No ratio is invented when a full-population S0 FP is zero.
+    if any(r is None for r in ratios):
+        result['reason']='ratio_undefined'
         return result
-    if not class_drops_pp or any(v is None for v in class_drops_pp.values()):
+    if ratio_ci is None:
+        result['reason']='ratio_ci_unestimable'
+        return result
+    if ap_ci is None:
+        result['reason']='ap_ci_unestimable'
+        return result
+    if not class_drops_pp or any(v is None or not math.isfinite(v) for v in class_drops_pp.values()):
         result['reason']='class_constraint_unestimable'
+        return result
+    # Exact 1.0 belongs to neither side.
+    if max(sum(r<1 for r in ratios),sum(r>1 for r in ratios))<2:
+        result['reason']='seed_consistency'
         return result
     if max(class_drops_pp.values())>1.0:
         result.update(verdict='TRADE_OFF',reason='class_constraint')
-    elif ratio_ci is None:
-        result['reason']='ratio_ci_unestimable'
     elif ratio_ci[0]>1:
         result.update(verdict='MSTCA_BETTER' if arm=='S3' else 'COMPONENT_HELPS',
                       effect_below_margin=ratio_ci[1]<1.10,reason='lower_bound_gt_one')
@@ -182,16 +192,12 @@ def decide(arm,ratios,ratio_ci,ap_ci,class_drops_pp):
         result.update(verdict='NO_ADVANTAGE' if arm=='S3' else 'REMOVABLE',reason='upper_bound_lt_margin')
     else:
         result['reason']='ratio_ci_crosses_margin'
-    if result['verdict']!='INCONCLUSIVE':
-        if ap_ci is None:
-            result.update(pre_ap_verdict=result['verdict'],verdict='INCONCLUSIVE',reason='ap_ci_unestimable')
-        else:
-            worse=result['verdict'] in ('COMPONENT_HELPS','MSTCA_BETTER')
-            if result['verdict']=='TRADE_OFF':
-                worse=geometric_mean(ratios)>1
-            opposed=ap_ci[0]>0 if worse else ap_ci[1]<0
-            if opposed:
-                result.update(pre_ap_verdict=result['verdict'],verdict='INCONCLUSIVE',reason='AP_consistency')
+    # TRADE_OFF is class-constraint evidence: report delta AP without a
+    # directional downgrade. Only these four ratio-based verdicts use AP.
+    worse=result['verdict'] in ('COMPONENT_HELPS','MSTCA_BETTER')
+    removable=result['verdict'] in ('REMOVABLE','NO_ADVANTAGE')
+    if (worse and ap_ci[0]>0) or (removable and ap_ci[1]<0):
+        result.update(pre_ap_verdict=result['verdict'],verdict='INCONCLUSIVE',reason='AP_consistency')
     return result
 
 
@@ -199,7 +205,13 @@ def comparison_results(metrics,uncertainty):
     points={}; decisions={}
     for arm in ARMS[1:]:
         ratios=[ratio(metrics[arm][str(s)]['primary']['fp'],metrics['S0'][str(s)]['primary']['fp']) for s in SEEDS]
-        deltas=[metrics[arm][str(s)]['ap']-metrics['S0'][str(s)]['ap'] for s in SEEDS]
+        deltas=[]; fp_differences=[]
+        for s in SEEDS:
+            current,base=metrics[arm][str(s)],metrics['S0'][str(s)]
+            deltas.append(finite(current['ap']-base['ap']) if current['ap'] is not None and base['ap'] is not None else None)
+            a,b=current['primary']['fp'],base['primary']['fp']
+            # Absolute-count difference (arm - S0), not a relative ratio or abs().
+            fp_differences.append(int(a-b) if a is not None and b is not None else None)
         classes=metrics['S0']['42']['matched_class_recall_outside_late_hover_fault']
         drops={}
         for c in classes:
@@ -208,8 +220,11 @@ def comparison_results(metrics,uncertainty):
             drops[c]=100*float(np.mean(np.subtract(b,a))) if all(x is not None for x in b+a) else None
         u=uncertainty['comparisons'][arm]
         points[arm]={'per_seed_ratios':dict(zip(map(str,SEEDS),ratios)),
+            'per_seed_fp_difference':dict(zip(map(str,SEEDS),fp_differences)),
+            'fp_difference_definition':'FP@R97(arm) - FP@R97(S0), absolute window counts',
             'aggregate_ratio':geometric_mean(ratios),'per_seed_delta_ap':dict(zip(map(str,SEEDS),deltas)),
-            'aggregate_delta_ap':float(np.mean(deltas)),'class_recall_drop_seed_mean_pp':drops,**u}
+            'aggregate_delta_ap':float(np.mean(deltas)) if all(d is not None for d in deltas) else None,
+            'class_recall_drop_seed_mean_pp':drops,**u}
         decisions[arm]=decide(arm,ratios,u['aggregate_ratio_ci'],u['aggregate_delta_ap_ci'],drops)
     return points,decisions
 

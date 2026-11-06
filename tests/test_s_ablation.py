@@ -151,13 +151,122 @@ def test_seed_consistency_precedes_class_constraint():
     assert evaluate.decide('S1',[1.2,1.1,.9],[1.02,1.08],[-.02,.02],{'GPS':1.01})['verdict']=='TRADE_OFF'
 
 
+@pytest.mark.parametrize('arm',['S1','S2','S3'])
 @pytest.mark.parametrize('ratios,ci,ap',[
     ([.9,.95,1.],[.8,1.05],[-.04,-.01]),
     ([1.2,1.3,.99],[1.1,1.3],[.01,.04]),
 ])
-def test_ap_opposite_direction_downgrades(ratios,ci,ap):
-    result=evaluate.decide('S1',ratios,ci,ap,{'GPS':0.})
+def test_ap_opposite_direction_downgrades(arm,ratios,ci,ap):
+    result=evaluate.decide(arm,ratios,ci,ap,{'GPS':0.})
     assert result['verdict']=='INCONCLUSIVE' and result['reason']=='AP_consistency'
+
+
+@pytest.mark.parametrize('arm',['S1','S2','S3'])
+@pytest.mark.parametrize('ratios,ap',[
+    ([1.2,1.1,.9],[.01,.04]),
+    ([.9,.95,1.1],[-.04,-.01]),
+])
+def test_trade_off_is_exempt_from_ap_direction_downgrade(arm,ratios,ap):
+    result=evaluate.decide(arm,ratios,[.8,1.3],ap,{'GPS':1.01})
+    assert result['verdict']=='TRADE_OFF' and result['reason']=='class_constraint'
+    assert 'pre_ap_verdict' not in result
+
+
+@pytest.mark.parametrize('arm',['S1','S3'])
+@pytest.mark.parametrize('ratios,ci,ap',[
+    ([1.2,1.3,1.],[1.1,1.3],[0.,.04]),
+    ([.9,.95,1.],[.8,1.05],[-.04,0.]),
+])
+def test_ap_direction_bounds_are_strict(arm,ratios,ci,ap):
+    result=evaluate.decide(arm,ratios,ci,ap,{'GPS':0.})
+    assert result['verdict']!='INCONCLUSIVE'
+
+
+@pytest.mark.parametrize('ratios,expected',[
+    ([1.,1.,1.],'INCONCLUSIVE'),
+    ([.9,1.,1.1],'INCONCLUSIVE'),
+    ([1.,1.,1.1],'INCONCLUSIVE'),
+    ([.9,.8,1.],'REMOVABLE'),
+    ([1.2,1.1,1.],'COMPONENT_HELPS'),
+])
+def test_ratio_equal_one_counts_as_neither_direction(ratios,expected):
+    ci=[1.01,1.2] if expected=='COMPONENT_HELPS' else [.8,1.05]
+    result=evaluate.decide('S1',ratios,ci,[-.02,.02],{'GPS':0.})
+    assert result['verdict']==expected
+    if expected=='INCONCLUSIVE':
+        assert result['reason']=='seed_consistency'
+
+
+@pytest.mark.parametrize('ratios,ratio_ci,ap_ci,drops,reason',[
+    ([None,.9,.95],None,None,{'GPS':2.},'ratio_undefined'),
+    ([.9,.95,1.],None,[-.02,.02],{'GPS':2.},'ratio_ci_unestimable'),
+    ([.9,.95,1.],[.8,1.05],None,{'GPS':2.},'ap_ci_unestimable'),
+    ([.9,.95,1.],[.8,1.05],[-.02,.02],{'GPS':None},'class_constraint_unestimable'),
+    ([.9,.95,1.],[.8,1.05],[-.02,.02],{},'class_constraint_unestimable'),
+])
+def test_r2_undefined_reason_codes(ratios,ratio_ci,ap_ci,drops,reason):
+    result=evaluate.decide('S1',ratios,ratio_ci,ap_ci,drops)
+    assert result['verdict']=='INCONCLUSIVE' and result['reason']==reason
+
+
+@pytest.fixture
+def comparison_inputs():
+    metrics={a:{str(s):{'primary':{'fp':10},'ap':.8,
+        'matched_class_recall_outside_late_hover_fault':{'GPS':.99}}
+        for s in evaluate.SEEDS} for a in evaluate.ARMS}
+    uncertainty={'comparisons':{a:{'aggregate_ratio_ci':[.8,1.05],
+        'aggregate_delta_ap_ci':[-.02,.02]} for a in evaluate.ARMS[1:]}}
+    return metrics,uncertainty
+
+
+@pytest.mark.parametrize('candidate_fp',[0,3])
+def test_zero_s0_fp_reports_undefined_ratio_and_absolute_fp_difference(comparison_inputs,candidate_fp):
+    metrics,uncertainty=comparison_inputs
+    metrics['S0']['42']['primary']['fp']=0
+    metrics['S1']['42']['primary']['fp']=candidate_fp
+    metrics['S1']['43']['primary']['fp']=9
+    points,decisions=evaluate.comparison_results(metrics,uncertainty)
+    assert all(d['verdict']=='INCONCLUSIVE' and d['reason']=='ratio_undefined' for d in decisions.values())
+    assert points['S1']['per_seed_ratios']['42'] is None
+    assert points['S1']['aggregate_ratio'] is None
+    assert points['S1']['per_seed_fp_difference']=={'42':candidate_fp,'43':-1,'44':0}
+    assert points['S1']['aggregate_delta_ap']==0.
+
+
+def test_missing_ap_is_reported_without_subtraction_error(comparison_inputs):
+    metrics,uncertainty=comparison_inputs
+    for a in evaluate.ARMS:
+        metrics[a]['42']['ap']=None
+    for a in evaluate.ARMS[1:]:
+        uncertainty['comparisons'][a]['aggregate_delta_ap_ci']=None
+    points,decisions=evaluate.comparison_results(metrics,uncertainty)
+    assert all(d['reason']=='ap_ci_unestimable' for d in decisions.values())
+    assert points['S1']['per_seed_delta_ap']['42'] is None
+    assert points['S1']['aggregate_delta_ap'] is None
+
+
+def test_undefined_bootstrap_replicates_are_counted_not_redrawn_or_dropped():
+    y=np.array([0,1]); score=np.array([.9,.5])
+    scores={a:{s:score.copy() for s in evaluate.SEEDS} for a in evaluate.ARMS}
+    replicates=20; seed=20261106
+    result=evaluate.paired_bootstrap(y,scores,['normal_group','fault_group'],replicates=replicates,seed=seed)
+    # np.unique orders fault_group before normal_group; each cluster has one row.
+    rng=np.random.default_rng(seed)
+    draws=[rng.integers(0,2,size=2) for _ in range(replicates)]
+    missing_ratio=sum(len(np.unique(d))==1 for d in draws)
+    missing_ap=sum(np.all(d==1) for d in draws)
+    assert missing_ratio>0 and missing_ap>0 and result['replicates']==replicates
+    for comparison in result['comparisons'].values():
+        assert comparison['undefined_aggregate_ratio_replicates']==missing_ratio
+        assert comparison['undefined_aggregate_ap_replicates']==missing_ap
+        assert comparison['aggregate_ratio_ci'] is None
+        assert comparison['aggregate_delta_ap_ci'] is None
+
+
+def test_protocol_sha_matches_r2_lock():
+    protocol,_=train.load_protocol()
+    assert train.PROTOCOL_SHA=='e3a5f9d1257953b0ca075570888a6b2218d38fa9c8d4688adcff664236e25b80'
+    assert protocol['revisions'][-1]['id']=='r2'
 
 
 def test_exact_margin_is_not_noninferiority_and_missing_ci_not_conclusion():
@@ -250,9 +359,77 @@ def test_formal_slots_enforce_frozen_order_and_manifest(tmp_path,monkeypatch):
         train.require_formal_slot(second,'manifest')
 
 
-def test_local_preflight_refuses_ssh_before_access(tmp_path):
-    with pytest.raises(RuntimeError,match='never connect'):
-        preflight.preflight(SimpleNamespace(output=tmp_path/'unused',local=True,check_ssh=True))
+def test_preflight_parser_has_no_server_side_ssh_flag(tmp_path):
+    args=preflight.parser().parse_args(['--data',str(tmp_path/'unused'),'--output',str(tmp_path/'output')])
+    assert not hasattr(args,'check_ssh')
+    with pytest.raises(SystemExit):
+        preflight.parser().parse_args(['--data',str(tmp_path/'unused'),'--output',str(tmp_path/'output'),'--check-ssh'])
+
+
+@pytest.mark.parametrize('smi_failure',[None,'banner','query'])
+def test_formal_preflight_records_host_and_never_calls_ssh(tmp_path,monkeypatch,smi_failure):
+    # Entire formal backend is mocked: no GPU, remote connection, source data or
+    # optimizer step. The four committed smoke-report paths retain their layout.
+    smoke_root=tmp_path/'committed_smoke'
+    monkeypatch.setattr(train,'SMOKE_ROOT',smoke_root)
+    smoke_paths=[]
+    for arm in evaluate.ARMS:
+        path=smoke_root/'runs'/f'{arm}_seed42_fold0'/'report.json'
+        train.write_json(path,{'status':'COMPLETE_CPU_SMOKE_NOT_FORMAL','epochs':2})
+        smoke_paths.append(path)
+    env={'torch':'2.5.1+cu124','numpy':'2.1.3','torch_cuda':'12.4',
+         'cuda_available':True,'cublas_workspace_config':':4096:8'}
+    monkeypatch.setattr(train,'environment',lambda:env)
+    monkeypatch.setattr(train,'load_protocol',lambda *a:({'arms':dict.fromkeys(evaluate.ARMS)},{}))
+    monkeypatch.setattr(train,'verify_data',lambda *a,**k:{'matched_sha256':{},'skipped_sha256':[]})
+    monkeypatch.setattr(train,'read_ledger',lambda *a:None)
+    monkeypatch.setattr(train,'fold_sizes',lambda *a:{})
+    monkeypatch.setattr(train,'implementation_manifest',lambda:{'protocol_sha256':train.PROTOCOL_SHA,'files':{}})
+    monkeypatch.setattr(preflight.socket,'gethostname',lambda:'mock-formal-host')
+    reads=[]; original_read=train.read_json
+    def read(path):
+        reads.append(Path(path))
+        return original_read(path)
+    monkeypatch.setattr(train,'read_json',read)
+    commands=[]; probes=[]
+    def command(cmd,**kwargs):
+        commands.append(cmd)
+        assert cmd[0]!='ssh'
+        if cmd[0]==sys.executable:
+            junit=Path(next(v.split('=',1)[1] for v in cmd if v.startswith('--junitxml=')))
+            suite=preflight.ET.Element('testsuite')
+            for i in range(12):
+                preflight.ET.SubElement(suite,'testcase',name=f'test_full_state_digest_golden[mock-{i}]')
+            preflight.ET.ElementTree(suite).write(junit,encoding='utf-8')
+            return SimpleNamespace(returncode=0,stdout='12 passed',stderr='')
+        assert cmd[0]=='nvidia-smi', f'Unexpected command: {cmd}'
+        failed=(smi_failure=='banner' and len(cmd)==1) or (smi_failure=='query' and len(cmd)>1)
+        text='NVIDIA-SMI 550.54 Driver Version: 550.54 CUDA Version: 12.4' if len(cmd)==1 else 'Mock GPU, 550.54\n'
+        return SimpleNamespace(returncode=int(failed),stdout=text,stderr='mock failure' if failed else '')
+    monkeypatch.setattr(preflight.subprocess,'run',command)
+    def probe(args,*,probe_epochs):
+        probes.append(args)
+        assert probe_epochs==2 and not args.cpu_smoke
+        return {'checkpoint_state_digests':{'last':'d'*64}}
+    monkeypatch.setattr(train,'run',probe)
+    output=tmp_path/'formal_preflight'
+    args=SimpleNamespace(output=output,local=False,data=tmp_path/'unused',protocol=train.DEFAULT_PROTOCOL)
+    if smi_failure:
+        with pytest.raises(RuntimeError,match='nvidia-smi'):
+            preflight.preflight(args)
+        assert not probes
+        result=original_read(output/'preflight.json')
+        assert result['status']=='BLOCKED' and not result['formal_clearance']
+    else:
+        result=preflight.preflight(args)
+        assert result['status']=='ALL_PREFLIGHT_GATES_PASS' and result['formal_clearance']
+        assert result['hostname']=='mock-formal-host'
+        assert 'CUDA Version: 12.4' in result['nvidia_smi']['stdout']
+        assert result['gpu']['model_driver_csv']=='Mock GPU, 550.54\n'
+        assert result['gpu']['torch_cuda']=='12.4' and len(probes)==2
+        assert all(result['cpu_smoke'].values())
+    assert set(smoke_paths).issubset(reads)
+    assert all(cmd[0] in (sys.executable,'nvidia-smi') for cmd in commands)
 
 
 def test_phase_gate_rejects_synthetic_and_hash_mismatch(tmp_path):
