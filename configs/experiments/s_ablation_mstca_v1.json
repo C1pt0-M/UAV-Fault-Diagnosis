@@ -139,19 +139,21 @@
       "NO_ADVANTAGE": "upper 95% bound < 1.10 (and class constraint holds)",
       "INCONCLUSIVE": "otherwise"
     },
-    "AP_consistency": "If the AP difference CI points the other way from the FP@R97 verdict (e.g. REMOVABLE but delta AP upper bound < 0), downgrade to INCONCLUSIVE and report both.",
+    "AP_consistency": "delta AP = AP(arm) - AP(S0) per seed (fault positive, pooled held-out). Direction is fixed by the verdict: COMPONENT_HELPS / MSTCA_BETTER (arm has more FP) is contradicted when the seed-aggregate delta AP 95% lower bound > 0 (arm significantly better AP); REMOVABLE / NO_ADVANTAGE is contradicted when the delta AP 95% upper bound < 0 (arm significantly worse AP). A contradicted verdict is downgraded to INCONCLUSIVE (reason AP_consistency) and both are reported. TRADE_OFF is exempt from AP_consistency; its delta AP is reported only.",
     "late_hover": "late_hover_normal FP and late_hover_fault GPS/barometer recall are reported separately, never a veto (as frozen in m0s_stats_branch_v1).",
     "phase2_confirmation": "On source val (same metrics, no bootstrap re-selection): a phase-1 verdict is CONFIRMED if the val point-estimate ratio lies on the same side of 1.0 (for HELPS/BETTER) or below 1.10 (for REMOVABLE/NO_ADVANTAGE); otherwise NOT_CONFIRMED and both results are reported. Val never changes the phase-1 verdict.",
-    "precedence": "Evaluate in this order and take the first that holds: INCONCLUSIVE by seed_consistency -> TRADE_OFF (class constraint) -> COMPONENT_HELPS / MSTCA_BETTER (lower bound > 1.0) -> REMOVABLE / NO_ADVANTAGE (upper bound < 1.10) -> INCONCLUSIVE. AP_consistency downgrades any non-INCONCLUSIVE verdict to INCONCLUSIVE. When HELPS/BETTER holds and the upper bound is also < 1.10, add flag effect_below_margin=true (statistically worse but by less than 10%)."
+    "precedence": "Evaluate in this order and take the first that holds: INCONCLUSIVE by seed_consistency -> TRADE_OFF (class constraint) -> COMPONENT_HELPS / MSTCA_BETTER (lower bound > 1.0) -> REMOVABLE / NO_ADVANTAGE (upper bound < 1.10) -> INCONCLUSIVE. AP_consistency downgrades any non-INCONCLUSIVE verdict to INCONCLUSIVE. When HELPS/BETTER holds and the upper bound is also < 1.10, add flag effect_below_margin=true (statistically worse but by less than 10%).",
+    "ap_seed_aggregation": "seed-aggregate delta AP = arithmetic mean of the three paired per-seed delta AP values; its 95% interval comes from the same paired cluster bootstrap replicates as the ratio",
+    "undefined_policy": "No pseudocounts, no redraws, no dropped replicates. (a) If FP@R97(S0) = 0 for a seed on the full pooled population, that seed's ratio is undefined: the comparison is INCONCLUSIVE (reason ratio_undefined) and the absolute FP difference is reported instead. (b) If any bootstrap replicate has an undefined aggregate ratio or delta AP (S0 FP = 0, or no fault window in the replicate), the corresponding interval is unavailable and the comparison is INCONCLUSIVE (reason ratio_ci_unestimable / ap_ci_unestimable); the count of undefined replicates is reported. (c) A per-seed ratio exactly equal to 1.0 counts as neither direction for seed_consistency. (d) If a class-recall drop is not estimable (class absent), the comparison is INCONCLUSIVE (reason class_constraint_unestimable)."
   },
   "preflight_gates": [
-    "SSH alias autodl_UAV reachable; record GPU model, driver, CUDA",
+    "Operator connects from the local machine with `ssh autodl_UAV`; the server-side preflight does not ssh to itself. It records hostname, GPU model, driver and CUDA (nvidia-smi) as evidence of the formal host.",
     "formal environment torch 2.5.1+cu124, numpy 2.1.3, CUDA available; mismatch stops",
     "pytest tests/test_mstca_ablation_factory.py passes on the formal environment, in particular all 12 golden digests. On mismatch: STOP and report; never regenerate goldens.",
     "this protocol file matches its .sha256 lock; code SHA256 match code_identities",
     "nine data_identities SHA256 match; outer fold and inner sizes match the expected numbers",
     "GPU determinism: S0 seed 42 fold 0 for 2 epochs run twice from scratch gives identical state_digest; otherwise STOP and report",
-    "CPU smoke (already done locally before server): every arm trains 2 epochs on <= 2048 fit windows, selection and prediction files written"
+    "CPU smoke (already done locally before server): every arm trains 2 epochs on <= 2048 fit windows, selection and prediction files written. The server checks the committed smoke report.json files (status COMPLETE_CPU_SMOKE_NOT_FORMAL, epochs 2) under artifacts/s_ablation_mstca_v1_smoke_20261106/runs/."
   ],
   "code_identities": {
     "packages/uav_fault/uav_fault/models/cnn/ablation_factory.py": "c1b84ecb3d89ecbe222f2757448252a0e26b7615c041ffa996212fba71940408",
@@ -184,6 +186,19 @@
         "decision_rules.precedence added: overlapping HELPS/REMOVABLE intervals resolve to HELPS with effect_below_margin flag",
         "late_hover split into late_hover_window / late_hover_normal / late_hover_fault, matching evaluate_seed43.py; fault-side exclusions use late_hover_fault",
         "byte-level SHA256 of the three val identity files explicitly allowed in phase 1 (no parsing/loading)"
+      ]
+    },
+    {
+      "id": "r2",
+      "date": "2026-11-06",
+      "before_any_run": true,
+      "by": "architect, answering implementer ambiguity questions after CPU smoke",
+      "changes": [
+        "decision_rules.AP_consistency: explicit delta-AP direction per verdict; TRADE_OFF exempt (report only)",
+        "decision_rules.ap_seed_aggregation added: arithmetic mean of paired per-seed delta AP",
+        "decision_rules.undefined_policy added: zero-baseline FP, undefined bootstrap replicates, ratio == 1, unestimable class recall all resolve to INCONCLUSIVE without pseudocounts",
+        "preflight_gates[0]: SSH is an operator-side gate; server preflight records host/GPU evidence instead of ssh-ing to itself",
+        "preflight_gates[6]: server verifies committed CPU smoke reports"
       ]
     }
   ]
