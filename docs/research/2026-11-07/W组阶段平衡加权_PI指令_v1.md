@@ -16,7 +16,7 @@
 以 `scripts/research/train_t_selection.py` 的 CV 路径为基础，复用它的 import 和函数，不要复制修改冻结文件。唯一的实质改动是采样权重：
 
 1. **基础权重：** `b = sampling_weights(labels, origins, True)`，与 T 相同。
-2. **起始参考时间：** 只用 fit 集合，对每种飞行类型（`case_uid.split('/')[1]`），取故障案例（`fault_onset_row` 非空的唯一 `case_uid`）的 `fault_onset_row * 0.02` 中位数。
+2. **起始参考时间：** 只用 fit 集合，对每种飞行类型（`case_uid.split('/')[1]`），取有效起始的故障案例（`fault_onset_row >= 0` 的唯一 `case_uid`；ledger 用 -1 表示无起始，必须排除）的 `fault_onset_row * 0.02` 中位数。（r1.1 澄清）
 3. **阶段：** `window_end_row * 0.02 > onset_reference[flight]` 为 post，否则为 pre。
 4. **格子：** 共 12 个（6 种飞行类型 × 2 个阶段）。每个格子算 `N_c = b[正常].sum()`、`F_c = b[故障].sum()`、`r_c = F_c / N_c`（`N_c = 0` 时取 1）。
 5. **乘子：** W1 下正常窗口乘以 `max(1, r_c)`，W2 下乘以 `max(1, sqrt(r_c))`。故障窗口保持 `b` 不变。不做重新归一化。
@@ -25,7 +25,7 @@
 8. **report.json** 写入：各飞行类型的 onset reference、12 个格子的 `N_c`、`F_c`、`r_c`、乘子、窗口数，以及 sampler 的有效样本量 `sum(w)^2 / sum(w^2)` 和各格子的采样概率。
 9. **checkpoint：** 至少保留 T0 所选轮次和第 100 轮。磁盘够用的话可以全部保留。
 
-参考值：架构师在 fold 0 的 fit 集合上预算过。W1 的乘子为 acce 3.27、circling 14.46、dece 2.59、hover 3.94、velocity 3.78、waypoint 7.24（都是 post 格子，pre 格子都是 1），有效样本量约 26748。W2 的有效样本量约 62364。你算出的数值应与此一致，不一致要在报告里说明原因。
+参考值（r1.1，排除 -1 后，fold 0 fit 集合，PI 预算）：W1 的 post 格子乘子为 acce 3.6148、circling 19.6427、dece 2.5915、hover 3.9351、velocity 3.9778、waypoint 8.4783，pre 格子都是 1。W2 的乘子取这些值的平方根。有效样本量请自行计算并报告。你算出的数值应与此一致，不一致要在报告里说明原因。
 
 ### 1.2 评估器 `scripts/research/evaluate_w_phase_balance.py`
 

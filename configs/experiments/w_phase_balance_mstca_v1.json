@@ -1,13 +1,13 @@
 {
   "name": "w_phase_balance_mstca_v1",
-  "status": "FROZEN_BEFORE_ANY_RUN (r1); the freeze record is the git commit that adds this file. No SHA locks or implementation manifests, by user decision of 2026-11-07.",
+  "status": "FROZEN_BEFORE_ANY_RUN (r1, clarification r1.1 before any implementation or run: onset reference uses fault_onset_row >= 0, see revisions); the freeze record is the git commit that adds this file. No SHA locks or implementation manifests, by user decision of 2026-11-07.",
   "frozen_at": "2026-11-07",
   "purpose": "Reduce false alarms on independent normal flights. Diagnosis (docs/research/2026-11-07/误报诊断分析_v1.md): after each flight type's typical fault-onset time the aircraft is in a different flight regime, and in that regime the training set holds about 1 normal window per 7-44 fault windows, all from about 56 independent normal flights per type. The model learns 'this regime means fault'. W re-balances normal versus fault sampling mass inside each (flight type x phase) cell. The phase is used only for training weights, never as a model input.",
   "baseline": "T0 = MSTCA (S0 architecture), S-recipe, inner-CE early stopping replay (configs/experiments/t_selection_mstca_v1.json, arm T0). Adopted after the T and V groups.",
   "inherits": "Everything from t_selection_mstca_v1 phase 1 (data root, population, outer folds, inner selection, recipe, loss, optimizer, schedule, determinism, model RNG, 100-epoch trajectory with per-epoch inner and held-out predictions, T0 replay, strata, FP@R97 definition, bootstrap plan) EXCEPT the sampler weights defined below. Seeds 42-46, folds 0-2.",
   "phase_cells": {
     "flight": "case_uid.split('/')[1] (acce, circling, dece, hover, velocity, waypoint)",
-    "onset_reference": "Per run, from the FIT population only: per flight type, the median over fault cases (unique case_uid with non-null fault_onset_row) of fault_onset_row * 0.02 s. Recorded in report.json.",
+    "onset_reference": "Per run, from the FIT population only: per flight type, the median over fault cases with a valid onset (unique case_uid with fault_onset_row >= 0; the ledger encodes 'no onset' as -1, which covers the 334 independent normal flights and 33 fault cases without fault windows, and these are excluded) of fault_onset_row * 0.02 s. Recorded in report.json.",
     "phase": "post if window_end_row * 0.02 > onset_reference[flight], else pre",
     "cell": "(flight, phase): 12 cells"
   },
@@ -58,5 +58,29 @@
     "regenerating goldens or changing the CPU capability setting"
   ],
   "outputs": "artifacts/w_phase_balance_mstca_v1/cv/<arm>_seed<s>_fold<f>/ (report.json incl. onset references, multipliers and sampler statistics; selections.json; inner/held-out predictions; checkpoints only for the T0-selected epoch and epoch 100). Evaluation in artifacts/w_phase_balance_mstca_v1/evaluation_cv/evaluation.json.",
-  "budget": "30 runs x ~15 min, about 7.5 GPU hours sequential."
+  "budget": "30 runs x ~15 min, about 7.5 GPU hours sequential.",
+  "revisions": [
+    {
+      "revision": "r1.1",
+      "date": "2026-11-07",
+      "before_any_run": true,
+      "change": "onset_reference: 'non-null fault_onset_row' replaced by 'fault_onset_row >= 0'. PI found the ledger uses -1 (not NaN) for no onset; notna() would put 367 no-onset cases (334 independent normal flights, 33 fault cases without fault windows) into the median at -0.02 s, contradicting the stated intent 'fault cases'.",
+      "effect_fold0_W1_post_multipliers": {
+        "acce": 3.6148,
+        "circling": 19.6427,
+        "dece": 2.5915,
+        "hover": 3.9351,
+        "velocity": 3.9778,
+        "waypoint": 8.4783
+      },
+      "full_train_onset_medians_s": {
+        "acce": 23.67,
+        "circling": 54.46,
+        "dece": 24.98,
+        "hover": 19.46,
+        "velocity": 22.96,
+        "waypoint": 54.41
+      }
+    }
+  ]
 }
