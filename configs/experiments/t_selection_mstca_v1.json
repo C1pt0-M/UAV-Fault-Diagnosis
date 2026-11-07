@@ -1,0 +1,148 @@
+{
+  "name": "t_selection_mstca_v1",
+  "status": "FROZEN_BEFORE_ANY_RUN",
+  "frozen_at": "2026-11-07",
+  "purpose": "Reduce normal-condition false alarms of the MSTCA baseline (S0 / M0 architecture) by fixing the training-length and checkpoint-selection protocol. The S-group showed checkpoint/seed effects (20-80%) far larger than structural effects (<=10%), and inner-CE selection tends to pick early epochs (docs/research/2026-11-07/S组结构消融结果_阶段1_v1.md, _阶段2_v1.md).",
+  "design_doc": "docs/research/2026-11-07/T组训练与选点协议_v1.md",
+  "baseline_architecture": "mstca (S0) only. The model is fixed; this protocol changes only training length and checkpoint selection.",
+  "inherits": {
+    "from": "configs/experiments/s_ablation_mstca_v1.json (r2, sha256 e3a5f9d1257953b0ca075570888a6b2218d38fa9c8d4688adcff664236e25b80)",
+    "sections": [
+      "initialization",
+      "data: root, population, outer_folds, inner_selection (same 's_ablation_inner_v1|' hash and expected sizes), never_read, identity_check",
+      "training: recipe, sampler, loss, optimizer, schedule, determinism, model_rng",
+      "evaluation.strata",
+      "evaluation.primary (FP@R97 definition)",
+      "evaluation.uncertainty (association_group cluster bootstrap, 2000 replicates, rng seed 20261106, one resample shared by all arms and seeds)",
+      "decision_rules.undefined_policy"
+    ],
+    "differences": [
+      "no early stopping: every run trains all 100 epochs",
+      "a checkpoint is saved after every epoch",
+      "selection rules are applied after training, using only inner predictions or fixed epochs",
+      "seeds 42-46 instead of 42-44"
+    ]
+  },
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "initialization_goldens": "Seeds 42-44 use the existing goldens in tests/test_mstca_ablation_factory.py. Goldens for (mstca, 45) and (mstca, 46) are generated once on the local CPU during implementation and pinned in tests/test_t_selection.py before any formal run; they must match on the server under ATEN_CPU_CAPABILITY=default. Never regenerate on the server.",
+  "trajectory": {
+    "per_run": "One run per (seed, fold): train 100 epochs with the inherited recipe. After each epoch e, in eval mode: save checkpoint_e; predict all inner windows and all outer held-out windows; store the fault probabilities per epoch.",
+    "rng_isolation": "Per-epoch inner and held-out inference must not consume any RNG used by training: every extra DataLoader has its own explicit torch.Generator, shuffle=False, num_workers=0. The reproduction gate detects violations.",
+    "heldout_use": "Per-epoch held-out predictions are used only (a) to read out the epoch that each pre-declared rule selected from inner or fixed information and (b) for the descriptive oracle curve. They never feed a selection rule."
+  },
+  "arms": {
+    "T0": {
+      "rule": "inner_ce_es",
+      "role": "reference",
+      "definition": "Exactly the S-protocol selection, replayed post hoc: compute the inner class-balanced CE each epoch with the same computation as inner_ce() in scripts/research/train_s_ablation.py (float64, mean of the two per-class means); feed epochs 1..100 in order to the same selection_step() logic (initial state best_loss=inf, reference=inf, bad_epochs=0; best on strict improvement, so earliest on ties; reference reset on loss < reference*0.995; bad_epochs incremented only for epochs > 30; stop at the first epoch > 30 with bad_epochs >= 20). T0 = best_epoch at the stop epoch, or at epoch 100 if no stop occurs. Equals S0 for seeds 42-44."
+    },
+    "T1": {
+      "rule": "fixed_100",
+      "definition": "Checkpoint of epoch 100 (end of the cosine schedule). Uses no inner information."
+    },
+    "T2": {
+      "rule": "inner_fp97",
+      "definition": "Epoch e in 1..100 minimising inner FP@R97 (inherited FP@R97 definition applied to the inner windows of that run); ties go to the later epoch."
+    },
+    "T3": {
+      "rule": "fixed_100_seed_ensemble",
+      "definition": "Per window, arithmetic mean of the fault probabilities of the five T1 models (seeds 42-46) that did not train on its fold. Secondary; deployment cost 5x MACs."
+    }
+  },
+  "gates_in_run": {
+    "reproduction": "For seeds 42, 43, 44 and every fold: (1) the state_digest of the T checkpoint at the S0 best_epoch must equal checkpoint_state_digests.best in artifacts/s_ablation_mstca_v1/cv/S0_seed<s>_fold<f>/report.json; (2) the T0 rule applied to the T run's inner-CE history must select the same epoch as S0. Any mismatch: STOP and report; do not continue the sequence.",
+    "evaluation_reproduction": "T0 pooled held-out FP@R97 for seeds 42, 43, 44 must equal the S0 values in artifacts/s_ablation_mstca_v1/evaluation_cv/evaluation.json (3595, 3588, 4610)."
+  },
+  "evaluation": {
+    "population": "Phase 1: pooled outer held-out predictions per (arm, seed) over all 162069 train windows.",
+    "primary": "FP@R97 (inherited definition) per (arm, seed).",
+    "comparisons": {
+      "primary": [
+        "T1 vs T0",
+        "T2 vs T0"
+      ],
+      "secondary": [
+        "T2 vs T1",
+        "T3 vs T1: ensemble FP@R97 divided by the geometric mean of the five T1 single-model FP@R97"
+      ]
+    },
+    "ratio": "FP@R97(arm) / FP@R97(T0) per seed; seed aggregate = geometric mean over the 5 seeds. Same paired cluster bootstrap; t* recomputed per arm, seed and replicate.",
+    "secondary_metrics": [
+      "AP; per-seed delta AP and its arithmetic seed mean with bootstrap CI",
+      "FP@R95",
+      "FP@R97 counting only normal windows outside late_hover_normal (t* unchanged)",
+      "late_hover_normal FP at t* and at p > 0.5, split SIL/HIL",
+      "per-class fault recall at t* outside late_hover_fault; GPS and barometer recall on late_hover_fault",
+      "selected epoch per (arm, seed, fold)",
+      "across-seed SD of log FP@R97 per arm (seed stability)",
+      "class-balanced CE and Brier score"
+    ],
+    "descriptive_only": "Held-out FP@R97 versus epoch per seed (pooled over folds) and the oracle epoch minimising it, labelled NOT SELECTABLE; shown only as headroom.",
+    "multiplicity": "Two primary comparisons, no correction; both reported regardless of outcome."
+  },
+  "decision_rules": {
+    "margin": "equivalence margin 1.10: ratio CI inside [1/1.10, 1.10]",
+    "precedence": "Take the first that holds: INCONCLUSIVE by undefined_policy -> INCONCLUSIVE by seed_consistency -> TRADE_OFF (class constraint) -> BETTER (upper 95% bound < 1.0) -> WORSE (lower 95% bound > 1.0) -> EQUIVALENT (CI inside [1/1.10, 1.10]) -> INCONCLUSIVE.",
+    "seed_consistency": "At least 4 of the 5 per-seed ratio point estimates strictly on the same side of 1.0 (exactly 1.0 counts for neither). Checked before TRADE_OFF/BETTER/WORSE; a seed-inconsistent comparison may still be EQUIVALENT only if its CI is inside the margin (then reason equivalent_seed_mixed).",
+    "class_constraint": "At t*, no fault class loses more than 1.0 pp recall versus T0 (seed mean) on fault windows outside late_hover_fault. Violated -> TRADE_OFF.",
+    "AP_consistency": "BETTER is contradicted when the delta AP 95% upper bound < 0; WORSE when the lower bound > 0. Contradicted verdicts become INCONCLUSIVE (reason AP_consistency). EQUIVALENT and TRADE_OFF only report delta AP.",
+    "undefined_policy": "Inherited from s_ablation_mstca_v1 r2: no pseudocounts, redraws or dropped replicates; an undefined ratio or CI makes the comparison INCONCLUSIVE.",
+    "T3": "ENSEMBLE_HELPS if the T3/T1 ratio 95% upper bound < 1.0 and delta AP (T3 - T1) upper bound is not < 0; otherwise NO_CLEAR_GAIN. Always reported with its 5x MAC cost.",
+    "adoption": "The rule adopted for later experiments follows mechanically from phase-1 verdicts: (1) both T1 and T2 BETTER -> T1, unless the T2/T1 ratio 95% upper bound < 1.0, then T2; (2) exactly one BETTER -> that one; (3) neither BETTER -> T1 if T1 is EQUIVALENT, otherwise keep T0. T1 is preferred on ties because a fixed length removes selection noise and needs no inner set. Ensemble use is a separate deployment decision and never changes the adopted rule."
+  },
+  "runs": {
+    "phase1_cv": "5 seeds x 3 folds = 15 runs; all arms derive from these 15 trajectories.",
+    "order": "for seed in [42, 43, 44, 45, 46]: for fold in [0, 1, 2]. Seeds 42-44 first, so the reproduction gate is passed before any new seed runs.",
+    "phase2_val": "Only after phase-1 verdicts and their SHA256 are recorded: 5 runs (one per seed), fit = all train windows minus inner (as in S phase 2), 100 epochs, checkpoint and inner predictions every epoch. Then predict the 34710 source val windows once with the T0-selected checkpoint and once with the adopted-rule checkpoint (a single pass if they coincide or T0 is adopted). If T1 is adopted, T3 uses the five epoch-100 val predictions. No per-epoch val predictions.",
+    "phase2_confirmation": "Adopted rule BETTER: CONFIRMED if the val geometric-mean ratio vs T0 < 1.0. Adopted rule EQUIVALENT: CONFIRMED if inside [1/1.10, 1.10]. Per-seed values reported. Val never changes the phase-1 verdicts or the adoption.",
+    "maximum_formal_jobs": 20,
+    "rerun_policy": "Inherited: only after an infrastructure failure, with identical configuration and the failure logged; never change seed or settings to replace a completed run."
+  },
+  "environment": {
+    "host": "operator logs in with ssh autodl_UAV; server preflight records hostname and nvidia-smi output",
+    "required": "torch 2.5.1+cu124, numpy 2.1.3, CUDA available, CUBLAS_WORKSPACE_CONFIG=:4096:8, ATEN_CPU_CAPABILITY=default; all asserted, never setdefault",
+    "golden_policy": "Golden digest mismatch: STOP and report. Never regenerate goldens and never change the CPU capability setting without architect approval."
+  },
+  "code_identities": {
+    "hash_rule": "sha256 of the file bytes after replacing CRLF with LF (line-ending independent; avoids the S-group CRLF incident)",
+    "files": {
+      "packages/uav_fault/uav_fault/models/cnn/ablation_factory.py": "c1b84ecb3d89ecbe222f2757448252a0e26b7615c041ffa996212fba71940408",
+      "tests/test_mstca_ablation_factory.py": "e2d118791c9daacd72cd45f9d7950fc1c5d40e8384f0006ebbf8db38f84cfe88",
+      "packages/uav_fault/uav_fault/models/cnn/lstm.py": "c01d5c1c37175f2bcbac2654d2bec43898d814073d465122afe515a825bcb369",
+      "packages/uav_fault/uav_fault/models/cnn/focal_loss.py": "8fb99a31dd838bafdbad20591313d7bef6766b5b6b64cc73cda8620ed0b3771a",
+      "packages/uav_fault/uav_fault/models/train_online_detector.py": "aa4d64f6c79a8b568e8a5f3f79953dd9572d9d074b7f7ee7d699d4894e5eddc3",
+      "packages/uav_fault/uav_fault/model_contract.py": "15723724bd93bca931c81427670a414646175760040b567f35d755dc6ad444f3",
+      "scripts/research/smoke_normal_source_sampling.py": "bca9d170fd967284d6ea914c4fb3ae459e9fc13aaf0005f06f2fe5307e54968c",
+      "scripts/research/train_s_ablation.py": "32d696bdb5ee8cd5d11bab19390d7e26915af105c0c55d2354e4e85fec8bb2da",
+      "scripts/research/evaluate_s_ablation.py": "c994ae7e6f9c9e930e5baff6d4dd5e66ba771072b2695b520778cc21d91be117",
+      "configs/experiments/s_ablation_mstca_v1.json": "e3a5f9d1257953b0ca075570888a6b2218d38fa9c8d4688adcff664236e25b80",
+      "configs/experiments/causal_pure_mstca_m0_v1.json": "63c36eb012c202ad6a83fa0539e5a9aa06468eb590dcfcd0b81cec24960fd309"
+    },
+    "new_scripts": "scripts/research/train_t_selection.py, scripts/research/evaluate_t_selection.py, scripts/research/preflight_t_selection.py and tests/test_t_selection.py are written after this freeze; their normalized SHA256 go into a pre-run manifest and must not change during phase 1 or phase 2."
+  },
+  "outputs": "artifacts/t_selection_mstca_v1/<phase>/seed<seed>_fold<fold>/ containing report.json, factory_receipt.json, checkpoints/epoch_<e>.pt, inner_predictions.npz (epochs x windows), heldout_predictions.npz (epochs x windows; phase 1 only), selections.json. Phase 2 val predictions only for selected checkpoints. Fresh directories only, never overwrite.",
+  "forbidden": [
+    "internal test or any Real data",
+    "source val in phase 1; per-epoch val predictions in phase 2",
+    "using held-out or val predictions in any selection rule",
+    "changing arms, rules, margin, seeds or adoption after any phase-1 result is seen",
+    "dropping or replacing a seed; reporting only favourable seeds",
+    "modifying frozen S-group files or artifacts",
+    "regenerating golden digests on the server"
+  ],
+  "preflight_gates": [
+    "environment as above, asserted",
+    "tests/test_mstca_ablation_factory.py and tests/test_t_selection.py pass on the server, including the 12 existing goldens and the 2 new (mstca, 45/46) goldens",
+    "protocol .sha256 lock; normalized code identities; nine data identities; outer fold and inner sizes",
+    "GPU determinism: seed 42 fold 0, 2 epochs, twice from scratch with the T runner, identical state digests",
+    "local CPU smoke committed: 2 epochs, <= 2048 fit windows, selection file and per-epoch prediction arrays written"
+  ],
+  "budget": "Phase 1: 15 runs x ~15 min, about 4 GPU hours. Phase 2: 5 runs x ~17 min, about 1.5 GPU hours.",
+  "revisions": []
+}
