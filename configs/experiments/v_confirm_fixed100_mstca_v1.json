@@ -1,0 +1,111 @@
+{
+  "name": "v_confirm_fixed100_mstca_v1",
+  "status": "FROZEN_BEFORE_ANY_RUN",
+  "frozen_at": "2026-11-07",
+  "purpose": "Pre-registered confirmation on source val of a post-hoc CV finding: training MSTCA for a fixed 100 epochs (V1) instead of inner-CE early stopping (V0) lowers false alarms without a material class-recall cost. The frozen T phase-1 verdict (TRADE_OFF, adopt T0) stays unchanged; only this protocol can change the training rule used by later experiments.",
+  "origin": {
+    "t_phase1_evaluation_sha256": "7250c38832602a2b61dbd90488ba6890718064626da58040dfe6e9ccf968dfb7",
+    "t_phase1_doc": "docs/research/2026-11-07/T组选点结果_阶段1_v1.md",
+    "hypothesis_source": "Descriptive, non-registered CV analyses in section 3 of the T phase-1 doc (matched-FP class recall; FP versus epoch).",
+    "val_exposure_disclosure": "Source val is NOT pristine: S-ablation phase 2 already predicted val with S0-S3 best and last checkpoints (early-stopping training), and the S0 val observation last < best FP partly motivated the T group. No epoch-100 val prediction exists. Results must be reported as a confirmation on a previously used validation split, not as an untouched held-out test."
+  },
+  "design_doc": "docs/research/2026-11-07/V组固定轮数val确认协议_v1.md",
+  "inherits": {
+    "from": "configs/experiments/t_selection_mstca_v1.json (r1, f434552d...) and through it configs/experiments/s_ablation_mstca_v1.json (r2, e3a5f9d1...)",
+    "sections": [
+      "initialization incl. the 14 goldens",
+      "data, inner split 's_ablation_inner_v1|', identity checks",
+      "training recipe and determinism",
+      "T0 replay definition (arm V0)",
+      "FP@R97 definition",
+      "strata (late_hover_fault, late_hover_normal)",
+      "undefined_policy",
+      "environment incl. ATEN_CPU_CAPABILITY=default and golden policy",
+      "LF-normalized code identity hash rule"
+    ]
+  },
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "runs": {
+    "count": 5,
+    "per_run": "One run per seed: fit = all source train windows minus the inner set (identical to S phase 2 / T phase 2 fit), 100 epochs, no early stopping. After each epoch: save checkpoint and state digest, compute inner class-balanced CE (inherited inner_ce), store inner logits. After epoch 100: replay V0 on the inner CE history, then predict all 34710 source val windows exactly once with the V0 checkpoint and once with the epoch-100 checkpoint (single pass if they coincide). No per-epoch val prediction; val never enters any selection.",
+    "prediction_format": "Store raw model logits as float32 [n, 2] together with original_cache_index and labels. Fault probability for all metrics = softmax over the float32 logits computed in float64, column 1 (identical to the S runner path model(x).double().softmax(1)).",
+    "order": "seed 42, 43, 44, 45, 46.",
+    "maximum_formal_jobs": 5,
+    "rerun_policy": "Only after an infrastructure failure, identical configuration, failure logged."
+  },
+  "arms": {
+    "V0": "T0 rule (inner-CE early stopping replay, inherited definition).",
+    "V1": "Epoch-100 checkpoint.",
+    "V3_descriptive": "Mean probability of the five V1 models on val; descriptive only, 5x MACs."
+  },
+  "gates_in_run": {
+    "reproduction": "Seeds 42, 43, 44: (1) state digest of the V checkpoint at the S0 val best_epoch equals checkpoint_state_digests.best in artifacts/s_ablation_mstca_v1/val/S0_seed<s>_fold0/report.json; (2) the V0 replay selects that same epoch; (3) V0 val FP@R97 equals the S0 val best values 785 / 428 / 741. Any mismatch: STOP the sequence and report."
+  },
+  "evaluation": {
+    "population": "34710 source val windows (17740 normal, 16970 fault).",
+    "uncertainty": "Paired association_group cluster bootstrap on val, 2000 replicates, rng seed 20261106, one resample plan shared by all arms and seeds; t* recomputed per arm, seed and replicate.",
+    "criteria": {
+      "C1_false_alarms": "Geometric mean over seeds of FP@R97(V1)/FP@R97(V0) < 1.0, AND at least 4 of 5 per-seed ratios strictly < 1.0, AND bootstrap 95% upper bound of the geometric-mean ratio < 1.0.",
+      "C2_matched_fp_class_recall": "Per seed, let k = FP@R97 of V0. Threshold V1 at t_m = the k-th largest V1 normal-window fault probability; alarm iff probability >= t_m (record the realised FP, which can exceed k only through ties). For every fault class, on fault windows outside late_hover_fault: seed mean of [recall(V1 at t_m) - recall(V0 at its t*)] >= -1.0 pp. Point estimates decide; a bootstrap CI is reported descriptively.",
+      "C3_r97_class_cap": "At each arm's own t* (R97 operating point), for every fault class outside late_hover_fault, the seed-mean recall drop recall(V0) - recall(V1) <= 2.0 pp. Applies to all classes, GPS included (the CV concern).",
+      "C4_ap": "Bootstrap 95% upper bound of the seed-mean delta AP (V1 - V0) >= 0."
+    },
+    "verdict": "CONFIRMED_ADOPT_FIXED_100 if C1, C2, C3 and C4 all hold; otherwise NOT_CONFIRMED_KEEP_T0 with the list of failed criteria. Any undefined quantity needed by a criterion makes that criterion fail (inherited undefined_policy: no pseudocounts, redraws or dropped replicates).",
+    "secondary_descriptive": [
+      "per-seed FP@R97, FP@R95 and ratios",
+      "per-class recall at R97 for both arms, including late_hover_fault GPS/barometer",
+      "late_hover_normal FP at t*, SIL/HIL",
+      "class-balanced CE and Brier from logits",
+      "across-seed SD of log FP@R97 per arm",
+      "V0 selected epochs",
+      "V3 ensemble FP@R97 and its ratio to the geometric mean of V1",
+      "comparison with S phase-2 S0 best/last val FP for seeds 42-44"
+    ],
+    "consequence": "If CONFIRMED: later experiments train MSTCA (and any compared architecture) for a fixed 100 epochs without early stopping, and S3 (MSTCA vs parameter-matched CNN) is re-examined under this rule in a separate protocol. If NOT_CONFIRMED: keep T0 and report the CV finding only as descriptive."
+  },
+  "code_identities": {
+    "hash_rule": "sha256 after CRLF->LF",
+    "files": {
+      "packages/uav_fault/uav_fault/models/cnn/ablation_factory.py": "c1b84ecb3d89ecbe222f2757448252a0e26b7615c041ffa996212fba71940408",
+      "tests/test_mstca_ablation_factory.py": "e2d118791c9daacd72cd45f9d7950fc1c5d40e8384f0006ebbf8db38f84cfe88",
+      "packages/uav_fault/uav_fault/models/cnn/lstm.py": "c01d5c1c37175f2bcbac2654d2bec43898d814073d465122afe515a825bcb369",
+      "packages/uav_fault/uav_fault/models/cnn/focal_loss.py": "8fb99a31dd838bafdbad20591313d7bef6766b5b6b64cc73cda8620ed0b3771a",
+      "packages/uav_fault/uav_fault/models/train_online_detector.py": "aa4d64f6c79a8b568e8a5f3f79953dd9572d9d074b7f7ee7d699d4894e5eddc3",
+      "packages/uav_fault/uav_fault/model_contract.py": "15723724bd93bca931c81427670a414646175760040b567f35d755dc6ad444f3",
+      "scripts/research/smoke_normal_source_sampling.py": "bca9d170fd967284d6ea914c4fb3ae459e9fc13aaf0005f06f2fe5307e54968c",
+      "scripts/research/train_s_ablation.py": "32d696bdb5ee8cd5d11bab19390d7e26915af105c0c55d2354e4e85fec8bb2da",
+      "scripts/research/evaluate_s_ablation.py": "c994ae7e6f9c9e930e5baff6d4dd5e66ba771072b2695b520778cc21d91be117",
+      "configs/experiments/s_ablation_mstca_v1.json": "e3a5f9d1257953b0ca075570888a6b2218d38fa9c8d4688adcff664236e25b80",
+      "configs/experiments/causal_pure_mstca_m0_v1.json": "63c36eb012c202ad6a83fa0539e5a9aa06468eb590dcfcd0b81cec24960fd309",
+      "configs/experiments/t_selection_mstca_v1.json": "f434552dc74e45333202d313d3a1810b7be3676ab21c4ac1f2badccc2b644ca9",
+      "scripts/research/train_t_selection.py": "c19ab18503ead55f1e12e675ebbf5e93c4e3dc0e171c56de60546ada343604f3",
+      "scripts/research/evaluate_t_selection.py": "7e3d078e48b179878360c4f114014367096913708a8da6322770708c24059598",
+      "scripts/research/preflight_t_selection.py": "1fe05d26516052ee41bc163bafef865ed2e31597c64cd274f2fcf92de7202dae",
+      "tests/test_t_selection.py": "f60c921c38d23232f766f34dbb40135da138d8545e04706b68eb7fb9929240ca"
+    },
+    "new_scripts": "scripts/research/train_v_confirm.py, scripts/research/evaluate_v_confirm.py, scripts/research/preflight_v_confirm.py, tests/test_v_confirm.py; written after this freeze; their normalized SHA256 sealed in a pre-run implementation manifest."
+  },
+  "outputs": "artifacts/v_confirm_fixed100_mstca_v1/val/seed<seed>/ (report.json, factory_receipt.json, checkpoints/epoch_<e>.pt, inner_logits.npz [100, n_inner, 2], val_logits_epoch_<e>.npz, selections.json) and artifacts/v_confirm_fixed100_mstca_v1/evaluation_val/. Fresh directories only.",
+  "preflight_gates": [
+    "environment asserted (torch 2.5.1+cu124, numpy 2.1.3, CUDA, CUBLAS_WORKSPACE_CONFIG=:4096:8, ATEN_CPU_CAPABILITY=default)",
+    "tests/test_mstca_ablation_factory.py, tests/test_s_ablation.py, tests/test_t_selection.py, tests/test_v_confirm.py: 0 failed, 0 skipped; 14 goldens unchanged",
+    "protocol lock; normalized code identities; nine data identities; T phase-1 evaluation SHA equals origin.t_phase1_evaluation_sha256",
+    "local CPU smoke committed (2 epochs, subsampled fit/inner, synthetic or subsampled val stand-in never reading real val locally)"
+  ],
+  "forbidden": [
+    "internal test or any Real data",
+    "per-epoch val predictions; any use of val in selection",
+    "changing criteria, thresholds (1.0 pp, 2.0 pp), seeds or arms after any V result is seen",
+    "dropping or replacing a seed",
+    "modifying S or T frozen files or artifacts",
+    "regenerating goldens or changing CPU dispatch without architect approval"
+  ],
+  "budget": "5 runs x ~20 min (about 1.5x the CV fit size) = about 1.7 GPU hours.",
+  "revisions": []
+}
