@@ -1,0 +1,45 @@
+{
+  "smoke": {
+    "status": "COMPLETE_CPU_SMOKE_NOT_FORMAL",
+    "device": "cpu",
+    "epochs": 2,
+    "optimizer_steps": 2,
+    "used_window_counts": {
+      "fit": 512,
+      "inner": 256,
+      "heldout": 256
+    },
+    "wall_time_s": 1.9956975000095554
+  },
+  "selections": {
+    "T0": {
+      "epoch": 2,
+      "stop_epoch": null,
+      "observed_through": 2
+    },
+    "T1": {
+      "epoch": 100,
+      "available": false
+    },
+    "T2": {
+      "epoch": 1,
+      "inner_fp_at_r97": 163,
+      "tie_break": "later"
+    }
+  },
+  "preflight": {
+    "status": "LOCAL_GATES_PASS_FORMAL_NOT_AUTHORIZED",
+    "formal_clearance": false,
+    "golden_tests_passed": 14,
+    "pytest_summary": {
+      "passed": 190,
+      "xfailed": 1,
+      "skipped": 0
+    },
+    "cpu_smoke": {
+      "status": "PASS",
+      "root": "D:\\UAV-Fault-Diagnosis\\artifacts\\t_selection_mstca_v1\\smoke\\r1_seed42_fold0",
+      "report_sha256": "207ca0e48e72ee53081b2b7dc5636987427999f3e146bbcbd149b28b6aa88513"
+    }
+  }
+}

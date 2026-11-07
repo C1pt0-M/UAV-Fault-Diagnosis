@@ -1,0 +1,133 @@
+{
+  "git_pull": "Already up to date",
+  "git_head": "2a702811b509301718f390f8456ecf1a61655417",
+  "protocol_sha256": "f434552dc74e45333202d313d3a1810b7be3676ab21c4ac1f2badccc2b644ca9",
+  "normalized_source_sha256": {
+    "scripts/research/train_t_selection.py": "c19ab18503ead55f1e12e675ebbf5e93c4e3dc0e171c56de60546ada343604f3",
+    "scripts/research/evaluate_t_selection.py": "7e3d078e48b179878360c4f114014367096913708a8da6322770708c24059598",
+    "scripts/research/preflight_t_selection.py": "1fe05d26516052ee41bc163bafef865ed2e31597c64cd274f2fcf92de7202dae",
+    "tests/test_t_selection.py": "f60c921c38d23232f766f34dbb40135da138d8545e04706b68eb7fb9929240ca"
+  },
+  "protected_existing_files": 10756,
+  "changed_protected_files": [],
+  "fourteen_goldens_unchanged": true,
+  "golden_regeneration": false,
+  "failures": [],
+  "retries": [],
+  "pytest": {
+    "main": {
+      "summary": {
+        "passed": 190,
+        "xfail": 1
+      },
+      "by_file": {
+        "tests.test_mstca_ablation_factory": {
+          "passed": 44,
+          "xfail": 1
+        },
+        "tests.test_s_ablation": {
+          "passed": 68
+        },
+        "tests.test_t_selection": {
+          "passed": 78
+        }
+      }
+    },
+    "preflight": {
+      "summary": {
+        "passed": 190,
+        "xfail": 1
+      },
+      "by_file": {
+        "tests.test_mstca_ablation_factory": {
+          "passed": 44,
+          "xfail": 1
+        },
+        "tests.test_s_ablation": {
+          "passed": 68
+        },
+        "tests.test_t_selection": {
+          "passed": 78
+        }
+      }
+    }
+  },
+  "smoke_path": "artifacts\\t_selection_mstca_v1\\smoke\\r1_seed42_fold0",
+  "smoke": {
+    "status": "COMPLETE_CPU_SMOKE_NOT_FORMAL",
+    "epochs": 2,
+    "optimizer_steps": 2,
+    "used_window_counts": {
+      "fit": 512,
+      "inner": 256,
+      "heldout": 256
+    },
+    "wall_time_s": 1.9956975000095554,
+    "environment": {
+      "python": "3.12.4 (tags/v3.12.4:8e8a4ba, Jun  6 2024, 19:30:16) [MSC v.1940 64 bit (AMD64)]",
+      "torch": "2.8.0+cpu",
+      "numpy": "2.5.1",
+      "torch_cuda": null,
+      "cuda_available": false,
+      "cublas_workspace_config": ":4096:8",
+      "aten_cpu_capability": null,
+      "effective_cpu_capability": "AVX2"
+    }
+  },
+  "selections": {
+    "T0": {
+      "epoch": 2,
+      "stop_epoch": null,
+      "observed_through": 2
+    },
+    "T1": {
+      "epoch": 100,
+      "available": false
+    },
+    "T2": {
+      "epoch": 1,
+      "inner_fp_at_r97": 163,
+      "tie_break": "later"
+    }
+  },
+  "local_preflight_status": "LOCAL_GATES_PASS_FORMAL_NOT_AUTHORIZED",
+  "formal_clearance": false,
+  "goldens_passed": 14,
+  "scope": {
+    "gpu_used": false,
+    "compute_server_connected": false,
+    "source_val_read": false,
+    "commit_or_push": false
+  },
+  "workarounds_and_interpretations": [
+    "本轮无执行失败或重试。主验收、CPU smoke、本地预检各一次成功；原有P3严格xfail保留。",
+    "为零跳过且不写S产物，仅在测试子进程内把S smoke根和anchor转换输出根重定向到T临时目录；未修改S文件。预检现在执行同样的三文件套件，并拒绝真实skip。",
+    "新增--cpu-smoke-root显式选择smoke根目录内的新子目录，拒绝旧协议或源码不匹配的报告；旧smoke文件均保持原样。",
+    "预检依赖最终源码smoke，因此执行顺序为pytest、fresh smoke、本地预检；未先跑一个必然失败的旧报告预检。",
+    "本地沿用torch2.8.0+cpu/numpy2.5.1/AVX2；CUDA_VISIBLE_DEVICES为空，CUBLAS显式:4096:8；未更换依赖或CPU分发设置。插件自动加载、pytest缓存和字节码写入禁用。",
+    "附加审计钩子禁止网络和源数据写入，只允许六个train侧identity文件；真实val三文件不打开、不哈希。phase2单测仅合成数据。",
+    "r1明确seed-mixed先判max class drop>1 pp，再判等价区间，最后INCONCLUSIVE；1 pp边界不触发TRADE_OFF；AP仍仅作用于BETTER/WORSE。未发现新的规则歧义。",
+    "正式预检要求committed smoke与本轮禁止commit的范围差异仍保留：不commit、不放行；CUDA、val三项SHA与GPU确定性检查均未执行。",
+    "首次终端打印设计文档中文出现显示乱码，随后通过read工具核对UTF-8正文；协议解析与执行未失败。"
+  ],
+  "access_audit": {
+    "source_files_opened": [
+      "build_manifest.json",
+      "cache/train.pt",
+      "input_contract.json",
+      "ledgers/train_included_windows.csv",
+      "norm_stats.json",
+      "train_cache_complete.json"
+    ],
+    "source_val_files_opened": [],
+    "network_connections": "DENIED_BY_AUDIT_HOOK",
+    "source_data_writes": "DENIED_BY_AUDIT_HOOK",
+    "subprocesses": [
+      {
+        "executable": null,
+        "command": "D:\\python3.12.4\\python.exe -I -B -c \"import sys; from pathlib import Path; sys.path.insert(0, 'D:\\\\UAV-Fault-Diagnosis\\\\scripts\\\\research'); import train_s_ablation, build_pure_m0_anchor; train_s_ablation.SMOKE_ROOT = Path('D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\r1_checks\\\\local_preflight\\\\tests\\\\scope'); build_pure_m0_anchor.OUTPUT_ROOT = Path('D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\r1_checks\\\\local_preflight\\\\tests\\\\scope'); import pytest; raise SystemExit(pytest.main(sys.argv[1:]))\" -q -p no:cacheprovider --basetemp=D:\\UAV-Fault-Diagnosis\\artifacts\\t_selection_mstca_v1\\r1_checks\\local_preflight\\tests\\scope\\tmp --junitxml=D:\\UAV-Fault-Diagnosis\\artifacts\\t_selection_mstca_v1\\r1_checks\\local_preflight\\tests\\junit.xml D:\\UAV-Fault-Diagnosis\\tests\\test_mstca_ablation_factory.py D:\\UAV-Fault-Diagnosis\\tests\\test_s_ablation.py D:\\UAV-Fault-Diagnosis\\tests\\test_t_selection.py"
+      }
+    ],
+    "cpu_smoke_root": "artifacts\\t_selection_mstca_v1\\smoke\\r1_seed42_fold0"
+  }
+}

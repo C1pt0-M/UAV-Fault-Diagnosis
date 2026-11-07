@@ -1,0 +1,477 @@
+{
+  "scope": "LOCAL_IMPLEMENTATION_CPU_SMOKE_ONLY_NO_FORMAL_RESULT",
+  "git_head": "237d41f596a34bc9f1aabdb22b1efac3863a9ac3",
+  "git_pull": "Already up to date",
+  "commit_or_push": false,
+  "compute_server_connected": false,
+  "gpu_used": false,
+  "protocol_sha256": "084483740a9fc3a64c17e2cface068b23bce8f94bf88ccd3fa755a35185140c0",
+  "normalized_source_sha256": {
+    "scripts/research/train_t_selection.py": "030507854005904e15dd9f9435281fe3d33718c675c5c905d43434e1fcb5258a",
+    "scripts/research/evaluate_t_selection.py": "eafd0b32fc521d26f2984fde25cdfc185659cb57379acde99c1e3023f9e8b5d7",
+    "scripts/research/preflight_t_selection.py": "8f320e381b0a01b8e4210602055a6319a82c51d4e07c3ce3f746d9c375ea0008",
+    "tests/test_t_selection.py": "7d01fe79d708edc0b6e3a6bade353ed66541d02b45f06296a7357b34f5838753"
+  },
+  "protected_files_count": 756,
+  "protected_files_changed": [],
+  "original_twelve_goldens_file_unchanged": true,
+  "new_golden_generation_count": 1,
+  "new_golden_generation_command": "CUDA_VISIBLE_DEVICES='' python -I -B - <<'PY' > artifacts/t_selection_mstca_v1/implementation_checks/new_goldens_generated_once.txt\nimport sys,torch\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()/'packages/uav_fault'))\nfrom uav_fault.models.cnn.ablation_factory import build_variant,initialize_variant,_state_digest\nprint('torch',torch.__version__,'CPU',torch.backends.cpu.get_cpu_capability())\nfor seed in (45,46):\n model=build_variant('mstca')\n receipt=initialize_variant(model,'mstca',seed)\n assert all(v.device.type=='cpu' for v in model.state_dict().values())\n assert receipt['full_state_digest']==_state_digest(model.state_dict())\n print(('mstca',seed),receipt['full_state_digest'])\nPY\n",
+  "new_goldens": {
+    "mstca,45": "f9064b9fd27dce20ebb5a1e9b51acfff067995a267c18eb3fa484ecc0e3663d3",
+    "mstca,46": "18850ec35353411487c9e2bc2dffbb84330d5ef8f8c10aa2defe949fffe2e012"
+  },
+  "pytest_attempts": [
+    {
+      "attempt": 1,
+      "summary": {
+        "passed": 173,
+        "skipped": 6,
+        "xfail": 1,
+        "failed": 1
+      },
+      "by_file": {
+        "tests.test_mstca_ablation_factory": {
+          "passed": 40,
+          "skipped": 4,
+          "xfail": 1
+        },
+        "tests.test_s_ablation": {
+          "passed": 66,
+          "skipped": 2
+        },
+        "tests.test_t_selection": {
+          "passed": 67,
+          "failed": 1
+        }
+      },
+      "failures": [
+        {
+          "test": "tests.test_t_selection::test_bootstrap_same_plan_for_all_16_vectors_and_all_comparisons",
+          "status": "failed",
+          "message": "assert [0.9999999999...9999999999999] == [1.0, 1.0]\n  \n  At index 0 diff: 0.9999999999999999 != 1.0\n  Use -v to get more diff",
+          "traceback": "monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000017F4A962D80>\n\n    def test_bootstrap_same_plan_for_all_16_vectors_and_all_comparisons(monkeypatch):\n        y = np.array([0, 1] * 3)\n        score = np.array([.75, .5, .875, .625, 1., .75])\n        scores = {a: {seed: score.copy() for seed in train.SEEDS} for a in evaluate.ARMS}\n        calls = []\n        original = evaluate.m.MetricCache.basic\n        def record(self, weights=None, recall=.97):\n            calls.append((id(weights), weights.copy()))\n            return original(self, weights, recall)\n        monkeypatch.setattr(evaluate.m.MetricCache, 'basic', record)\n        result = evaluate.paired_bootstrap(y, scores, np.array(['000', '000', '001', '001', '002', '002']), replicates=8)\n        assert len(calls) == 8 * 16\n        for i in range(0, len(calls), 16):\n            assert len({p[0] for p in calls[i:i + 16]}) == 1\n            assert all(np.array_equal(calls[i][1], p[1]) for p in calls[i:i + 16])\n        for c in result['comparisons'].values():\n>           assert c['aggregate_ratio_ci'] == [1., 1.]\nE           assert [0.9999999999...9999999999999] == [1.0, 1.0]\nE             \nE             At index 0 diff: 0.9999999999999999 != 1.0\nE             Use -v to get more diff\n\ntests\\test_t_selection.py:324: AssertionError"
+        }
+      ],
+      "junit": "artifacts\\t_selection_mstca_v1\\implementation_checks\\pytest_r1.xml"
+    },
+    {
+      "attempt": 2,
+      "summary": {
+        "passed": 177,
+        "skipped": 6,
+        "xfail": 1,
+        "failed": 1
+      },
+      "by_file": {
+        "tests.test_mstca_ablation_factory": {
+          "passed": 40,
+          "skipped": 4,
+          "xfail": 1
+        },
+        "tests.test_s_ablation": {
+          "passed": 66,
+          "skipped": 2
+        },
+        "tests.test_t_selection": {
+          "passed": 71,
+          "failed": 1
+        }
+      },
+      "failures": [
+        {
+          "test": "tests.test_t_selection::test_bootstrap_same_plan_for_all_16_vectors_and_all_comparisons",
+          "status": "failed",
+          "message": "assert [-5.551115123125783e-17, 0.0] == [0.0, 0.0]\n  \n  At index 0 diff: -5.551115123125783e-17 != 0.0\n  Use -v to get more diff",
+          "traceback": "monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000024DACF3D1C0>\n\n    def test_bootstrap_same_plan_for_all_16_vectors_and_all_comparisons(monkeypatch):\n        y = np.array([0, 1] * 3)\n        score = np.array([.75, .5, .875, .625, 1., .75])\n        scores = {a: {seed: score.copy() for seed in train.SEEDS} for a in evaluate.ARMS}\n        calls = []\n        original = evaluate.m.MetricCache.basic\n        def record(self, weights=None, recall=.97):\n            calls.append((id(weights), weights.copy()))\n            return original(self, weights, recall)\n        monkeypatch.setattr(evaluate.m.MetricCache, 'basic', record)\n        result = evaluate.paired_bootstrap(y, scores, np.array(['000', '000', '001', '001', '002', '002']), replicates=8)\n        assert len(calls) == 8 * 16\n        for i in range(0, len(calls), 16):\n            assert len({p[0] for p in calls[i:i + 16]}) == 1\n            assert all(np.array_equal(calls[i][1], p[1]) for p in calls[i:i + 16])\n        for c in result['comparisons'].values():\n            assert c['aggregate_ratio_ci'] == [1., 1.]\n>           assert c['aggregate_delta_ap_ci'] == [0., 0.]\nE           assert [-5.551115123125783e-17, 0.0] == [0.0, 0.0]\nE             \nE             At index 0 diff: -5.551115123125783e-17 != 0.0\nE             Use -v to get more diff\n\ntests\\test_t_selection.py:325: AssertionError"
+        }
+      ],
+      "junit": "artifacts\\t_selection_mstca_v1\\implementation_checks\\pytest_r2.xml"
+    },
+    {
+      "attempt": 3,
+      "summary": {
+        "passed": 148,
+        "error": 36,
+        "xfail": 1
+      },
+      "by_file": {
+        "tests.test_mstca_ablation_factory": {
+          "passed": 39,
+          "error": 5,
+          "xfail": 1
+        },
+        "tests.test_s_ablation": {
+          "passed": 52,
+          "error": 16
+        },
+        "tests.test_t_selection": {
+          "passed": 57,
+          "error": 15
+        }
+      },
+      "failures": [
+        {
+          "test": "tests.test_mstca_ablation_factory::test_pure_anchor_tamper_rejected",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_mstca_ablation_factory::test_conversion_refuses_overwrite",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_mstca_ablation_factory::test_conversion_rejects_bad_source_identity_or_mapping[sha256]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_mstca_ablation_factory::test_conversion_rejects_bad_source_identity_or_mapping[state_digest]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_mstca_ablation_factory::test_conversion_rejects_bad_source_identity_or_mapping[m0_mapped_state_digest]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_hash_splits_preserve_leading_zero_strings",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_phase_val_without_verdict_sha_refused_before_any_data",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_formal_refusal_precedes_data[cuda_available-False]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_formal_refusal_precedes_data[torch-2.8.0+cpu]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_formal_refusal_precedes_data[numpy-2.5.1]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_formal_refusal_precedes_data[cublas_workspace_config-None]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_existing_output_refused",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_formal_slots_enforce_frozen_order_and_manifest",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_preflight_parser_has_no_server_side_ssh_flag",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_formal_preflight_records_host_and_never_calls_ssh[None]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_formal_preflight_records_host_and_never_calls_ssh[banner]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_formal_preflight_records_host_and_never_calls_ssh[query]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_phase_gate_rejects_synthetic_and_hash_mismatch",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_val_identity_files_are_hashed_without_parsing",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_incomplete_evaluation_has_no_conclusions",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_s_ablation::test_synthetic_end_to_end_never_accesses_heldout_during_training",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_normalized_sha_is_line_ending_independent",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_bad_protocol_lock_refused",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_reproduction_gate_matching_and_both_mismatches",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_rng_isolation_actual_three_epoch_training_with_extra_inference_on_off",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_local_data_identities_never_open_any_val_file",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_val_refusal_precedes_any_protocol_or_data_access",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_phase1_gate_rejects_hash_and_mechanically_wrong_adoption",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_val_unique_checkpoint_passes_only_synthetic_not_source_val[T1-1-2-2]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_val_unique_checkpoint_passes_only_synthetic_not_source_val[T1-2-2-1]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_val_unique_checkpoint_passes_only_synthetic_not_source_val[T0-1-2-1]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_formal_slots_new_seeds_require_all_prior_old_seed_runs",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_formal_preflight_refuses_local_environment_before_any_nvidia_or_data",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_fifteen_run_pooling_inner_replay_and_prediction_corruption",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_preflight_local_no_gpu_or_ssh_and_formal_two_fully_mocked_probes[True]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        },
+        {
+          "test": "tests.test_t_selection::test_preflight_local_no_gpu_or_ssh_and_formal_two_fully_mocked_probes[False]",
+          "status": "error",
+          "message": "failed on setup with \"FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\"",
+          "traceback": "self = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/implementation_checks/pytest_scope_r3/tmp')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\t_selection_mstca_v1\\\\implementation_checks\\\\pytest_scope_r3\\\\tmp'\n\nD:\\python3.12.4\\Lib\\pathlib.py:1311: FileNotFoundError"
+        }
+      ],
+      "junit": "artifacts\\t_selection_mstca_v1\\implementation_checks\\pytest_r3.xml"
+    },
+    {
+      "attempt": 4,
+      "summary": {
+        "passed": 184,
+        "xfail": 1
+      },
+      "by_file": {
+        "tests.test_mstca_ablation_factory": {
+          "passed": 44,
+          "xfail": 1
+        },
+        "tests.test_s_ablation": {
+          "passed": 68
+        },
+        "tests.test_t_selection": {
+          "passed": 72
+        }
+      },
+      "failures": [],
+      "junit": "artifacts\\t_selection_mstca_v1\\implementation_checks\\pytest_r4.xml"
+    },
+    {
+      "attempt": 5,
+      "summary": {
+        "passed": 184,
+        "xfail": 1
+      },
+      "by_file": {
+        "tests.test_mstca_ablation_factory": {
+          "passed": 44,
+          "xfail": 1
+        },
+        "tests.test_s_ablation": {
+          "passed": 68
+        },
+        "tests.test_t_selection": {
+          "passed": 72
+        }
+      },
+      "failures": [],
+      "junit": "artifacts\\t_selection_mstca_v1\\implementation_checks\\pytest_r5.xml"
+    },
+    {
+      "attempt": 6,
+      "summary": {
+        "passed": 185,
+        "xfail": 1
+      },
+      "by_file": {
+        "tests.test_mstca_ablation_factory": {
+          "passed": 44,
+          "xfail": 1
+        },
+        "tests.test_s_ablation": {
+          "passed": 68
+        },
+        "tests.test_t_selection": {
+          "passed": 73
+        }
+      },
+      "failures": [],
+      "junit": "artifacts\\t_selection_mstca_v1\\implementation_checks\\pytest_r6.xml"
+    }
+  ],
+  "smoke_attempts": [
+    {
+      "directory": "smoke_impl_r1",
+      "outcome": "SUCCESS_INITIAL_IMPLEMENTATION"
+    },
+    {
+      "directory": "smoke_failed_save_r2",
+      "outcome": "PROCESS_EXIT_1_WINERROR5_THEN_ERRNO17_NO_RELABEL"
+    },
+    {
+      "directory": "smoke",
+      "outcome": "SUCCESS_IDENTICAL_CONFIG_INFRASTRUCTURE_RETRY"
+    }
+  ],
+  "smoke_final": {
+    "status": "COMPLETE_CPU_SMOKE_NOT_FORMAL",
+    "epochs": 2,
+    "optimizer_steps": 2,
+    "used_window_counts": {
+      "fit": 512,
+      "inner": 256,
+      "heldout": 256
+    },
+    "wall_time_s": 4.47755439998582,
+    "environment": {
+      "python": "3.12.4 (tags/v3.12.4:8e8a4ba, Jun  6 2024, 19:30:16) [MSC v.1940 64 bit (AMD64)]",
+      "torch": "2.8.0+cpu",
+      "numpy": "2.5.1",
+      "torch_cuda": null,
+      "cuda_available": false,
+      "cublas_workspace_config": ":4096:8",
+      "aten_cpu_capability": null,
+      "effective_cpu_capability": "AVX2"
+    }
+  },
+  "selections": {
+    "T0": {
+      "epoch": 2,
+      "stop_epoch": null,
+      "observed_through": 2
+    },
+    "T1": {
+      "epoch": 100,
+      "available": false
+    },
+    "T2": {
+      "epoch": 1,
+      "inner_fp_at_r97": 163,
+      "tie_break": "later"
+    }
+  },
+  "source_access_audit": {
+    "source_files_opened": [
+      "build_manifest.json",
+      "cache/train.pt",
+      "input_contract.json",
+      "ledgers/train_included_windows.csv",
+      "norm_stats.json",
+      "train_cache_complete.json"
+    ],
+    "subprocesses": [
+      {
+        "executable": null,
+        "command": "D:\\python3.12.4\\python.exe -I -B -m pytest -q -p no:cacheprovider --basetemp=D:\\UAV-Fault-Diagnosis\\artifacts\\t_selection_mstca_v1\\local_preflight_final\\tests\\tmp --junitxml=D:\\UAV-Fault-Diagnosis\\artifacts\\t_selection_mstca_v1\\local_preflight_final\\tests\\junit.xml D:\\UAV-Fault-Diagnosis\\tests\\test_mstca_ablation_factory.py D:\\UAV-Fault-Diagnosis\\tests\\test_t_selection.py"
+      }
+    ],
+    "val_files_opened": [],
+    "data_writes": "FORBIDDEN_BY_AUDIT_HOOK",
+    "network_connections": "FORBIDDEN_BY_AUDIT_HOOK",
+    "archived_smoke": "smoke_impl_r1",
+    "preserved_failed_save": "smoke_failed_save_r2",
+    "successful_smokes_checkpoint_and_prediction_arrays_bitwise_identical": true
+  },
+  "local_preflight_attempts": [
+    "local_preflight: BLOCKED one-off audit hook",
+    "local_preflight_retry1: LOCAL_PASS prior implementation",
+    "local_preflight_final: LOCAL_PASS final implementation"
+  ],
+  "formal_clearance": false,
+  "complete_deviations_interpretations_and_failures": "# T implementation execution audit (local only)\n\n## Scope / invariants\n\n- Initial `git pull --ff-only`: Already up to date. No commit, add, push, SSH, remote training or GPU execution.\n- Protocol raw SHA/lock: 084483740a9fc3a64c17e2cface068b23bce8f94bf88ccd3fa755a35185140c0.\n- Four new source files only. Existing S files/artifacts, original twelve goldens, case_relative_features_dev.py and the two tmp_control_compensation_audit logs are protected by the 756-file before/after raw-SHA inventory.\n- Real source val files are not opened, even for SHA. Local data checks verify the six allowed train-side identity files; three val identities remain a formal gate. Source-data writes and network connections are denied by the smoke/preflight audit hooks. Phase-2 unit checks use synthetic fixtures only.\n- Local environment is Python 3.12.4, torch 2.8.0+cpu, numpy 2.5.1, pytest 8.4.2, CPU AVX2. CUDA_VISIBLE_DEVICES is empty, CUBLAS_WORKSPACE_CONFIG=:4096:8 is explicitly supplied. ATEN_CPU_CAPABILITY is not changed locally: this preserves the environment/method of the existing CPU goldens. The formal path still strictly asserts the registered CUDA versions and ATEN_CPU_CAPABILITY=default, never setdefault.\n- Two new goldens were generated ONCE with the existing build_variant -> initialize_variant -> historical-compatible state digest method. Exact command is in golden_generation_command.txt. Tests subsequently compare against the pinned literals; they do not regenerate them.\n\n## Every failure and retry / verification iteration\n\n1. Attempted to read tests/conftest.py; ENOENT. The file is absent; it was not created or modified. No retry of that read.\n2. The first preparation/inventory command used Windows' default GBK read_text decoding and failed with UnicodeDecodeError on the UTF-8 T protocol. Repeated that preparation with encoding='utf-8'; normalized pins and the protected-file inventory then passed. The subsequent existing-golden subprocess in the initial compound shell command still ran: 12 passed, 33 deselected. No golden was changed.\n3. pytest_r1: 173 passed, 6 skipped, 1 xfailed, 1 failed. The T3 bootstrap exact-unit-ratio assertion exposed exp(mean(log(integer FP))) rounding (1 became 0.9999999999999999). Fixed the common point/bootstrap T3 path by computing the algebraically equivalent GM(FP_T3/FP_T1_seed). No clipping, tolerance or pseudocount was introduced; the strict test assertion was retained.\n4. pytest_r2: 177 passed, 6 skipped, 1 xfailed, 1 failed. The same test's next assertion exposed T3 AP subtraction rounding (-5.55e-17 instead of zero for identical APs). Fixed both point/bootstrap paths with the algebraically equivalent arithmetic mean of paired AP_T3-AP_T1_seed differences. The exact-zero assertion was retained.\n5. pytest_r3: 148 passed, 36 fixture-setup errors, 1 xfailed. The nested --basetemp parent had not been created (WinError 3). Created a fresh parent explicitly before pytest_r4. All 36 testcase names/errors are preserved in pytest_r3.xml and execution_audit.json.\n6. pytest_r4: 184 passed, 1 xfailed. pytest_r5: 184 passed, 1 xfailed after additional admission/provenance review. pytest_r6: 185 passed, 1 xfailed after adding the explicitly labelled two SD conventions. All logs/XML are retained; none were overwritten.\n7. To cover the six pre-existing path-guarded tests without writing any S artifacts, pytest_r3/r4/r5/r6 change only the two in-process test output roots: train_s_ablation.SMOKE_ROOT and build_pure_m0_anchor.OUTPUT_ROOT -> a fresh T-only temporary scope. Production files/constants on disk are unchanged; separate production processes retain their normal roots. Plugin autoload and pytest cache are disabled, and -I -B is used. The final three-file suite has zero skips. The unchanged P3 batch-height-origin test is still its original strict expected failure.\n8. The initial real local_preflight invocation was BLOCKED by an overly strict extra audit hook: on Windows subprocess.Popen reports executable=None when it infers the executable from its command line. No pytest child was started by that attempt. Preserved local_preflight/ and its BLOCKED report. Corrected only the one-off audit hook to validate the explicit Python/pytest command line, and retried in fresh local_preflight_retry1/: LOCAL_GATES_PASS_FORMAL_NOT_AUTHORIZED, 14 goldens passed. Its auxiliary suite is 112 passed, 4 skipped, 1 xfailed; the four inherited conversion-path skips are covered by the main scoped suite.\n9. First actual source CPU smoke succeeded: 2 epochs, 2 optimizer steps, 512 fit / 256 inner / 256 heldout, 4.0904846 s. After resolving the unspecified SD divisor, the evaluator/test file hashes changed, so the successful original smoke was preserved by moving it to smoke_impl_r1/. This is implementation revalidation before ANY formal run, not replacement of a completed formal job.\n10. Source smoke revalidation trained and predicted all two epochs, but final report replacement failed with Windows PermissionError / WinError 5. The frozen S JSON writer then tried to write FAILED using the already-existing report.json.partial and raised FileExistsError / Errno 17. The process exited 1. The failed directory is preserved intact as smoke_failed_save_r2/: report.json remains RUNNING and report.json.partial contains the pending COMPLETE_CPU_SMOKE_NOT_FORMAL payload. It is not counted as a successful run and was not manually relabelled. The complete original traceback is in final_smoke_preflight_console.txt.\n11. One infrastructure retry with identical final source/configuration, seed42/fold0 and no settings/seed change succeeded in a fresh smoke/: 2 epochs, 2 optimizer steps, 4.4775544 s. Actual checkpoint state digests and every saved prediction/ID/label/epoch array are bitwise equal to the first successful smoke. final_smoke_retry_console.txt and final_access_audit.json record this. No S helper was patched to work around the Windows lock.\n12. Final real local preflight in fresh local_preflight_final/ succeeded for the final implementation: 14 goldens passed; auxiliary suite 113 passed, 4 skipped, 1 xfailed. The four inherited path skips are already covered by final main pytest_r6. Formal clearance remains false. The implementation manifest matches the final successful smoke and all four final source files.\n\n## Protocol/brief conflicts, interpretations and ambiguities\n\n- Scope conflict: the frozen formal preflight requires a COMMITTED local CPU smoke, whereas the user/brief explicitly forbid committing in this task. No commit was made; that formal gate remains pending, not bypassed. There is no training/selection-rule conflict between the brief and the frozen JSON.\n- Local no-val scope overrides running the full nine-file identity check now: six train-side files are verified, the three val files are explicitly NOT OPENED. Formal execution retains the inherited nine-file check, with val bytes hashed only in CV and no parsing/loading.\n- CPU smoke deliberately truncates the observation horizon to 2 but never redefines T1: it remains epoch 100, available=false. T0 stop_epoch=null means no early stop was observed; observed_through records the actual cap. Such runs are excluded from formal evaluation/reproduction.\n- The global explicit undefined-policy precedence applies before T3's directional ENSEMBLE_HELPS/NO_CLEAR_GAIN rule: an unavailable ratio/AP interval yields INCONCLUSIVE. No undefined bootstrap draw is dropped or redrawn.\n- The first-holds seed-consistency branch is evaluated before class constraints: mixed seeds with an in-margin CI return EQUIVALENT, reason equivalent_seed_mixed. This precedence, including an estimable class drop, has an explicit test. AP consistency downgrades only BETTER/WORSE, not EQUIVALENT/TRADE_OFF.\n- T2/T1 is a secondary comparison used exactly by the mechanical adoption CI condition; no unregistered class/AP/seed veto is added to adoption. T3 never changes adoption.\n- T3 delta AP is AP(ensemble) minus the arithmetic seed mean of T1 AP; it is computed as a mean of paired differences to preserve exact zero. The ensemble FP ratio uses the algebraically equivalent mean-of-log paired ratios to preserve exact one.\n- The protocol does not specify the divisor of across-seed log-FP SD. Both sample_ddof1 and population_ddof0 are reported explicitly, instead of silently choosing one; neither affects decisions. Nonpositive/undefined FP makes both SD values unavailable, without a pseudocount.\n- Oracle ties use the earliest minimum for a deterministic descriptive label only. Oracle curves are marked NOT SELECTABLE and never enter selection/adoption.\n- CE is computed separately through the unchanged S inner_ce float64 path, not reconstructed from rounded float32 stored probabilities. Trajectory probabilities are float32 as specified. The formal S0 digest/epoch and fixed-FP reproduction gates remain strict; possible effects of float32 score ties are NOT worked around and have not been tested formally in this local-only task.\n- Formal environment, three val identities, committed-smoke requirement, host/GPU evidence, native GPU determinism and full S0 trajectory/pooled-FP reproduction have NOT been executed or declared passed.\n\nNo other execution deviations or unresolved selection-rule changes were made. Full source/artifact hashes and every pytest failed/error testcase are in the accompanying manifests/audit JSON.\n"
+}
