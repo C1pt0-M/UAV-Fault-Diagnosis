@@ -1,6 +1,6 @@
 {
   "name": "t_selection_mstca_v1",
-  "status": "FROZEN_BEFORE_ANY_RUN",
+  "status": "FROZEN_BEFORE_ANY_RUN (r1)",
   "frozen_at": "2026-11-07",
   "purpose": "Reduce normal-condition false alarms of the MSTCA baseline (S0 / M0 architecture) by fixing the training-length and checkpoint-selection protocol. The S-group showed checkpoint/seed effects (20-80%) far larger than structural effects (<=10%), and inner-CE selection tends to pick early epochs (docs/research/2026-11-07/S组结构消融结果_阶段1_v1.md, _阶段2_v1.md).",
   "design_doc": "docs/research/2026-11-07/T组训练与选点协议_v1.md",
@@ -88,8 +88,8 @@
   },
   "decision_rules": {
     "margin": "equivalence margin 1.10: ratio CI inside [1/1.10, 1.10]",
-    "precedence": "Take the first that holds: INCONCLUSIVE by undefined_policy -> INCONCLUSIVE by seed_consistency -> TRADE_OFF (class constraint) -> BETTER (upper 95% bound < 1.0) -> WORSE (lower 95% bound > 1.0) -> EQUIVALENT (CI inside [1/1.10, 1.10]) -> INCONCLUSIVE.",
-    "seed_consistency": "At least 4 of the 5 per-seed ratio point estimates strictly on the same side of 1.0 (exactly 1.0 counts for neither). Checked before TRADE_OFF/BETTER/WORSE; a seed-inconsistent comparison may still be EQUIVALENT only if its CI is inside the margin (then reason equivalent_seed_mixed).",
+    "precedence": "Take the first that holds: INCONCLUSIVE by undefined_policy -> seed-inconsistent branch (see seed_consistency) -> TRADE_OFF (class constraint) -> BETTER (upper 95% bound < 1.0) -> WORSE (lower 95% bound > 1.0) -> EQUIVALENT (CI inside [1/1.10, 1.10]) -> INCONCLUSIVE.",
+    "seed_consistency": "Seed-consistent means at least 4 of the 5 per-seed ratio point estimates strictly on the same side of 1.0 (exactly 1.0 counts for neither). A seed-inconsistent comparison is resolved inside its own branch, in this order: class constraint violated -> TRADE_OFF (reason class_constraint_seed_mixed); else CI inside [1/1.10, 1.10] -> EQUIVALENT (reason equivalent_seed_mixed); else INCONCLUSIVE (reason seed_consistency). The class constraint therefore applies to every EQUIVALENT verdict.",
     "class_constraint": "At t*, no fault class loses more than 1.0 pp recall versus T0 (seed mean) on fault windows outside late_hover_fault. Violated -> TRADE_OFF.",
     "AP_consistency": "BETTER is contradicted when the delta AP 95% upper bound < 0; WORSE when the lower bound > 0. Contradicted verdicts become INCONCLUSIVE (reason AP_consistency). EQUIVALENT and TRADE_OFF only report delta AP.",
     "undefined_policy": "Inherited from s_ablation_mstca_v1 r2: no pseudocounts, redraws or dropped replicates; an undefined ratio or CI makes the comparison INCONCLUSIVE.",
@@ -144,5 +144,13 @@
     "local CPU smoke committed: 2 epochs, <= 2048 fit windows, selection file and per-epoch prediction arrays written"
   ],
   "budget": "Phase 1: 15 runs x ~15 min, about 4 GPU hours. Phase 2: 5 runs x ~17 min, about 1.5 GPU hours.",
-  "revisions": []
+  "revisions": [
+    {
+      "revision": "r1",
+      "date": "2026-11-07",
+      "before_any_formal_run": true,
+      "change": "seed_consistency/precedence: a seed-inconsistent comparison is checked against the class constraint before it can be EQUIVALENT (r0 allowed equivalent_seed_mixed even with a >1 pp class recall drop, which could make T1 adoptable despite a recall cost, inconsistent with the seed-consistent path where TRADE_OFF precedes EQUIVALENT).",
+      "reason": "Found in architect review of the local implementation; no formal result exists."
+    }
+  ]
 }

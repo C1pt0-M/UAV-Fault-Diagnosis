@@ -109,3 +109,13 @@ S 组说明，结构差异对误报的影响不超过 10%，而选点、训练�
 - 如果 T1 判为 BETTER，那么"训练满轮次"就是降低误报最简单的手段，后续实验统一用 fixed_100。
 - inner 只有约 100 个组，用 inner FP@R97 选点（T2）可能噪声较大，因此 T2 不一定优于 T1。
 - 存储估算：每个 run 保存 100 个 checkpoint，约 100 × 1–2 MB；每轮的 held-out 预测为 float32，100 × 约 54k 个窗口，每个 run 约 22 MB。可以接受。
+
+## 修订 r1（2026-11-07，任何正式运行之前）
+
+- **问题：** 审查本地实现时发现，r0 允许 seed 不一致、CI 落在边际内的比较直接判为 EQUIVALENT（equivalent_seed_mixed），即使某个故障类的召回下降超过 1 pp，也可能因此采纳 T1。而 seed 一致的比较中，TRADE_OFF 先于 EQUIVALENT，两者不一致。
+- **修改：** seed 不一致的比较在其分支内依次判断：
+  1. 类约束不满足 → TRADE_OFF（class_constraint_seed_mixed）；
+  2. CI 落在边际内 → EQUIVALENT（equivalent_seed_mixed）；
+  3. 否则 → INCONCLUSIVE（seed_consistency）。
+  这样所有 EQUIVALENT 都满足类约束。
+- **新锁：** `f434552dc74e45333202d313d3a1810b7be3676ab21c4ac1f2badccc2b644ca9`。
