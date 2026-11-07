@@ -1,0 +1,62 @@
+{
+  "name": "w_phase_balance_mstca_v1",
+  "status": "FROZEN_BEFORE_ANY_RUN (r1); the freeze record is the git commit that adds this file. No SHA locks or implementation manifests, by user decision of 2026-11-07.",
+  "frozen_at": "2026-11-07",
+  "purpose": "Reduce false alarms on independent normal flights. Diagnosis (docs/research/2026-11-07/误报诊断分析_v1.md): after each flight type's typical fault-onset time the aircraft is in a different flight regime, and in that regime the training set holds about 1 normal window per 7-44 fault windows, all from about 56 independent normal flights per type. The model learns 'this regime means fault'. W re-balances normal versus fault sampling mass inside each (flight type x phase) cell. The phase is used only for training weights, never as a model input.",
+  "baseline": "T0 = MSTCA (S0 architecture), S-recipe, inner-CE early stopping replay (configs/experiments/t_selection_mstca_v1.json, arm T0). Adopted after the T and V groups.",
+  "inherits": "Everything from t_selection_mstca_v1 phase 1 (data root, population, outer folds, inner selection, recipe, loss, optimizer, schedule, determinism, model RNG, 100-epoch trajectory with per-epoch inner and held-out predictions, T0 replay, strata, FP@R97 definition, bootstrap plan) EXCEPT the sampler weights defined below. Seeds 42-46, folds 0-2.",
+  "phase_cells": {
+    "flight": "case_uid.split('/')[1] (acce, circling, dece, hover, velocity, waypoint)",
+    "onset_reference": "Per run, from the FIT population only: per flight type, the median over fault cases (unique case_uid with non-null fault_onset_row) of fault_onset_row * 0.02 s. Recorded in report.json.",
+    "phase": "post if window_end_row * 0.02 > onset_reference[flight], else pre",
+    "cell": "(flight, phase): 12 cells"
+  },
+  "arms": {
+    "W0": "T0 itself. Reuse the existing T CV held-out predictions at the T0 epoch (artifacts/t_selection_mstca_v1/cv/seed<s>_fold<f>/heldout_predictions.npz + selections.json). No new runs.",
+    "W1": "Full cell balance. b = existing balanced_source_normal weights, sampling_weights(labels, origins, True). For each cell c: N_c = sum of b over its normal windows, F_c = sum of b over its fault windows, r_c = F_c / N_c if N_c > 0 else 1. Normal windows in cell c get b * max(1, r_c); fault windows keep b. No renormalisation; WeightedRandomSampler draws per epoch = number of fit windows (as before).",
+    "W2": "Square-root balance. Same as W1 but the normal multiplier is max(1, sqrt(r_c)).",
+    "selection": "W1 and W2 use the T0 rule (inner-CE early stopping replay, unweighted inner class-balanced CE), exactly as T0. The epoch-100 checkpoint of W1/W2 is reported descriptively only."
+  },
+  "evaluation": {
+    "population": "Pooled outer held-out predictions per (arm, seed) over all 162069 train windows.",
+    "primary": "FP@R97 per (arm, seed); ratio = FP(arm) / FP(W0) per seed; aggregate = geometric mean over 5 seeds; association_group cluster bootstrap, 2000 replicates, rng 20261106, one resample plan shared by all arms and seeds; t* recomputed per arm, seed and replicate.",
+    "comparisons": "W1 vs W0 and W2 vs W0 (primary, no multiplicity correction, both reported). W1 vs W2 descriptive.",
+    "class_windows": "For C2 and C3, each class uses ALL its fault windows, including late-hover faults (the intervention targets post-onset regimes, so these must be inside the constraint). The V-style version excluding late_hover_fault is reported descriptively."
+  },
+  "criteria": {
+    "C1": "Aggregate FP ratio < 1, at least 4 of 5 per-seed ratios < 1, and bootstrap 95% CI upper bound < 1.",
+    "C2": "Matched FP: threshold of the arm set so its FP equals W0's FP@R97 per seed (matched_fp_threshold of evaluate_v_confirm.py); seed-mean recall change of every fault class >= -1.0 pp versus W0 at its R97 threshold.",
+    "C3": "At each arm's own R97 threshold, seed-mean recall drop of every fault class versus W0 <= 2.0 pp.",
+    "C4": "Delta AP (arm - W0), seed mean, bootstrap 95% CI upper bound >= 0.",
+    "verdict_per_arm": "PASS if C1-C4 all hold, else FAIL with the failed criteria listed. Undefined value -> FAIL (no pseudocounts, no dropped replicates).",
+    "adoption": "Both FAIL -> KEEP_T0. Exactly one PASS -> adopt it. Both PASS -> adopt the one with the lower aggregate FP ratio. Decided mechanically; not changed after results are seen."
+  },
+  "secondary_descriptive": [
+    "Independent-normal FP rate by flight x time bin (0,10,20,30,45,60,90,inf s) and by phase cell, per arm (seed mean)",
+    "Pre-fault normal FP rate per arm",
+    "Number of the 334 independent normal flights with at least one alarm at R97",
+    "Selected T0 epoch per (arm, seed, fold); epoch-100 FP@R97 of W1/W2",
+    "Per-cell multipliers, effective sample size of the sampler (sum(w)^2 / sum(w^2)) and per-cell sampling probability",
+    "FP@R95, per-seed SD of log FP@R97",
+    "Per-class recall at R97 excluding late_hover_fault (V-style)"
+  ],
+  "confirmation_disclosure": "Source val has already been used twice (S phase 2, V). This experiment is decided on train CV only; an adoption is provisional until a clean confirmation set exists. Val, internal test and Real data are not read.",
+  "runs": "2 arms x 5 seeds x 3 folds = 30 runs, order seed -> fold -> arm. Each run trains 100 epochs (as in T). Up to two runs may execute concurrently on the GPU if memory allows; results must not depend on concurrency. Rerun only after an infrastructure failure, identical configuration, logged.",
+  "gates": [
+    "Unit test: with all multipliers forced to 1 the new weights equal sampling_weights(labels, origins, True) exactly.",
+    "Unit test: cell assignment and onset reference on a toy ledger.",
+    "Golden digest tests (tests/test_mstca_ablation_factory.py, tests/test_t_selection.py) pass on the server under ATEN_CPU_CAPABILITY=default. Never regenerate goldens.",
+    "W0 FP@R97 recomputed by the new evaluator for seeds 42-44 equals 3595, 3588, 4610 (T/S evaluation)."
+  ],
+  "forbidden": [
+    "source val, internal test, any Real data",
+    "using held-out predictions for selection or weighting",
+    "time, phase or position as a model input",
+    "changing arms, multipliers, criteria or adoption after any result is seen",
+    "dropping or replacing a seed",
+    "modifying frozen S/T/V files or artifacts",
+    "regenerating goldens or changing the CPU capability setting"
+  ],
+  "outputs": "artifacts/w_phase_balance_mstca_v1/cv/<arm>_seed<s>_fold<f>/ (report.json incl. onset references, multipliers and sampler statistics; selections.json; inner/held-out predictions; checkpoints only for the T0-selected epoch and epoch 100). Evaluation in artifacts/w_phase_balance_mstca_v1/evaluation_cv/evaluation.json.",
+  "budget": "30 runs x ~15 min, about 7.5 GPU hours sequential."
+}
