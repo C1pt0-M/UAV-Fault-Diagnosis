@@ -1,0 +1,34 @@
+{
+  "status": "ALL_GATES_AND_T_S_PROBE_MATCH",
+  "formal_clearance": true,
+  "protocol_sha256": "f434552dc74e45333202d313d3a1810b7be3676ab21c4ac1f2badccc2b644ca9",
+  "s_probe_digest": "04c134994dcccc756d9d46e138f06cc4afb1ff0caed15db2b9df29bc4f9e3452",
+  "t_epoch2_digests": [
+    "04c134994dcccc756d9d46e138f06cc4afb1ff0caed15db2b9df29bc4f9e3452",
+    "04c134994dcccc756d9d46e138f06cc4afb1ff0caed15db2b9df29bc4f9e3452"
+  ],
+  "implementation_manifest_sha256": "7cc6a3b0f8933d133d0c5fd3f7214249d17ce1b88da7456cc5f90f9e6e23cbff",
+  "protected_tracked_file_count": 1727,
+  "tracked_files_changed": [],
+  "data_open_counts": {
+    "build_manifest.json": 3,
+    "input_contract.json": 21,
+    "norm_stats.json": 15,
+    "train_cache_complete.json": 3,
+    "val_cache_complete.json": 3,
+    "cache/train.pt": 9,
+    "cache/val.pt": 3,
+    "ledgers/train_included_windows.csv": 6,
+    "ledgers/val_included_windows.csv": 3
+  },
+  "val_access": "FROZEN_VERIFY_DATA_SHA_BYTES_ONLY_NO_PARSE_NO_LOAD",
+  "completed_utc": "2026-11-07T07:39:44.181415+00:00",
+  "authorized_preflight_retry": 1,
+  "first_preflight_failure": "3 converter negative tests: missing historical initial.pt; no jobs started; original directory/log preserved",
+  "uploaded_anchor_sha256": "b666b8a28129319f0b58e1c62ab7fa0e8698d61ec6aa32243824cda243f3e956",
+  "operational_notes": [
+    "First server pull stayed at da34d0e because origin is an old local mirror; SCP incremental committed bundle, refresh mirror, second ff-only pull reached 090e873; no training retry.",
+    "Probe-input manifest is produced by frozen preflight before probes; a byte-identical formal manifest is sealed after all gates, without modifying committed files.",
+    "The unchanged strict P3 xfail is expected, not a skipped golden or new failure."
+  ]
+}
