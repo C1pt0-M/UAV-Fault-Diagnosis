@@ -1,0 +1,222 @@
+
+===== acce  onset median 22.9s  n EN 2283 LN 700 PF 4006 LF 7076; mean p EN 0.039 LN 0.392 PF 0.036
+-- top: late indep vs early indep (time drift in normal flight) --
+                   EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+vel_x:m            0.994  0.992  0.510  0.575     0.553
+accel_x:m          0.007  0.009  0.531  0.370    -0.595
+actuator_ctrl_2:m  0.007  0.009  0.522  0.280    -0.558
+mag_x:m            0.987  0.985  0.468  0.543     0.542
+att_q_y:m          0.013  0.015  0.548  0.370    -0.598
+mag_z:m            0.013  0.016  0.535  0.418    -0.556
+att_q_w:m          0.037  0.038  0.471  0.283    -0.560
+vel_y:m            0.053  0.055  0.526  0.529    -0.125
+-- top: late indep vs prefault normal --
+                   EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+vel_x:m            0.994  0.992  0.510  0.575     0.553
+accel_x:m          0.007  0.009  0.531  0.370    -0.595
+actuator_ctrl_2:m  0.007  0.009  0.522  0.280    -0.558
+mag_x:m            0.987  0.985  0.468  0.543     0.542
+att_q_y:m          0.013  0.015  0.548  0.370    -0.598
+mag_z:m            0.013  0.016  0.535  0.418    -0.556
+att_q_w:m          0.037  0.038  0.471  0.283    -0.560
+vel_y:m            0.053  0.055  0.526  0.529    -0.125
+-- top: early indep vs prefault (recording shift at matched time) --
+           EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+att_q_z:m  0.569  0.535  0.416  0.504     0.014
+att_q_x:m  0.486  0.448  0.445  0.456     0.028
+att_q_y:m  0.013  0.015  0.548  0.370    -0.598
+mag_y:m    0.584  0.611  0.538  0.496     0.308
+mag_z:m    0.013  0.016  0.535  0.418    -0.556
+-- top |rho| score vs feature within late indep --
+                  EN_LN  PF_LN  LF_LN  rho_p_LN
+att_q_y:m         0.013  0.015  0.370    -0.598
+accel_x:m         0.007  0.009  0.370    -0.595
+accel_z:m         0.917  0.921  0.668     0.586
+actuator_out_4:m  0.941  0.943  0.734     0.571
+actuator_out_2:m  0.941  0.943  0.734     0.569
+att_q_w:m         0.037  0.038  0.283    -0.560
+
+===== circling  onset median 53.1s  n EN 2912 LN 318 PF 19035 LF 13866; mean p EN 0.012 LN 0.157 PF 0.013
+-- top: late indep vs early indep (time drift in normal flight) --
+           EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+att_q_w:m  0.040  0.063  0.526  0.349    -0.514
+att_q_z:m  0.900  0.842  0.460  0.078    -0.296
+att_q_w:s  0.860  0.771  0.475  0.588     0.439
+mag_x:m    0.157  0.190  0.511  0.655     0.474
+att_q_y:m  0.835  0.827  0.506  0.496     0.515
+vel_z:m    0.817  0.794  0.484  0.323    -0.007
+gyro_z:m   0.808  0.743  0.470  0.709     0.478
+att_q_x:m  0.808  0.689  0.440  0.167     0.561
+-- top: late indep vs prefault normal --
+                     EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+att_q_w:m            0.040  0.063  0.526  0.349    -0.514
+att_q_z:m            0.900  0.842  0.460  0.078    -0.296
+att_q_y:m            0.835  0.827  0.506  0.496     0.515
+mag_x:m              0.157  0.190  0.511  0.655     0.474
+actuator_ctrl_3:s    0.719  0.798  0.538  0.415    -0.675
+vel_z:m              0.817  0.794  0.484  0.323    -0.007
+baro_alt_relative:s  0.211  0.220  0.501  0.631     0.058
+att_q_w:s            0.860  0.771  0.475  0.588     0.439
+-- top: early indep vs prefault (recording shift at matched time) --
+                   EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+actuator_ctrl_4:m  0.365  0.442  0.569  0.704    -0.513
+actuator_ctrl_1:m  0.379  0.449  0.564  0.462    -0.244
+gyro_z:s           0.620  0.689  0.561  0.421    -0.625
+att_q_x:m          0.808  0.689  0.440  0.167     0.561
+actuator_ctrl_3:m  0.656  0.630  0.446  0.542     0.229
+-- top |rho| score vs feature within late indep --
+                   EN_LN  PF_LN  LF_LN  rho_p_LN
+actuator_ctrl_3:s  0.719  0.798  0.415    -0.675
+mag_x:s            0.731  0.709  0.567     0.674
+mag_y:m            0.671  0.666  0.466     0.632
+gyro_z:s           0.620  0.689  0.421    -0.625
+mag_z:s            0.577  0.529  0.654     0.621
+actuator_out_1:s   0.386  0.451  0.556    -0.608
+
+===== dece  onset median 24.9s  n EN 2131 LN 869 PF 4691 LF 6082; mean p EN 0.031 LN 0.329 PF 0.044
+-- top: late indep vs early indep (time drift in normal flight) --
+                     EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+gyro_y:m             0.908  0.916  0.514  0.264    -0.237
+vel_z:m              0.905  0.880  0.482  0.385     0.144
+actuator_ctrl_2:m    0.101  0.120  0.497  0.465    -0.333
+baro_alt_relative:s  0.102  0.112  0.514  0.364    -0.384
+acc_norm:s           0.111  0.102  0.492  0.496    -0.319
+vel_z:s              0.116  0.115  0.511  0.371    -0.376
+vel_x:m              0.883  0.860  0.493  0.540     0.369
+baro_alt_relative:m  0.122  0.139  0.517  0.727     0.300
+-- top: late indep vs prefault normal --
+                     EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+gyro_y:m             0.908  0.916  0.514  0.264    -0.237
+acc_norm:s           0.111  0.102  0.492  0.496    -0.319
+baro_alt_relative:s  0.102  0.112  0.514  0.364    -0.384
+vel_z:s              0.116  0.115  0.511  0.371    -0.376
+vel_z:m              0.905  0.880  0.482  0.385     0.144
+actuator_ctrl_2:m    0.101  0.120  0.497  0.465    -0.333
+actuator_out_1:m     0.122  0.121  0.496  0.796     0.501
+actuator_out_3:m     0.122  0.121  0.495  0.796     0.501
+-- top: early indep vs prefault (recording shift at matched time) --
+                   EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+att_q_z:m          0.538  0.534  0.464  0.458    -0.009
+actuator_ctrl_1:m  0.310  0.346  0.532  0.535     0.146
+gyro_x:s           0.396  0.420  0.524  0.565     0.045
+att_q_y:m          0.148  0.172  0.522  0.435    -0.373
+att_q_x:m          0.506  0.490  0.479  0.473    -0.006
+-- top |rho| score vs feature within late indep --
+                     EN_LN  PF_LN  LF_LN  rho_p_LN
+actuator_out_1:m     0.122  0.121  0.796     0.501
+actuator_out_3:m     0.122  0.121  0.796     0.501
+actuator_ctrl_4:m    0.398  0.388  0.760     0.483
+baro_alt_relative:s  0.102  0.112  0.364    -0.384
+actuator_ctrl_2:s    0.750  0.749  0.291    -0.382
+vel_z:s              0.116  0.115  0.371    -0.376
+
+===== hover  onset median 19.4s  n EN 1418 LN 1689 PF 11084 LF 18760; mean p EN 0.096 LN 0.487 PF 0.019
+-- top: late indep vs early indep (time drift in normal flight) --
+                     EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+baro_alt_relative:s  0.028  0.070  0.812  0.526    -0.490
+vel_z:m              0.968  0.940  0.191  0.430    -0.136
+baro_alt_relative:m  0.035  0.060  0.799  0.506    -0.174
+actuator_ctrl_4:m    0.058  0.247  0.810  0.778     0.291
+actuator_out_4:m     0.061  0.255  0.811  0.780     0.270
+actuator_out_2:m     0.061  0.255  0.811  0.782     0.287
+actuator_out_3:m     0.061  0.255  0.810  0.778     0.284
+actuator_out_1:m     0.061  0.255  0.810  0.779     0.280
+-- top: late indep vs prefault normal --
+                     EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+baro_alt_relative:m  0.035  0.060  0.799  0.506    -0.174
+vel_z:m              0.968  0.940  0.191  0.430    -0.136
+baro_alt_relative:s  0.028  0.070  0.812  0.526    -0.490
+mag_y:m              0.221  0.202  0.446  0.490    -0.177
+actuator_ctrl_4:m    0.058  0.247  0.810  0.778     0.291
+vel_z:s              0.501  0.254  0.334  0.539    -0.491
+actuator_out_2:m     0.061  0.255  0.811  0.782     0.287
+actuator_out_4:m     0.061  0.255  0.811  0.780     0.270
+-- top: early indep vs prefault (recording shift at matched time) --
+                     EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+baro_alt_relative:s  0.028  0.070  0.812  0.526    -0.490
+actuator_out_2:m     0.061  0.255  0.811  0.782     0.287
+actuator_out_4:m     0.061  0.255  0.811  0.780     0.270
+actuator_out_3:m     0.061  0.255  0.810  0.778     0.284
+actuator_ctrl_4:m    0.058  0.247  0.810  0.778     0.291
+-- top |rho| score vs feature within late indep --
+                     EN_LN  PF_LN  LF_LN  rho_p_LN
+vel_z:s              0.501  0.254  0.539    -0.491
+baro_alt_relative:s  0.028  0.070  0.526    -0.490
+actuator_out_2:s     0.573  0.373  0.718    -0.484
+actuator_ctrl_4:s    0.591  0.395  0.717    -0.482
+actuator_out_3:s     0.552  0.359  0.724    -0.481
+actuator_out_1:s     0.556  0.361  0.721    -0.481
+
+===== velocity  onset median 22.9s  n EN 1756 LN 1377 PF 5585 LF 9357; mean p EN 0.044 LN 0.398 PF 0.044
+-- top: late indep vs early indep (time drift in normal flight) --
+                   EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+vel_z:s            0.033  0.039  0.523  0.494    -0.004
+actuator_out_4:m   0.935  0.954  0.525  0.689    -0.051
+acc_norm:s         0.083  0.098  0.523  0.600     0.166
+vel_y:m            0.135  0.145  0.519  0.506     0.251
+accel_z:s          0.167  0.185  0.518  0.522     0.040
+actuator_ctrl_4:s  0.177  0.197  0.522  0.554     0.085
+actuator_out_2:m   0.820  0.835  0.529  0.666     0.383
+actuator_ctrl_4:m  0.815  0.825  0.558  0.643    -0.106
+-- top: late indep vs prefault normal --
+                   EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+vel_z:s            0.033  0.039  0.523  0.494    -0.004
+actuator_out_4:m   0.935  0.954  0.525  0.689    -0.051
+acc_norm:s         0.083  0.098  0.523  0.600     0.166
+vel_y:m            0.135  0.145  0.519  0.506     0.251
+actuator_out_2:m   0.820  0.835  0.529  0.666     0.383
+actuator_ctrl_4:m  0.815  0.825  0.558  0.643    -0.106
+accel_z:s          0.167  0.185  0.518  0.522     0.040
+mag_z:m            0.191  0.194  0.523  0.583     0.029
+-- top: early indep vs prefault (recording shift at matched time) --
+                   EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+actuator_ctrl_3:s  0.490  0.559  0.565  0.474    -0.009
+actuator_ctrl_4:m  0.815  0.825  0.558  0.643    -0.106
+att_q_z:m          0.597  0.561  0.444  0.547     0.019
+gyro_z:s           0.472  0.524  0.551  0.490    -0.055
+att_q_z:s          0.583  0.621  0.544  0.464    -0.161
+-- top |rho| score vs feature within late indep --
+                     EN_LN  PF_LN  LF_LN  rho_p_LN
+baro_alt_relative:m  0.449  0.459  0.461     0.389
+actuator_out_2:m     0.820  0.835  0.666     0.383
+baro_alt_relative:s  0.440  0.453  0.464     0.335
+vel_x:m              0.508  0.522  0.458     0.335
+vel_z:m              0.589  0.588  0.494    -0.333
+mag_y:m              0.391  0.404  0.481     0.311
+
+===== waypoint  onset median 53.1s  n EN 2695 LN 574 PF 17505 LF 15050; mean p EN 0.037 LN 0.313 PF 0.015
+-- top: late indep vs early indep (time drift in normal flight) --
+                   EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+mag_x:m            0.093  0.101  0.502  0.727    -0.354
+att_q_z:m          0.907  0.893  0.459  0.283     0.415
+mag_z:m            0.893  0.892  0.534  0.241     0.664
+att_q_w:m          0.135  0.152  0.590  0.061    -0.597
+att_q_x:m          0.853  0.811  0.437  0.340     0.661
+vel_x:m            0.155  0.173  0.499  0.674    -0.701
+att_q_w:s          0.828  0.773  0.430  0.576     0.252
+actuator_ctrl_4:s  0.270  0.268  0.477  0.805    -0.059
+-- top: late indep vs prefault normal --
+           EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+mag_x:m    0.093  0.101  0.502  0.727    -0.354
+att_q_z:m  0.907  0.893  0.459  0.283     0.415
+mag_z:m    0.893  0.892  0.534  0.241     0.664
+att_q_w:m  0.135  0.152  0.590  0.061    -0.597
+vel_x:m    0.155  0.173  0.499  0.674    -0.701
+att_q_x:m  0.853  0.811  0.437  0.340     0.661
+att_q_w:s  0.828  0.773  0.430  0.576     0.252
+att_q_y:m  0.714  0.747  0.582  0.868     0.540
+-- top: early indep vs prefault (recording shift at matched time) --
+                  EN_LN  PF_LN  PF_EN  LF_LN  rho_p_LN
+actuator_out_2:m  0.651  0.511  0.380  0.898     0.685
+actuator_out_4:m  0.638  0.513  0.381  0.856     0.618
+att_q_y:s         0.583  0.469  0.397  0.768     0.177
+accel_z:m         0.603  0.492  0.401  0.618     0.715
+actuator_out_3:m  0.300  0.429  0.595  0.680    -0.603
+-- top |rho| score vs feature within late indep --
+                   EN_LN  PF_LN  LF_LN  rho_p_LN
+accel_z:m          0.603  0.492  0.618     0.715
+actuator_out_1:m   0.295  0.431  0.667    -0.707
+vel_x:m            0.155  0.173  0.674    -0.701
+mag_y:m            0.686  0.702  0.646     0.695
+actuator_ctrl_4:m  0.326  0.442  0.744    -0.692
+actuator_out_2:m   0.651  0.511  0.898     0.685
