@@ -379,6 +379,7 @@ def test_preflight_smoke_requires_partial_selection_and_stand_in_scope(tmp_path,
 
 
 def test_evaluator_cpu_refusal_before_any_val_ledger(tmp_path, monkeypatch):
+    monkeypatch.setattr(t, 'environment', lambda: {'torch': '2.8.0+cpu'})
     monkeypatch.setattr(s, 'read_ledger', lambda *a, **kw: pytest.fail('Local formal evaluator must refuse before val'))
     args = evaluate.parser().parse_args(['--runs', str(tmp_path / 'unused'), '--output', str(tmp_path / 'new'),
         '--t-phase1-evaluation', str(train.LOCAL_ORIGIN)])
