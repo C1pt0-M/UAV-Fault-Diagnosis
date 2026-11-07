@@ -1,0 +1,35 @@
+{
+  "name": "e_ens_t_cv_v1",
+  "status": "FROZEN_BEFORE_ANY_RESULT; the freeze record is the git commit that adds this file. Zero-training analysis of existing predictions.",
+  "frozen_at": "2026-11-08",
+  "purpose": "Check whether the M0+GBT probability average (ENS, the only prior result that lowered false alarms without losing recall: feature_groupcv_v1, ens_groupcv_seed43_v1, ens_internal_test_v1) still helps on top of the current T0 baseline across 5 seeds at FP@R97, and whether averaging with GBT removes the GPS R97 loss that blocked T1 (fixed 100 epochs) in T and V.",
+  "not_a_repeat_of": "feature_groupcv_v1 and ens_groupcv_seed43_v1 used the old M0 recipe (val-selected checkpoint, seeds 42/43, threshold 0.5). Here the MSTCA part is T0/T1 from t_selection_mstca_v1 (inner selection only, 5 seeds) and the operating point is FP@R97.",
+  "inputs": {
+    "mstca": "artifacts/t_selection_mstca_v1/cv/seed<s>_fold<f>/heldout_predictions.npz, epoch from selections.json (T0) or epoch 100 (T1); seeds 42-46, folds 0-2",
+    "gbt": "artifacts/feature_groupcv_v1_20261105/gbt_heldout.npz (frozen GBT recipe, 130 window statistics, refit per outer fold on the 2 other folds, random_state 0; one GBT per fold, shared by all seeds)",
+    "fold_check": "the GBT fold vector must equal the T outer fold of every window (both use sha256('h1cv|'+association_group) % 3); otherwise STOP",
+    "w0_gate": "T0 FP@R97 for seeds 42/43/44 must equal 3595/3588/4610; otherwise STOP"
+  },
+  "arms": {
+    "T0": "reference",
+    "E0": "mean(T0 probability, GBT probability)",
+    "E1": "mean(T1 probability, GBT probability)"
+  },
+  "evaluation": "Pooled outer held-out over all 162069 train windows, per (arm, seed). Same as w_phase_balance_mstca_v1: FP@R97, ratio vs T0 per seed, geometric mean over 5 seeds, association_group cluster bootstrap 2000 replicates rng 20261106, one shared resample plan, t* recomputed per replicate.",
+  "criteria": {
+    "C1": "Aggregate FP ratio < 1, at least 4 of 5 per-seed ratios < 1, bootstrap 95% CI upper bound < 1.",
+    "C2": "At matched FP (arm threshold so its FP equals T0's FP@R97 per seed), seed-mean recall change of every fault class >= -1.0 pp vs T0 at its R97 threshold.",
+    "C3": "At each arm's own R97 threshold, seed-mean recall drop of every fault class vs T0 <= 2.0 pp.",
+    "C4": "Delta AP (arm - T0), seed mean, bootstrap 95% CI upper bound >= 0.",
+    "class_windows": "ALL fault windows of the class, including late-hover faults (as in W). V-style (excluding late hover) reported descriptively.",
+    "verdict_per_arm": "PASS if C1-C4 all hold, else FAIL with failed criteria. Undefined -> FAIL.",
+    "reading": "Train CV only; val is burned and internal test/Real are locked, so a PASS makes the arm a provisional candidate, not an adoption. Both FAIL -> ENS does not carry over to T0/T1 at R97."
+  },
+  "descriptive": [
+    "GBT alone vs T0 (same criteria, not a decision)",
+    "E1 vs T1 (does GBT averaging fix T1's GPS drop)",
+    "Independent-normal FP by flight type and phase (pre/post the per-flight onset median), late-hover normal FP and late-hover GPS/Baro recall",
+    "Per-class recall at R97 excluding late-hover faults"
+  ],
+  "forbidden": ["source val, internal test, Real", "changing arms, combination rule (plain mean) or criteria after results", "refitting or tuning the GBT"]
+}
