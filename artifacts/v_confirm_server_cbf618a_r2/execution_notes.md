@@ -1,0 +1,22 @@
+# V formal attempt STOPPED at preflight — no model jobs started
+
+## Synchronization and preservation
+- User authorized retry after the prior SSH timeout. Retry connected successfully; before HEAD090e873d4836393ba1cd83f2dbf2d4f3b2691016, clean tracked worktree, idle RTX4090D.
+- Created incremental main bundle requiring the already present090e873 and exporting refs/heads/main=cbf618ac81608d479bea9442ba625b0578b3e981. Bundle verified locally/remotely; SHA256 5f7914ffbcb9767b6b45e53bbf1f50d627664bcf82ae2837ad9a337dd8865405. Local dirty development file/audit logs were NOT bundled.
+- Uploaded to new /root/autodl-tmp/v_confirm_upload_cbf618a_r2/. Fetched this bundle directly in the requested worktree and git merge --ff-only FETCH_HEAD. No origin URL/bare-mirror change, no commit.
+- HEAD now cbf618ac81608d479bea9442ba625b0578b3e981; no tracked modifications. All6784 pre-existing protected S/T files/identities retain exact bytes AND mtime through sync and preflight. No incoming added path collided with an existing file. New committed server_r1 reference files were added by the authorized fast-forward, not overlaid on existing results.
+
+## Complete failures/retries/deviations
+1. Prior initial SSH attempt: timeout, exit255; original record remains artifacts/v_confirm_server_cbf618a_connection_20261107T124844Z/failure.json. Retried only following user's explicit permission; succeeded.
+2. Setup invocation error: attempted to start the operational sync auditor with bare `python` in the non-login SSH shell. PATH had no python, exit127, no script execution/fetch/merge/output snapshot occurred. Preserved sync.log. Corrected ONCE to the explicitly requested runtime absolute path with -I -B, preserving the first log and using sync_retry1.log. This is an operational invocation correction, not a failed/retried formal model or preflight job.
+3. Formal preflight ran ONCE with requested DATA, relative output/smoke arguments, runtime_pytest_r1/bin/python, CUBLAS_WORKSPACE_CONFIG=:4096:8, ATEN_CPU_CAPABILITY=default; -I -B/PYTHONDONTWRITEBYTECODE prevented bytecode changes. It exited1: BLOCKED, formal_clearance=false. Pytest259 passed / 1 failed / 1 existing P3 xfailed / 0 skipped. No rerun, test modification, skip, new dependency, CPU-dispatch change or workaround was attempted.
+4. Failed case: tests.test_v_confirm.test_evaluator_cpu_refusal_before_any_val_ledger. It expects an invalid CPU environment but does not force/mock that environment. On the registered CUDA server, environment assertions succeed, then evaluator attempts the test's default Windows path D:/UAV-Data/causal_input_v1/ledgers/val_included_windows.csv, raising FileNotFoundError rather than expected RuntimeError('Formal environment'). Did not create this path or substitute another dataset.
+5. Independent manifest blocker: generated raw SHA256 is 7b1375d26a8a29573cfa1653e505eace88a22cfac36fea4b120f09f203c2868c, NOT requested f70a6bfbce6b53addf9d31e829b302942607437f1ea343fb07527cdc486df521. Read-only comparison locates the difference: committed/local Windows manifest has10 CRLF lines and raw SHA f70a6bfb...; replacing CRLF with LF in memory yields EXACTLY7b1375d2..., the server LF file's raw SHA. JSON contents and all4 normalized V source hashes match. Still treated as BLOCKED per user's raw-SHA requirement. No file normalization, rewriting, manifest replacement, alternate SHA acceptance or gate bypass occurred.
+
+## Gates/results
+- Registered environment: torch2.5.1+cu124, numpy2.1.3, CUDA12.4 available, requested CUBLAS/ATEN flags, effective NO AVX. Protocol raw lock63f26e5b..., all16 normalized inherited pins, origin evaluation SHA7250c388..., all9 data identities matched;14 unchanged goldens passed.
+- Formal committed-smoke checking was not reached because pytest failed first; do not report ALL_PREFLIGHT_GATES_PASS or overall clearance.
+- Immediate stop after preflight failure. Five formal V runs started=0, evaluation started=false. Therefore no V FP/AP/criteria/verdict/V3/S-comparison/evaluation SHA exists. No shutdown or commit/push.
+- Original preflight/, preflight.log, all test artifacts remain on server without renaming/moving/overwriting; failure_audit.json inventories their raw hashes. A local evidence copy is formal_preflight/. Setup failures and receipts are also retained locally.
+
+No other failures, retries, bypasses or unresolved task-scope interpretations occurred. Further changes or preflight reruns require new authorization.

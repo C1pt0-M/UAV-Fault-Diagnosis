@@ -1,0 +1,353 @@
+{
+  "status": "COMPLETE",
+  "verdict": "NOT_CONFIRMED_KEEP_T0",
+  "failed_criteria": [
+    "C3_r97_class_cap"
+  ],
+  "head": "bae7f3278601d0297ba307ef1c5005ebe2f41c19",
+  "preflight": {
+    "status": "ALL_PREFLIGHT_GATES_PASS",
+    "head": "bae7f3278601d0297ba307ef1c5005ebe2f41c19",
+    "manifest_raw_sha256": "09fdac3e1cc6e1433af770a0e9ae4281d482dcf91af6305c36f7c301bdaee858",
+    "manifest_lf_sha256": "09fdac3e1cc6e1433af770a0e9ae4281d482dcf91af6305c36f7c301bdaee858",
+    "pytest": {
+      "passed": 260,
+      "xfailed": 1,
+      "skipped": 0,
+      "failed": 0
+    },
+    "goldens": 14,
+    "data_identities": 9,
+    "old_protected_unchanged": 9135,
+    "cpu_smoke": {
+      "status": "PASS",
+      "root": "/root/autodl-tmp/UAV-Fault-Diagnosis/artifacts/v_confirm_fixed100_mstca_v1/smoke/seed42_2epochs_stand_in_r3",
+      "report_sha256": "bb19f7a6400a8b023ed06597e8ca23fc0cb2364008bb01828d5912f362c9e9e2"
+    },
+    "sealed_file_count": 2242,
+    "time": "2026-11-07T13:16:18.908294+00:00"
+  },
+  "runs": [
+    {
+      "seed": 42,
+      "V0_epoch": 14,
+      "gate": {
+        "status": "PASS",
+        "s0_report_sha256": "3fa4398193abdb17a2486be3e98e108ef6e5efaeb0e368c4325c238b75cd863f",
+        "best_epoch": 14,
+        "fp_r97": 785
+      },
+      "FP_R97": {
+        "V0": 785,
+        "V1": 404
+      },
+      "FP_R95": {
+        "V0": 607,
+        "V1": 255
+      },
+      "AP": {
+        "V0": 0.9950417534617217,
+        "V1": 0.9974278837068606
+      },
+      "ratios": {
+        "FP_R97_V1_over_V0": 0.5146496815286624,
+        "FP_R95_V1_over_V0": 0.4200988467874794
+      },
+      "wall_time_s": 995.4091244731098
+    },
+    {
+      "seed": 43,
+      "V0_epoch": 78,
+      "gate": {
+        "status": "PASS",
+        "s0_report_sha256": "0ccc21e1726e43791c414706f655b44a386823e46eb6df0f801fd962a92014bd",
+        "best_epoch": 78,
+        "fp_r97": 428
+      },
+      "FP_R97": {
+        "V0": 428,
+        "V1": 413
+      },
+      "FP_R95": {
+        "V0": 282,
+        "V1": 267
+      },
+      "AP": {
+        "V0": 0.9973436282458694,
+        "V1": 0.9973464385630209
+      },
+      "ratios": {
+        "FP_R97_V1_over_V0": 0.9649532710280374,
+        "FP_R95_V1_over_V0": 0.9468085106382979
+      },
+      "wall_time_s": 1045.367848124355
+    },
+    {
+      "seed": 44,
+      "V0_epoch": 22,
+      "gate": {
+        "status": "PASS",
+        "s0_report_sha256": "74db1ea989db107193669297975c43e9c4da12007c52f9b562a2e6d4a27f0d51",
+        "best_epoch": 22,
+        "fp_r97": 741
+      },
+      "FP_R97": {
+        "V0": 741,
+        "V1": 390
+      },
+      "FP_R95": {
+        "V0": 523,
+        "V1": 259
+      },
+      "AP": {
+        "V0": 0.995406733993197,
+        "V1": 0.9973396536673002
+      },
+      "ratios": {
+        "FP_R97_V1_over_V0": 0.5263157894736842,
+        "FP_R95_V1_over_V0": 0.49521988527724664
+      },
+      "wall_time_s": 1002.8232206106186
+    },
+    {
+      "seed": 45,
+      "V0_epoch": 40,
+      "gate": {
+        "status": "NOT_APPLICABLE_STAND_IN_OR_NEW_SEED"
+      },
+      "FP_R97": {
+        "V0": 633,
+        "V1": 390
+      },
+      "FP_R95": {
+        "V0": 448,
+        "V1": 252
+      },
+      "AP": {
+        "V0": 0.996456665529917,
+        "V1": 0.9975806881822276
+      },
+      "ratios": {
+        "FP_R97_V1_over_V0": 0.6161137440758294,
+        "FP_R95_V1_over_V0": 0.5625
+      },
+      "wall_time_s": 1053.3227179739624
+    },
+    {
+      "seed": 46,
+      "V0_epoch": 16,
+      "gate": {
+        "status": "NOT_APPLICABLE_STAND_IN_OR_NEW_SEED"
+      },
+      "FP_R97": {
+        "V0": 867,
+        "V1": 388
+      },
+      "FP_R95": {
+        "V0": 692,
+        "V1": 264
+      },
+      "AP": {
+        "V0": 0.9945578317667787,
+        "V1": 0.9973663156200865
+      },
+      "ratios": {
+        "FP_R97_V1_over_V0": 0.447520184544406,
+        "FP_R95_V1_over_V0": 0.3815028901734104
+      },
+      "wall_time_s": 1039.6800144892186
+    }
+  ],
+  "comparison": {
+    "per_seed_ratios": {
+      "42": 0.5146496815286624,
+      "43": 0.9649532710280374,
+      "44": 0.5263157894736842,
+      "45": 0.6161137440758294,
+      "46": 0.447520184544406
+    },
+    "aggregate_ratio": 0.5909457083980781,
+    "per_seed_delta_ap": {
+      "42": 0.0023861302451388955,
+      "43": 2.8103171514359815e-06,
+      "44": 0.0019329196741031396,
+      "45": 0.0011240226523105967,
+      "46": 0.002808483853307786
+    },
+    "aggregate_delta_ap": 0.0016508733484023707,
+    "C2_seed_mean_recall_delta_pp": {
+      "GPS": 3.9359698681732582,
+      "accelerometer": 3.047977422389464,
+      "barometer": 1.4022140221402215,
+      "gyroscope": 3.3104395604395602,
+      "magnetometer": 1.610352264557872,
+      "motor": 0.3240679752338295
+    },
+    "C3_seed_mean_recall_drop_pp": {
+      "GPS": 2.109227871939736,
+      "accelerometer": 1.2417685794920037,
+      "barometer": -0.33210332103321033,
+      "gyroscope": -0.4258241758241758,
+      "magnetometer": -0.02875629043853343,
+      "motor": -0.2213147147938348
+    },
+    "matched_fp": {
+      "42": {
+        "threshold": 0.3362461289379905,
+        "target_fp": 785,
+        "realised_fp": 785
+      },
+      "43": {
+        "threshold": 0.475235978317319,
+        "target_fp": 428,
+        "realised_fp": 428
+      },
+      "44": {
+        "threshold": 0.34463158224305035,
+        "target_fp": 741,
+        "realised_fp": 741
+      },
+      "45": {
+        "threshold": 0.3821928712195736,
+        "target_fp": 633,
+        "realised_fp": 633
+      },
+      "46": {
+        "threshold": 0.2645844949061918,
+        "target_fp": 867,
+        "realised_fp": 867
+      }
+    },
+    "V3_fp_r97": 377,
+    "V3_ratio_to_geometric_mean_V1": 0.9499109170501268
+  },
+  "uncertainty": {
+    "replicates": 2000,
+    "rng_seed": 20261106,
+    "groups": 278,
+    "shared_resample_plan_sha256": "a605f1fbfd250cde41d642ca4ec0bf6181c8d5a684d4458bdab11b1b874f82b7",
+    "paired_across_all_arms_and_seeds": true,
+    "aggregate_ratio_ci": [
+      0.4580109741220865,
+      0.7249140317671859
+    ],
+    "aggregate_delta_ap_ci": [
+      0.0009330626230154498,
+      0.0025681012717725655
+    ],
+    "per_seed_ratio_ci": {
+      "42": [
+        0.36497130479444406,
+        0.6735983436853
+      ],
+      "43": [
+        0.8304332818797702,
+        1.1100942704779235
+      ],
+      "44": [
+        0.3918157679140943,
+        0.7005075902108482
+      ],
+      "45": [
+        0.4367948624745906,
+        0.8021501371430826
+      ],
+      "46": [
+        0.2899008966493629,
+        0.6171870572207083
+      ]
+    },
+    "per_seed_delta_ap_ci": {
+      "42": [
+        0.001255017628501709,
+        0.0038180329153670997
+      ],
+      "43": [
+        -0.0002764778194267653,
+        0.00028698935952647665
+      ],
+      "44": [
+        0.0010072568699754868,
+        0.003135931989471583
+      ],
+      "45": [
+        0.0005155836383409884,
+        0.0019396157705331948
+      ],
+      "46": [
+        0.0015393181723823452,
+        0.004391623417895271
+      ]
+    },
+    "C2_class_delta_ci_pp": {
+      "GPS": [
+        0.4650490657346418,
+        8.27520679074111
+      ],
+      "accelerometer": [
+        0.12175636255292022,
+        6.085860004903214
+      ],
+      "barometer": [
+        0.2672905209337886,
+        3.1834878207787565
+      ],
+      "gyroscope": [
+        0.46129337113541247,
+        5.937272057529853
+      ],
+      "magnetometer": [
+        0.24640295890153668,
+        3.2892156862745034
+      ],
+      "motor": [
+        0.10382299510307734,
+        0.5232976726935666
+      ]
+    },
+    "undefined_ratio_replicates": 0,
+    "undefined_ap_replicates": 0,
+    "C2_undefined_class_replicates": {
+      "GPS": 0,
+      "accelerometer": 0,
+      "barometer": 0,
+      "gyroscope": 0,
+      "magnetometer": 0,
+      "motor": 0
+    },
+    "V3_ratio_ci": [
+      0.8755323481456102,
+      0.9988372637311855
+    ],
+    "V3_undefined_replicates": 0,
+    "undefined_policy": "No pseudocounts, redraws, or dropped replicates; C2 CI is descriptive, its point estimate decides."
+  },
+  "evaluation_sha256": "dbfde60749af6a7ab34ea4847c45cbfb0c783f56e893b9fce35e255825832443",
+  "training_failures": 0,
+  "training_retries": 0,
+  "evaluation_failures": 0,
+  "preflight_failures": 0,
+  "monitoring_transport_failures": [
+    {
+      "operation": "evidence SCP",
+      "exit": 255,
+      "evidence": "monitor_transfer_failure1.txt"
+    },
+    {
+      "operation": "read-only long SSH watcher",
+      "exit": 255,
+      "evidence": "watch_full_1.log"
+    },
+    {
+      "operation": "read-only short SSH watcher",
+      "exit": 255,
+      "evidence": "watch_full_5.log"
+    }
+  ],
+  "path_interpretation": "Absolute paths resolving to the identical requested directories; no code/gate changes",
+  "protected_old_files_unchanged": 9135,
+  "sealed_inputs_unchanged": 2242,
+  "no_commit_no_shutdown": true,
+  "evidence_archive_sha256": "e3ad8f8a31fc4b88282f16d1f2f601534a751a7ad465d731c0c08db1429c6e1a",
+  "exhaustive_execution_notes": "execution_notes.md"
+}

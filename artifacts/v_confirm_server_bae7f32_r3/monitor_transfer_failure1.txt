@@ -1,0 +1,8 @@
+Evidence-download operation failed (not a model/preflight failure).
+Exact output:
+Read from remote host connect.westb.seetacloud.com: Connection reset by peer
+client_loop: send disconnect: Connection reset by peer
+scp: Connection closed
+Command exit code: 255
+
+watch.py upload had succeeded. During the subsequent multi-file evidence download, sync_receipt.json and protected_before.json arrived, formal_clearance_receipt.json did not. The watcher was not yet started by this chained command. A new read-only SSH status query succeeded and confirmed seed42 RUNNING at epoch13, io_events=[], no FAILED marker. No job restart, retrain, rename, move, data change or protocol bypass occurred.

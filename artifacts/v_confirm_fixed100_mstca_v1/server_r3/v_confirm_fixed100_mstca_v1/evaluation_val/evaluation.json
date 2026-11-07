@@ -1,0 +1,929 @@
+{
+  "status": "COMPLETE",
+  "protocol_sha256": "63f26e5bc57bb642903e3f2d0998efb5c982d14507e2f1b32e7e5ffb3baa4778",
+  "performance_claim": true,
+  "population": 34710,
+  "disclosure": "Source val is NOT pristine: S-ablation phase 2 already predicted val with S0-S3 best and last checkpoints (early-stopping training), and the S0 val observation last < best FP partly motivated the T group. No epoch-100 val prediction exists. Results must be reported as a confirmation on a previously used validation split, not as an untouched held-out test.",
+  "origin": {
+    "path": "/root/autodl-tmp/UAV-Fault-Diagnosis/artifacts/t_selection_mstca_v1/evaluation_cv/evaluation.json",
+    "sha256": "7250c38832602a2b61dbd90488ba6890718064626da58040dfe6e9ccf968dfb7",
+    "t_verdicts_unchanged": {
+      "T1": {
+        "verdict": "TRADE_OFF",
+        "reason": "class_constraint"
+      },
+      "T2": {
+        "verdict": "TRADE_OFF",
+        "reason": "class_constraint"
+      }
+    },
+    "t_adoption_unchanged": "T0"
+  },
+  "T_verdicts_and_adoption_unchanged": true,
+  "metrics": {
+    "V0": {
+      "42": {
+        "primary": {
+          "threshold": 0.45511804246921805,
+          "fp": 785,
+          "ap": 0.9950417534617217
+        },
+        "ap": 0.9950417534617217,
+        "fp_at_r95": {
+          "threshold": 0.48637860073284445,
+          "fp": 607,
+          "ap": 0.9950417534617217
+        },
+        "fp_r97_outside_late_hover_normal": 522,
+        "fixed_p_gt_half": {
+          "all_normal_fp": 315,
+          "fault_tp": 15513,
+          "normal_n": 17740,
+          "fault_n": 16970,
+          "late_hover_normal_fp": {
+            "SIL": 111,
+            "HIL": 75
+          },
+          "independent_nonhover_fp": 108,
+          "class_recall_outside_late_hover_fault": {
+            "GPS": 0.7203389830508474,
+            "accelerometer": 0.8410159924741298,
+            "barometer": 0.8920664206642066,
+            "gyroscope": 0.834478021978022,
+            "magnetometer": 0.8411214953271028,
+            "motor": 0.9906468186009748
+          },
+          "late_hover_fault_recall": {
+            "GPS": 0.7640449438202247,
+            "barometer": 0.37254901960784315
+          }
+        },
+        "matched_class_recall_outside_late_hover_fault": {
+          "GPS": 0.9472693032015066,
+          "accelerometer": 0.980244590780809,
+          "barometer": 0.9787822878228782,
+          "gyroscope": 0.9423076923076923,
+          "magnetometer": 0.8590941768511862,
+          "motor": 0.9945988670794361
+        },
+        "class_balanced_ce": 0.12118295481018537,
+        "brier_binary": 0.036317106344892956,
+        "matched_late_hover_normal_fp": {
+          "SIL": 137,
+          "HIL": 126
+        },
+        "matched_late_hover_fault_recall": {
+          "GPS": 0.9775280898876404,
+          "barometer": 0.9477124183006536
+        },
+        "ce_source": "float64 cross_entropy from raw float32 logits; no probability clipping"
+      },
+      "43": {
+        "primary": {
+          "threshold": 0.462390605095949,
+          "fp": 428,
+          "ap": 0.9973436282458694
+        },
+        "ap": 0.9973436282458694,
+        "fp_at_r95": {
+          "threshold": 0.5043014644663282,
+          "fp": 282,
+          "ap": 0.9973436282458694
+        },
+        "fp_r97_outside_late_hover_normal": 200,
+        "fixed_p_gt_half": {
+          "all_normal_fp": 302,
+          "fault_tp": 16176,
+          "normal_n": 17740,
+          "fault_n": 16970,
+          "late_hover_normal_fp": {
+            "SIL": 116,
+            "HIL": 81
+          },
+          "independent_nonhover_fp": 77,
+          "class_recall_outside_late_hover_fault": {
+            "GPS": 0.8305084745762712,
+            "accelerometer": 0.9134524929444967,
+            "barometer": 0.9584870848708487,
+            "gyroscope": 0.9416208791208791,
+            "magnetometer": 0.8540618260244428,
+            "motor": 0.996970096166513
+          },
+          "late_hover_fault_recall": {
+            "GPS": 0.8651685393258427,
+            "barometer": 0.42483660130718953
+          }
+        },
+        "matched_class_recall_outside_late_hover_fault": {
+          "GPS": 0.9152542372881356,
+          "accelerometer": 0.9463781749764817,
+          "barometer": 0.977859778597786,
+          "gyroscope": 0.9635989010989011,
+          "magnetometer": 0.8662832494608196,
+          "motor": 0.9978922408114873
+        },
+        "class_balanced_ce": 0.08296105318479216,
+        "brier_binary": 0.024577262441708603,
+        "matched_late_hover_normal_fp": {
+          "SIL": 124,
+          "HIL": 104
+        },
+        "matched_late_hover_fault_recall": {
+          "GPS": 1.0,
+          "barometer": 0.6601307189542484
+        },
+        "ce_source": "float64 cross_entropy from raw float32 logits; no probability clipping"
+      },
+      "44": {
+        "primary": {
+          "threshold": 0.4659621829861026,
+          "fp": 741,
+          "ap": 0.995406733993197
+        },
+        "ap": 0.995406733993197,
+        "fp_at_r95": {
+          "threshold": 0.4987169821036033,
+          "fp": 523,
+          "ap": 0.995406733993197
+        },
+        "fp_r97_outside_late_hover_normal": 479,
+        "fixed_p_gt_half": {
+          "all_normal_fp": 495,
+          "fault_tp": 16061,
+          "normal_n": 17740,
+          "fault_n": 16970,
+          "late_hover_normal_fp": {
+            "SIL": 129,
+            "HIL": 108
+          },
+          "independent_nonhover_fp": 209,
+          "class_recall_outside_late_hover_fault": {
+            "GPS": 0.8493408662900188,
+            "accelerometer": 0.8974600188146754,
+            "barometer": 0.9520295202952029,
+            "gyroscope": 0.8997252747252747,
+            "magnetometer": 0.8425593098490295,
+            "motor": 0.9930180476880517
+          },
+          "late_hover_fault_recall": {
+            "GPS": 0.9382022471910112,
+            "barometer": 0.6666666666666666
+          }
+        },
+        "matched_class_recall_outside_late_hover_fault": {
+          "GPS": 0.963276836158192,
+          "accelerometer": 0.9313264346190028,
+          "barometer": 0.985239852398524,
+          "gyroscope": 0.9519230769230769,
+          "magnetometer": 0.8576563623292596,
+          "motor": 0.9959162165722566
+        },
+        "class_balanced_ce": 0.10856299177269231,
+        "brier_binary": 0.03294157886141882,
+        "matched_late_hover_normal_fp": {
+          "SIL": 134,
+          "HIL": 128
+        },
+        "matched_late_hover_fault_recall": {
+          "GPS": 0.9831460674157303,
+          "barometer": 0.8888888888888888
+        },
+        "ce_source": "float64 cross_entropy from raw float32 logits; no probability clipping"
+      },
+      "45": {
+        "primary": {
+          "threshold": 0.4902508369689484,
+          "fp": 633,
+          "ap": 0.996456665529917
+        },
+        "ap": 0.996456665529917,
+        "fp_at_r95": {
+          "threshold": 0.5178114651138244,
+          "fp": 448,
+          "ap": 0.996456665529917
+        },
+        "fp_r97_outside_late_hover_normal": 402,
+        "fixed_p_gt_half": {
+          "all_normal_fp": 590,
+          "fault_tp": 16379,
+          "normal_n": 17740,
+          "fault_n": 16970,
+          "late_hover_normal_fp": {
+            "SIL": 126,
+            "HIL": 95
+          },
+          "independent_nonhover_fp": 296,
+          "class_recall_outside_late_hover_fault": {
+            "GPS": 0.9387947269303202,
+            "accelerometer": 0.9614299153339605,
+            "barometer": 0.9760147601476015,
+            "gyroscope": 0.945054945054945,
+            "magnetometer": 0.8483105679367362,
+            "motor": 0.994071927282308
+          },
+          "late_hover_fault_recall": {
+            "GPS": 0.949438202247191,
+            "barometer": 0.8496732026143791
+          }
+        },
+        "matched_class_recall_outside_late_hover_fault": {
+          "GPS": 0.9510357815442562,
+          "accelerometer": 0.9651928504233303,
+          "barometer": 0.9797047970479705,
+          "gyroscope": 0.9622252747252747,
+          "magnetometer": 0.8511861969805895,
+          "motor": 0.9951258068765644
+        },
+        "class_balanced_ce": 0.092617362615256,
+        "brier_binary": 0.028707694739903998,
+        "matched_late_hover_normal_fp": {
+          "SIL": 128,
+          "HIL": 103
+        },
+        "matched_late_hover_fault_recall": {
+          "GPS": 0.9662921348314607,
+          "barometer": 0.8627450980392157
+        },
+        "ce_source": "float64 cross_entropy from raw float32 logits; no probability clipping"
+      },
+      "46": {
+        "primary": {
+          "threshold": 0.47316186451419984,
+          "fp": 867,
+          "ap": 0.9945578317667787
+        },
+        "ap": 0.9945578317667787,
+        "fp_at_r95": {
+          "threshold": 0.4843228091471806,
+          "fp": 692,
+          "ap": 0.9945578317667787
+        },
+        "fp_r97_outside_late_hover_normal": 599,
+        "fixed_p_gt_half": {
+          "all_normal_fp": 606,
+          "fault_tp": 15907,
+          "normal_n": 17740,
+          "fault_n": 16970,
+          "late_hover_normal_fp": {
+            "SIL": 130,
+            "HIL": 124
+          },
+          "independent_nonhover_fp": 317,
+          "class_recall_outside_late_hover_fault": {
+            "GPS": 0.7787193973634652,
+            "accelerometer": 0.8814675446848542,
+            "barometer": 0.8957564575645757,
+            "gyroscope": 0.9340659340659341,
+            "magnetometer": 0.8504672897196262,
+            "motor": 0.9909102884995389
+          },
+          "late_hover_fault_recall": {
+            "GPS": 0.9550561797752809,
+            "barometer": 0.3333333333333333
+          }
+        },
+        "matched_class_recall_outside_late_hover_fault": {
+          "GPS": 0.9529190207156308,
+          "accelerometer": 0.973659454374412,
+          "barometer": 0.9732472324723247,
+          "gyroscope": 0.9574175824175825,
+          "magnetometer": 0.8619698058950396,
+          "motor": 0.9928863127387696
+        },
+        "class_balanced_ce": 0.1124258445343026,
+        "brier_binary": 0.03394654427915427,
+        "matched_late_hover_normal_fp": {
+          "SIL": 137,
+          "HIL": 131
+        },
+        "matched_late_hover_fault_recall": {
+          "GPS": 0.9775280898876404,
+          "barometer": 0.9084967320261438
+        },
+        "ce_source": "float64 cross_entropy from raw float32 logits; no probability clipping"
+      }
+    },
+    "V1": {
+      "42": {
+        "primary": {
+          "threshold": 0.4819091262085367,
+          "fp": 404,
+          "ap": 0.9974278837068606
+        },
+        "ap": 0.9974278837068606,
+        "fp_at_r95": {
+          "threshold": 0.5143564535933783,
+          "fp": 255,
+          "ap": 0.9974278837068606
+        },
+        "fp_r97_outside_late_hover_normal": 193,
+        "fixed_p_gt_half": {
+          "all_normal_fp": 331,
+          "fault_tp": 16303,
+          "normal_n": 17740,
+          "fault_n": 16970,
+          "late_hover_normal_fp": {
+            "SIL": 119,
+            "HIL": 68
+          },
+          "independent_nonhover_fp": 111,
+          "class_recall_outside_late_hover_fault": {
+            "GPS": 0.8813559322033898,
+            "accelerometer": 0.929444967074318,
+            "barometer": 0.9732472324723247,
+            "gyroscope": 0.9491758241758241,
+            "magnetometer": 0.8533429187634796,
+            "motor": 0.9968383612172309
+          },
+          "late_hover_fault_recall": {
+            "GPS": 0.8146067415730337,
+            "barometer": 0.7124183006535948
+          }
+        },
+        "matched_class_recall_outside_late_hover_fault": {
+          "GPS": 0.9256120527306968,
+          "accelerometer": 0.949200376293509,
+          "barometer": 0.9833948339483395,
+          "gyroscope": 0.9567307692307693,
+          "magnetometer": 0.8598130841121495,
+          "motor": 0.996970096166513
+        },
+        "class_balanced_ce": 0.08328779737142869,
+        "brier_binary": 0.023739033802376408,
+        "matched_late_hover_normal_fp": {
+          "SIL": 125,
+          "HIL": 86
+        },
+        "matched_late_hover_fault_recall": {
+          "GPS": 0.898876404494382,
+          "barometer": 0.8431372549019608
+        },
+        "ce_source": "float64 cross_entropy from raw float32 logits; no probability clipping"
+      },
+      "43": {
+        "primary": {
+          "threshold": 0.47854353833415875,
+          "fp": 413,
+          "ap": 0.9973464385630209
+        },
+        "ap": 0.9973464385630209,
+        "fp_at_r95": {
+          "threshold": 0.5095453435570582,
+          "fp": 267,
+          "ap": 0.9973464385630209
+        },
+        "fp_r97_outside_late_hover_normal": 196,
+        "fixed_p_gt_half": {
+          "all_normal_fp": 319,
+          "fault_tp": 16280,
+          "normal_n": 17740,
+          "fault_n": 16970,
+          "late_hover_normal_fp": {
+            "SIL": 110,
+            "HIL": 73
+          },
+          "independent_nonhover_fp": 99,
+          "class_recall_outside_late_hover_fault": {
+            "GPS": 0.8785310734463276,
+            "accelerometer": 0.9379115710253998,
+            "barometer": 0.9723247232472325,
+            "gyroscope": 0.9402472527472527,
+            "magnetometer": 0.8533429187634796,
+            "motor": 0.997101831115795
+          },
+          "late_hover_fault_recall": {
+            "GPS": 0.8033707865168539,
+            "barometer": 0.6274509803921569
+          }
+        },
+        "matched_class_recall_outside_late_hover_fault": {
+          "GPS": 0.928436911487759,
+          "accelerometer": 0.9567262464722484,
+          "barometer": 0.9797047970479705,
+          "gyroscope": 0.9553571428571429,
+          "magnetometer": 0.8576563623292596,
+          "motor": 0.9974970359636411
+        },
+        "class_balanced_ce": 0.08553304862333734,
+        "brier_binary": 0.02393299200505316,
+        "matched_late_hover_normal_fp": {
+          "SIL": 119,
+          "HIL": 98
+        },
+        "matched_late_hover_fault_recall": {
+          "GPS": 0.9438202247191011,
+          "barometer": 0.7712418300653595
+        },
+        "ce_source": "float64 cross_entropy from raw float32 logits; no probability clipping"
+      },
+      "44": {
+        "primary": {
+          "threshold": 0.4809350915008783,
+          "fp": 390,
+          "ap": 0.9973396536673002
+        },
+        "ap": 0.9973396536673002,
+        "fp_at_r95": {
+          "threshold": 0.509931801449367,
+          "fp": 259,
+          "ap": 0.9973396536673002
+        },
+        "fp_r97_outside_late_hover_normal": 182,
+        "fixed_p_gt_half": {
+          "all_normal_fp": 319,
+          "fault_tp": 16298,
+          "normal_n": 17740,
+          "fault_n": 16970,
+          "late_hover_normal_fp": {
+            "SIL": 115,
+            "HIL": 59
+          },
+          "independent_nonhover_fp": 113,
+          "class_recall_outside_late_hover_fault": {
+            "GPS": 0.8926553672316384,
+            "accelerometer": 0.9190968955785512,
+            "barometer": 0.9787822878228782,
+            "gyroscope": 0.948489010989011,
+            "magnetometer": 0.8533429187634796,
+            "motor": 0.9967066262679489
+          },
+          "late_hover_fault_recall": {
+            "GPS": 0.7303370786516854,
+            "barometer": 0.7320261437908496
+          }
+        },
+        "matched_class_recall_outside_late_hover_fault": {
+          "GPS": 0.931261770244821,
+          "accelerometer": 0.9369708372530574,
+          "barometer": 0.9843173431734318,
+          "gyroscope": 0.9587912087912088,
+          "magnetometer": 0.8583752695902228,
+          "motor": 0.9977605058622052
+        },
+        "class_balanced_ce": 0.08720178636492187,
+        "brier_binary": 0.023821077311995256,
+        "matched_late_hover_normal_fp": {
+          "SIL": 124,
+          "HIL": 84
+        },
+        "matched_late_hover_fault_recall": {
+          "GPS": 0.8932584269662921,
+          "barometer": 0.8235294117647058
+        },
+        "ce_source": "float64 cross_entropy from raw float32 logits; no probability clipping"
+      },
+      "45": {
+        "primary": {
+          "threshold": 0.4745582632424899,
+          "fp": 390,
+          "ap": 0.9975806881822276
+        },
+        "ap": 0.9975806881822276,
+        "fp_at_r95": {
+          "threshold": 0.5062120601251453,
+          "fp": 252,
+          "ap": 0.9975806881822276
+        },
+        "fp_r97_outside_late_hover_normal": 178,
+        "fixed_p_gt_half": {
+          "all_normal_fp": 294,
+          "fault_tp": 16219,
+          "normal_n": 17740,
+          "fault_n": 16970,
+          "late_hover_normal_fp": {
+            "SIL": 111,
+            "HIL": 61
+          },
+          "independent_nonhover_fp": 98,
+          "class_recall_outside_late_hover_fault": {
+            "GPS": 0.8568738229755178,
+            "accelerometer": 0.9247412982126059,
+            "barometer": 0.9621771217712177,
+            "gyroscope": 0.9409340659340659,
+            "magnetometer": 0.8511861969805895,
+            "motor": 0.9960479515215387
+          },
+          "late_hover_fault_recall": {
+            "GPS": 0.7584269662921348,
+            "barometer": 0.6078431372549019
+          }
+        },
+        "matched_class_recall_outside_late_hover_fault": {
+          "GPS": 0.9256120527306968,
+          "accelerometer": 0.9501411100658513,
+          "barometer": 0.9797047970479705,
+          "gyroscope": 0.9629120879120879,
+          "magnetometer": 0.8598130841121495,
+          "motor": 0.9974970359636411
+        },
+        "class_balanced_ce": 0.08119152799998826,
+        "brier_binary": 0.023617404899117126,
+        "matched_late_hover_normal_fp": {
+          "SIL": 125,
+          "HIL": 87
+        },
+        "matched_late_hover_fault_recall": {
+          "GPS": 0.9157303370786517,
+          "barometer": 0.738562091503268
+        },
+        "ce_source": "float64 cross_entropy from raw float32 logits; no probability clipping"
+      },
+      "46": {
+        "primary": {
+          "threshold": 0.4789672092814019,
+          "fp": 388,
+          "ap": 0.9973663156200865
+        },
+        "ap": 0.9973663156200865,
+        "fp_at_r95": {
+          "threshold": 0.5112427071784991,
+          "fp": 264,
+          "ap": 0.9973663156200865
+        },
+        "fp_r97_outside_late_hover_normal": 168,
+        "fixed_p_gt_half": {
+          "all_normal_fp": 319,
+          "fault_tp": 16264,
+          "normal_n": 17740,
+          "fault_n": 16970,
+          "late_hover_normal_fp": {
+            "SIL": 110,
+            "HIL": 81
+          },
+          "independent_nonhover_fp": 95,
+          "class_recall_outside_late_hover_fault": {
+            "GPS": 0.871939736346516,
+            "accelerometer": 0.909689557855127,
+            "barometer": 0.9769372693726938,
+            "gyroscope": 0.9471153846153846,
+            "magnetometer": 0.8540618260244428,
+            "motor": 0.9973653010143592
+          },
+          "late_hover_fault_recall": {
+            "GPS": 0.8202247191011236,
+            "barometer": 0.5424836601307189
+          }
+        },
+        "matched_class_recall_outside_late_hover_fault": {
+          "GPS": 0.9133709981167608,
+          "accelerometer": 0.9416745061147695,
+          "barometer": 0.9843173431734318,
+          "gyroscope": 0.9649725274725275,
+          "magnetometer": 0.8619698058950396,
+          "motor": 0.9977605058622052
+        },
+        "class_balanced_ce": 0.0868759686424602,
+        "brier_binary": 0.023467718697277203,
+        "matched_late_hover_normal_fp": {
+          "SIL": 126,
+          "HIL": 94
+        },
+        "matched_late_hover_fault_recall": {
+          "GPS": 0.9606741573033708,
+          "barometer": 0.7124183006535948
+        },
+        "ce_source": "float64 cross_entropy from raw float32 logits; no probability clipping"
+      }
+    }
+  },
+  "comparison": {
+    "per_seed_ratios": {
+      "42": 0.5146496815286624,
+      "43": 0.9649532710280374,
+      "44": 0.5263157894736842,
+      "45": 0.6161137440758294,
+      "46": 0.447520184544406
+    },
+    "aggregate_ratio": 0.5909457083980781,
+    "per_seed_delta_ap": {
+      "42": 0.0023861302451388955,
+      "43": 2.8103171514359815e-06,
+      "44": 0.0019329196741031396,
+      "45": 0.0011240226523105967,
+      "46": 0.002808483853307786
+    },
+    "aggregate_delta_ap": 0.0016508733484023707,
+    "C2_seed_mean_recall_delta_pp": {
+      "GPS": 3.9359698681732582,
+      "accelerometer": 3.047977422389464,
+      "barometer": 1.4022140221402215,
+      "gyroscope": 3.3104395604395602,
+      "magnetometer": 1.610352264557872,
+      "motor": 0.3240679752338295
+    },
+    "C3_seed_mean_recall_drop_pp": {
+      "GPS": 2.109227871939736,
+      "accelerometer": 1.2417685794920037,
+      "barometer": -0.33210332103321033,
+      "gyroscope": -0.4258241758241758,
+      "magnetometer": -0.02875629043853343,
+      "motor": -0.2213147147938348
+    },
+    "matched_fp": {
+      "42": {
+        "threshold": 0.3362461289379905,
+        "target_fp": 785,
+        "realised_fp": 785
+      },
+      "43": {
+        "threshold": 0.475235978317319,
+        "target_fp": 428,
+        "realised_fp": 428
+      },
+      "44": {
+        "threshold": 0.34463158224305035,
+        "target_fp": 741,
+        "realised_fp": 741
+      },
+      "45": {
+        "threshold": 0.3821928712195736,
+        "target_fp": 633,
+        "realised_fp": 633
+      },
+      "46": {
+        "threshold": 0.2645844949061918,
+        "target_fp": 867,
+        "realised_fp": 867
+      }
+    },
+    "V3_fp_r97": 377,
+    "V3_ratio_to_geometric_mean_V1": 0.9499109170501268
+  },
+  "uncertainty": {
+    "replicates": 2000,
+    "rng_seed": 20261106,
+    "groups": 278,
+    "shared_resample_plan_sha256": "a605f1fbfd250cde41d642ca4ec0bf6181c8d5a684d4458bdab11b1b874f82b7",
+    "paired_across_all_arms_and_seeds": true,
+    "aggregate_ratio_ci": [
+      0.4580109741220865,
+      0.7249140317671859
+    ],
+    "aggregate_delta_ap_ci": [
+      0.0009330626230154498,
+      0.0025681012717725655
+    ],
+    "per_seed_ratio_ci": {
+      "42": [
+        0.36497130479444406,
+        0.6735983436853
+      ],
+      "43": [
+        0.8304332818797702,
+        1.1100942704779235
+      ],
+      "44": [
+        0.3918157679140943,
+        0.7005075902108482
+      ],
+      "45": [
+        0.4367948624745906,
+        0.8021501371430826
+      ],
+      "46": [
+        0.2899008966493629,
+        0.6171870572207083
+      ]
+    },
+    "per_seed_delta_ap_ci": {
+      "42": [
+        0.001255017628501709,
+        0.0038180329153670997
+      ],
+      "43": [
+        -0.0002764778194267653,
+        0.00028698935952647665
+      ],
+      "44": [
+        0.0010072568699754868,
+        0.003135931989471583
+      ],
+      "45": [
+        0.0005155836383409884,
+        0.0019396157705331948
+      ],
+      "46": [
+        0.0015393181723823452,
+        0.004391623417895271
+      ]
+    },
+    "C2_class_delta_ci_pp": {
+      "GPS": [
+        0.4650490657346418,
+        8.27520679074111
+      ],
+      "accelerometer": [
+        0.12175636255292022,
+        6.085860004903214
+      ],
+      "barometer": [
+        0.2672905209337886,
+        3.1834878207787565
+      ],
+      "gyroscope": [
+        0.46129337113541247,
+        5.937272057529853
+      ],
+      "magnetometer": [
+        0.24640295890153668,
+        3.2892156862745034
+      ],
+      "motor": [
+        0.10382299510307734,
+        0.5232976726935666
+      ]
+    },
+    "undefined_ratio_replicates": 0,
+    "undefined_ap_replicates": 0,
+    "C2_undefined_class_replicates": {
+      "GPS": 0,
+      "accelerometer": 0,
+      "barometer": 0,
+      "gyroscope": 0,
+      "magnetometer": 0,
+      "motor": 0
+    },
+    "V3_ratio_ci": [
+      0.8755323481456102,
+      0.9988372637311855
+    ],
+    "V3_undefined_replicates": 0,
+    "undefined_policy": "No pseudocounts, redraws, or dropped replicates; C2 CI is descriptive, its point estimate decides."
+  },
+  "verdict": "NOT_CONFIRMED_KEEP_T0",
+  "criteria": {
+    "C1_false_alarms": true,
+    "C2_matched_fp_class_recall": true,
+    "C3_r97_class_cap": false,
+    "C4_ap": true
+  },
+  "failed_criteria": [
+    "C3_r97_class_cap"
+  ],
+  "selections": {
+    "42": {
+      "V0": {
+        "epoch": 14,
+        "stop_epoch": 50,
+        "observed_through": 50
+      },
+      "V1": {
+        "epoch": 100,
+        "available": true
+      }
+    },
+    "43": {
+      "V0": {
+        "epoch": 78,
+        "stop_epoch": 94,
+        "observed_through": 94
+      },
+      "V1": {
+        "epoch": 100,
+        "available": true
+      }
+    },
+    "44": {
+      "V0": {
+        "epoch": 22,
+        "stop_epoch": 50,
+        "observed_through": 50
+      },
+      "V1": {
+        "epoch": 100,
+        "available": true
+      }
+    },
+    "45": {
+      "V0": {
+        "epoch": 40,
+        "stop_epoch": 50,
+        "observed_through": 50
+      },
+      "V1": {
+        "epoch": 100,
+        "available": true
+      }
+    },
+    "46": {
+      "V0": {
+        "epoch": 16,
+        "stop_epoch": 50,
+        "observed_through": 50
+      },
+      "V1": {
+        "epoch": 100,
+        "available": true
+      }
+    }
+  },
+  "per_seed_fp_ratios": {
+    "42": {
+      "FP_R97_V1_over_V0": 0.5146496815286624,
+      "FP_R95_V1_over_V0": 0.4200988467874794
+    },
+    "43": {
+      "FP_R97_V1_over_V0": 0.9649532710280374,
+      "FP_R95_V1_over_V0": 0.9468085106382979
+    },
+    "44": {
+      "FP_R97_V1_over_V0": 0.5263157894736842,
+      "FP_R95_V1_over_V0": 0.49521988527724664
+    },
+    "45": {
+      "FP_R97_V1_over_V0": 0.6161137440758294,
+      "FP_R95_V1_over_V0": 0.5625
+    },
+    "46": {
+      "FP_R97_V1_over_V0": 0.447520184544406,
+      "FP_R95_V1_over_V0": 0.3815028901734104
+    }
+  },
+  "seed_stability_log_fp_sd": {
+    "V0": {
+      "ddof0": 0.24727293385265076,
+      "ddof1": 0.276459544545168
+    },
+    "V1": {
+      "ddof0": 0.02459653083959788,
+      "ddof1": 0.027499757484005415
+    }
+  },
+  "V3_descriptive": {
+    "fp_r97": 377,
+    "ratio_to_geometric_mean_V1": 0.9499109170501268,
+    "ratio_ci": [
+      0.8755323481456102,
+      0.9988372637311855
+    ],
+    "mac_cost_multiplier": 5
+  },
+  "S_phase2_descriptive": {
+    "source_sha256": "5d662629c22f42876093cc6694a80c5b5ca39aaaf715953d26f60b5314ede1c4",
+    "scope": "DESCRIPTIVE_ONLY_S0_EARLY_STOPPING_BEST_LAST",
+    "seeds": {
+      "42": {
+        "S_best_fp_r97": 785,
+        "S_last_fp_r97": 636,
+        "V0_fp_r97": 785,
+        "V1_fp_r97": 404
+      },
+      "43": {
+        "S_best_fp_r97": 428,
+        "S_last_fp_r97": 402,
+        "V0_fp_r97": 428,
+        "V1_fp_r97": 413
+      },
+      "44": {
+        "S_best_fp_r97": 741,
+        "S_last_fp_r97": 640,
+        "V0_fp_r97": 741,
+        "V1_fp_r97": 390
+      }
+    }
+  },
+  "run_report_sha256": {
+    "/root/autodl-tmp/UAV-Fault-Diagnosis/artifacts/v_confirm_fixed100_mstca_v1/val/seed42": "c7c5cb383d8ee350d4619cb56d7e8c640dd0863ae0397b75382a1a97c1c7e5a3",
+    "/root/autodl-tmp/UAV-Fault-Diagnosis/artifacts/v_confirm_fixed100_mstca_v1/val/seed43": "54dee99557164bc3a3112fe7019df431ae31060912193d55ad42fce6badce737",
+    "/root/autodl-tmp/UAV-Fault-Diagnosis/artifacts/v_confirm_fixed100_mstca_v1/val/seed44": "0a61dc029d5aee701dc50f43a71d6e3a373cf1a89a04e8bd4601454bdd81fc16",
+    "/root/autodl-tmp/UAV-Fault-Diagnosis/artifacts/v_confirm_fixed100_mstca_v1/val/seed45": "ae14fc47d56bdbb5c123a079194862954c0ee928893a6b02b89c882935b0ce9c",
+    "/root/autodl-tmp/UAV-Fault-Diagnosis/artifacts/v_confirm_fixed100_mstca_v1/val/seed46": "86136c2023694d9bc735fadc625298fea17112a15a9bcc1e0ccf94d199b725fe"
+  },
+  "resources": [
+    {
+      "seed": 42,
+      "epochs": 100,
+      "wall_time_s": 995.4091244731098,
+      "param_count": 105938,
+      "macs": 6764928
+    },
+    {
+      "seed": 43,
+      "epochs": 100,
+      "wall_time_s": 1045.367848124355,
+      "param_count": 105938,
+      "macs": 6764928
+    },
+    {
+      "seed": 44,
+      "epochs": 100,
+      "wall_time_s": 1002.8232206106186,
+      "param_count": 105938,
+      "macs": 6764928
+    },
+    {
+      "seed": 45,
+      "epochs": 100,
+      "wall_time_s": 1053.3227179739624,
+      "param_count": 105938,
+      "macs": 6764928
+    },
+    {
+      "seed": 46,
+      "epochs": 100,
+      "wall_time_s": 1039.6800144892186,
+      "param_count": 105938,
+      "macs": 6764928
+    }
+  ]
+}
