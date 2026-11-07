@@ -1,0 +1,20 @@
+{
+  "source_files_opened": [
+    "build_manifest.json",
+    "cache/train.pt",
+    "input_contract.json",
+    "ledgers/train_included_windows.csv",
+    "norm_stats.json",
+    "train_cache_complete.json"
+  ],
+  "real_val_files_opened": [],
+  "network_connections": "DENIED_BY_AUDIT_HOOK",
+  "source_data_writes": "DENIED_BY_AUDIT_HOOK",
+  "subprocesses": [
+    {
+      "executable": null,
+      "command": "D:\\python3.12.4\\python.exe -I -B -c \"import sys; from pathlib import Path; sys.path.insert(0, 'D:\\\\UAV-Fault-Diagnosis\\\\scripts\\\\research'); import train_s_ablation, build_pure_m0_anchor; train_s_ablation.SMOKE_ROOT = Path('D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\v_confirm_fixed100_mstca_v1\\\\local_preflight_r2\\\\tests\\\\scope'); build_pure_m0_anchor.OUTPUT_ROOT = Path('D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\v_confirm_fixed100_mstca_v1\\\\local_preflight_r2\\\\tests\\\\scope'); import pytest; raise SystemExit(pytest.main(sys.argv[1:]))\" -q -p no:cacheprovider --basetemp=D:\\UAV-Fault-Diagnosis\\artifacts\\v_confirm_fixed100_mstca_v1\\local_preflight_r2\\tests\\scope\\tmp --junitxml=D:\\UAV-Fault-Diagnosis\\artifacts\\v_confirm_fixed100_mstca_v1\\local_preflight_r2\\tests\\junit.xml D:\\UAV-Fault-Diagnosis\\tests\\test_mstca_ablation_factory.py D:\\UAV-Fault-Diagnosis\\tests\\test_s_ablation.py D:\\UAV-Fault-Diagnosis\\tests\\test_t_selection.py D:\\UAV-Fault-Diagnosis\\tests\\test_v_confirm.py"
+    }
+  ],
+  "prediction_scope": "STAND_IN"
+}

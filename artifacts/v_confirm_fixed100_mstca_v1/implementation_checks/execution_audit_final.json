@@ -1,0 +1,169 @@
+{
+  "status": "FINAL_LOCAL_IMPLEMENTATION_ACCEPTED_NOT_FORMAL_CONFIRMATION",
+  "created_at": "2026-11-07T12:39:46.621580+00:00",
+  "supersedes": "implementation_checks/execution_audit.json (stage1 retained unchanged)",
+  "protocol_sha256": "63f26e5bc57bb642903e3f2d0998efb5c982d14507e2f1b32e7e5ffb3baa4778",
+  "source_files_normalized_sha256": {
+    "scripts/research/train_v_confirm.py": "fc6c2a0f9744778a451c4454fe26ab37bf345f64c4e161518a5c509070582157",
+    "scripts/research/evaluate_v_confirm.py": "b5c1d08c71fd688374808e99be566782c210bf2921efc8b65b31e077e180bb74",
+    "scripts/research/preflight_v_confirm.py": "7dbc1d173b9e98f300ce7cabbba875a1e1fd26cc06917ce3fe9e9ae71b96fcd8",
+    "tests/test_v_confirm.py": "5fb40602354882f272a336cccda24d96b60bbc31bbb9713b7eeb81463f90b137"
+  },
+  "frozen_normalized_code_pins_verified": 16,
+  "goldens_unchanged": {
+    "cnn1d_matched/42": "61c67e76cdf337df0bd6eb05bc0f375e84a207d859878e0ded2381dc30fbf48a",
+    "cnn1d_matched/43": "8860d857fc60d2ebc35c1dd5081762af725de88a5b2ea193ce68549002f97041",
+    "cnn1d_matched/44": "2c96ed1bb3b595622e5a0b4ce5fc4a6e8a4f85ed16b547a5c9be12fdc6af6076",
+    "mstca/42": "c86a31c99c3858e6b0d96262fb92dac4c472cb8376c0356df8a3c8e35fec521d",
+    "mstca/43": "227dc429536953fae4a0d8d63069617ed09abe39a4842e60cde7b375738686f5",
+    "mstca/44": "f53dd1b285f7586146402a7cdcfcee2c2dde3b8886346c66c64961727388a6bd",
+    "mstca/45": "f9064b9fd27dce20ebb5a1e9b51acfff067995a267c18eb3fa484ecc0e3663d3",
+    "mstca/46": "18850ec35353411487c9e2bc2dffbb84330d5ef8f8c10aa2defe949fffe2e012",
+    "mstca_no_se/42": "40cdc82c75161257d4ec2f1d3174f475d825b2bce7401c49a7bac27e38e4c297",
+    "mstca_no_se/43": "869af3abf771b0889110dcdce320c9946c491f885935f038833839489be740e0",
+    "mstca_no_se/44": "819fe00c9175e3aaf387c61272b29eb15cfecca1329cc3b8ac2a441ba63dcac6",
+    "mstca_single_k7/42": "2f4cf7a1eb6d917158be670044481951ac2e533579dccc2d4ef84a109b406509",
+    "mstca_single_k7/43": "3e343db34359531698597b7c6d9cf25d12af8fc63c76edcecd909e4ff3916729",
+    "mstca_single_k7/44": "653bc50a62a4d6a9a61d5f8dafd89ebf71cee042562f4e5b22c005690a9d4d28"
+  },
+  "golden_generation_count": 0,
+  "protected_raw_unchanged": 14238,
+  "protected_changes": [],
+  "main_pytest_runs": [
+    {
+      "junit": "pytest_1.xml",
+      "passed": 255,
+      "xfailed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "junit": "pytest_2.xml",
+      "passed": 256,
+      "xfailed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "junit": "pytest_3.xml",
+      "passed": 258,
+      "xfailed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "junit": "pytest_4.xml",
+      "passed": 260,
+      "xfailed": 1,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "final_suite_counts": {
+    "tests.test_mstca_ablation_factory": {
+      "passed": 44,
+      "xfailed": 1
+    },
+    "tests.test_s_ablation": {
+      "passed": 68
+    },
+    "tests.test_t_selection": {
+      "passed": 78
+    },
+    "tests.test_v_confirm": {
+      "passed": 70
+    }
+  },
+  "actual_local_preflight_pytest_runs": [
+    {
+      "passed": 258,
+      "xfailed": 1,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "passed": 260,
+      "xfailed": 1,
+      "skipped": 0,
+      "failed": 0
+    }
+  ],
+  "source_train_smoke_success_count": 2,
+  "source_train_smoke_failure_count": 0,
+  "formal_training_jobs": 0,
+  "training_retries": 0,
+  "final_smoke": {
+    "path": "artifacts\\v_confirm_fixed100_mstca_v1\\smoke\\seed42_2epochs_stand_in_r2",
+    "report_sha256": "ca222693eca068a5369aed286dd95ced1f6bb98fb08ec7f2e912f199c34a04af",
+    "selections": {
+      "V0": {
+        "epoch": 2,
+        "stop_epoch": null,
+        "observed_through": 2
+      },
+      "V1": {
+        "epoch": 100,
+        "available": false
+      }
+    },
+    "population_counts": {
+      "fit": 512,
+      "inner": 256,
+      "STAND_IN": 256
+    },
+    "population_pairwise_disjoint": true,
+    "epochs": 2,
+    "optimizer_steps": 2,
+    "val_prediction_passes": 0,
+    "stand_in_prediction_passes": 1,
+    "wall_time_s": 4.074773299973458,
+    "io_events": []
+  },
+  "r1_r2_checkpoints_and_all_npz_arrays_bitwise_equal": true,
+  "per_epoch_progress_equals_final_inner_logits": true,
+  "access_audit": {
+    "source_files_opened": [
+      "build_manifest.json",
+      "cache/train.pt",
+      "input_contract.json",
+      "ledgers/train_included_windows.csv",
+      "norm_stats.json",
+      "train_cache_complete.json"
+    ],
+    "real_val_files_opened": [],
+    "network_connections": "DENIED_BY_AUDIT_HOOK",
+    "source_data_writes": "DENIED_BY_AUDIT_HOOK",
+    "subprocesses": [
+      {
+        "executable": null,
+        "command": "D:\\python3.12.4\\python.exe -I -B -c \"import sys; from pathlib import Path; sys.path.insert(0, 'D:\\\\UAV-Fault-Diagnosis\\\\scripts\\\\research'); import train_s_ablation, build_pure_m0_anchor; train_s_ablation.SMOKE_ROOT = Path('D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\v_confirm_fixed100_mstca_v1\\\\local_preflight_r2\\\\tests\\\\scope'); build_pure_m0_anchor.OUTPUT_ROOT = Path('D:\\\\UAV-Fault-Diagnosis\\\\artifacts\\\\v_confirm_fixed100_mstca_v1\\\\local_preflight_r2\\\\tests\\\\scope'); import pytest; raise SystemExit(pytest.main(sys.argv[1:]))\" -q -p no:cacheprovider --basetemp=D:\\UAV-Fault-Diagnosis\\artifacts\\v_confirm_fixed100_mstca_v1\\local_preflight_r2\\tests\\scope\\tmp --junitxml=D:\\UAV-Fault-Diagnosis\\artifacts\\v_confirm_fixed100_mstca_v1\\local_preflight_r2\\tests\\junit.xml D:\\UAV-Fault-Diagnosis\\tests\\test_mstca_ablation_factory.py D:\\UAV-Fault-Diagnosis\\tests\\test_s_ablation.py D:\\UAV-Fault-Diagnosis\\tests\\test_t_selection.py D:\\UAV-Fault-Diagnosis\\tests\\test_v_confirm.py"
+      }
+    ],
+    "prediction_scope": "STAND_IN"
+  },
+  "formal_clearance": false,
+  "formal_gates_not_run": [
+    "registered CUDA environment",
+    "three real val identity hashes",
+    "committed V STAND_IN smoke",
+    "first formal seed reproduction against S0 val"
+  ],
+  "operational_failures": [
+    {
+      "type": "edit_tool_nonunique_context",
+      "partial_write": false,
+      "attempts": 2,
+      "resolved": true,
+      "evidence": "edit_rejected_1.txt"
+    }
+  ],
+  "implementation_corrections_after_first_success": [
+    "explicit per-seed FP@R95 ratios",
+    "persist inner logits EACH epoch via flushed progress memmap"
+  ],
+  "all_deviations_workarounds_interpretations": "execution_notes_final.md",
+  "GPU_execution": false,
+  "compute_server_connections": false,
+  "real_val_access_even_for_hash": false,
+  "commit_or_push": false
+}
