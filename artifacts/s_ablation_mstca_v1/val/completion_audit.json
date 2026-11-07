@@ -1,0 +1,123 @@
+{
+  "complete_runs": 12,
+  "protected_phase1_files": 1601,
+  "changed_phase1_files": [],
+  "unexpected_new_stage1_files": [],
+  "phase1_verdicts_sha256": "d79768f48b6acc50767a5a70d8c54c80c412937ec24c9599fde3ac2a8e5b011c",
+  "implementation_manifest_sha256": "9ba8e318b11ab5cd3b7244fc4b1cc9278cf9b61635b3ad72d47d390b95b07437",
+  "phase1_decisions_unchanged": true,
+  "evaluation_val_sha256": "5d662629c22f42876093cc6694a80c5b5ca39aaaf715953d26f60b5314ede1c4",
+  "all_nine_source_data_files_unchanged": {
+    "build_manifest.json": true,
+    "input_contract.json": true,
+    "norm_stats.json": true,
+    "train_cache_complete.json": true,
+    "val_cache_complete.json": true,
+    "cache/train.pt": true,
+    "cache/val.pt": true,
+    "ledgers/train_included_windows.csv": true,
+    "ledgers/val_included_windows.csv": true
+  },
+  "code_commit": "da34d0e384e8acd515e464487683943894e1e173",
+  "git_worktree_clean": true,
+  "instruction_clarification_not_execution_deviation": true,
+  "training_failures": [],
+  "training_retries": 0,
+  "launcher_failures": [
+    {
+      "attempt": 1,
+      "stage": "SSH command transmission",
+      "error": "Command was truncated; Python SyntaxError: unterminated triple-quoted string literal.",
+      "effect": "Parser failed before execution; no training, no val output directory, phase1 key SHA unchanged."
+    }
+  ],
+  "launcher_retries": 1,
+  "new_environment_workarounds": [],
+  "frozen_metadata_note": "12 reports: outer heldout count is 0/[] in phase val; actual saved val predictions verified as 34710 per checkpoint.",
+  "run_statuses": [
+    {
+      "arm": "S0",
+      "seed": 42,
+      "status": "COMPLETE",
+      "epochs": 50,
+      "best_epoch": 14
+    },
+    {
+      "arm": "S1",
+      "seed": 42,
+      "status": "COMPLETE",
+      "epochs": 50,
+      "best_epoch": 30
+    },
+    {
+      "arm": "S2",
+      "seed": 42,
+      "status": "COMPLETE",
+      "epochs": 51,
+      "best_epoch": 43
+    },
+    {
+      "arm": "S3",
+      "seed": 42,
+      "status": "COMPLETE",
+      "epochs": 50,
+      "best_epoch": 12
+    },
+    {
+      "arm": "S0",
+      "seed": 43,
+      "status": "COMPLETE",
+      "epochs": 94,
+      "best_epoch": 78
+    },
+    {
+      "arm": "S1",
+      "seed": 43,
+      "status": "COMPLETE",
+      "epochs": 50,
+      "best_epoch": 30
+    },
+    {
+      "arm": "S2",
+      "seed": 43,
+      "status": "COMPLETE",
+      "epochs": 50,
+      "best_epoch": 22
+    },
+    {
+      "arm": "S3",
+      "seed": 43,
+      "status": "COMPLETE",
+      "epochs": 50,
+      "best_epoch": 27
+    },
+    {
+      "arm": "S0",
+      "seed": 44,
+      "status": "COMPLETE",
+      "epochs": 50,
+      "best_epoch": 22
+    },
+    {
+      "arm": "S1",
+      "seed": 44,
+      "status": "COMPLETE",
+      "epochs": 50,
+      "best_epoch": 22
+    },
+    {
+      "arm": "S2",
+      "seed": 44,
+      "status": "COMPLETE",
+      "epochs": 54,
+      "best_epoch": 34
+    },
+    {
+      "arm": "S3",
+      "seed": 44,
+      "status": "COMPLETE",
+      "epochs": 50,
+      "best_epoch": 22
+    }
+  ]
+}

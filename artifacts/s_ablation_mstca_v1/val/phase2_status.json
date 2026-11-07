@@ -1,0 +1,265 @@
+{
+  "status": "COMPLETE",
+  "phase": "val",
+  "expected_runs": 12,
+  "completed": [
+    {
+      "job": "S0_seed42_fold0",
+      "epochs": 50,
+      "best_epoch": 14,
+      "last_epoch": 50,
+      "wall_time_s": 393.0190946627408,
+      "process_elapsed_s": 408.72694182395935,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    },
+    {
+      "job": "S1_seed42_fold0",
+      "epochs": 50,
+      "best_epoch": 30,
+      "last_epoch": 50,
+      "wall_time_s": 454.62159614264965,
+      "process_elapsed_s": 470.40972995758057,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    },
+    {
+      "job": "S2_seed42_fold0",
+      "epochs": 51,
+      "best_epoch": 43,
+      "last_epoch": 51,
+      "wall_time_s": 510.28055550158024,
+      "process_elapsed_s": 525.9555540084839,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    },
+    {
+      "job": "S3_seed42_fold0",
+      "epochs": 50,
+      "best_epoch": 12,
+      "last_epoch": 50,
+      "wall_time_s": 429.1572142355144,
+      "process_elapsed_s": 445.04491996765137,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    },
+    {
+      "job": "S0_seed43_fold0",
+      "epochs": 94,
+      "best_epoch": 78,
+      "last_epoch": 94,
+      "wall_time_s": 943.3200926315039,
+      "process_elapsed_s": 959.4719183444977,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    },
+    {
+      "job": "S1_seed43_fold0",
+      "epochs": 50,
+      "best_epoch": 30,
+      "last_epoch": 50,
+      "wall_time_s": 420.0725696478039,
+      "process_elapsed_s": 436.36243081092834,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    },
+    {
+      "job": "S2_seed43_fold0",
+      "epochs": 50,
+      "best_epoch": 22,
+      "last_epoch": 50,
+      "wall_time_s": 467.46597104519606,
+      "process_elapsed_s": 483.1018626689911,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    },
+    {
+      "job": "S3_seed43_fold0",
+      "epochs": 50,
+      "best_epoch": 27,
+      "last_epoch": 50,
+      "wall_time_s": 419.9792508780956,
+      "process_elapsed_s": 436.00729417800903,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    },
+    {
+      "job": "S0_seed44_fold0",
+      "epochs": 50,
+      "best_epoch": 22,
+      "last_epoch": 50,
+      "wall_time_s": 510.77908773534,
+      "process_elapsed_s": 526.2675430774689,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    },
+    {
+      "job": "S1_seed44_fold0",
+      "epochs": 50,
+      "best_epoch": 22,
+      "last_epoch": 50,
+      "wall_time_s": 439.459237575531,
+      "process_elapsed_s": 455.29126358032227,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    },
+    {
+      "job": "S2_seed44_fold0",
+      "epochs": 54,
+      "best_epoch": 34,
+      "last_epoch": 54,
+      "wall_time_s": 527.6583770029247,
+      "process_elapsed_s": 543.1336739063263,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    },
+    {
+      "job": "S3_seed44_fold0",
+      "epochs": 50,
+      "best_epoch": 22,
+      "last_epoch": 50,
+      "wall_time_s": 417.4683164637536,
+      "process_elapsed_s": 433.83317136764526,
+      "val_predictions_per_checkpoint": {
+        "best": 34710,
+        "last": 34710
+      }
+    }
+  ],
+  "started_utc": "2026-11-07T03:13:43.800035+00:00",
+  "current_job": null,
+  "phase1_verdicts_sha256": "d79768f48b6acc50767a5a70d8c54c80c412937ec24c9599fde3ac2a8e5b011c",
+  "implementation_manifest_sha256": "9ba8e318b11ab5cd3b7244fc4b1cc9278cf9b61635b3ad72d47d390b95b07437",
+  "environment_overrides": {
+    "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+    "ATEN_CPU_CAPABILITY": "default",
+    "CUDA_VISIBLE_DEVICES": "0"
+  },
+  "protected_phase1_file_count": 1601,
+  "protected_phase1_files_unchanged": true,
+  "training_failures": [],
+  "training_retries": 0,
+  "new_environment_workarounds": [],
+  "launcher_failures": [
+    {
+      "attempt": 1,
+      "stage": "SSH command transmission",
+      "error": "Command was truncated; Python SyntaxError: unterminated triple-quoted string literal.",
+      "effect": "Parser failed before execution; no training, no val output directory, phase1 key SHA unchanged."
+    }
+  ],
+  "launcher_retries": 1,
+  "instruction_clarifications": [
+    {
+      "category": "指令措辞澄清",
+      "execution_deviation": false,
+      "text": "best/last 各预测一遍 val；确认只使用 best；last 仅作敏感性分析，不参与确认或更改结论。"
+    }
+  ],
+  "metadata_notes": [
+    {
+      "job": "S0_seed42_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    },
+    {
+      "job": "S1_seed42_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    },
+    {
+      "job": "S2_seed42_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    },
+    {
+      "job": "S3_seed42_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    },
+    {
+      "job": "S0_seed43_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    },
+    {
+      "job": "S1_seed43_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    },
+    {
+      "job": "S2_seed43_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    },
+    {
+      "job": "S3_seed43_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    },
+    {
+      "job": "S0_seed44_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    },
+    {
+      "job": "S1_seed44_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    },
+    {
+      "job": "S2_seed44_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    },
+    {
+      "job": "S3_seed44_fold0",
+      "category": "冻结代码人口字段说明",
+      "text": "phase val 无外层 heldout，原 report 该字段为0；两个实际val预测npz各核验34710窗；未修改report。"
+    }
+  ],
+  "training_total_wall_s": 6124.105966567993,
+  "training_sum_report_wall_s": 5933.281363522634,
+  "evaluation_sha256": "5d662629c22f42876093cc6694a80c5b5ca39aaaf715953d26f60b5314ede1c4",
+  "confirmations": {
+    "S1": {
+      "phase1_verdict_unchanged": "TRADE_OFF",
+      "val_ratio": 1.2058248655129997,
+      "confirmation": "NOT_APPLICABLE"
+    },
+    "S2": {
+      "phase1_verdict_unchanged": "TRADE_OFF",
+      "val_ratio": 1.0578732497869892,
+      "confirmation": "NOT_APPLICABLE"
+    },
+    "S3": {
+      "phase1_verdict_unchanged": "MSTCA_BETTER",
+      "val_ratio": 1.3262349122014858,
+      "confirmation": "CONFIRMED"
+    }
+  },
+  "total_wall_s": 6129.287432909012,
+  "finished_utc": "2026-11-07T04:55:53.087467+00:00"
+}
