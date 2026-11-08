@@ -1,0 +1,44 @@
+{
+  "name": "q2_late_hover_gps_observability_v1",
+  "date": "2026-11-08",
+  "status": "frozen before any probe result",
+  "question": "Do the 26 input channels (and their combinations) contain information that separates late-hover GPS fault windows from late-hover normal windows? Is the late-hover GPS bottleneck a model-capability problem or an input-information limit?",
+  "why_new": "11-05 hover_separability measured only per-channel mean/std and a 130-d GBT on val (8-10 GPS cases, AUC 0.80), without fault-mode stratification, cross-channel physics features, flight-identity control or raw-GPS reference. RflyMAD GPS faults are mode 4 (multiplicative scale 0.9/1.0/1.1 on three axes, 27 combinations incl. identity) or mode 3 (noise); this split was never used.",
+  "training": "CPU probes only (HistGradientBoosting); no neural network training",
+  "data_boundary": "train split only. No val, internal test or Real. Raw RflyMAD vehicle_gps_position used only as an outside-input reference (Part B).",
+  "population": {
+    "late_hover": "hover flights, window_end_row*0.02 > 30 s",
+    "positive": "train late-hover GPS fault windows (942 windows, 40 cases: mode 3 4 cases/144 windows; mode 4 36 cases/798 windows, of which z-factor = 1: 313 windows; identity (1,1,1): 2 cases/46 windows)",
+    "negative": "train late-hover independent normal windows (1237 windows, 55 cases)",
+    "strata": ["all", "mode3", "mode4_z_ne_1", "mode4_z_eq_1", "mode4_identity"]
+  },
+  "part_A_26ch": {
+    "features": {
+      "F0": "existing 130-d window statistics (mean, std, min, max, mean |diff| per channel)",
+      "F1": "F0 + per channel q10, q50, q90, linear slope, last-first, FFT band energy 0-1/1-3/3-8/8-25 Hz",
+      "F2": "F1 + cross-channel physics consistency: NED accel from quaternion-rotated accel minus g vs d(vel)/dt (per-axis residual mean/std/max abs, window delta-v vs integrated accel), baro rate vs -vel_z (residual mean/std, delta baro vs -integrated vel_z), horizontal speed mean/max, tilt mean/std"
+    },
+    "channel_groups": "actuator_ctrl(4), actuator_out(4), gyro(3), accel(3)+acc_norm, baro(1), attitude(4), velocity(3), mag(3), physics(cross-channel); group-only probes on F1 features of that group",
+    "probe": "HistGradientBoostingClassifier(max_iter 400, lr 0.05, max_leaf_nodes 31, l2 1.0, random_state 0), balanced class weights, 3-fold group CV with folds sha256('h1cv|'+association_group)%3, out-of-fold probabilities",
+    "existing_models": "global T0, T1 (seed-mean AUC over 42-46), GBT, E1 scores restricted to the same windows",
+    "confound_control": "same F2 probe separating GPS-hover pre-fault windows from independent-normal hover windows with matched window end time 10-21.7 s (both normal); measures flight-identity leakage",
+    "metrics": "AUC per stratum with association_group cluster bootstrap 95% CI (2000, rng 20261106); recall at 5% and 10% late-hover normal FPR; paired AUC difference probe minus best existing model"
+  },
+  "part_B_raw_gps": {
+    "purpose": "outside-26ch reference: does the fault exist in the raw GPS sensor at all during late hover",
+    "features_per_case": "GPS relative altitude / baro relative altitude ratio in late hover (relative to takeoff), GPS horizontal position std and drift in late hover",
+    "comparison": "late-hover GPS fault cases by stratum vs the 55 train independent-normal hover flights; case-level AUC"
+  },
+  "decision_rule": {
+    "info_present": "best Part-A probe AUC >= 0.90 with CI lower >= 0.85, and confound-control AUC <= 0.70",
+    "not_observable_26ch": "best Part-A probe AUC CI upper < 0.75",
+    "partial": "otherwise",
+    "model_capability_gap": "info_present and probe minus best existing model AUC with CI lower > 0.05",
+    "input_limit": "not_observable_26ch in a stratum and Part B separates that stratum (case AUC >= 0.90)",
+    "physical_or_label_limit": "not observable in Part A and not separated in Part B for that stratum (fault leaves no measurable effect in hover)",
+    "applied_per_stratum": true
+  },
+  "expected_information_gain": "Whether the late-hover GPS recall requirement is achievable from current inputs; which GPS fault modes are detectable; whether to treat late-hover GPS as a model problem, an input-contract problem, or a label/physics limitation when fixing the source-model operating point.",
+  "not_allowed": ["changing strata or thresholds after results", "using val/test/Real", "neural network training"],
+  "outputs": "artifacts/q2_late_hover_gps_observability_v1/; report docs/research/2026-11-08/Q2后段hoverGPS可观测性_v1.md"
+}
