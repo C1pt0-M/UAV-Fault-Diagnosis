@@ -1,0 +1,49 @@
+{
+  "name": "source_operating_point_v1",
+  "date": "2026-11-08",
+  "status": "frozen before computing any result under this definition",
+  "user_decision_2026_11_08": {
+    "source_detector": "GBT (130-d window statistics, HistGradientBoosting max_iter 400, lr 0.05, max_leaf_nodes 31, l2 1.0, random_state 0, balanced sample weights); deployment fit = artifacts/ens_internal_test_v1_20261105/gbt_full_train.pkl (full train, sha256 df468524e2047205dd8422ab3e486ce7692f0ac312276e20394d6f88a1bb6774)",
+    "deep_backbone_for_cross_domain": "T1 MSTCA recipe (pure 26-ch MSTCA, fixed 100 epochs); not a detector at this stage",
+    "operating_point": "strict per-class recall >= baseline, excluding late-hover mode-4 GPS (unobservable z!=1 and no-physical-effect z=1 / identity) from the hard constraints"
+  },
+  "basis": "Q1 (configs/experiments/q1_source_model_selection_v1.json, KEEP=GBT) and Q2 (configs/experiments/q2_late_hover_gps_observability_v1.json: late-hover mode-4 GPS is input-limited or has no measurable effect in hover)",
+  "data_boundary": "train CV held-out predictions only (162069 windows, folds sha256('h1cv|'+association_group)%3). No val, internal test or Real. No training.",
+  "disclosure": "GBT and T0 train-CV predictions were already analysed in E/Q1; this fixes the operating point and threshold of the chosen model, it is not an independent confirmation. The deployment GBT fit was already scored once on the internal test (ens_internal_test_v1, 2026-11-06); any further internal-test use needs a separate plan and explicit user approval.",
+  "baseline": {
+    "model": "T0 MSTCA (t_selection_mstca_v1 selections.json T0 epoch), seeds 42-46",
+    "reference_threshold": "T0's own FP@R97 threshold per seed (97% recall over all train-CV fault windows)",
+    "targets": "per seed, T0 true-positive count in each constrained stratum at that threshold"
+  },
+  "constrained_strata": {
+    "excluded_windows": "late-hover mode-4 GPS fault windows: hover flight, window_end_row*0.02 > 30 s, class GPS, case fault mode 4 per artifacts/q2_gps_fault_modes.csv (all z factors, including identity)",
+    "strata": [
+      "GPS fault windows excluding the excluded windows",
+      "accelerometer", "barometer", "gyroscope", "magnetometer", "motor",
+      "late-hover GPS mode-3 fault windows (7th stratum, strict)"
+    ]
+  },
+  "threshold_rule": {
+    "per_seed": "highest GBT threshold t such that GBT TP >= T0 target in all 7 strata for that seed",
+    "deployment": "minimum of the 5 per-seed thresholds (recall >= baseline against every T0 seed)"
+  },
+  "metrics": {
+    "primary": "normal false alarms at the deployment threshold vs T0 FP@R97 per seed; geometric-mean ratio",
+    "ci": "association_group cluster bootstrap, 2000 replicates, rng 20261106; T0 thresholds, targets and the GBT threshold recomputed in each replicate",
+    "secondary": [
+      "per-seed threshold and FP ratio",
+      "recall per constrained stratum (GBT vs T0 per seed)",
+      "disclosure only: recall on the excluded late-hover mode-4 GPS windows (GBT vs T0), split z!=1 / z=1 / identity",
+      "late-hover independent-normal FP",
+      "out-of-fold transfer: targets and threshold chosen on two folds, applied to the third; FP ratio and per-stratum recall difference vs T0",
+      "descriptive reference only: T1 and E1 under the same definition"
+    ]
+  },
+  "acceptance": {
+    "A1": "geometric-mean FP ratio < 1 with bootstrap CI upper < 1",
+    "A2": "out-of-fold per-stratum recall deficit vs T0 <= 1 pp for all 7 strata (seed mean)",
+    "on_fail": "report; do not change the definition or pick another model in this round"
+  },
+  "not_allowed": ["changing strata, exclusions or threshold rule after results", "reading val/test/Real", "training"],
+  "outputs": "artifacts/source_operating_point_v1/evaluation.json; report docs/research/2026-11-08/源域最终模型与工作点_v1.md"
+}
