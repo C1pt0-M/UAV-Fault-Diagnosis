@@ -1,0 +1,51 @@
+{
+  "name": "gbt_event_operating_point_v1",
+  "date": "2026-11-08",
+  "status": "FROZEN_BEFORE_RUN",
+  "question": "At the deployment event level (continuous replay + OnlineDetectionPolicy), what event onset realises the user's operating point for the GBT source detector, and does GBT then raise fewer normal false-alarm events than the M0 baseline while detecting at least as many fault cases per class?",
+  "why_new": "11-06 event studies evaluated M0 and ENS only (ens_event_replay_val_v1, ens_event_threshold_v1). GBT alone was never evaluated at event level, and the user's per-class operating point (2026-11-08, source_operating_point_v1) was never applied to events. Window-level gains did not transfer to events for ENS at the default onset 0.6 (29 vs 12 val false events), so this check is required before GBT is treated as the deployable detector.",
+  "training": "none; no new inference. Reuse per-frame scores from ens_event_threshold_v1.",
+  "data_boundary": "train held-out frames (2580 cases) for selection; source val frames (555 cases) for confirmation. Val was used for development before (disclosed); this is not an independent test. No internal test, no Real.",
+  "inputs": {
+    "frame_scores": "D:/UAV-Data/ens_event_threshold_v1_scores/*.npz + index.csv (keys timestamp_us, m0, gbt, reference_state, row_label_valid)",
+    "train_scores": "M0 = feature_groupcv_v1 fold best.pt (seed 42); GBT = per-fold refit of the frozen recipe, verified equal to gbt_heldout.npz (score_frames.log max diff 0)",
+    "val_scores": "M0 = M0 B best.pt; GBT = gbt_full_train.pkl (deployment fit, sha256 df468524e2047205dd8422ab3e486ce7692f0ac312276e20394d6f88a1bb6774)",
+    "gps_modes": "artifacts/q2_gps_fault_modes.csv"
+  },
+  "event_policy": {
+    "fixed": "inference_every 1, clear_th 0.40, k_on 3, k_off 3, min_event_s 0.5, merge_gap_s 0.5 (deployment defaults; not tuned)",
+    "onset_grid": [0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95],
+    "note": "the window-level threshold 0.3744 (source_operating_point_v1) stays the window-level reference; the deployed alarm is produced by the event policy, so the operating point is realised by choosing the event onset under the same per-class principle"
+  },
+  "definitions": {
+    "false_event": "finalized event lying entirely in label-valid normal time (as ens_event_threshold_v1)",
+    "primary_false_metric": "independent-normal (cls no_fault) false events per valid-exposure hour, pooled",
+    "detected": "fault case with post-onset scored frames and a confirmation with candidate_start >= reference onset (as ens_event_threshold_v1); spans_onset reported alongside",
+    "excluded_from_hard_constraint": "hover-flight GPS fault cases with fault mode 4 (event-level counterpart of the user's exclusion of late-hover mode-4 GPS); reported separately, split by confirmation time before / after grid t = 30 s. Pre-run count check (mode table covers all GPS cases): train 36 cases, val 8 cases. Case-level exclusion is coarser than the window-level one (which excluded only windows after 30 s); disclosed"
+  },
+  "baseline": "M0 at onset 0.60 (deployment default) on the same population",
+  "selection_rule": {
+    "constraint": "for each of the 6 fault classes (GPS without hover mode-4 cases, accelerometer, barometer, gyroscope, magnetometer, motor), detected cases >= baseline detected cases of that class (train held-out pooled); and paired median confirmation latency (cases detected by both) minus baseline <= +0.5 s",
+    "objective": "among onsets meeting the constraint, the lowest independent-normal false events per hour; ties -> more total detected cases, then lower onset",
+    "applied_to": "GBT (chosen onset = GBT event operating point) and, by the same rule, M0 (M0-tuned, fair comparator)",
+    "if_none": "stop and report; do not relax"
+  },
+  "acceptance": {
+    "EV1_train": "GBT@chosen independent-normal false events per hour < M0@0.60 (train held-out)",
+    "EV2_val_false": "GBT@chosen independent-normal false events <= M0@0.60 (val)",
+    "EV3_val_detect": "GBT@chosen total detected (excluded cases removed) >= M0@0.60 minus 1% of scored fault cases (val); per-class deficits > 2 cases flagged, not failing",
+    "verdict": "PASS if EV1-EV3 hold"
+  },
+  "secondary": [
+    "GBT@chosen vs M0-tuned on train and val (fair comparison, descriptive)",
+    "association_group cluster bootstrap (2000, rng 20261106) CI of the false-events-per-hour ratio GBT@chosen / M0@0.60 and / M0-tuned, train held-out",
+    "per class: detected, spans_onset, median and P90 confirmation latency",
+    "by flight directory: independent-normal false events, cases with false event, alarm occupancy",
+    "pre-fault normal false events in fault cases",
+    "full onset sweep table for GBT and M0 on both populations",
+    "check: whether feature_groupcv_v1 M0 fold scores equal T0 seed 42 held-out probabilities at cap64 windows (report only; T0 frame scores do not exist)"
+  ],
+  "reproduction_gate": "recomputed M0@0.60 and ENS@0.75 on train held-out must equal ens_event_threshold_v1 results.json (M0: 113 false events, 1513 detected; ENS: 81, 1705); otherwise stop",
+  "not_allowed": ["changing grid, policy parameters, constraint or rule after results", "choosing on val", "internal test", "Real", "new inference or training"],
+  "outputs": "artifacts/gbt_event_operating_point_v1/{results.json, events_per_case.csv, sweep.csv}; report docs/research/2026-11-08/GBT事件级工作点结果_v1.md"
+}
