@@ -1,0 +1,3926 @@
+{
+ "protocol": "configs/experiments/q1_source_model_selection_v1.json",
+ "population": 162069,
+ "gate_t0": {
+  "42": 3595,
+  "43": 3588,
+  "44": 4610,
+  "45": 3740,
+  "46": 4243
+ },
+ "gate_s0": {
+  "42": 3595,
+  "43": 3588,
+  "44": 4610
+ },
+ "classes": [
+  "GPS",
+  "accelerometer",
+  "barometer",
+  "gyroscope",
+  "magnetometer",
+  "motor",
+  "late_hover_GPS"
+ ],
+ "bootstrap": {
+  "replicates": 2000,
+  "rng_seed": 20261106,
+  "groups": 1296
+ },
+ "arms": {
+  "T1": {
+   "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+   ],
+   "fp_pc": {
+    "42": 3222,
+    "43": 3138,
+    "44": 3271,
+    "45": 3381,
+    "46": 3170
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610,
+    "45": 3740,
+    "46": 4243
+   },
+   "fp_pc_sd": 95.4007337497988,
+   "fp_pc_cv": 0.02947742360332431,
+   "ratio_per_seed": {
+    "42": 0.8962447844228094,
+    "43": 0.8745819397993311,
+    "44": 0.7095444685466378,
+    "45": 0.9040106951871658,
+    "46": 0.7471128918218242
+   },
+   "ratio": 0.8221542625828162,
+   "ratio_ci": [
+    0.7688805497567225,
+    0.9496907222140238
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.235883171070932,
+    "43": 0.8745819397993311,
+    "44": 0.7095444685466378,
+    "45": 0.9040106951871658,
+    "46": 0.7471128918218242
+   },
+   "strict_ratio": 0.8767251564519191,
+   "strict_ratio_ci": [
+    0.8266481993738735,
+    1.011926477718105
+   ],
+   "ap_delta": 0.0018862405603378596,
+   "at_main": {
+    "42": {
+     "threshold": 0.4754718244075775,
+     "late_hover_gps_recall": 0.8832271762208068,
+     "late_hover_indep_normal_fp": 1043,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.47332531213760376,
+     "late_hover_gps_recall": 0.8800424628450106,
+     "late_hover_indep_normal_fp": 1031,
+     "binding_classes": [
+      "magnetometer"
+     ]
+    },
+    "44": {
+     "threshold": 0.46518510580062866,
+     "late_hover_gps_recall": 0.9140127388535032,
+     "late_hover_indep_normal_fp": 1067,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "45": {
+     "threshold": 0.4572037160396576,
+     "late_hover_gps_recall": 0.9299363057324841,
+     "late_hover_indep_normal_fp": 1057,
+     "binding_classes": [
+      "magnetometer"
+     ]
+    },
+    "46": {
+     "threshold": 0.4760130047798157,
+     "late_hover_gps_recall": 0.8970276008492569,
+     "late_hover_indep_normal_fp": 1043,
+     "binding_classes": [
+      "magnetometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "45": {
+     "threshold": 0.4762435257434845,
+     "late_hover_gps_recall": 0.9256900212314225,
+     "late_hover_indep_normal_fp": 1091,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "46": {
+     "threshold": 0.4922078251838684,
+     "late_hover_gps_recall": 0.8736730360934183,
+     "late_hover_indep_normal_fp": 1082,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.8399816126722638,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 2.0358929096793177,
+     "accelerometer": 1.20507399577167,
+     "barometer": 1.6508141221989359,
+     "gyroscope": 4.655095683133066,
+     "magnetometer": 1.0804885687441277,
+     "motor": 0.1499956773580012,
+     "late_hover_GPS": 1.910828025477707
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 3234,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       -0.10297146219476316,
+       0.4379341588643914,
+       2.4181847493148476,
+       3.5603026257231867,
+       2.5524585029752584,
+       0.2010028529437192,
+       -12.632696390658174
+      ]
+     },
+     "43": {
+      "fp_arm": 3269,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       1.9711679905854662,
+       1.072183630323165,
+       0.45139448653877157,
+       3.5157988429016465,
+       -0.40714062010648294,
+       0.1664217169534019,
+       8.067940552016985
+      ]
+     },
+     "44": {
+      "fp_arm": 3460,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       3.3686378346572523,
+       2.823920265780731,
+       1.6443656295340965,
+       9.256786826880285,
+       3.1005324146570623,
+       0.12319529696550531,
+       15.180467091295117
+      ]
+     },
+     "45": {
+      "fp_arm": 3455,
+      "fp_t0": 3747,
+      "recall_diff_pp": [
+       3.824654310091203,
+       0.8909694956206584,
+       3.6756408189585685,
+       5.770657172526332,
+       0.18791105543376135,
+       0.17506700095098124,
+       1.167728237791932
+      ]
+     },
+     "46": {
+      "fp_arm": 3137,
+      "fp_t0": 4323,
+      "recall_diff_pp": [
+       1.1179758752574287,
+       0.8003624282694051,
+       0.06448492664839593,
+       1.1719329476338822,
+       -0.03131850923896023,
+       0.08429151897639837,
+       -2.229299363057325
+      ]
+     }
+    }
+   },
+   "eligible": true
+  },
+  "W1": {
+   "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+   ],
+   "fp_pc": {
+    "42": 5349,
+    "43": 4066,
+    "44": 5143,
+    "45": 4745,
+    "46": 3941
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610,
+    "45": 3740,
+    "46": 4243
+   },
+   "fp_pc_sd": 629.3657124438859,
+   "fp_pc_cv": 0.13538240243587288,
+   "ratio_per_seed": {
+    "42": 1.4878998609179417,
+    "43": 1.133221850613155,
+    "44": 1.1156182212581345,
+    "45": 1.268716577540107,
+    "46": 0.9288239453217063
+   },
+   "ratio": 1.1725745178163676,
+   "ratio_ci": [
+    1.1121369859073966,
+    1.3315275679841323
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.4878998609179417,
+    "43": 1.133221850613155,
+    "44": 1.1156182212581345,
+    "45": 1.268716577540107,
+    "46": 1.0025925053028517
+   },
+   "strict_ratio": 1.1906350469406177,
+   "strict_ratio_ci": [
+    1.1313401580389582,
+    1.3404176284869767
+   ],
+   "ap_delta": 0.00018948422249702722,
+   "at_main": {
+    "42": {
+     "threshold": 0.35256287455558777,
+     "late_hover_gps_recall": 0.9968152866242038,
+     "late_hover_indep_normal_fp": 1134,
+     "binding_classes": [
+      "accelerometer"
+     ]
+    },
+    "43": {
+     "threshold": 0.3322939872741699,
+     "late_hover_gps_recall": 0.9968152866242038,
+     "late_hover_indep_normal_fp": 1102,
+     "binding_classes": [
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.3245386779308319,
+     "late_hover_gps_recall": 0.9989384288747346,
+     "late_hover_indep_normal_fp": 1122,
+     "binding_classes": [
+      "motor"
+     ]
+    },
+    "45": {
+     "threshold": 0.29665547609329224,
+     "late_hover_gps_recall": 0.9957537154989384,
+     "late_hover_indep_normal_fp": 1128,
+     "binding_classes": [
+      "magnetometer"
+     ]
+    },
+    "46": {
+     "threshold": 0.3332445025444031,
+     "late_hover_gps_recall": 0.8163481953290871,
+     "late_hover_indep_normal_fp": 917,
+     "binding_classes": [
+      "motor"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "45": {
+     "threshold": 0.4762435257434845,
+     "late_hover_gps_recall": 0.9256900212314225,
+     "late_hover_indep_normal_fp": 1091,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "46": {
+     "threshold": 0.4922078251838684,
+     "late_hover_gps_recall": 0.8736730360934183,
+     "late_hover_indep_normal_fp": 1082,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 1.189783613367848,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 3.789349808767285,
+     "accelerometer": 1.5252189670794323,
+     "barometer": 2.5568273416088987,
+     "gyroscope": 3.7946892152499627,
+     "magnetometer": 1.37801440651425,
+     "motor": 0.09639491657300943,
+     "late_hover_GPS": 3.821656050955415
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 5509,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       0.8090614886731392,
+       -1.011778918755663,
+       2.7728518458810254,
+       1.9878356326954458,
+       1.252740369558409,
+       0.15561511195642777,
+       -6.900212314225053
+      ]
+     },
+     "43": {
+      "fp_arm": 4363,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       6.1929979405707565,
+       2.310480217456962,
+       1.4670320812510076,
+       1.9581664441477526,
+       0.6733479486376448,
+       0.11238869196853117,
+       21.019108280254777
+      ]
+     },
+     "44": {
+      "fp_arm": 5142,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       7.825831126802001,
+       3.141045001510118,
+       3.063034015798807,
+       9.894674380655688,
+       3.210147196993423,
+       0.00432264199878966,
+       23.88535031847134
+      ]
+     },
+     "45": {
+      "fp_arm": 4774,
+      "fp_t0": 3747,
+      "recall_diff_pp": [
+       6.281259193880553,
+       1.1627906976744187,
+       4.5461873287119134,
+       5.399792315680166,
+       0.0,
+       0.2226160629376675,
+       6.1571125265392785
+      ]
+     },
+     "46": {
+      "fp_arm": 3831,
+      "fp_t0": 4323,
+      "recall_diff_pp": [
+       -2.1624007060900263,
+       2.023557837511326,
+       0.9350314364017411,
+       -0.26702269692923897,
+       1.7538365173817727,
+       -0.01296792599636898,
+       -25.05307855626327
+      ]
+     }
+    }
+   },
+   "eligible": false
+  },
+  "W2": {
+   "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+   ],
+   "fp_pc": {
+    "42": 4398,
+    "43": 3552,
+    "44": 4706,
+    "45": 6291,
+    "46": 4196
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610,
+    "45": 3740,
+    "46": 4243
+   },
+   "fp_pc_sd": 1020.9004848661792,
+   "fp_pc_cv": 0.22056355806640868,
+   "ratio_per_seed": {
+    "42": 1.22336578581363,
+    "43": 0.9899665551839465,
+    "44": 1.020824295010846,
+    "45": 1.6820855614973262,
+    "46": 0.9889229318878152
+   },
+   "ratio": 1.1551215236645196,
+   "ratio_ci": [
+    1.0578668940902203,
+    1.4179387054549735
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.2684283727399166,
+    "43": 0.9899665551839465,
+    "44": 1.020824295010846,
+    "45": 1.6820855614973262,
+    "46": 0.9889229318878152
+   },
+   "strict_ratio": 1.163508605570454,
+   "strict_ratio_ci": [
+    1.0673891077683724,
+    1.4193895495977142
+   ],
+   "ap_delta": 0.0003482263968900723,
+   "at_main": {
+    "42": {
+     "threshold": 0.4187772870063782,
+     "late_hover_gps_recall": 0.9723991507430998,
+     "late_hover_indep_normal_fp": 1179,
+     "binding_classes": [
+      "accelerometer"
+     ]
+    },
+    "43": {
+     "threshold": 0.429870069026947,
+     "late_hover_gps_recall": 0.8853503184713376,
+     "late_hover_indep_normal_fp": 993,
+     "binding_classes": [
+      "accelerometer"
+     ]
+    },
+    "44": {
+     "threshold": 0.352824866771698,
+     "late_hover_gps_recall": 0.9989384288747346,
+     "late_hover_indep_normal_fp": 1132,
+     "binding_classes": [
+      "motor"
+     ]
+    },
+    "45": {
+     "threshold": 0.2845906615257263,
+     "late_hover_gps_recall": 1.0,
+     "late_hover_indep_normal_fp": 1186,
+     "binding_classes": [
+      "motor"
+     ]
+    },
+    "46": {
+     "threshold": 0.3907183110713959,
+     "late_hover_gps_recall": 0.940552016985138,
+     "late_hover_indep_normal_fp": 1089,
+     "binding_classes": [
+      "motor"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "45": {
+     "threshold": 0.4762435257434845,
+     "late_hover_gps_recall": 0.9256900212314225,
+     "late_hover_indep_normal_fp": 1091,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "46": {
+     "threshold": 0.4922078251838684,
+     "late_hover_gps_recall": 0.8736730360934183,
+     "late_hover_indep_normal_fp": 1082,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 1.1641497595364088,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 4.760223595175051,
+     "accelerometer": 1.603745092117185,
+     "barometer": 2.2795421570207965,
+     "gyroscope": 4.224892449191515,
+     "magnetometer": 1.4469151268399627,
+     "motor": -0.011671133396732081,
+     "late_hover_GPS": 3.7154989384288752
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 4670,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       3.353927625772286,
+       0.42283298097251587,
+       3.079155247460906,
+       2.907580477673936,
+       0.42279987472596303,
+       0.09077548197458286,
+       -1.2738853503184713
+      ]
+     },
+     "43": {
+      "fp_arm": 3439,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       -0.8826125330979699,
+       -1.6158260344306856,
+       -0.3546670965661777,
+       -2.8630766948523956,
+       0.23488881929220168,
+       -0.00216132099939483,
+       -7.749469214437367
+      ]
+     },
+     "44": {
+      "fp_arm": 4741,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       5.692850838481906,
+       3.5034732709151313,
+       2.5149121392874414,
+       9.138110072689512,
+       4.431569057312872,
+       -0.11887265496671566,
+       14.118895966029724
+      ]
+     },
+     "45": {
+      "fp_arm": 5995,
+      "fp_t0": 3747,
+      "recall_diff_pp": [
+       8.296557811120918,
+       2.6427061310782243,
+       4.578429792036111,
+       7.728823616674084,
+       1.659880989664892,
+       -0.09293680297397769,
+       4.777070063694268
+      ]
+     },
+     "46": {
+      "fp_arm": 4441,
+      "fp_t0": 4323,
+      "recall_diff_pp": [
+       7.340394233598117,
+       3.06553911205074,
+       1.5798807028857005,
+       4.213024773772437,
+       0.4854368932038835,
+       0.0648396299818449,
+       8.704883227176222
+      ]
+     }
+    }
+   },
+   "eligible": false
+  },
+  "S1": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 4648,
+    "43": 4553,
+    "44": 5154
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 323.07429486110465,
+   "fp_pc_cv": 0.06751813894693932,
+   "ratio_per_seed": {
+    "42": 1.2929068150208622,
+    "43": 1.2689520624303232,
+    "44": 1.118004338394794
+   },
+   "ratio": 1.2241049190379116,
+   "ratio_ci": [
+    1.133702719423343,
+    1.4324807162558466
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.2929068150208622,
+    "43": 1.2689520624303232,
+    "44": 1.118004338394794
+   },
+   "strict_ratio": 1.2241049190379116,
+   "strict_ratio_ci": [
+    1.134335561056817,
+    1.4324807162558466
+   ],
+   "ap_delta": -0.0023136304953597087,
+   "at_main": {
+    "42": {
+     "threshold": 0.4399078792654156,
+     "late_hover_gps_recall": 0.9968152866242038,
+     "late_hover_indep_normal_fp": 1192,
+     "binding_classes": [
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.4405874045498675,
+     "late_hover_gps_recall": 0.9883227176220807,
+     "late_hover_indep_normal_fp": 1173,
+     "binding_classes": [
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.38931989894578356,
+     "late_hover_gps_recall": 0.9989384288747346,
+     "late_hover_indep_normal_fp": 1200,
+     "binding_classes": [
+      "motor"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 1.2486952704114533,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 5.403550063744238,
+     "accelerometer": 1.9883217557636161,
+     "barometer": 1.1231124724595627,
+     "gyroscope": 4.801463679968353,
+     "magnetometer": 2.526359745276125,
+     "motor": 0.003602201665658049,
+     "late_hover_GPS": 14.331210191082803
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 4784,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       2.3242130038246542,
+       1.1023859861069163,
+       -0.41915202321457357,
+       0.5043762053107848,
+       0.2192295646727216,
+       0.0216132099939483,
+       0.9554140127388535
+      ]
+     },
+     "43": {
+      "fp_arm": 4539,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       5.280964989702854,
+       0.9966777408637874,
+       0.3385458649040787,
+       2.4773772437323838,
+       2.207954901346696,
+       -0.049710382986081096,
+       18.15286624203822
+      ]
+     },
+     "44": {
+      "fp_arm": 5248,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       8.605472197705208,
+       3.865901540320145,
+       3.4499435756891828,
+       11.42263759086189,
+       5.151894769808957,
+       0.03890377798910694,
+       23.88535031847134
+      ]
+     }
+    }
+   },
+   "eligible": false
+  },
+  "S2": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 3739,
+    "43": 4086,
+    "44": 4305
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 285.40205558708465,
+   "fp_pc_cv": 0.07058583402813305,
+   "ratio_per_seed": {
+    "42": 1.0400556328233659,
+    "43": 1.1387959866220736,
+    "44": 0.9338394793926247
+   },
+   "ratio": 1.0341691450867445,
+   "ratio_ci": [
+    0.978621700356464,
+    1.1402675813195657
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.1279554937413074,
+    "43": 1.1387959866220736,
+    "44": 0.9338394793926247
+   },
+   "strict_ratio": 1.0625190061753313,
+   "strict_ratio_ci": [
+    0.9983027501904552,
+    1.155785682139633
+   ],
+   "ap_delta": 0.0006093870961153177,
+   "at_main": {
+    "42": {
+     "threshold": 0.4781158817153059,
+     "late_hover_gps_recall": 0.9373673036093418,
+     "late_hover_indep_normal_fp": 1087,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "43": {
+     "threshold": 0.47099448441689745,
+     "late_hover_gps_recall": 0.9118895966029724,
+     "late_hover_indep_normal_fp": 1093,
+     "binding_classes": [
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.46204337934519424,
+     "late_hover_gps_recall": 0.9968152866242038,
+     "late_hover_indep_normal_fp": 1159,
+     "binding_classes": [
+      "motor"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 1.0752602600971624,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 4.9867608120035305,
+     "accelerometer": 1.741669183529649,
+     "barometer": 1.3864259229405127,
+     "gyroscope": 4.183355585224745,
+     "magnetometer": 3.3876187493475314,
+     "motor": 0.038183337655975334,
+     "late_hover_GPS": 12.137296532200992
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 3962,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       3.9129155634010004,
+       0.9664753850800363,
+       1.8861841044655812,
+       2.551550215101617,
+       2.5837770122142185,
+       0.12751793896429497,
+       -0.42462845010615713
+      ]
+     },
+     "43": {
+      "fp_arm": 4128,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       3.0303030303030303,
+       1.7819389912413168,
+       0.27406093825568273,
+       2.1510161697077583,
+       1.5659254619480112,
+       0.00648396299818449,
+       13.588110403397028
+      ]
+     },
+     "44": {
+      "fp_arm": 4449,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       8.01706384230656,
+       2.476593174267593,
+       1.999032726100274,
+       7.847500370864857,
+       6.013153773880363,
+       -0.01945188899455347,
+       23.248407643312103
+      ]
+     }
+    }
+   },
+   "eligible": false
+  },
+  "S3": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 4549,
+    "43": 4546,
+    "44": 5732
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 683.873038899278,
+   "fp_pc_cv": 0.1383704806567636,
+   "ratio_per_seed": {
+    "42": 1.2653685674547983,
+    "43": 1.2670011148272018,
+    "44": 1.2433839479392625
+   },
+   "ratio": 1.2585382861770047,
+   "ratio_ci": [
+    1.1977685403702174,
+    1.4178496778352032
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.2653685674547983,
+    "43": 1.2670011148272018,
+    "44": 1.2433839479392625
+   },
+   "strict_ratio": 1.2585382861770047,
+   "strict_ratio_ci": [
+    1.1992699377684013,
+    1.4178496778352032
+   ],
+   "ap_delta": -0.0034529372559777283,
+   "at_main": {
+    "42": {
+     "threshold": 0.45660478229867396,
+     "late_hover_gps_recall": 0.9968152866242038,
+     "late_hover_indep_normal_fp": 1174,
+     "binding_classes": [
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.4754983138749278,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1182,
+     "binding_classes": [
+      "magnetometer"
+     ]
+    },
+    "44": {
+     "threshold": 0.3801731751546654,
+     "late_hover_gps_recall": 0.9989384288747346,
+     "late_hover_indep_normal_fp": 1191,
+     "binding_classes": [
+      "motor"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 1.3656730401490442,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 6.506815730116702,
+     "accelerometer": 2.5873351454746802,
+     "barometer": 2.3375785910043527,
+     "gyroscope": 6.2156950007417295,
+     "magnetometer": 3.2727842154713436,
+     "motor": 0.07276447364629261,
+     "late_hover_GPS": 14.614295824486907
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 4978,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       5.648720211827008,
+       1.147689519782543,
+       2.950185394164114,
+       4.569055036344756,
+       2.395865956780457,
+       0.08213019797700355,
+       1.4861995753715498
+      ]
+     },
+     "43": {
+      "fp_arm": 4887,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       5.398646660782583,
+       2.536997885835095,
+       0.7093341931323554,
+       2.8630766948523956,
+       0.20357031005324147,
+       0.13184058096308462,
+       19.426751592356688
+      ]
+     },
+     "44": {
+      "fp_arm": 6128,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       8.473080317740513,
+       4.077318030806403,
+       3.3532161857165885,
+       11.214953271028037,
+       7.218916379580332,
+       0.00432264199878966,
+       22.929936305732483
+      ]
+     }
+    }
+   },
+   "eligible": false
+  },
+  "GBT": {
+   "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+   ],
+   "fp_pc": {
+    "42": 2520,
+    "43": 2352,
+    "44": 2928,
+    "45": 2282,
+    "46": 2489
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610,
+    "45": 3740,
+    "46": 4243
+   },
+   "fp_pc_sd": 251.06015215481727,
+   "fp_pc_cv": 0.09985687381863706,
+   "ratio_per_seed": {
+    "42": 0.7009735744089013,
+    "43": 0.6555183946488294,
+    "44": 0.6351409978308026,
+    "45": 0.6101604278074866,
+    "46": 0.5866132453452746
+   },
+   "ratio": 0.6364884332939226,
+   "ratio_ci": [
+    0.5665923571600777,
+    0.8341352172144187
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.2481223922114046,
+    "43": 0.7277034559643255,
+    "44": 0.6351409978308026,
+    "45": 0.9270053475935829,
+    "46": 0.7185953334904549
+   },
+   "strict_ratio": 0.825904206868058,
+   "strict_ratio_ci": [
+    0.731801130327189,
+    0.9940559284708862
+   ],
+   "ap_delta": 0.0037605552705437086,
+   "at_main": {
+    "42": {
+     "threshold": 0.4512477220698297,
+     "late_hover_gps_recall": 0.7813163481953291,
+     "late_hover_indep_normal_fp": 749,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.4867937431987728,
+     "late_hover_gps_recall": 0.7558386411889597,
+     "late_hover_indep_normal_fp": 700,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "44": {
+     "threshold": 0.3743877097283664,
+     "late_hover_gps_recall": 0.8662420382165605,
+     "late_hover_indep_normal_fp": 850,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "45": {
+     "threshold": 0.5023091944351452,
+     "late_hover_gps_recall": 0.7462845010615711,
+     "late_hover_indep_normal_fp": 682,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "46": {
+     "threshold": 0.45677641419967213,
+     "late_hover_gps_recall": 0.7813163481953291,
+     "late_hover_indep_normal_fp": 735,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "45": {
+     "threshold": 0.4762435257434845,
+     "late_hover_gps_recall": 0.9256900212314225,
+     "late_hover_indep_normal_fp": 1091,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "46": {
+     "threshold": 0.4922078251838684,
+     "late_hover_gps_recall": 0.8736730360934183,
+     "late_hover_indep_normal_fp": 1082,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.6790979939525803,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 2.385995881141512,
+     "accelerometer": 2.2047719722138326,
+     "barometer": 0.6126068031597613,
+     "gyroscope": 5.9664738169411065,
+     "magnetometer": 2.9877857813968047,
+     "motor": 0.22002247773839373,
+     "late_hover_GPS": -5.753715498938428
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 2758,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       1.7946454839658723,
+       1.5101177891875566,
+       1.7088505561824923,
+       5.592642041240172,
+       3.8365173817726275,
+       0.330682112907409,
+       -14.75583864118896
+      ]
+     },
+     "43": {
+      "fp_arm": 2408,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       0.6325389820535452,
+       1.6913319238900635,
+       -1.047880058036434,
+       3.7531523512831924,
+       1.2057626056999686,
+       0.17506700095098124,
+       -3.9278131634819533
+      ]
+     },
+     "44": {
+      "fp_arm": 3005,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       5.472197705207414,
+       3.8356991845363937,
+       1.5153957762373045,
+       10.488058151609554,
+       6.529909176323207,
+       0.25719719892798476,
+       12.632696390658174
+      ]
+     },
+     "45": {
+      "fp_arm": 2454,
+      "fp_t0": 3747,
+      "recall_diff_pp": [
+       0.5589879376287143,
+       0.9815765629719118,
+       1.096243753022731,
+       5.355288532858626,
+       0.9552145317882869,
+       0.15561511195642777,
+       -18.683651804670912
+      ]
+     },
+     "46": {
+      "fp_arm": 2796,
+      "fp_t0": 4323,
+      "recall_diff_pp": [
+       3.4716092968520154,
+       3.0051344004832377,
+       -0.20957601160728678,
+       4.643228007713989,
+       2.4115252113999373,
+       0.18155096394916573,
+       -4.033970276008493
+      ]
+     }
+    }
+   },
+   "eligible": true
+  },
+  "E0": {
+   "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+   ],
+   "fp_pc": {
+    "42": 2371,
+    "43": 2298,
+    "44": 2823,
+    "45": 2281,
+    "46": 2479
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610,
+    "45": 3740,
+    "46": 4243
+   },
+   "fp_pc_sd": 222.41582677498468,
+   "fp_pc_cv": 0.09076715098554712,
+   "ratio_per_seed": {
+    "42": 0.6595271210013908,
+    "43": 0.6404682274247492,
+    "44": 0.6123644251626899,
+    "45": 0.6098930481283422,
+    "46": 0.584256422342682
+   },
+   "ratio": 0.620753927507737,
+   "ratio_ci": [
+    0.5447601809862834,
+    0.7945752055810172
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.0614742698191932,
+    "43": 0.6995540691192865,
+    "44": 0.6123644251626899,
+    "45": 0.8764705882352941,
+    "46": 0.7004477963704926
+   },
+   "strict_ratio": 0.7747663791202558,
+   "strict_ratio_ci": [
+    0.6893629851360229,
+    0.9044432256018592
+   ],
+   "ap_delta": 0.0033940517556874327,
+   "at_main": {
+    "42": {
+     "threshold": 0.49763653582010914,
+     "late_hover_gps_recall": 0.7993630573248408,
+     "late_hover_indep_normal_fp": 771,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.501974047192738,
+     "late_hover_gps_recall": 0.7632696390658175,
+     "late_hover_indep_normal_fp": 731,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "44": {
+     "threshold": 0.4377527910159963,
+     "late_hover_gps_recall": 0.8736730360934183,
+     "late_hover_indep_normal_fp": 836,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "45": {
+     "threshold": 0.5050404301545564,
+     "late_hover_gps_recall": 0.7696390658174098,
+     "late_hover_indep_normal_fp": 723,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "46": {
+     "threshold": 0.49169287285297403,
+     "late_hover_gps_recall": 0.7887473460721869,
+     "late_hover_indep_normal_fp": 769,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "45": {
+     "threshold": 0.4762435257434845,
+     "late_hover_gps_recall": 0.9256900212314225,
+     "late_hover_indep_normal_fp": 1091,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "46": {
+     "threshold": 0.4922078251838684,
+     "late_hover_gps_recall": 0.8736730360934183,
+     "late_hover_indep_normal_fp": 1082,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.6559871601747936,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 1.753456899087967,
+     "accelerometer": 1.7154938085170641,
+     "barometer": 0.47718845719812986,
+     "gyroscope": 5.396825396825397,
+     "magnetometer": 3.113059818352646,
+     "motor": 0.3038817325149131,
+     "late_hover_GPS": -5.074309978768578
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 2586,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       1.5445719329214476,
+       1.4044095439444277,
+       1.6604868611961954,
+       5.043762053107847,
+       3.476354525524585,
+       0.39768306388864877,
+       -12.738853503184714
+      ]
+     },
+     "43": {
+      "fp_arm": 2356,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       -0.10297146219476316,
+       1.2231954092419208,
+       -1.4509108495889087,
+       3.1300993917816347,
+       1.675540244284372,
+       0.2852943719201176,
+       -4.246284501061571
+      ]
+     },
+     "44": {
+      "fp_arm": 2884,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       4.751397469844072,
+       3.2920567804288736,
+       1.3703046912784136,
+       9.642486278000296,
+       5.981835264641403,
+       0.32635947090861933,
+       13.481953290870488
+      ]
+     },
+     "45": {
+      "fp_arm": 2432,
+      "fp_t0": 3747,
+      "recall_diff_pp": [
+       0.4265960576640188,
+       0.2567200241618846,
+       1.2413348379816218,
+       4.925085298917074,
+       1.8634512997181334,
+       0.23990663093282613,
+       -16.878980891719745
+      ]
+     },
+     "46": {
+      "fp_arm": 2695,
+      "fp_t0": 4323,
+      "recall_diff_pp": [
+       2.14769049720506,
+       2.401087284808215,
+       -0.43527325487667257,
+       4.24269396232013,
+       2.5681177575947385,
+       0.27016512492435374,
+       -4.989384288747346
+      ]
+     }
+    }
+   },
+   "eligible": true
+  },
+  "E1": {
+   "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+   ],
+   "fp_pc": {
+    "42": 2461,
+    "43": 2160,
+    "44": 2638,
+    "45": 2166,
+    "46": 2223
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610,
+    "45": 3740,
+    "46": 4243
+   },
+   "fp_pc_sd": 211.700968349226,
+   "fp_pc_cv": 0.09087438545210595,
+   "ratio_per_seed": {
+    "42": 0.6845618915159944,
+    "43": 0.6020066889632107,
+    "44": 0.572234273318872,
+    "45": 0.5791443850267379,
+    "46": 0.523921753476314
+   },
+   "ratio": 0.5901035625071575,
+   "ratio_ci": [
+    0.5248218714269628,
+    0.7606831030101877
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.08567454798331,
+    "43": 0.68561872909699,
+    "44": 0.5893709327548807,
+    "45": 0.853475935828877,
+    "46": 0.672637284939901
+   },
+   "strict_ratio": 0.7589770641463409,
+   "strict_ratio_ci": [
+    0.6752429751718997,
+    0.8776380725461583
+   ],
+   "ap_delta": 0.0039145495724589585,
+   "at_main": {
+    "42": {
+     "threshold": 0.473954644035853,
+     "late_hover_gps_recall": 0.7993630573248408,
+     "late_hover_indep_normal_fp": 771,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.507014381961457,
+     "late_hover_gps_recall": 0.7494692144373672,
+     "late_hover_indep_normal_fp": 689,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "44": {
+     "threshold": 0.45347727922078307,
+     "late_hover_gps_recall": 0.8365180467091295,
+     "late_hover_indep_normal_fp": 830,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "45": {
+     "threshold": 0.5030435682832535,
+     "late_hover_gps_recall": 0.7558386411889597,
+     "late_hover_indep_normal_fp": 696,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "46": {
+     "threshold": 0.4992303015285249,
+     "late_hover_gps_recall": 0.7653927813163482,
+     "late_hover_indep_normal_fp": 706,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "45": {
+     "threshold": 0.4762435257434845,
+     "late_hover_gps_recall": 0.9256900212314225,
+     "late_hover_indep_normal_fp": 1091,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "46": {
+     "threshold": 0.4922078251838684,
+     "late_hover_gps_recall": 0.8736730360934183,
+     "late_hover_indep_normal_fp": 1082,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.6231538759309794,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 1.3503971756398943,
+     "accelerometer": 1.7456961643008153,
+     "barometer": 0.6706432371433176,
+     "gyroscope": 5.7469218216881774,
+     "magnetometer": 3.0974005637331663,
+     "motor": 0.3021526757153973,
+     "late_hover_GPS": -7.1762208067940545
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 2538,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       0.5001471020888497,
+       1.0268800966475384,
+       1.8055779461550863,
+       5.414626909954013,
+       4.008769182586909,
+       0.37606985389470043,
+       -18.046709129511676
+      ]
+     },
+     "43": {
+      "fp_arm": 2208,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       -0.23536334215945867,
+       1.4346118997281787,
+       -1.11236498468483,
+       3.4416258715324135,
+       1.5189476980895709,
+       0.28961701391890726,
+       -4.777070063694268
+      ]
+     },
+     "44": {
+      "fp_arm": 2805,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       4.471903501029715,
+       3.8054968287526427,
+       1.5476382395615025,
+       10.384215991692628,
+       6.279361102411525,
+       0.31339154491225035,
+       11.995753715498939
+      ]
+     },
+     "45": {
+      "fp_arm": 2258,
+      "fp_t0": 3747,
+      "recall_diff_pp": [
+       0.2794939688143572,
+       0.2567200241618846,
+       1.4670320812510076,
+       5.221777184394007,
+       1.4093329157532102,
+       0.26151984092677444,
+       -17.940552016985137
+      ]
+     },
+     "46": {
+      "fp_arm": 2510,
+      "fp_t0": 4323,
+      "recall_diff_pp": [
+       1.7358046484260077,
+       2.2047719722138326,
+       -0.3546670965661777,
+       4.2723631508678235,
+       2.2705919198246165,
+       0.27016512492435374,
+       -7.112526539278131
+      ]
+     }
+    }
+   },
+   "eligible": true
+  },
+  "W1+GBT": {
+   "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+   ],
+   "fp_pc": {
+    "42": 2578,
+    "43": 2128,
+    "44": 2646,
+    "45": 2217,
+    "46": 2216
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610,
+    "45": 3740,
+    "46": 4243
+   },
+   "fp_pc_sd": 236.79315868495863,
+   "fp_pc_cv": 0.10046379239921877,
+   "ratio_per_seed": {
+    "42": 0.7171070931849791,
+    "43": 0.5930880713489409,
+    "44": 0.5739696312364425,
+    "45": 0.5927807486631016,
+    "46": 0.5222719773744992
+   },
+   "ratio": 0.5965908489052422,
+   "ratio_ci": [
+    0.5322803301220562,
+    0.7764166612351041
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.23115438108484,
+    "43": 0.6931438127090301,
+    "44": 0.5913232104121475,
+    "45": 0.8748663101604278,
+    "46": 0.7164741927881216
+   },
+   "strict_ratio": 0.7943659265497088,
+   "strict_ratio_ci": [
+    0.7040858347843911,
+    0.9307448924716657
+   ],
+   "ap_delta": 0.0037899265394049754,
+   "at_main": {
+    "42": {
+     "threshold": 0.41998212215862063,
+     "late_hover_gps_recall": 0.7898089171974523,
+     "late_hover_indep_normal_fp": 751,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.451017417553245,
+     "late_hover_gps_recall": 0.727176220806794,
+     "late_hover_indep_normal_fp": 668,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "44": {
+     "threshold": 0.39837079218391025,
+     "late_hover_gps_recall": 0.8237791932059448,
+     "late_hover_indep_normal_fp": 783,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "45": {
+     "threshold": 0.43945517487839814,
+     "late_hover_gps_recall": 0.7494692144373672,
+     "late_hover_indep_normal_fp": 689,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "46": {
+     "threshold": 0.44187606485063424,
+     "late_hover_gps_recall": 0.7303609341825902,
+     "late_hover_indep_normal_fp": 652,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "45": {
+     "threshold": 0.4762435257434845,
+     "late_hover_gps_recall": 0.9256900212314225,
+     "late_hover_indep_normal_fp": 1091,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "46": {
+     "threshold": 0.4922078251838684,
+     "late_hover_gps_recall": 0.8736730360934183,
+     "late_hover_indep_normal_fp": 1082,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.6412902389995586,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 1.700500147102089,
+     "accelerometer": 1.9571126547870734,
+     "barometer": 0.8383040464291472,
+     "gyroscope": 5.554072096128171,
+     "magnetometer": 3.203883495145631,
+     "motor": 0.3216045647099507,
+     "late_hover_GPS": -7.749469214437369
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 2730,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       0.794351279788173,
+       0.9966777408637874,
+       1.8700628728034823,
+       5.34045393858478,
+       4.040087691825869,
+       0.41281231088441256,
+       -18.365180467091296
+      ]
+     },
+     "43": {
+      "fp_arm": 2211,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       -0.16181229773462782,
+       1.4497130776200544,
+       -0.6448492664839593,
+       3.1449339860554812,
+       1.5972439711869715,
+       0.2939396559176969,
+       -6.1571125265392785
+      ]
+     },
+     "44": {
+      "fp_arm": 2827,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       4.942630185348632,
+       3.548776804590758,
+       1.5798807028857005,
+       10.221035454680315,
+       6.326338866269966,
+       0.330682112907409,
+       11.252653927813164
+      ]
+     },
+     "45": {
+      "fp_arm": 2380,
+      "fp_t0": 3747,
+      "recall_diff_pp": [
+       0.8973227419829362,
+       1.2231954092419208,
+       1.6443656295340965,
+       4.984423676012461,
+       1.4876291888506108,
+       0.29826229791648656,
+       -16.772823779193207
+      ]
+     },
+     "46": {
+      "fp_arm": 2532,
+      "fp_t0": 4323,
+      "recall_diff_pp": [
+       2.030008826125331,
+       2.5672002416188464,
+       -0.25793970659358373,
+       4.079513425307818,
+       2.5681177575947385,
+       0.2723264459237486,
+       -8.704883227176222
+      ]
+     }
+    }
+   },
+   "eligible": true
+  },
+  "W2+GBT": {
+   "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+   ],
+   "fp_pc": {
+    "42": 2456,
+    "43": 2208,
+    "44": 2788,
+    "45": 2246,
+    "46": 2394
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610,
+    "45": 3740,
+    "46": 4243
+   },
+   "fp_pc_sd": 230.54457269690823,
+   "fp_pc_cv": 0.09532938004337918,
+   "ratio_per_seed": {
+    "42": 0.6831710709318498,
+    "43": 0.6153846153846154,
+    "44": 0.6047722342733188,
+    "45": 0.6005347593582888,
+    "46": 0.5642234268206457
+   },
+   "ratio": 0.6124229288099547,
+   "ratio_ci": [
+    0.5436042818679556,
+    0.79035809981368
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.1838664812239221,
+    "43": 0.7120958751393534,
+    "44": 0.6108459869848156,
+    "45": 0.9056149732620321,
+    "46": 0.7013905255715296
+   },
+   "strict_ratio": 0.7997150733665168,
+   "strict_ratio_ci": [
+    0.7085396398506575,
+    0.9224173535266681
+   ],
+   "ap_delta": 0.0036351348109630033,
+   "at_main": {
+    "42": {
+     "threshold": 0.45898005593267754,
+     "late_hover_gps_recall": 0.7823779193205945,
+     "late_hover_indep_normal_fp": 745,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.4825046500470815,
+     "late_hover_gps_recall": 0.7303609341825902,
+     "late_hover_indep_normal_fp": 675,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "44": {
+     "threshold": 0.42108202428558494,
+     "late_hover_gps_recall": 0.8386411889596603,
+     "late_hover_indep_normal_fp": 813,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "45": {
+     "threshold": 0.4781927181175833,
+     "late_hover_gps_recall": 0.7537154989384289,
+     "late_hover_indep_normal_fp": 692,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "46": {
+     "threshold": 0.4593272819939458,
+     "late_hover_gps_recall": 0.7632696390658175,
+     "late_hover_indep_normal_fp": 710,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "45": {
+     "threshold": 0.4762435257434845,
+     "late_hover_gps_recall": 0.9256900212314225,
+     "late_hover_indep_normal_fp": 1091,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "46": {
+     "threshold": 0.4922078251838684,
+     "late_hover_gps_recall": 0.8736730360934183,
+     "late_hover_indep_normal_fp": 1082,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.6502564830971714,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 1.9329214474845542,
+     "accelerometer": 1.893687707641196,
+     "barometer": 0.6770917298081572,
+     "gyroscope": 5.482866043613707,
+     "magnetometer": 3.07860945818979,
+     "motor": 0.2623843693265324,
+     "late_hover_GPS": -7.218683651804672
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 2707,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       1.3533392174168872,
+       1.1778918755662942,
+       1.999032726100274,
+       5.088265835929388,
+       3.9617914187284686,
+       0.4020057058874384,
+       -16.24203821656051
+      ]
+     },
+     "43": {
+      "fp_arm": 2255,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       -0.05884083553986467,
+       1.1325883418906675,
+       -1.2090923746574238,
+       2.67022696929239,
+       1.6442217350454118,
+       0.2788104089219331,
+       -7.112526539278131
+      ]
+     },
+     "44": {
+      "fp_arm": 2904,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       5.1191526919682255,
+       3.820598006644518,
+       1.5798807028857005,
+       10.45838896306186,
+       6.357657375508926,
+       0.26151984092677444,
+       12.208067940552016
+      ]
+     },
+     "45": {
+      "fp_arm": 2410,
+      "fp_t0": 3747,
+      "recall_diff_pp": [
+       0.5148573109738158,
+       0.906070673512534,
+       1.4347896179268096,
+       5.073431241655541,
+       1.1901033510804886,
+       0.11671133396732082,
+       -17.515923566878982
+      ]
+     },
+     "46": {
+      "fp_arm": 2580,
+      "fp_t0": 4323,
+      "recall_diff_pp": [
+       2.736098852603707,
+       2.431289640591966,
+       -0.41915202321457357,
+       4.124017208129358,
+       2.239273410585656,
+       0.25287455692919514,
+       -7.43099787685775
+      ]
+     }
+    }
+   },
+   "eligible": true
+  },
+  "S1+GBT": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 2612,
+    "43": 2428,
+    "44": 2907
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 241.63402078349813,
+   "fp_pc_cv": 0.09121707088844777,
+   "ratio_per_seed": {
+    "42": 0.7265646731571628,
+    "43": 0.6767001114827201,
+    "44": 0.63058568329718
+   },
+   "ratio": 0.6768174449434481,
+   "ratio_ci": [
+    0.5838329676837333,
+    0.8595866207174077
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.1226703755215577,
+    "43": 0.7112597547380156,
+    "44": 0.63058568329718
+   },
+   "strict_ratio": 0.7955635340269265,
+   "strict_ratio_ci": [
+    0.7075577920946386,
+    0.9782349951399537
+   ],
+   "ap_delta": 0.0032221621342787277,
+   "at_main": {
+    "42": {
+     "threshold": 0.47013394201282965,
+     "late_hover_gps_recall": 0.8131634819532909,
+     "late_hover_indep_normal_fp": 793,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.4900905582701876,
+     "late_hover_gps_recall": 0.7866242038216561,
+     "late_hover_indep_normal_fp": 749,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "44": {
+     "threshold": 0.43561000566725855,
+     "late_hover_gps_recall": 0.8736730360934183,
+     "late_hover_indep_normal_fp": 877,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.7049546039423958,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 2.3487300186329314,
+     "accelerometer": 1.9027484143763214,
+     "barometer": 0.4782632059756032,
+     "gyroscope": 5.943727439054541,
+     "magnetometer": 3.930472909489508,
+     "motor": 0.3249185902423561,
+     "late_hover_GPS": -0.17692852087756528
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 2821,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       1.8093556928508385,
+       1.3440048323769254,
+       1.8216991778171852,
+       5.014092864560154,
+       3.726902599436267,
+       0.39768306388864877,
+       -11.78343949044586
+      ]
+     },
+     "43": {
+      "fp_arm": 2431,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       0.22065313327449249,
+       0.5889459377831471,
+       -1.7410930195066903,
+       2.4477080551846906,
+       1.7538365173817727,
+       0.25719719892798476,
+       -3.5031847133757963
+      ]
+     },
+     "44": {
+      "fp_arm": 2990,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       5.016181229773463,
+       3.7752944729688918,
+       1.3541834596163147,
+       10.369381397418781,
+       6.310679611650485,
+       0.31987550791043484,
+       14.75583864118896
+      ]
+     }
+    }
+   },
+   "eligible": true
+  },
+  "S2+GBT": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 2399,
+    "43": 2326,
+    "44": 2830
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 272.3680108480681,
+   "fp_pc_cv": 0.10815407445985496,
+   "ratio_per_seed": {
+    "42": 0.6673157162726009,
+    "43": 0.6482720178372352,
+    "44": 0.613882863340564
+   },
+   "ratio": 0.6427736227262698,
+   "ratio_ci": [
+    0.5601210748387546,
+    0.8387755532959629
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.1360222531293462,
+    "43": 0.6950947603121517,
+    "44": 0.613882863340564
+   },
+   "strict_ratio": 0.7855469037877173,
+   "strict_ratio_ci": [
+    0.6964020832269742,
+    0.959968204784986
+   ],
+   "ap_delta": 0.003698055615547998,
+   "at_main": {
+    "42": {
+     "threshold": 0.49519585811560785,
+     "late_hover_gps_recall": 0.7738853503184714,
+     "late_hover_indep_normal_fp": 726,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.4929103616549792,
+     "late_hover_gps_recall": 0.7696390658174098,
+     "late_hover_indep_normal_fp": 725,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "44": {
+     "threshold": 0.44653442524543185,
+     "late_hover_gps_recall": 0.8895966029723992,
+     "late_hover_indep_normal_fp": 874,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.6831069386317504,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 2.6919682259488087,
+     "accelerometer": 2.0285915634752842,
+     "barometer": 0.5642431081734645,
+     "gyroscope": 6.186025812194036,
+     "magnetometer": 4.16536172878171,
+     "motor": 0.3350047549061987,
+     "late_hover_GPS": -1.3092710544939858
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 2716,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       1.5739923506913798,
+       1.2080942313500453,
+       1.7249717878445914,
+       5.444296098501706,
+       3.867835891011588,
+       0.39768306388864877,
+       -16.666666666666668
+      ]
+     },
+     "43": {
+      "fp_arm": 2386,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       0.4854368932038835,
+       1.2231954092419208,
+       -1.4186683862647107,
+       3.1746031746031744,
+       1.816473535859693,
+       0.2809717299213279,
+       -3.6093418259023355
+      ]
+     },
+     "44": {
+      "fp_arm": 2879,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       6.016475433951162,
+       3.654485049833887,
+       1.3864259229405127,
+       9.939178163477228,
+       6.811775759473849,
+       0.32635947090861933,
+       16.348195329087048
+      ]
+     }
+    }
+   },
+   "eligible": true
+  },
+  "S3+GBT": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 2531,
+    "43": 2470,
+    "44": 2972
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 273.9239553842149,
+   "fp_pc_cv": 0.10306934229934087,
+   "ratio_per_seed": {
+    "42": 0.7040333796940195,
+    "43": 0.6884057971014492,
+    "44": 0.6446854663774404
+   },
+   "ratio": 0.6785708766005176,
+   "ratio_ci": [
+    0.5968597026377374,
+    0.8781708847164905
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.1760778859527121,
+    "43": 0.7204570791527313,
+    "44": 0.6446854663774404
+   },
+   "strict_ratio": 0.8174553218696679,
+   "strict_ratio_ci": [
+    0.731153689963513,
+    1.021125081615912
+   ],
+   "ap_delta": 0.0028595303265604257,
+   "at_main": {
+    "42": {
+     "threshold": 0.4830994762396597,
+     "late_hover_gps_recall": 0.8004246284501062,
+     "late_hover_indep_normal_fp": 789,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.4994256446190476,
+     "late_hover_gps_recall": 0.778131634819533,
+     "late_hover_indep_normal_fp": 752,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "44": {
+     "threshold": 0.44427992055489635,
+     "late_hover_gps_recall": 0.8481953290870489,
+     "late_hover_indep_normal_fp": 857,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.7213293859954021,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 2.3045993919780328,
+     "accelerometer": 2.1342998087184135,
+     "barometer": 0.655596754258692,
+     "gyroscope": 5.8547198734114625,
+     "magnetometer": 4.050527194905523,
+     "motor": 0.31843462724417165,
+     "late_hover_GPS": -1.4508138711960374
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 2804,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       1.5151515151515151,
+       1.2080942313500453,
+       1.6282443978719974,
+       5.2069425901201605,
+       4.040087691825869,
+       0.4020057058874384,
+       -15.286624203821656
+      ]
+     },
+     "43": {
+      "fp_arm": 2528,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       0.4265960576640188,
+       1.46481425551193,
+       -1.2574560696437207,
+       2.1361815754339117,
+       1.4093329157532102,
+       0.3004236189158814,
+       -2.0169851380042463
+      ]
+     },
+     "44": {
+      "fp_arm": 3099,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       4.972050603118564,
+       3.729990939293265,
+       1.5960019345477994,
+       10.221035454680315,
+       6.702160977137488,
+       0.25287455692919514,
+       12.951167728237792
+      ]
+     }
+    }
+   },
+   "eligible": true
+  },
+  "S1last": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 3805,
+    "43": 3628,
+    "44": 3636
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 99.96165931662665,
+   "fp_pc_cv": 0.02709232793837564,
+   "ratio_per_seed": {
+    "42": 1.0584144645340752,
+    "43": 1.0111482720178373,
+    "44": 0.7887201735357917
+   },
+   "ratio": 0.9450711807008388,
+   "ratio_ci": [
+    0.8929601432332803,
+    1.0683509205308077
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.1694019471488177,
+    "43": 1.0111482720178373,
+    "44": 0.7887201735357917
+   },
+   "strict_ratio": 0.977013433849774,
+   "strict_ratio_ci": [
+    0.9447886648323253,
+    1.096638923191835
+   ],
+   "ap_delta": -0.0006631816660863284,
+   "at_main": {
+    "42": {
+     "threshold": 0.44920608219072306,
+     "late_hover_gps_recall": 0.9596602972399151,
+     "late_hover_indep_normal_fp": 1129,
+     "binding_classes": [
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.4682055731594363,
+     "late_hover_gps_recall": 0.940552016985138,
+     "late_hover_indep_normal_fp": 1104,
+     "binding_classes": [
+      "gyroscope"
+     ]
+    },
+    "44": {
+     "threshold": 0.48583814153245275,
+     "late_hover_gps_recall": 0.9617834394904459,
+     "late_hover_indep_normal_fp": 1119,
+     "binding_classes": [
+      "motor"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.9741202268379184,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 3.246052760615868,
+     "accelerometer": 1.6611295681063123,
+     "barometer": 1.3326884840668494,
+     "gyroscope": 3.881718834989863,
+     "magnetometer": 1.8947698089570935,
+     "motor": 0.07420535431255583,
+     "late_hover_GPS": 11.78343949044586
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 3586,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       3.265666372462489,
+       1.0268800966475384,
+       1.11236498468483,
+       2.7592345349354694,
+       1.1901033510804886,
+       0.03890377798910694,
+       -0.42462845010615713
+      ]
+     },
+     "43": {
+      "fp_arm": 3785,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       1.7358046484260077,
+       1.2836001208094232,
+       0.6287280348218603,
+       0.6823913365969441,
+       0.15659254619480112,
+       0.12535661796490014,
+       16.666666666666668
+      ]
+     },
+     "44": {
+      "fp_arm": 3986,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       4.736687260959106,
+       2.6729084868619752,
+       2.256972432693858,
+       8.203530633437175,
+       4.337613529595991,
+       0.05835566698366041,
+       19.10828025477707
+      ]
+     }
+    }
+   },
+   "eligible": false
+  },
+  "S2last": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 3122,
+    "43": 3530,
+    "44": 3672
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 285.5194097313409,
+   "fp_pc_cv": 0.08296767039849115,
+   "ratio_per_seed": {
+    "42": 0.8684283727399166,
+    "43": 0.9838350055741361,
+    "44": 0.796529284164859
+   },
+   "ratio": 0.8796015933449953,
+   "ratio_ci": [
+    0.8386259868047475,
+    1.0004245493439932
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.063421418636996,
+    "43": 0.9838350055741361,
+    "44": 0.796529284164859
+   },
+   "strict_ratio": 0.9410437337496887,
+   "strict_ratio_ci": [
+    0.8866633665140271,
+    1.0363181359301437
+   ],
+   "ap_delta": 0.0010772765614876316,
+   "at_main": {
+    "42": {
+     "threshold": 0.4793789642654184,
+     "late_hover_gps_recall": 0.9182590233545648,
+     "late_hover_indep_normal_fp": 1049,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.4915670242415267,
+     "late_hover_gps_recall": 0.9692144373673036,
+     "late_hover_indep_normal_fp": 1117,
+     "binding_classes": [
+      "magnetometer"
+     ]
+    },
+    "44": {
+     "threshold": 0.4764997513083775,
+     "late_hover_gps_recall": 0.9840764331210191,
+     "late_hover_indep_normal_fp": 1124,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.9279041872019103,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 3.937432578209277,
+     "accelerometer": 1.3440048323769254,
+     "barometer": 1.278951045193186,
+     "gyroscope": 3.8866636997478117,
+     "magnetometer": 2.385426453700804,
+     "motor": 0.0922163626408461,
+     "late_hover_GPS": 9.907997169143668
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 3125,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       0.1323918799646955,
+       -0.07550588945937783,
+       1.999032726100274,
+       1.5279632102062009,
+       1.3623551518947699,
+       0.06267830898245007,
+       -7.643312101910828
+      ]
+     },
+     "43": {
+      "fp_arm": 3639,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       4.60429538099441,
+       1.7668378133494413,
+       0.17733354828308884,
+       1.409286456015428,
+       -0.06263701847792046,
+       0.09942076597216219,
+       15.180467091295117
+      ]
+     },
+     "44": {
+      "fp_arm": 4112,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       7.075610473668726,
+       2.340682573240713,
+       1.6604868611961954,
+       8.722741433021806,
+       5.856561227685562,
+       0.114550012967926,
+       22.18683651804671
+      ]
+     }
+    }
+   },
+   "eligible": false
+  },
+  "S3last": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 3664,
+    "43": 3863,
+    "44": 3687
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 108.8622983406101,
+   "fp_pc_cv": 0.029123140273036408,
+   "ratio_per_seed": {
+    "42": 1.0191933240611961,
+    "43": 1.076644370122631,
+    "44": 0.7997830802603036
+   },
+   "ratio": 0.9574152749413558,
+   "ratio_ci": [
+    0.9297241872225086,
+    1.0754464573538969
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.0828929068150208,
+    "43": 1.076644370122631,
+    "44": 0.7997830802603036
+   },
+   "strict_ratio": 0.9769597354044963,
+   "strict_ratio_ci": [
+    0.9435015251374239,
+    1.0865297848901136
+   ],
+   "ap_delta": -0.0012748666578791628,
+   "at_main": {
+    "42": {
+     "threshold": 0.46990936815993467,
+     "late_hover_gps_recall": 0.9585987261146497,
+     "late_hover_indep_normal_fp": 1092,
+     "binding_classes": [
+      "accelerometer"
+     ]
+    },
+    "43": {
+     "threshold": 0.4789154368594122,
+     "late_hover_gps_recall": 0.9522292993630573,
+     "late_hover_indep_normal_fp": 1140,
+     "binding_classes": [
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.47335804462874453,
+     "late_hover_gps_recall": 0.9893842887473461,
+     "late_hover_indep_normal_fp": 1129,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 1.0055743861501225,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 3.241149357654212,
+     "accelerometer": 1.3943420920165106,
+     "barometer": 1.7948304583803536,
+     "gyroscope": 3.723483162735499,
+     "magnetometer": 3.090092911577409,
+     "motor": 0.0713235929800294,
+     "late_hover_GPS": 12.208067940552018
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 3826,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       1.9858781994704324,
+       0.4379341588643914,
+       2.9179429308399163,
+       3.1300993917816347,
+       2.896962104603821,
+       0.07780755597821389,
+       -2.1231422505307855
+      ]
+     },
+     "43": {
+      "fp_arm": 4087,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       2.7949396881435717,
+       1.495016611295681,
+       1.080122521360632,
+       0.08900756564307966,
+       1.3310366426558096,
+       0.05835566698366041,
+       16.24203821656051
+      ]
+     },
+     "44": {
+      "fp_arm": 3806,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       4.942630185348632,
+       2.2500755058894595,
+       1.3864259229405127,
+       7.951342530781783,
+       5.042279987472596,
+       0.07780755597821389,
+       22.505307855626327
+      ]
+     }
+    }
+   },
+   "eligible": false
+  },
+  "S1last+GBT": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 2385,
+    "43": 2286,
+    "44": 2767
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 253.99671913891592,
+   "fp_pc_cv": 0.10244557104285396,
+   "ratio_per_seed": {
+    "42": 0.6634214186369958,
+    "43": 0.637123745819398,
+    "44": 0.6002169197396963
+   },
+   "ratio": 0.6330536318577746,
+   "ratio_ci": [
+    0.5505958856955306,
+    0.8047012316099412
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.0993045897079277,
+    "43": 0.6858974358974359,
+    "44": 0.6002169197396963
+   },
+   "strict_ratio": 0.7677653087561683,
+   "strict_ratio_ci": [
+    0.6764012268005793,
+    0.9278625624278938
+   ],
+   "ap_delta": 0.00387176144924802,
+   "at_main": {
+    "42": {
+     "threshold": 0.4831513928287957,
+     "late_hover_gps_recall": 0.7919320594479831,
+     "late_hover_indep_normal_fp": 759,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.5007271400562057,
+     "late_hover_gps_recall": 0.7738853503184714,
+     "late_hover_indep_normal_fp": 723,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "44": {
+     "threshold": 0.4502540774246537,
+     "late_hover_gps_recall": 0.8545647558386412,
+     "late_hover_indep_normal_fp": 866,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.6588488384050569,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 1.907423752083946,
+     "accelerometer": 2.0285915634752842,
+     "barometer": 0.8114353269923157,
+     "gyroscope": 5.8893339267171045,
+     "magnetometer": 3.940912412569162,
+     "motor": 0.3278003515748826,
+     "late_hover_GPS": -2.2292993630573252
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 2557,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       1.0885554574874963,
+       1.1929930534581696,
+       1.6927293245203934,
+       5.103100430203234,
+       3.664265580958346,
+       0.36094060689893664,
+       -17.091295116772823
+      ]
+     },
+     "43": {
+      "fp_arm": 2333,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       -0.14710208884966167,
+       1.2382965871337965,
+       -0.7899403514428502,
+       2.4477080551846906,
+       1.6442217350454118,
+       0.28961701391890726,
+       -2.0169851380042463
+      ]
+     },
+     "44": {
+      "fp_arm": 2806,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       4.780817887614004,
+       3.654485049833887,
+       1.5315170078994036,
+       10.117193294763387,
+       6.514249921703727,
+       0.3328434339068038,
+       12.420382165605096
+      ]
+     }
+    }
+   },
+   "eligible": false
+  },
+  "S2last+GBT": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 2341,
+    "43": 2224,
+    "44": 2696
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 245.79734199810488,
+   "fp_pc_cv": 0.10155516127176899,
+   "ratio_per_seed": {
+    "42": 0.651182197496523,
+    "43": 0.6198439241917503,
+    "44": 0.5848156182212582
+   },
+   "ratio": 0.6180182168778183,
+   "ratio_ci": [
+    0.5323747783700415,
+    0.8085138523272303
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.074269819193324,
+    "43": 0.6836677814938684,
+    "44": 0.5848156182212582
+   },
+   "strict_ratio": 0.7544998370977634,
+   "strict_ratio_ci": [
+    0.6750197255309133,
+    0.9267308253320555
+   ],
+   "ap_delta": 0.003943390756171487,
+   "at_main": {
+    "42": {
+     "threshold": 0.4875501896985718,
+     "late_hover_gps_recall": 0.7760084925690022,
+     "late_hover_indep_normal_fp": 727,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.5071880119431513,
+     "late_hover_gps_recall": 0.7547770700636943,
+     "late_hover_indep_normal_fp": 704,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "44": {
+     "threshold": 0.45802018406384126,
+     "late_hover_gps_recall": 0.8556263269639066,
+     "late_hover_indep_normal_fp": 849,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.6499770521207318,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 2.26537216828479,
+     "accelerometer": 2.00845665961945,
+     "barometer": 0.5696168520608308,
+     "gyroscope": 6.042624734213519,
+     "magnetometer": 3.993109927967429,
+     "motor": 0.3220368289098297,
+     "late_hover_GPS": -3.255484784147205
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 2529,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       0.8973227419829362,
+       1.0268800966475384,
+       1.8378204094792843,
+       4.791573950452455,
+       3.632947071719386,
+       0.36310192789833146,
+       -18.683651804670912
+      ]
+     },
+     "43": {
+      "fp_arm": 2286,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       0.6031185642836129,
+       1.3138024765931742,
+       -1.5637594712236016,
+       2.9965880433170153,
+       1.5659254619480112,
+       0.2939396559176969,
+       -4.564755838641189
+      ]
+     },
+     "44": {
+      "fp_arm": 2780,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       5.29567519858782,
+       3.684687405617638,
+       1.4347896179268096,
+       10.339712208871088,
+       6.780457250234889,
+       0.30906890291346073,
+       13.481953290870488
+      ]
+     }
+    }
+   },
+   "eligible": false
+  },
+  "S3last+GBT": {
+   "seeds": [
+    42,
+    43,
+    44
+   ],
+   "fp_pc": {
+    "42": 2416,
+    "43": 2251,
+    "44": 2752
+   },
+   "t0_fp": {
+    "42": 3595,
+    "43": 3588,
+    "44": 4610
+   },
+   "fp_pc_sd": 255.31744946242904,
+   "fp_pc_cv": 0.1032419933127493,
+   "ratio_per_seed": {
+    "42": 0.6720445062586926,
+    "43": 0.6273690078037905,
+    "44": 0.5969631236442516
+   },
+   "ratio": 0.6313781283176414,
+   "ratio_ci": [
+    0.5573538028020014,
+    0.8167260216746582
+   ],
+   "strict_ratio_per_seed": {
+    "42": 1.122392211404729,
+    "43": 0.6861761426978819,
+    "44": 0.5969631236442516
+   },
+   "strict_ratio": 0.7718079616244915,
+   "strict_ratio_ci": [
+    0.687727570901556,
+    0.9435431093374778
+   ],
+   "ap_delta": 0.0037910133238775456,
+   "at_main": {
+    "42": {
+     "threshold": 0.48483064375121443,
+     "late_hover_gps_recall": 0.7887473460721869,
+     "late_hover_indep_normal_fp": 753,
+     "binding_classes": [
+      "GPS"
+     ]
+    },
+    "43": {
+     "threshold": 0.5044788720666618,
+     "late_hover_gps_recall": 0.7643312101910829,
+     "late_hover_indep_normal_fp": 711,
+     "binding_classes": [
+      "barometer"
+     ]
+    },
+    "44": {
+     "threshold": 0.4475741801727289,
+     "late_hover_gps_recall": 0.8535031847133758,
+     "late_hover_indep_normal_fp": 868,
+     "binding_classes": [
+      "barometer"
+     ]
+    }
+   },
+   "t0_late_hover": {
+    "42": {
+     "threshold": 0.48896127939224243,
+     "late_hover_gps_recall": 0.9830148619957537,
+     "late_hover_indep_normal_fp": 1169,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "43": {
+     "threshold": 0.48253366351127625,
+     "late_hover_gps_recall": 0.802547770700637,
+     "late_hover_indep_normal_fp": 1014,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    },
+    "44": {
+     "threshold": 0.4324328601360321,
+     "late_hover_gps_recall": 0.8450106157112527,
+     "late_hover_indep_normal_fp": 963,
+     "binding_classes": [
+      "GPS",
+      "accelerometer",
+      "barometer",
+      "gyroscope",
+      "magnetometer",
+      "motor"
+     ]
+    }
+   },
+   "oof": {
+    "fp_ratio_gm": 0.6675702346556435,
+    "recall_diff_pp_seed_mean": {
+     "GPS": 2.054525840933608,
+     "accelerometer": 2.058793919259035,
+     "barometer": 0.8060615831049492,
+     "gyroscope": 5.844830143895565,
+     "magnetometer": 4.118383964923269,
+     "motor": 0.33140255324054063,
+     "late_hover_GPS": -2.3708421797593773
+    },
+    "per_seed": {
+     "42": {
+      "fp_arm": 2625,
+      "fp_t0": 3611,
+      "recall_diff_pp": [
+       1.132686084142395,
+       1.253397765025672,
+       1.9184265677897792,
+       5.2514463729417,
+       4.1966802380206705,
+       0.36958589089651595,
+       -17.515923566878982
+      ]
+     },
+     "43": {
+      "fp_arm": 2321,
+      "fp_t0": 3704,
+      "recall_diff_pp": [
+       0.07355104442483083,
+       1.1778918755662942,
+       -1.096243753022731,
+       1.8543242842308263,
+       1.659880989664892,
+       0.2874556929195124,
+       -2.335456475583864
+      ]
+     },
+     "44": {
+      "fp_arm": 2858,
+      "fp_t0": 4376,
+      "recall_diff_pp": [
+       4.957340394233598,
+       3.7450921171851403,
+       1.5960019345477994,
+       10.428719774514168,
+       6.498590667084247,
+       0.3371660759055935,
+       12.738853503184714
+      ]
+     }
+    }
+   },
+   "eligible": false
+  }
+ },
+ "selection": {
+  "eligible": [
+   "E1",
+   "W1+GBT",
+   "W2+GBT",
+   "E0",
+   "GBT",
+   "S2+GBT",
+   "S1+GBT",
+   "S3+GBT",
+   "T1"
+  ],
+  "best": "E1",
+  "parsimony_checks": {
+   "T1": {
+    "common_seeds": [
+     42,
+     43,
+     44,
+     45,
+     46
+    ],
+    "point": 0.7177528468359864,
+    "ci": [
+     0.6242316149659116,
+     0.8873626210489739
+    ]
+   },
+   "GBT": {
+    "common_seeds": [
+     42,
+     43,
+     44,
+     45,
+     46
+    ],
+    "point": 0.9271237804798487,
+    "ci": [
+     0.8287291643881235,
+     1.0014032398670911
+    ]
+   }
+  },
+  "keep": "GBT",
+  "flags": {
+   "strict_ratio_ge_1": false,
+   "oof_class_deficit_gt_1pp": [],
+   "three_seeds_only": false
+  }
+ }
+}
