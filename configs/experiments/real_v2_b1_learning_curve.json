@@ -1,0 +1,72 @@
+{
+  "name": "real_v2_b1_learning_curve",
+  "date": "2026-11-08",
+  "status": "FROZEN_BEFORE_B1_RUN",
+  "user_approval": "2026-11-08: B1 numbers chosen by the user after B0 (H2 = both normal populations <= 5.5 false events/h and motor, sensor new-confirmation detection >= 80% each; S+R with equal total domain weight; event onset selected by inner CV). Line approved in the cross-domain draft decisions of the same day.",
+  "basis": "B0 (artifacts/real_v2_b0_diagnostics/, commit 9044e26): strong Real-internal session difference (normal_full vs pre_fault AUC 0.972); Real-only GBT fault vs pre_fault AUC 0.975 [0.968, 0.982], motor 0.984, sensor 0.965; source GBT 0.757. B1 recommendation GO. Architect check: per-case paired AUC median 1.00 motor / 0.99 sensor; post_fault_normal and late normal-flight windows not systematically flagged, so the separation is not only time-in-flight.",
+  "questions": {
+    "H1_source_value": "With the same Real-label budget, does source + Real (S+R) beat Real-only (R)? Primary at the 25% fraction.",
+    "H2_usability": "With the full dev training folds, is there a Real event-level operating point with few false events on both Real normal populations and high new-confirmation detection for motor and sensor?"
+  },
+  "population": {
+    "cases": "configs/data/real_v2_split.csv (sha256 9232ee35e7a59f4fac4534fc8e98fc454380b51e6e5d8439aaa0f769cd1090ee), partition dev, label_quarantine false",
+    "case_types_by_role_v1": "test_fault -> fault case (family motor / sensor); test_normal, adapt_normal, calibrate_normal -> N1 normal_full flight; supplemental_normal_test -> supplemental segment (descriptive only)",
+    "windows": "real_included_windows.csv rows of those cases, label qualified_y, tensors from windows/*.npz (as B0)",
+    "sealed": "never opened (as B0, asserted, counts in receipt)",
+    "outer_folds": "dev_fold 0..4 from the split file"
+  },
+  "features_and_recipe": "130-dim stats() and HistGradientBoostingClassifier(max_iter=400, learning_rate=0.05, max_leaf_nodes=31, l2_regularization=1.0, random_state=0) exactly as B0; no search",
+  "arms": {
+    "S": "frozen artifacts/ens_internal_test_v1_20261105/gbt_full_train.pkl (sha256 df468524...6774); reference only, no selection, event onset 0.95 descriptive",
+    "R": "Real training-fold windows only; weights as B0 arm R (fault 1; normal total = number of normal windows, 50/50 between normal_origin normal_flight and normal_part_of_fault_case)",
+    "S_plus_R": "source train windows (cache/train.pt, 162069 windows, gbt_full_train weights) + Real training-fold windows with arm-R weights rescaled so that Real total weight = source total weight; one fit, no weight grid"
+  },
+  "learning_curve": {
+    "fractions": [0.10, 0.25, 0.50, 1.00],
+    "subsets": "within each outer training set, groups are ordered per stratum family key (motor / sensor / normal_full / normal_segment) by sha256('real_v2_b1|' + rep + '|' + group) and the first ceil(fraction x n) groups are taken; nested across fractions within a repeat",
+    "repeats": "rep 0..4 for fractions < 1.0; a single fit at 1.0",
+    "same_subset_for_R_and_S_plus_R": true
+  },
+  "window_metrics": {
+    "per_arm_fraction_repeat": "pooled outer-OOF: AP (fault vs all normal), AUC (fault vs pre_fault), normal FPR per normal population at the threshold giving pooled fault recall 0.8 (descriptive)",
+    "H1": "delta AP = AP(S+R) - AP(R), mean over the 5 repeats at fraction 0.25; association-group cluster bootstrap over dev groups (2000, rng 20261108), resampling groups and recomputing the repeat-mean delta. H1 holds if the CI lower bound > 0. Same statistic at 0.10, 0.50 and 1.00 reported descriptively"
+  },
+  "event_level": {
+    "fractions": "1.00 only (arms R and S+R); S at onset 0.95 descriptive",
+    "frame_scoring": "continuous replay of every non-sealed, non-quarantine dev case from cases/*.npz with case_windows (window end every valid frame), stats() and the relevant model; features may be cached once per case",
+    "policy": "OnlineDetectionPolicy inference_every 1, clear 0.40, k_on 3, k_off 3, min_event 0.5 s, merge 0.5 s; aggregate_scores; onset grid 0.45, 0.50, ..., 0.95",
+    "definitions": {
+      "normal_time": "row_label_valid & reference_state == 0 & scored",
+      "false_event": "finalized event lying entirely in normal_time (as ens_event_threshold.py)",
+      "N1_rate": "false events in N1 normal_full flights / their normal_time hours",
+      "N2_rate": "false events in fault cases that end before the reference onset / normal_time hours before onset in fault cases",
+      "post_fault_false_events": "false events in fault cases after the reference onset (descriptive)",
+      "detected": "fault case with a confirmation whose candidate_start >= reference onset; denominator = fault cases with scored frames after onset; per family motor / sensor",
+      "latency": "first such confirmation time - onset; median and P90 per family (descriptive)"
+    },
+    "inner_selection": "for each outer fold k and arm: fit one model per inner fold j != k on the other three training folds (same arm recipe, fraction 1.0), score fold j cases -> inner OOF frames over the 4 training folds. Feasible onset: inner-OOF detection >= 0.80 for motor and for sensor. Choose the feasible onset with the lowest pooled (N1 + N2 false events) / (N1 + N2 normal hours); ties -> more detected, then lower onset. If none is feasible: take the onset maximising min(motor, sensor detection), flag 'no_feasible_onset' for that fold; no other fallback",
+    "outer_evaluation": "outer fold k cases are scored by the arm's fold-k model (fit on all four training folds) at the onset chosen for fold k; results pooled over the 5 folds",
+    "H2": "for an arm, H2 holds if pooled outer N1_rate <= 5.5 and N2_rate <= 5.5 false events/h and detection >= 0.80 for motor and >= 0.80 for sensor (point values). H2 is evaluated for S+R and R separately; the line 'H2 holds' if at least one arm passes. Association-group bootstrap CIs (2000, rng 20261108) reported for the four quantities, not used for the verdict"
+  },
+  "descriptive": [
+    "learning-curve table and plot data: arm x fraction x repeat window metrics",
+    "per outer fold: chosen onset, feasibility, inner-OOF rates",
+    "N1, N2 separately by flight directory; supplemental segments and post-fault false events",
+    "per-case paired fault vs pre_fault AUC distribution for R and S+R at 1.0 (session check)",
+    "S at onset 0.95 on the same dev cases (N1, N2, detection)",
+    "fit receipts: n_iter_, fit time, training window counts per fit"
+  ],
+  "consequences": {
+    "H1_and_H2": "propose B2 (T1 MSTCA source retraining + Real fine-tuning) to the user",
+    "H2_only": "Real-supervised detection is usable but source pretraining adds no measurable value at this budget; report, user decides whether T1 is still worth GPU",
+    "H2_fails": "report which condition fails; no B2; back to data / label level with the user"
+  },
+  "not_allowed": [
+    "opening sealed-partition files or computing on sealed rows",
+    "changing fractions, repeats, weights, grid, policy, thresholds, selection rule or criteria after any result",
+    "choosing onset on outer folds",
+    "internal test; M0/MSTCA; GPU; T1 training; starting B2",
+    "relabelling or excluding cases after seeing results"
+  ],
+  "outputs": "artifacts/real_v2_b1_learning_curve/ (receipt.json, results.json, window_metrics.csv, onset_selection.csv, events_per_case.csv, run.log, execution_notes.md); script scripts/research/real_v2_b1_learning_curve.py; report docs/research/2026-11-08/跨域B1学习曲线结果_v1.md. Models and frame scores stay local, sha256 in the receipt."
+}
