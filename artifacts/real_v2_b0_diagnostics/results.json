@@ -1,0 +1,3133 @@
+{
+  "status": "COMPLETE",
+  "protocol": "configs\\experiments\\real_v2_b0_diagnostics.json",
+  "config_sha256": "40c3df7cbf36c8587d2aa7398631af3b4e4f4efffc1fb21ae79945290d78fd17",
+  "startup": {
+    "dev_before_quarantine": 320,
+    "dev_quarantine": 5,
+    "eligible_cases": 315,
+    "eligible_groups": 288,
+    "split_sha256": "9232ee35e7a59f4fac4534fc8e98fc454380b51e6e5d8439aaa0f769cd1090ee"
+  },
+  "source_model_sha256": "df468524e2047205dd8422ab3e486ce7692f0ac312276e20394d6f88a1bb6774",
+  "windows": 18480,
+  "reproduction_gate": {
+    "cases": 13,
+    "all_match": true,
+    "rows": [
+      {
+        "case_uid": "REAL/acce/no_fault/451_1",
+        "windows": 59,
+        "S_ge05": 59,
+        "expected_windows": 59,
+        "expected_S_ge05": 59,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/acce/no_fault/456_1",
+        "windows": 64,
+        "S_ge05": 64,
+        "expected_windows": 64,
+        "expected_S_ge05": 64,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/acce/no_fault/457_1",
+        "windows": 60,
+        "S_ge05": 60,
+        "expected_windows": 60,
+        "expected_S_ge05": 60,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/circling/no_fault/400_1",
+        "windows": 61,
+        "S_ge05": 61,
+        "expected_windows": 61,
+        "expected_S_ge05": 61,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/circling/no_fault/405_1",
+        "windows": 59,
+        "S_ge05": 59,
+        "expected_windows": 59,
+        "expected_S_ge05": 59,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/hover/no_fault/102_1",
+        "windows": 60,
+        "S_ge05": 60,
+        "expected_windows": 60,
+        "expected_S_ge05": 60,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/hover/no_fault/107_1",
+        "windows": 60,
+        "S_ge05": 60,
+        "expected_windows": 60,
+        "expected_S_ge05": 60,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/velocity/no_fault/321_1",
+        "windows": 60,
+        "S_ge05": 59,
+        "expected_windows": 60,
+        "expected_S_ge05": 59,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/velocity/no_fault/322_1",
+        "windows": 59,
+        "S_ge05": 59,
+        "expected_windows": 59,
+        "expected_S_ge05": 59,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/velocity/no_fault/325_1",
+        "windows": 54,
+        "S_ge05": 54,
+        "expected_windows": 54,
+        "expected_S_ge05": 54,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/waypoint/no_fault/236_1",
+        "windows": 61,
+        "S_ge05": 61,
+        "expected_windows": 61,
+        "expected_S_ge05": 61,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/waypoint/no_fault/241_1",
+        "windows": 61,
+        "S_ge05": 61,
+        "expected_windows": 61,
+        "expected_S_ge05": 61,
+        "pass": true
+      },
+      {
+        "case_uid": "REAL/waypoint/no_fault/243_1",
+        "windows": 61,
+        "S_ge05": 61,
+        "expected_windows": 61,
+        "expected_S_ge05": 61,
+        "pass": true
+      }
+    ]
+  },
+  "B0_1": {
+    "main": {
+      "auc": 0.9715802769731987,
+      "ci95": [
+        0.9484457592321721,
+        0.9877119501757732
+      ],
+      "undefined_replicates": 0
+    },
+    "sensitivity_far": {
+      "auc": 0.9738791956852213,
+      "ci95": [
+        0.9510230790692755,
+        0.9891738702580156
+      ],
+      "undefined_replicates": 0
+    },
+    "near_only_descriptive": {
+      "auc": 0.9621449127312368,
+      "ci95": [
+        0.934883548887172,
+        0.9838122819439684
+      ],
+      "undefined_replicates": 0
+    },
+    "near_windows_removed": 1314,
+    "near_cases": 264,
+    "far_windows": 5393,
+    "far_cases": 265,
+    "no_refit_supplement1": true,
+    "by_flight": {
+      "acce": {
+        "auc": 0.957858492290816,
+        "ci95": null,
+        "undefined_replicates": 6
+      },
+      "circling": {
+        "auc": 0.9808644759381955,
+        "ci95": null,
+        "undefined_replicates": 7
+      },
+      "hover": {
+        "auc": 0.9941402327367239,
+        "ci95": null,
+        "undefined_replicates": 1
+      },
+      "velocity": {
+        "auc": 0.92909549689441,
+        "ci95": [
+          0.8262266658941775,
+          0.989208911364664
+        ],
+        "undefined_replicates": 0
+      },
+      "waypoint": {
+        "auc": 0.9898809523809524,
+        "ci95": null,
+        "undefined_replicates": 4
+      }
+    },
+    "source_probability": {
+      "normal_full": {
+        "windows": 1931,
+        "cases": 32,
+        "median": 0.999712787991207,
+        "share_ge03744": 1.0,
+        "share_ge05": 0.9989642672190575
+      },
+      "pre_fault": {
+        "windows": 6707,
+        "cases": 265,
+        "median": 0.9980324505889617,
+        "share_ge03744": 0.9982108245117042,
+        "share_ge05": 0.9964216490234084
+      }
+    },
+    "interpretation": "strong"
+  },
+  "B0_2": {
+    "R": {
+      "pooled": {
+        "a": {
+          "auc": 0.9701158424272517,
+          "ci95": [
+            0.9621535128257097,
+            0.977136415692267
+          ],
+          "undefined_replicates": 0
+        },
+        "b": {
+          "auc": 0.9750560710005208,
+          "ci95": [
+            0.9676835932584003,
+            0.9815612777984334
+          ],
+          "undefined_replicates": 0
+        },
+        "c": {
+          "auc": 0.9717940937652095,
+          "ci95": [
+            0.9606337154346557,
+            0.9814988640492989
+          ],
+          "undefined_replicates": 0
+        },
+        "AP_a": 0.9498429507546189,
+        "c_minus_b": -0.0032619772353112975
+      },
+      "motor": {
+        "a": {
+          "auc": 0.9809877509827942,
+          "ci95": [
+            0.9729807235608826,
+            0.986847851017993
+          ],
+          "undefined_replicates": 0
+        },
+        "b": {
+          "auc": 0.983834104406349,
+          "ci95": [
+            0.9766323440075946,
+            0.9892030813608027
+          ],
+          "undefined_replicates": 0
+        },
+        "c": {
+          "auc": 0.982123147487014,
+          "ci95": [
+            0.9734192465678277,
+            0.9889138657619218
+          ],
+          "undefined_replicates": 0
+        },
+        "AP_a": 0.9558775826997601,
+        "c_minus_b": -0.0017109569193349827
+      },
+      "sensor": {
+        "a": {
+          "auc": 0.9576359812826614,
+          "ci95": [
+            0.9445008079968866,
+            0.9692513084012772
+          ],
+          "undefined_replicates": 0
+        },
+        "b": {
+          "auc": 0.9649797686229165,
+          "ci95": [
+            0.9526582595932369,
+            0.9753848909634597
+          ],
+          "undefined_replicates": 0
+        },
+        "c": {
+          "auc": 0.9599373755501343,
+          "ci95": [
+            0.942385858481472,
+            0.9752015567545178
+          ],
+          "undefined_replicates": 0
+        },
+        "AP_a": 0.8560202045700913,
+        "c_minus_b": -0.005042393072782203
+      },
+      "FPR_at_recall": {
+        "0.5": {
+          "requested_recall": 0.5,
+          "threshold": 0.9688136598089391,
+          "actual_recall": 0.5000821692686935,
+          "comparison": ">=; highest fault-score order statistic meeting requested recall, ties retained",
+          "normal_FPR": {
+            "normal_full": 0.0005178663904712584,
+            "normal_segment": 0.0,
+            "pre_fault": 0.001490979573579842,
+            "post_fault_normal": 0.002861230329041488,
+            "transition_normal": 0.007927519818799546
+          },
+          "normal_windows": {
+            "normal_full": 1931,
+            "normal_segment": 777,
+            "pre_fault": 6707,
+            "post_fault_normal": 2097,
+            "transition_normal": 883
+          }
+        },
+        "0.8": {
+          "requested_recall": 0.8,
+          "threshold": 0.5709344777577784,
+          "actual_recall": 0.8,
+          "comparison": ">=; highest fault-score order statistic meeting requested recall, ties retained",
+          "normal_FPR": {
+            "normal_full": 0.033661315380631794,
+            "normal_segment": 0.010296010296010296,
+            "pre_fault": 0.02803041598330103,
+            "post_fault_normal": 0.03338102050548403,
+            "transition_normal": 0.08380520951302378
+          },
+          "normal_windows": {
+            "normal_full": 1931,
+            "normal_segment": 777,
+            "pre_fault": 6707,
+            "post_fault_normal": 2097,
+            "transition_normal": 883
+          }
+        }
+      }
+    },
+    "S": {
+      "pooled": {
+        "a": {
+          "auc": 0.6660657360778776,
+          "ci95": [
+            0.6357374852255575,
+            0.6977247547776728
+          ],
+          "undefined_replicates": 0
+        },
+        "b": {
+          "auc": 0.7571190109206597,
+          "ci95": [
+            0.7307948721444002,
+            0.7852801659386626
+          ],
+          "undefined_replicates": 0
+        },
+        "c": {
+          "auc": 0.619568726643355,
+          "ci95": [
+            0.5603641457762695,
+            0.6751996927539896
+          ],
+          "undefined_replicates": 0
+        },
+        "AP_a": 0.5107737165599988,
+        "c_minus_b": -0.13755028427730465
+      },
+      "motor": {
+        "a": {
+          "auc": 0.7325157398407385,
+          "ci95": [
+            0.6982860102326173,
+            0.7656356392057864
+          ],
+          "undefined_replicates": 0
+        },
+        "b": {
+          "auc": 0.8161756979132337,
+          "ci95": [
+            0.7849838739877537,
+            0.8454022421235933
+          ],
+          "undefined_replicates": 0
+        },
+        "c": {
+          "auc": 0.6944708267245154,
+          "ci95": [
+            0.6330781280822627,
+            0.7502848219022688
+          ],
+          "undefined_replicates": 0
+        },
+        "AP_a": 0.43183361757176497,
+        "c_minus_b": -0.12170487118871831
+      },
+      "sensor": {
+        "a": {
+          "auc": 0.5897877931774809,
+          "ci95": [
+            0.5426039321419468,
+            0.6375136331116802
+          ],
+          "undefined_replicates": 0
+        },
+        "b": {
+          "auc": 0.6893278545140762,
+          "ci95": [
+            0.6455424563542549,
+            0.731578375481807
+          ],
+          "undefined_replicates": 0
+        },
+        "c": {
+          "auc": 0.5335886244675931,
+          "ci95": [
+            0.4600827374171861,
+            0.6060161414080414
+          ],
+          "undefined_replicates": 0
+        },
+        "AP_a": 0.27366406385754816,
+        "c_minus_b": -0.15573923004648305
+      },
+      "FPR_at_recall": {
+        "0.5": {
+          "requested_recall": 0.5,
+          "threshold": 0.9998346294542265,
+          "actual_recall": 0.5000821692686935,
+          "comparison": ">=; highest fault-score order statistic meeting requested recall, ties retained",
+          "normal_FPR": {
+            "normal_full": 0.39927498705334025,
+            "normal_segment": 0.1583011583011583,
+            "pre_fault": 0.13642463098255553,
+            "post_fault_normal": 0.463519313304721,
+            "transition_normal": 0.5753114382785957
+          },
+          "normal_windows": {
+            "normal_full": 1931,
+            "normal_segment": 777,
+            "pre_fault": 6707,
+            "post_fault_normal": 2097,
+            "transition_normal": 883
+          }
+        },
+        "0.8": {
+          "requested_recall": 0.8,
+          "threshold": 0.9982026988922911,
+          "actual_recall": 0.8,
+          "comparison": ">=; highest fault-score order statistic meeting requested recall, ties retained",
+          "normal_FPR": {
+            "normal_full": 0.7628171931641636,
+            "normal_segment": 0.6138996138996139,
+            "pre_fault": 0.48427016549873264,
+            "post_fault_normal": 0.8140200286123033,
+            "transition_normal": 0.9026047565118913
+          },
+          "normal_windows": {
+            "normal_full": 1931,
+            "normal_segment": 777,
+            "pre_fault": 6707,
+            "post_fault_normal": 2097,
+            "transition_normal": 883
+          }
+        }
+      }
+    }
+  },
+  "B1": {
+    "recommendation": "GO",
+    "not_supported_in_B1": [],
+    "automatic_B1_launch": false
+  },
+  "B0_3": {
+    "cases_by_family": {
+      "motor": 154,
+      "normal": 50,
+      "sensor": 111
+    },
+    "windows_by_family_phase_label": [
+      {
+        "family": "motor",
+        "phase": "post_fault_normal",
+        "qualified_y": 0,
+        "windows": 1414
+      },
+      {
+        "family": "motor",
+        "phase": "pre_fault",
+        "qualified_y": 0,
+        "windows": 3749
+      },
+      {
+        "family": "motor",
+        "phase": "stable_fault",
+        "qualified_y": 1,
+        "windows": 2804
+      },
+      {
+        "family": "motor",
+        "phase": "transition",
+        "qualified_y": 0,
+        "windows": 749
+      },
+      {
+        "family": "motor",
+        "phase": "transition",
+        "qualified_y": 1,
+        "windows": 448
+      },
+      {
+        "family": "normal",
+        "phase": "normal_flight",
+        "qualified_y": 0,
+        "windows": 2708
+      },
+      {
+        "family": "sensor",
+        "phase": "post_fault_normal",
+        "qualified_y": 0,
+        "windows": 683
+      },
+      {
+        "family": "sensor",
+        "phase": "pre_fault",
+        "qualified_y": 0,
+        "windows": 2958
+      },
+      {
+        "family": "sensor",
+        "phase": "stable_fault",
+        "qualified_y": 1,
+        "windows": 2498
+      },
+      {
+        "family": "sensor",
+        "phase": "transition",
+        "qualified_y": 0,
+        "windows": 134
+      },
+      {
+        "family": "sensor",
+        "phase": "transition",
+        "qualified_y": 1,
+        "windows": 335
+      }
+    ],
+    "fault_cases_without_pre_fault_windows": {
+      "motor": 0,
+      "sensor": 0
+    },
+    "cases_without_pre_fault_windows_by_family": {
+      "motor": 0,
+      "normal": 50,
+      "sensor": 0
+    },
+    "pre_fault_length_s": {
+      "family": {
+        "motor": {
+          "cases": 154,
+          "defined": 154,
+          "missing": 0,
+          "min": 12.94,
+          "q25": 20.125,
+          "median": 35.69,
+          "q75": 55.160000000000004,
+          "max": 105.36
+        },
+        "sensor": {
+          "cases": 111,
+          "defined": 111,
+          "missing": 0,
+          "min": 12.9,
+          "q25": 20.0,
+          "median": 20.62,
+          "q75": 55.1,
+          "max": 63.940000000000005
+        }
+      },
+      "flight": {
+        "acce": {
+          "cases": 27,
+          "defined": 27,
+          "missing": 0,
+          "min": 18.240000000000002,
+          "q25": 18.67,
+          "median": 19.6,
+          "q75": 20.21,
+          "max": 20.7
+        },
+        "circling": {
+          "cases": 49,
+          "defined": 49,
+          "missing": 0,
+          "min": 35.1,
+          "q25": 54.4,
+          "median": 55.02,
+          "q75": 55.28,
+          "max": 63.940000000000005
+        },
+        "hover": {
+          "cases": 65,
+          "defined": 65,
+          "missing": 0,
+          "min": 19.68,
+          "q25": 20.0,
+          "median": 20.28,
+          "q75": 20.48,
+          "max": 56.68
+        },
+        "velocity": {
+          "cases": 42,
+          "defined": 42,
+          "missing": 0,
+          "min": 12.9,
+          "q25": 13.045000000000002,
+          "median": 16.42,
+          "q75": 20.115000000000002,
+          "max": 30.580000000000002
+        },
+        "waypoint": {
+          "cases": 82,
+          "defined": 82,
+          "missing": 0,
+          "min": 54.32,
+          "q25": 54.92,
+          "median": 55.17,
+          "q75": 55.355000000000004,
+          "max": 105.36
+        }
+      },
+      "family_flight": {
+        "motor/acce": {
+          "cases": 15,
+          "defined": 15,
+          "missing": 0,
+          "min": 18.64,
+          "q25": 20.009999999999998,
+          "median": 20.16,
+          "q75": 20.520000000000003,
+          "max": 20.7
+        },
+        "motor/circling": {
+          "cases": 31,
+          "defined": 31,
+          "missing": 0,
+          "min": 35.1,
+          "q25": 45.08,
+          "median": 54.620000000000005,
+          "q75": 55.17,
+          "max": 56.04
+        },
+        "motor/hover": {
+          "cases": 29,
+          "defined": 29,
+          "missing": 0,
+          "min": 19.68,
+          "q25": 19.88,
+          "median": 20.28,
+          "q75": 20.38,
+          "max": 21.42
+        },
+        "motor/velocity": {
+          "cases": 28,
+          "defined": 28,
+          "missing": 0,
+          "min": 12.94,
+          "q25": 13.075,
+          "median": 13.4,
+          "q75": 20.225,
+          "max": 30.580000000000002
+        },
+        "motor/waypoint": {
+          "cases": 51,
+          "defined": 51,
+          "missing": 0,
+          "min": 54.54,
+          "q25": 54.92,
+          "median": 55.22,
+          "q75": 55.510000000000005,
+          "max": 105.36
+        },
+        "sensor/acce": {
+          "cases": 12,
+          "defined": 12,
+          "missing": 0,
+          "min": 18.240000000000002,
+          "q25": 18.380000000000003,
+          "median": 18.67,
+          "q75": 19.005,
+          "max": 19.6
+        },
+        "sensor/circling": {
+          "cases": 18,
+          "defined": 18,
+          "missing": 0,
+          "min": 54.36,
+          "q25": 55.02,
+          "median": 55.260000000000005,
+          "q75": 55.415,
+          "max": 63.940000000000005
+        },
+        "sensor/hover": {
+          "cases": 36,
+          "defined": 36,
+          "missing": 0,
+          "min": 19.8,
+          "q25": 20.04,
+          "median": 20.3,
+          "q75": 20.505,
+          "max": 56.68
+        },
+        "sensor/velocity": {
+          "cases": 14,
+          "defined": 14,
+          "missing": 0,
+          "min": 12.9,
+          "q25": 13.004999999999999,
+          "median": 19.51,
+          "q75": 19.92,
+          "max": 20.34
+        },
+        "sensor/waypoint": {
+          "cases": 31,
+          "defined": 31,
+          "missing": 0,
+          "min": 54.32,
+          "q25": 54.93,
+          "median": 55.1,
+          "q75": 55.21,
+          "max": 55.5
+        }
+      }
+    },
+    "special_phase_cases": {
+      "post_fault_normal": [
+        {
+          "case_uid": "REAL/acce/GPS/449_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/acce/barometer/439_1",
+          "windows": 23
+        },
+        {
+          "case_uid": "REAL/acce/barometer/440_1",
+          "windows": 23
+        },
+        {
+          "case_uid": "REAL/acce/gyroscope/437_1",
+          "windows": 17
+        },
+        {
+          "case_uid": "REAL/acce/gyroscope/438_1",
+          "windows": 24
+        },
+        {
+          "case_uid": "REAL/acce/magnetometer/445_1",
+          "windows": 19
+        },
+        {
+          "case_uid": "REAL/acce/motor/408_1",
+          "windows": 25
+        },
+        {
+          "case_uid": "REAL/acce/motor/409_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/acce/motor/416_1",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/acce/motor/419_1",
+          "windows": 24
+        },
+        {
+          "case_uid": "REAL/acce/motor/422_1",
+          "windows": 26
+        },
+        {
+          "case_uid": "REAL/acce/motor/425_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/circling/GPS/390_1",
+          "windows": 15
+        },
+        {
+          "case_uid": "REAL/circling/GPS/392_1",
+          "windows": 17
+        },
+        {
+          "case_uid": "REAL/circling/GPS/392_2",
+          "windows": 19
+        },
+        {
+          "case_uid": "REAL/circling/GPS/394_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/circling/barometer/383_2",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/circling/gyroscope/372_1",
+          "windows": 14
+        },
+        {
+          "case_uid": "REAL/circling/gyroscope/375_1",
+          "windows": 14
+        },
+        {
+          "case_uid": "REAL/circling/gyroscope/376_1",
+          "windows": 15
+        },
+        {
+          "case_uid": "REAL/circling/gyroscope/377_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/circling/magnetometer/385_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/circling/magnetometer/386_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/circling/magnetometer/388_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/circling/motor/326_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/circling/motor/326_2",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/circling/motor/327_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/circling/motor/327_2",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/circling/motor/329_2",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/motor/331_1",
+          "windows": 17
+        },
+        {
+          "case_uid": "REAL/circling/motor/331_2",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/circling/motor/332_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/circling/motor/332_2",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/circling/motor/333_1",
+          "windows": 25
+        },
+        {
+          "case_uid": "REAL/circling/motor/333_2",
+          "windows": 17
+        },
+        {
+          "case_uid": "REAL/circling/motor/334_1",
+          "windows": 31
+        },
+        {
+          "case_uid": "REAL/circling/motor/334_2",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/circling/motor/335_1",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/circling/motor/336_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/circling/motor/339_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/circling/motor/340_1",
+          "windows": 21
+        },
+        {
+          "case_uid": "REAL/circling/motor/341_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/circling/motor/344_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/circling/motor/345_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/motor/347_1",
+          "windows": 23
+        },
+        {
+          "case_uid": "REAL/circling/motor/350_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/circling/motor/353_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/motor/355_1",
+          "windows": 28
+        },
+        {
+          "case_uid": "REAL/circling/motor/357_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/circling/motor/362_1",
+          "windows": 14
+        },
+        {
+          "case_uid": "REAL/circling/motor/364_1",
+          "windows": 24
+        },
+        {
+          "case_uid": "REAL/hover/GPS/92_1",
+          "windows": 22
+        },
+        {
+          "case_uid": "REAL/hover/GPS/96_2",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/barometer/73_1",
+          "windows": 14
+        },
+        {
+          "case_uid": "REAL/hover/barometer/76_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/hover/barometer/76_2",
+          "windows": 34
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/61_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/63_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/64_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/65_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/70_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/hover/motor/10_1",
+          "windows": 17
+        },
+        {
+          "case_uid": "REAL/hover/motor/11_1",
+          "windows": 15
+        },
+        {
+          "case_uid": "REAL/hover/motor/13_1",
+          "windows": 14
+        },
+        {
+          "case_uid": "REAL/hover/motor/14_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/hover/motor/16_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/hover/motor/20_1",
+          "windows": 20
+        },
+        {
+          "case_uid": "REAL/hover/motor/22_1",
+          "windows": 24
+        },
+        {
+          "case_uid": "REAL/hover/motor/26_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/hover/motor/28_1",
+          "windows": 20
+        },
+        {
+          "case_uid": "REAL/hover/motor/29_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/hover/motor/30_1",
+          "windows": 17
+        },
+        {
+          "case_uid": "REAL/hover/motor/32_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/hover/motor/34_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/motor/8_1",
+          "windows": 18
+        },
+        {
+          "case_uid": "REAL/hover/motor/9_1",
+          "windows": 21
+        },
+        {
+          "case_uid": "REAL/velocity/GPS/310_1",
+          "windows": 19
+        },
+        {
+          "case_uid": "REAL/velocity/GPS/312_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/velocity/accelerometer/289_1",
+          "windows": 15
+        },
+        {
+          "case_uid": "REAL/velocity/gyroscope/296_1",
+          "windows": 19
+        },
+        {
+          "case_uid": "REAL/velocity/gyroscope/297_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/velocity/magnetometer/306_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/velocity/magnetometer/309_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/velocity/motor/246_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/velocity/motor/249_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/velocity/motor/250_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/velocity/motor/252_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/velocity/motor/254_1",
+          "windows": 23
+        },
+        {
+          "case_uid": "REAL/velocity/motor/255_1",
+          "windows": 29
+        },
+        {
+          "case_uid": "REAL/velocity/motor/259_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/velocity/motor/260_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/velocity/motor/262_1",
+          "windows": 22
+        },
+        {
+          "case_uid": "REAL/velocity/motor/263_1",
+          "windows": 14
+        },
+        {
+          "case_uid": "REAL/velocity/motor/267_1",
+          "windows": 29
+        },
+        {
+          "case_uid": "REAL/velocity/motor/273_1",
+          "windows": 32
+        },
+        {
+          "case_uid": "REAL/velocity/motor/275_1",
+          "windows": 15
+        },
+        {
+          "case_uid": "REAL/velocity/motor/277_1",
+          "windows": 41
+        },
+        {
+          "case_uid": "REAL/velocity/motor/282_1",
+          "windows": 17
+        },
+        {
+          "case_uid": "REAL/waypoint/GPS/226_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/waypoint/GPS/227_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/waypoint/GPS/230_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/waypoint/GPS/233_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/waypoint/GPS/235_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/waypoint/barometer/213_1",
+          "windows": 19
+        },
+        {
+          "case_uid": "REAL/waypoint/barometer/215_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/196_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/196_2",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/201_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/202_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/203_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/205_1",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/216_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/217_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/218_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/220_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/221_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/223_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/225_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/112_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/116_1",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/117_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/118_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/122_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/123_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/124_1",
+          "windows": 17
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/131_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/135_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/140_1",
+          "windows": 25
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/145_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/147_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/151_1",
+          "windows": 22
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/152_1",
+          "windows": 22
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/153_1",
+          "windows": 21
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/154_1",
+          "windows": 21
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/155_1",
+          "windows": 22
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/156_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/159_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/162_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/163_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/165_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/166_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/167_1",
+          "windows": 17
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/168_1",
+          "windows": 19
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/170_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/171_2",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/172_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/173_2",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/174_2",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/175_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/177_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/181_1",
+          "windows": 18
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/183_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/184_1",
+          "windows": 25
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/185_1",
+          "windows": 7
+        }
+      ],
+      "transition": [
+        {
+          "case_uid": "REAL/acce/GPS/447_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/acce/GPS/448_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/acce/GPS/449_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/acce/barometer/439_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/acce/barometer/440_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/acce/barometer/441_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/acce/barometer/442_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/acce/gyroscope/435_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/acce/gyroscope/437_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/acce/gyroscope/438_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/acce/magnetometer/445_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/acce/magnetometer/446_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/acce/motor/407_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/acce/motor/408_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/acce/motor/409_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/acce/motor/412_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/acce/motor/413_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/acce/motor/414_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/acce/motor/416_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/acce/motor/416_2",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/acce/motor/419_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/acce/motor/422_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/acce/motor/423_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/acce/motor/425_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/acce/motor/426_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/acce/motor/428_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/acce/motor/429_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/circling/GPS/390_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/GPS/392_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/GPS/392_2",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/GPS/394_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/circling/accelerometer/369_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/barometer/378_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/barometer/379_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/barometer/380_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/barometer/383_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/circling/barometer/383_2",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/gyroscope/372_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/gyroscope/375_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/gyroscope/376_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/gyroscope/377_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/magnetometer/385_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/magnetometer/386_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/magnetometer/388_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/motor/326_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/motor/326_2",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/motor/327_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/circling/motor/327_2",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/motor/329_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/circling/motor/329_2",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/circling/motor/331_1",
+          "windows": 23
+        },
+        {
+          "case_uid": "REAL/circling/motor/331_2",
+          "windows": 15
+        },
+        {
+          "case_uid": "REAL/circling/motor/332_1",
+          "windows": 25
+        },
+        {
+          "case_uid": "REAL/circling/motor/332_2",
+          "windows": 15
+        },
+        {
+          "case_uid": "REAL/circling/motor/333_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/circling/motor/333_2",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/circling/motor/334_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/motor/334_2",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/circling/motor/335_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/motor/336_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/motor/338_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/motor/339_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/circling/motor/340_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/circling/motor/341_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/circling/motor/344_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/motor/345_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/motor/347_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/circling/motor/350_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/circling/motor/353_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/motor/354_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/circling/motor/355_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/circling/motor/357_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/circling/motor/358_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/circling/motor/362_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/circling/motor/364_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/hover/GPS/92_1",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/hover/GPS/94_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/hover/GPS/95_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/GPS/96_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/GPS/96_2",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/hover/GPS/97_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/GPS/97_2",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/GPS/97_3",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/hover/accelerometer/56_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/accelerometer/60_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/hover/barometer/72_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/hover/barometer/73_1",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/hover/barometer/74_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/hover/barometer/76_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/hover/barometer/76_2",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/barometer/76_3",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/hover/barometer/77_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/hover/barometer/77_2",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/hover/barometer/78_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/barometer/79_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/61_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/63_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/64_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/65_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/67_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/68_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/68_2",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/69_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/gyroscope/70_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/hover/magnetometer/82_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/hover/magnetometer/83_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/magnetometer/85_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/magnetometer/86_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/magnetometer/89_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/magnetometer/90_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/motor/10_1",
+          "windows": 24
+        },
+        {
+          "case_uid": "REAL/hover/motor/11_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/motor/13_1",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/hover/motor/14_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/motor/16_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/hover/motor/17_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/motor/1_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/motor/20_1",
+          "windows": 27
+        },
+        {
+          "case_uid": "REAL/hover/motor/21_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/hover/motor/22_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/motor/23_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/hover/motor/23_2",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/hover/motor/26_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/motor/28_1",
+          "windows": 25
+        },
+        {
+          "case_uid": "REAL/hover/motor/29_1",
+          "windows": 36
+        },
+        {
+          "case_uid": "REAL/hover/motor/2_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/motor/30_1",
+          "windows": 26
+        },
+        {
+          "case_uid": "REAL/hover/motor/32_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/hover/motor/33_1",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/hover/motor/34_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/motor/35_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/motor/36_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/hover/motor/3_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/motor/4_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/hover/motor/6_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/hover/motor/7_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/hover/motor/7_2",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/hover/motor/8_1",
+          "windows": 26
+        },
+        {
+          "case_uid": "REAL/hover/motor/9_1",
+          "windows": 26
+        },
+        {
+          "case_uid": "REAL/velocity/GPS/310_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/velocity/GPS/312_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/velocity/accelerometer/287_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/velocity/accelerometer/288_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/velocity/accelerometer/289_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/velocity/barometer/300_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/velocity/barometer/301_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/velocity/barometer/302_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/velocity/barometer/303_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/velocity/gyroscope/296_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/velocity/gyroscope/297_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/velocity/magnetometer/306_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/velocity/magnetometer/307_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/velocity/magnetometer/309_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/velocity/motor/246_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/velocity/motor/248_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/velocity/motor/249_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/velocity/motor/249_2",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/velocity/motor/250_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/velocity/motor/252_1",
+          "windows": 10
+        },
+        {
+          "case_uid": "REAL/velocity/motor/253_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/velocity/motor/254_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/velocity/motor/255_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/velocity/motor/256_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/velocity/motor/259_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/velocity/motor/260_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/velocity/motor/261_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/velocity/motor/262_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/velocity/motor/263_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/velocity/motor/264_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/velocity/motor/267_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/velocity/motor/271_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/velocity/motor/272_1",
+          "windows": 11
+        },
+        {
+          "case_uid": "REAL/velocity/motor/273_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/velocity/motor/274_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/velocity/motor/275_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/velocity/motor/277_1",
+          "windows": 5
+        },
+        {
+          "case_uid": "REAL/velocity/motor/278_1",
+          "windows": 7
+        },
+        {
+          "case_uid": "REAL/velocity/motor/280_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/velocity/motor/281_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/velocity/motor/282_1",
+          "windows": 6
+        },
+        {
+          "case_uid": "REAL/velocity/motor/284_1",
+          "windows": 9
+        },
+        {
+          "case_uid": "REAL/waypoint/GPS/226_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/waypoint/GPS/227_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/waypoint/GPS/230_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/GPS/233_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/waypoint/GPS/235_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/accelerometer/186_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/accelerometer/188_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/accelerometer/195_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/barometer/206_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/barometer/207_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/barometer/208_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/barometer/210_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/barometer/213_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/barometer/215_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/barometer/215_2",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/196_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/196_2",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/198_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/199_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/200_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/201_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/202_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/203_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/gyroscope/205_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/216_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/217_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/218_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/220_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/221_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/223_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/magnetometer/225_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/112_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/114_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/116_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/117_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/117_2",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/118_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/120_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/122_1",
+          "windows": 17
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/123_1",
+          "windows": 15
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/124_1",
+          "windows": 12
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/127_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/131_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/132_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/133_1",
+          "windows": 4
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/134_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/135_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/140_1",
+          "windows": 14
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/144_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/145_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/147_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/150_2",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/151_1",
+          "windows": 14
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/152_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/153_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/154_1",
+          "windows": 8
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/155_1",
+          "windows": 15
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/156_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/157_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/159_1",
+          "windows": 1
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/162_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/163_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/164_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/165_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/166_1",
+          "windows": 19
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/167_1",
+          "windows": 18
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/168_1",
+          "windows": 18
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/170_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/171_2",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/172_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/173_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/173_2",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/174_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/174_2",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/175_1",
+          "windows": 2
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/177_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/179_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/180_1",
+          "windows": 3
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/181_1",
+          "windows": 16
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/183_1",
+          "windows": 20
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/184_1",
+          "windows": 13
+        },
+        {
+          "case_uid": "REAL/waypoint/motor/185_1",
+          "windows": 14
+        }
+      ]
+    },
+    "normal_full_valid_exposure_h": 0.7327722222222222,
+    "fault_pre_valid_exposure_h": 2.8114166666666662,
+    "missing_onset_fault_cases": [],
+    "fold_family": [
+      {
+        "dev_fold": 0,
+        "family": "motor",
+        "cases": 32,
+        "windows": 1890
+      },
+      {
+        "dev_fold": 0,
+        "family": "normal",
+        "cases": 15,
+        "windows": 787
+      },
+      {
+        "dev_fold": 0,
+        "family": "sensor",
+        "cases": 23,
+        "windows": 1369
+      },
+      {
+        "dev_fold": 1,
+        "family": "motor",
+        "cases": 32,
+        "windows": 1914
+      },
+      {
+        "dev_fold": 1,
+        "family": "normal",
+        "cases": 12,
+        "windows": 675
+      },
+      {
+        "dev_fold": 1,
+        "family": "sensor",
+        "cases": 23,
+        "windows": 1371
+      },
+      {
+        "dev_fold": 2,
+        "family": "motor",
+        "cases": 33,
+        "windows": 1960
+      },
+      {
+        "dev_fold": 2,
+        "family": "normal",
+        "cases": 9,
+        "windows": 527
+      },
+      {
+        "dev_fold": 2,
+        "family": "sensor",
+        "cases": 20,
+        "windows": 1196
+      },
+      {
+        "dev_fold": 3,
+        "family": "motor",
+        "cases": 29,
+        "windows": 1733
+      },
+      {
+        "dev_fold": 3,
+        "family": "normal",
+        "cases": 7,
+        "windows": 358
+      },
+      {
+        "dev_fold": 3,
+        "family": "sensor",
+        "cases": 23,
+        "windows": 1359
+      },
+      {
+        "dev_fold": 4,
+        "family": "motor",
+        "cases": 28,
+        "windows": 1667
+      },
+      {
+        "dev_fold": 4,
+        "family": "normal",
+        "cases": 7,
+        "windows": 361
+      },
+      {
+        "dev_fold": 4,
+        "family": "sensor",
+        "cases": 22,
+        "windows": 1313
+      }
+    ]
+  },
+  "bootstrap": {
+    "replicates": 2000,
+    "rng_seed": 20261108,
+    "groups": 288,
+    "shared_plan": true,
+    "population": "all eligible dev association_groups; subset windows contribute according to each metric",
+    "no_pseudocount_drop_or_redraw": true
+  },
+  "normal_windows_outside_named_FPR_subsets": 0,
+  "access": {
+    "unique_window_npz": 315,
+    "window_open_calls": 315,
+    "unique_case_npz": 297,
+    "case_open_calls": 297,
+    "actual_window_files": [
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__GPS__447_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__GPS__448_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__GPS__449_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__barometer__439_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__barometer__440_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__barometer__441_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__barometer__442_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__gyroscope__435_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__gyroscope__437_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__gyroscope__438_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__magnetometer__445_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__magnetometer__446_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__407_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__408_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__409_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__412_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__413_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__414_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__416_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__416_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__419_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__422_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__423_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__425_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__426_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__428_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__429_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__451_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__452_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__455_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__456_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__457_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__460_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__GPS__390_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__GPS__392_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__GPS__392_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__GPS__394_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__accelerometer__367_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__accelerometer__369_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__barometer__378_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__barometer__379_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__barometer__380_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__barometer__383_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__barometer__383_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__gyroscope__372_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__gyroscope__373_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__gyroscope__375_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__gyroscope__376_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__gyroscope__377_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__magnetometer__385_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__magnetometer__386_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__magnetometer__388_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__magnetometer__389_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__326_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__326_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__327_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__327_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__329_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__329_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__331_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__331_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__332_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__332_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__333_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__333_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__334_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__334_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__335_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__336_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__338_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__339_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__340_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__341_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__344_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__345_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__347_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__350_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__353_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__354_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__355_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__357_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__358_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__362_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__363_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__364_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__396_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__398_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__400_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__402_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__404_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__405_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__92_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__93_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__94_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__95_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__96_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__96_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__97_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__97_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__97_3.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__accelerometer__56_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__accelerometer__60_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__72_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__73_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__74_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__76_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__76_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__76_3.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__77_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__77_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__78_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__79_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__61_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__63_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__64_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__65_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__67_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__68_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__68_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__69_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__70_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__82_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__83_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__85_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__86_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__89_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__90_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__10_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__11_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__13_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__14_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__16_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__17_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__1_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__20_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__21_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__22_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__23_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__23_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__26_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__28_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__29_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__2_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__30_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__32_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__33_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__34_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__35_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__36_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__3_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__4_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__6_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__7_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__7_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__8_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__9_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__101_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__102_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__104_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__105_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__107_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__109_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__110_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__GPS__310_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__GPS__311_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__GPS__312_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__accelerometer__287_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__accelerometer__288_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__accelerometer__289_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__accelerometer__290_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__accelerometer__291_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__barometer__300_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__barometer__301_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__barometer__302_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__barometer__303_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__gyroscope__295_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__gyroscope__296_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__gyroscope__297_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__magnetometer__305_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__magnetometer__306_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__magnetometer__307_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__magnetometer__309_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__246_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__248_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__248_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__249_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__249_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__250_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__252_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__253_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__254_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__255_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__256_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__259_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__260_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__261_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__262_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__263_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__264_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__267_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__271_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__272_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__273_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__274_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__275_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__277_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__278_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__280_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__281_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__282_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__284_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__319_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__320_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__321_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__322_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__323_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__324_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__325_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__GPS__226_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__GPS__227_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__GPS__230_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__GPS__233_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__GPS__235_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__accelerometer__186_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__accelerometer__188_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__accelerometer__189_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__accelerometer__195_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__206_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__207_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__208_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__210_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__212_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__213_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__214_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__215_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__215_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__196_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__196_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__197_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__198_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__199_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__200_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__201_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__202_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__203_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__205_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__216_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__217_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__218_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__220_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__221_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__223_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__225_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__112_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__114_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__116_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__117_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__117_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__118_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__120_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__122_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__123_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__124_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__125_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__127_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__128_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__131_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__132_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__133_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__134_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__135_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__140_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__142_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__142_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__144_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__145_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__147_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__150_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__151_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__152_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__153_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__154_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__155_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__156_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__157_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__159_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__162_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__163_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__164_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__165_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__166_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__167_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__168_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__170_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__171_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__172_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__173_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__173_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__174_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__174_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__175_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__176_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__177_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__179_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__180_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__181_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__183_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__184_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__185_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__236_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__238_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__239_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__241_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__243_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__244_1.npz"
+    ],
+    "actual_case_files": [
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__GPS__447_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__GPS__448_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__GPS__449_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__barometer__439_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__barometer__440_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__barometer__441_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__barometer__442_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__gyroscope__435_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__gyroscope__437_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__gyroscope__438_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__magnetometer__445_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__magnetometer__446_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__407_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__408_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__409_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__412_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__413_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__414_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__416_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__416_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__419_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__422_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__423_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__425_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__426_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__428_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__429_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__451_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__452_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__455_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__456_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__457_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__460_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__GPS__390_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__GPS__392_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__GPS__392_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__GPS__394_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__accelerometer__369_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__barometer__378_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__barometer__379_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__barometer__380_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__barometer__383_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__barometer__383_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__gyroscope__372_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__gyroscope__373_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__gyroscope__375_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__gyroscope__376_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__gyroscope__377_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__magnetometer__385_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__magnetometer__386_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__magnetometer__388_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__326_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__326_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__327_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__327_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__329_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__329_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__331_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__331_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__332_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__332_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__333_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__333_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__334_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__334_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__335_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__336_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__338_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__339_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__340_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__341_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__344_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__345_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__347_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__350_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__353_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__354_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__355_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__357_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__358_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__362_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__364_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__396_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__398_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__400_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__402_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__404_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__405_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__92_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__93_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__94_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__95_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__96_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__96_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__97_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__97_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__97_3.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__accelerometer__56_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__accelerometer__60_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__72_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__73_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__74_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__76_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__76_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__76_3.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__77_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__77_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__78_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__79_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__61_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__63_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__64_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__65_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__67_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__68_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__68_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__69_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__70_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__82_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__83_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__85_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__86_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__89_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__90_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__10_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__11_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__13_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__14_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__16_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__17_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__1_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__20_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__21_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__22_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__23_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__23_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__26_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__28_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__29_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__2_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__30_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__32_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__33_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__34_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__35_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__36_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__3_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__4_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__6_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__7_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__7_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__8_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__9_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__101_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__102_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__104_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__105_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__107_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__109_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__110_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__GPS__310_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__GPS__312_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__accelerometer__287_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__accelerometer__288_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__accelerometer__289_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__barometer__300_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__barometer__301_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__barometer__302_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__barometer__303_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__gyroscope__296_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__gyroscope__297_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__magnetometer__306_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__magnetometer__307_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__magnetometer__309_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__246_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__248_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__249_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__249_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__250_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__252_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__253_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__254_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__255_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__256_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__259_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__260_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__261_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__262_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__263_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__264_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__267_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__271_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__272_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__273_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__274_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__275_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__277_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__278_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__280_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__281_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__282_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__284_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__319_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__320_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__321_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__322_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__323_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__324_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__325_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__GPS__226_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__GPS__227_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__GPS__230_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__GPS__233_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__GPS__235_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__accelerometer__186_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__accelerometer__188_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__accelerometer__195_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__206_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__207_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__208_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__210_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__213_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__215_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__215_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__196_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__196_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__198_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__199_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__200_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__201_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__202_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__203_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__205_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__216_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__217_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__218_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__220_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__221_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__223_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__225_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__112_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__114_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__116_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__117_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__117_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__118_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__120_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__122_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__123_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__124_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__127_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__131_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__132_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__133_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__134_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__135_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__140_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__144_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__145_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__147_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__150_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__151_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__152_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__153_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__154_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__155_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__156_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__157_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__159_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__162_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__163_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__164_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__165_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__166_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__167_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__168_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__170_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__171_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__172_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__173_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__173_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__174_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__174_2.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__175_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__177_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__179_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__180_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__181_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__183_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__184_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__185_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__236_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__238_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__239_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__241_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__243_1.npz",
+      "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__244_1.npz"
+    ],
+    "blocked_accesses": [],
+    "eligible_only": true
+  },
+  "wall_time_s": 166.54503450001357,
+  "no_deployed_models": true,
+  "no_working_point_or_event_replay": true,
+  "sealed_not_blind_history_disclosed": true
+}
