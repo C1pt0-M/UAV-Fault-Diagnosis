@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="10" time="11.181" timestamp="2026-11-08T17:00:25.049991+08:00" hostname="Jack"><testcase classname="tests.test_gbt_event_operating_point" name="test_event_fields_equal_frozen_case_events" time="9.754"><failure message="assert 0 == 1">tmp_path = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/gbt_event_operating_point_v1_checks/pytest_scope_r1/test_event_fields_equal_frozen0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000019A7F7FAD80&gt;
+
+    def test_event_fields_equal_frozen_case_events(tmp_path, monkeypatch):
+        uid = 'SIL/hover/GPS/example'
+        times = np.arange(150, dtype=np.int64) * 20000
+        p = np.r_[np.full(30, .1), np.full(40, .9), np.full(20, .1), np.full(60, .9)].astype(np.float32)
+        p[:3] = np.nan
+        np.savez(tmp_path / (uid.replace('/', '__') + '.npz'), timestamp_us=times, m0=p, gbt=p,
+                 reference_state=np.r_[np.zeros(80), np.ones(70)].astype(np.int8), row_label_valid=np.ones(150, dtype=bool))
+        monkeypatch.setattr(g.reference, 'SCORES', tmp_path)
+        monkeypatch.setattr(g.reference, 'GRID', [.75])
+        old = g.reference.case_events(uid)
+        new = g.case_records((uid, [('M0', (.6,)), ('ENS', (.75,))], tmp_path))
+        for a, b in zip(old, new):
+            for key, value in a.items():
+                if isinstance(value, float) and np.isnan(value):
+                    assert np.isnan(b[key])
+                else:
+                    assert b[key] == value
+&gt;       assert new[0]['false_events'] == 1
+E       assert 0 == 1
+
+tests\test_gbt_event_operating_point.py:31: AssertionError</failure></testcase><testcase classname="tests.test_gbt_event_operating_point" name="test_selection_constraints_exclusion_more_detected_then_lower_onset" time="0.375" /><testcase classname="tests.test_gbt_event_operating_point" name="test_no_feasible_does_not_relax_class_or_latency[True-1.5]" time="0.172" /><testcase classname="tests.test_gbt_event_operating_point" name="test_no_feasible_does_not_relax_class_or_latency[False-1.500001]" time="0.183" /><testcase classname="tests.test_gbt_event_operating_point" name="test_paired_statistic_is_median_of_differences_not_difference_of_medians" time="0.004" /><testcase classname="tests.test_gbt_event_operating_point" name="test_no_common_detected_latency_is_unavailable" time="0.006" /><testcase classname="tests.test_gbt_event_operating_point" name="test_ev3_uses_registered_one_percent_and_flags_without_class_veto[4-True]" time="0.023" /><testcase classname="tests.test_gbt_event_operating_point" name="test_ev3_uses_registered_one_percent_and_flags_without_class_veto[5-False]" time="0.023" /><testcase classname="tests.test_gbt_event_operating_point" name="test_bootstrap_is_paired_and_does_not_redraw_undefined_rates" time="0.013" /><testcase classname="tests.test_gbt_event_operating_point" name="test_availability_mismatch_stops_instead_of_changing_exposure" time="0.019" /></testsuite></testsuites>

@@ -1,0 +1,32 @@
+F.........                                                               [100%]
+================================== FAILURES ===================================
+_________________ test_event_fields_equal_frozen_case_events __________________
+
+tmp_path = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/gbt_event_operating_point_v1_checks/pytest_scope_r1/test_event_fields_equal_frozen0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000019A7F7FAD80>
+
+    def test_event_fields_equal_frozen_case_events(tmp_path, monkeypatch):
+        uid = 'SIL/hover/GPS/example'
+        times = np.arange(150, dtype=np.int64) * 20000
+        p = np.r_[np.full(30, .1), np.full(40, .9), np.full(20, .1), np.full(60, .9)].astype(np.float32)
+        p[:3] = np.nan
+        np.savez(tmp_path / (uid.replace('/', '__') + '.npz'), timestamp_us=times, m0=p, gbt=p,
+                 reference_state=np.r_[np.zeros(80), np.ones(70)].astype(np.int8), row_label_valid=np.ones(150, dtype=bool))
+        monkeypatch.setattr(g.reference, 'SCORES', tmp_path)
+        monkeypatch.setattr(g.reference, 'GRID', [.75])
+        old = g.reference.case_events(uid)
+        new = g.case_records((uid, [('M0', (.6,)), ('ENS', (.75,))], tmp_path))
+        for a, b in zip(old, new):
+            for key, value in a.items():
+                if isinstance(value, float) and np.isnan(value):
+                    assert np.isnan(b[key])
+                else:
+                    assert b[key] == value
+>       assert new[0]['false_events'] == 1
+E       assert 0 == 1
+
+tests\test_gbt_event_operating_point.py:31: AssertionError
+- generated xml file: D:\UAV-Fault-Diagnosis\artifacts\gbt_event_operating_point_v1_checks\pytest_r1.xml -
+=========================== short test summary info ===========================
+FAILED tests/test_gbt_event_operating_point.py::test_event_fields_equal_frozen_case_events
+1 failed, 9 passed in 11.18s

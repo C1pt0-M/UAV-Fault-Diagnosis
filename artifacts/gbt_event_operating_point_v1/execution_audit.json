@@ -1,0 +1,130 @@
+{
+  "status": "COMPLETE_AUDITED",
+  "protocol_commit": "3a9ac66dfe8898d590ab89ffb38acf85a27d3e43",
+  "reproduction_gate": {
+    "actual": [
+      113,
+      1513,
+      81,
+      1705
+    ],
+    "expected": [
+      113,
+      1513,
+      81,
+      1705
+    ],
+    "pass": true
+  },
+  "chosen_onsets": {
+    "GBT": 0.95,
+    "M0": 0.6
+  },
+  "acceptance": {
+    "criteria": {
+      "EV1": {
+        "pass": true,
+        "GBT_per_h": 12.031699517662535,
+        "M0_per_h": 27.191640909917325
+      },
+      "EV2": {
+        "pass": true,
+        "GBT_events": 3,
+        "M0_events": 12
+      },
+      "EV3": {
+        "pass": true,
+        "GBT_detected_excluding": 389,
+        "M0_detected_excluding": 337,
+        "scored_fault_cases": 472,
+        "scored_fault_cases_excluding": 464,
+        "allowance_cases": 4.72,
+        "minimum_detected": 332.28,
+        "per_class_deficits": {
+          "GPS": 1,
+          "accelerometer": -8,
+          "barometer": -1,
+          "gyroscope": 3,
+          "magnetometer": 0,
+          "motor": -47
+        },
+        "flagged_classes_deficit_gt2": [
+          "gyroscope"
+        ]
+      }
+    },
+    "verdict": "PASS"
+  },
+  "workers": 8,
+  "local_cpu_only": true,
+  "no_training_no_new_inference": true,
+  "internal_test_or_real_read": false,
+  "val_selection": false,
+  "association_group_source": {
+    "excluded_cases": {
+      "train": 36,
+      "val": 8
+    },
+    "GPS_modes_missing": 0,
+    "train_groups": 1296,
+    "group_source": "D:\\UAV-Data\\causal_input_v1\\ledgers\\train_all_windows.csv",
+    "train_cases_with_groups": 2580
+  },
+  "events_csv_rows": 71550,
+  "sweep_rows": 44,
+  "source_guard_in_parent_and_workers": true,
+  "val_requires_train_selection_file": true,
+  "protected_existing_files_raw_sha_unchanged": [
+    "scripts/research/case_relative_features_dev.py",
+    "tmp_control_compensation_audit.log",
+    "tmp_control_compensation_audit_sampled.log",
+    "scripts/research/ens_event_threshold.py"
+  ],
+  "real_aggregation_attempts": 1,
+  "aggregation_retries": 0,
+  "pytest_iterations": [
+    {
+      "run": 1,
+      "passed": 9,
+      "failed": 1
+    },
+    {
+      "run": 2,
+      "passed": 10,
+      "failed": 1
+    },
+    {
+      "run": 3,
+      "passed": 11,
+      "failed": 0
+    },
+    {
+      "run": 4,
+      "passed": 12,
+      "failed": 0
+    }
+  ],
+  "pytest_final_skipped": 0,
+  "commit_precheck_failures": 1,
+  "commit_precheck_cause": "terminal NUL delimiter parsed as empty path; actual staged files were correct; git commit was not yet called",
+  "cap64_check": {
+    "status": "无法核对",
+    "reason": "本地缺少真实T0 seed42 CV held-out概率；不使用smoke/合成测试产物冒充，不另行推理。",
+    "missing": [
+      "artifacts\\t_selection_mstca_v1\\cv\\seed42_fold0\\heldout_predictions.npz",
+      "artifacts\\t_selection_mstca_v1\\cv\\seed42_fold1\\heldout_predictions.npz",
+      "artifacts\\t_selection_mstca_v1\\cv\\seed42_fold2\\heldout_predictions.npz"
+    ],
+    "feature_fold_files_present": true
+  },
+  "wall_time_s": 632.2956524000037,
+  "environment": {
+    "python": "3.12.4",
+    "numpy": "2.5.1",
+    "pandas": "2.3.1"
+  },
+  "extra_descriptive_check": "EV3 denominator472 vs exclusion-filtered464 arithmetic, both PASS; no re-selection",
+  "full_deviations": "execution_notes.md",
+  "conclusion_report": "docs/research/2026-11-08/GBT事件级工作点结果_v1.md",
+  "closure_report_and_ledger_not_changed": true
+}

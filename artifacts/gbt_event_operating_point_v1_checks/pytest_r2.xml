@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="11" time="3.565" timestamp="2026-11-08T17:01:39.260810+08:00" hostname="Jack"><testcase classname="tests.test_gbt_event_operating_point" name="test_event_fields_equal_frozen_case_events[20-0]" time="1.890"><failure message="assert (False)">tmp_path = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/gbt_event_operating_point_v1_checks/pytest_scope_r2/test_event_fields_equal_frozen0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000002391A54B110&gt;
+gap_frames = 20, expected_false = 0
+
+    @pytest.mark.parametrize('gap_frames,expected_false', [(20, 0), (40, 1)])
+    def test_event_fields_equal_frozen_case_events(tmp_path, monkeypatch, gap_frames, expected_false):
+        uid = 'SIL/hover/GPS/example'
+        p = np.r_[np.full(30, .1), np.full(40, .9), np.full(gap_frames, .1), np.full(60, .9)].astype(np.float32)
+        times = np.arange(len(p), dtype=np.int64) * 20000
+        p[:3] = np.nan
+        normal_rows = 60 + gap_frames
+        np.savez(tmp_path / (uid.replace('/', '__') + '.npz'), timestamp_us=times, m0=p, gbt=p,
+                 reference_state=np.r_[np.zeros(normal_rows), np.ones(len(p) - normal_rows)].astype(np.int8), row_label_valid=np.ones(len(p), dtype=bool))
+        monkeypatch.setattr(g.reference, 'SCORES', tmp_path)
+        monkeypatch.setattr(g.reference, 'GRID', [.75])
+        old = g.reference.case_events(uid)
+        new = g.case_records((uid, [('M0', (.6,)), ('ENS', (.75,))], tmp_path))
+        for a, b in zip(old, new):
+            for key, value in a.items():
+                if isinstance(value, float) and np.isnan(value):
+                    assert np.isnan(b[key])
+                else:
+                    assert b[key] == value
+        assert new[0]['false_events'] == expected_false
+        assert new[0]['spans_onset'] is (expected_false == 0)
+&gt;       assert new[0]['detected'] and new[0]['confirm_latency_s'] &gt;= 0
+E       assert (False)
+
+tests\test_gbt_event_operating_point.py:35: AssertionError</failure></testcase><testcase classname="tests.test_gbt_event_operating_point" name="test_event_fields_equal_frozen_case_events[40-1]" time="0.021" /><testcase classname="tests.test_gbt_event_operating_point" name="test_selection_constraints_exclusion_more_detected_then_lower_onset" time="0.500" /><testcase classname="tests.test_gbt_event_operating_point" name="test_no_feasible_does_not_relax_class_or_latency[True-1.5]" time="0.234" /><testcase classname="tests.test_gbt_event_operating_point" name="test_no_feasible_does_not_relax_class_or_latency[False-1.500001]" time="0.240" /><testcase classname="tests.test_gbt_event_operating_point" name="test_paired_statistic_is_median_of_differences_not_difference_of_medians" time="0.004" /><testcase classname="tests.test_gbt_event_operating_point" name="test_no_common_detected_latency_is_unavailable" time="0.008" /><testcase classname="tests.test_gbt_event_operating_point" name="test_ev3_uses_registered_one_percent_and_flags_without_class_veto[4-True]" time="0.029" /><testcase classname="tests.test_gbt_event_operating_point" name="test_ev3_uses_registered_one_percent_and_flags_without_class_veto[5-False]" time="0.023" /><testcase classname="tests.test_gbt_event_operating_point" name="test_bootstrap_is_paired_and_does_not_redraw_undefined_rates" time="0.012" /><testcase classname="tests.test_gbt_event_operating_point" name="test_availability_mismatch_stops_instead_of_changing_exposure" time="0.010" /></testsuite></testsuites>

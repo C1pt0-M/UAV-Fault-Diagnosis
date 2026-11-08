@@ -1,0 +1,37 @@
+F..........                                                              [100%]
+================================== FAILURES ===================================
+______________ test_event_fields_equal_frozen_case_events[20-0] _______________
+
+tmp_path = WindowsPath('D:/UAV-Fault-Diagnosis/artifacts/gbt_event_operating_point_v1_checks/pytest_scope_r2/test_event_fields_equal_frozen0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002391A54B110>
+gap_frames = 20, expected_false = 0
+
+    @pytest.mark.parametrize('gap_frames,expected_false', [(20, 0), (40, 1)])
+    def test_event_fields_equal_frozen_case_events(tmp_path, monkeypatch, gap_frames, expected_false):
+        uid = 'SIL/hover/GPS/example'
+        p = np.r_[np.full(30, .1), np.full(40, .9), np.full(gap_frames, .1), np.full(60, .9)].astype(np.float32)
+        times = np.arange(len(p), dtype=np.int64) * 20000
+        p[:3] = np.nan
+        normal_rows = 60 + gap_frames
+        np.savez(tmp_path / (uid.replace('/', '__') + '.npz'), timestamp_us=times, m0=p, gbt=p,
+                 reference_state=np.r_[np.zeros(normal_rows), np.ones(len(p) - normal_rows)].astype(np.int8), row_label_valid=np.ones(len(p), dtype=bool))
+        monkeypatch.setattr(g.reference, 'SCORES', tmp_path)
+        monkeypatch.setattr(g.reference, 'GRID', [.75])
+        old = g.reference.case_events(uid)
+        new = g.case_records((uid, [('M0', (.6,)), ('ENS', (.75,))], tmp_path))
+        for a, b in zip(old, new):
+            for key, value in a.items():
+                if isinstance(value, float) and np.isnan(value):
+                    assert np.isnan(b[key])
+                else:
+                    assert b[key] == value
+        assert new[0]['false_events'] == expected_false
+        assert new[0]['spans_onset'] is (expected_false == 0)
+>       assert new[0]['detected'] and new[0]['confirm_latency_s'] >= 0
+E       assert (False)
+
+tests\test_gbt_event_operating_point.py:35: AssertionError
+- generated xml file: D:\UAV-Fault-Diagnosis\artifacts\gbt_event_operating_point_v1_checks\pytest_r2.xml -
+=========================== short test summary info ===========================
+FAILED tests/test_gbt_event_operating_point.py::test_event_fields_equal_frozen_case_events[20-0]
+1 failed, 10 passed in 3.57s
