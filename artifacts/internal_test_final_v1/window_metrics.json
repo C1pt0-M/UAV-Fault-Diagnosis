@@ -1,0 +1,219 @@
+{
+  "operating_points": {
+    "GBT": 0.3744,
+    "M0": "argmax"
+  },
+  "overall": {
+    "GBT": {
+      "windows": 34802,
+      "normal_windows": 17800,
+      "fault_windows": 17002,
+      "normal_FP": 502,
+      "fault_TP": 16824
+    },
+    "M0": {
+      "windows": 34802,
+      "normal_windows": 17800,
+      "fault_windows": 17002,
+      "normal_FP": 475,
+      "fault_TP": 16510
+    }
+  },
+  "F3": {
+    "GPS": {
+      "windows": 1470,
+      "M0_TP": 1363,
+      "GBT_TP": 1432,
+      "M0_recall": 0.9272108843537415,
+      "GBT_recall": 0.9741496598639455,
+      "delta_pp": 4.6938775510204085,
+      "pass": true
+    },
+    "accelerometer": {
+      "windows": 1570,
+      "M0_TP": 1492,
+      "GBT_TP": 1540,
+      "M0_recall": 0.9503184713375796,
+      "GBT_recall": 0.9808917197452229,
+      "delta_pp": 3.0573248407643314,
+      "pass": true
+    },
+    "barometer": {
+      "windows": 1450,
+      "M0_TP": 1333,
+      "GBT_TP": 1394,
+      "M0_recall": 0.9193103448275862,
+      "GBT_recall": 0.9613793103448276,
+      "delta_pp": 4.206896551724138,
+      "pass": true
+    },
+    "gyroscope": {
+      "windows": 1257,
+      "M0_TP": 1178,
+      "GBT_TP": 1231,
+      "M0_recall": 0.9371519490851233,
+      "GBT_recall": 0.979315831344471,
+      "delta_pp": 4.216388225934765,
+      "pass": true
+    },
+    "magnetometer": {
+      "windows": 1224,
+      "M0_TP": 1184,
+      "GBT_TP": 1210,
+      "M0_recall": 0.9673202614379085,
+      "GBT_recall": 0.988562091503268,
+      "delta_pp": 2.1241830065359477,
+      "pass": true
+    },
+    "motor": {
+      "windows": 9816,
+      "M0_TP": 9795,
+      "GBT_TP": 9807,
+      "M0_recall": 0.9978606356968215,
+      "GBT_recall": 0.9990831295843521,
+      "delta_pp": 0.12224938875305623,
+      "pass": true
+    }
+  },
+  "excluded_late_hover_mode4": {
+    "windows": 215,
+    "cases": 10,
+    "recall": {
+      "GBT": 0.9767441860465116,
+      "M0": 0.7674418604651163
+    }
+  },
+  "by_domain": {
+    "HIL": {
+      "GBT": {
+        "windows": 17150,
+        "normal_windows": 8850,
+        "fault_windows": 8300,
+        "normal_FP": 223,
+        "fault_TP": 8187
+      },
+      "M0": {
+        "windows": 17150,
+        "normal_windows": 8850,
+        "fault_windows": 8300,
+        "normal_FP": 209,
+        "fault_TP": 7991
+      }
+    },
+    "SIL": {
+      "GBT": {
+        "windows": 17652,
+        "normal_windows": 8950,
+        "fault_windows": 8702,
+        "normal_FP": 279,
+        "fault_TP": 8637
+      },
+      "M0": {
+        "windows": 17652,
+        "normal_windows": 8950,
+        "fault_windows": 8702,
+        "normal_FP": 266,
+        "fault_TP": 8519
+      }
+    }
+  },
+  "by_flight": {
+    "acce": {
+      "GBT": {
+        "windows": 3302,
+        "normal_windows": 1648,
+        "fault_windows": 1654,
+        "normal_FP": 67,
+        "fault_TP": 1598
+      },
+      "M0": {
+        "windows": 3302,
+        "normal_windows": 1648,
+        "fault_windows": 1654,
+        "normal_FP": 43,
+        "fault_TP": 1526
+      }
+    },
+    "circling": {
+      "GBT": {
+        "windows": 8201,
+        "normal_windows": 4785,
+        "fault_windows": 3416,
+        "normal_FP": 10,
+        "fault_TP": 3416
+      },
+      "M0": {
+        "windows": 8201,
+        "normal_windows": 4785,
+        "fault_windows": 3416,
+        "normal_FP": 1,
+        "fault_TP": 3416
+      }
+    },
+    "dece": {
+      "GBT": {
+        "windows": 3293,
+        "normal_windows": 1783,
+        "fault_windows": 1510,
+        "normal_FP": 127,
+        "fault_TP": 1459
+      },
+      "M0": {
+        "windows": 3293,
+        "normal_windows": 1783,
+        "fault_windows": 1510,
+        "normal_FP": 65,
+        "fault_TP": 1349
+      }
+    },
+    "hover": {
+      "GBT": {
+        "windows": 7909,
+        "normal_windows": 3171,
+        "fault_windows": 4738,
+        "normal_FP": 212,
+        "fault_TP": 4689
+      },
+      "M0": {
+        "windows": 7909,
+        "normal_windows": 3171,
+        "fault_windows": 4738,
+        "normal_FP": 288,
+        "fault_TP": 4605
+      }
+    },
+    "velocity": {
+      "GBT": {
+        "windows": 4038,
+        "normal_windows": 1913,
+        "fault_windows": 2125,
+        "normal_FP": 65,
+        "fault_TP": 2110
+      },
+      "M0": {
+        "windows": 4038,
+        "normal_windows": 1913,
+        "fault_windows": 2125,
+        "normal_FP": 64,
+        "fault_TP": 2097
+      }
+    },
+    "waypoint": {
+      "GBT": {
+        "windows": 8059,
+        "normal_windows": 4500,
+        "fault_windows": 3559,
+        "normal_FP": 21,
+        "fault_TP": 3552
+      },
+      "M0": {
+        "windows": 8059,
+        "normal_windows": 4500,
+        "fault_windows": 3559,
+        "normal_FP": 14,
+        "fault_TP": 3517
+      }
+    }
+  },
+  "ENS_known_normal_FP_reference_only": 342
+}

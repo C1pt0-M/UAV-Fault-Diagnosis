@@ -1,0 +1,42 @@
+{
+  "time": "2026-11-08T11:24:36.997128+00:00",
+  "config_sha256": "7293a62e00f71b98c5fae892148ded486d0438aa832f180d5b32e2e156b5d51d",
+  "models": {
+    "GBT": {
+      "path": "D:\\UAV-Fault-Diagnosis\\artifacts\\ens_internal_test_v1_20261105\\gbt_full_train.pkl",
+      "sha256": "df468524e2047205dd8422ab3e486ce7692f0ac312276e20394d6f88a1bb6774"
+    },
+    "M0_baseline": {
+      "path": "D:\\UAV-Fault-Diagnosis\\artifacts\\causal_pure_mstca_m0_v1_20261101\\results\\runs\\balanced_source_normal\\best.pt",
+      "sha256": "ac8596cd2e762a4b50845b79e312b1588e68956839a0e9c3573f88a05b5fc6cb"
+    }
+  },
+  "saved_predictions_sha256": "45360dbf5e136dc30e881bf9989cb0307683fe1cd6ff19ce8cdfde886411e8f8",
+  "parity_gate": {
+    "status": "PASS",
+    "expected_windows": 34802,
+    "aligned_windows": 34802,
+    "missing_window_original_indices": [],
+    "labels_equal": true,
+    "GBT_max_abs_difference": 2.9795787059860857e-08,
+    "GBT_limit": 1e-06,
+    "M0_max_abs_difference": 2.384185791015625e-07,
+    "M0_limit": 0.002,
+    "pass": true
+  },
+  "operating_points": {
+    "GBT_window": 0.3744,
+    "M0_window": "argmax",
+    "GBT_event": 0.95,
+    "M0_event": 0.6
+  },
+  "policy": {
+    "inference_every": 1,
+    "clear_th": 0.4,
+    "k_on": 3,
+    "k_off": 3,
+    "min_event_s": 0.5,
+    "merge_gap_s": 0.5
+  },
+  "final_use_no_rerun": true
+}

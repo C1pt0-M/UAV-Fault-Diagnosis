@@ -1,0 +1,231 @@
+{
+  "status": "COMPLETE_AUDITED",
+  "authority": "内部test最终评价_PI指令_补充1.md",
+  "preparation_commit": "fe00ff444c7d73029a96ffb440a5650b94af26cd",
+  "attempt1": "import failure, no models/payload/metrics; preserved via authorized git mv; not an extra evaluation or metric rerun",
+  "archived_failure_and_old_checks_SHA_mtime_unchanged": true,
+  "protected_files": 49,
+  "preflight": {
+    "status": "PASS",
+    "time": "2026-11-08T11:14:50.929077+00:00",
+    "python": "D:\\python3.12.4\\python.exe",
+    "flags": {
+      "ignore_environment": 1,
+      "safe_path": true,
+      "isolated": 0,
+      "no_user_site": 0,
+      "utf8_mode": 1,
+      "dont_write_bytecode": true
+    },
+    "imports": [
+      {
+        "module": "numpy",
+        "file": "D:\\python3.12.4\\Lib\\site-packages\\numpy\\__init__.py"
+      },
+      {
+        "module": "pandas",
+        "file": "D:\\python3.12.4\\Lib\\site-packages\\pandas\\__init__.py"
+      },
+      {
+        "module": "torch",
+        "file": "D:\\python3.12.4\\Lib\\site-packages\\torch\\__init__.py"
+      },
+      {
+        "module": "sklearn.ensemble",
+        "file": "D:\\python3.12.4\\Lib\\site-packages\\sklearn\\ensemble\\__init__.py"
+      },
+      {
+        "module": "threadpoolctl",
+        "file": "C:\\Users\\23119\\AppData\\Roaming\\Python\\Python312\\site-packages\\threadpoolctl.py"
+      },
+      {
+        "module": "uav_fault.causal_input",
+        "file": "D:\\UAV-Fault-Diagnosis\\packages\\uav_fault\\uav_fault\\causal_input.py"
+      },
+      {
+        "module": "uav_fault.models.cnn.lstm",
+        "file": "D:\\UAV-Fault-Diagnosis\\packages\\uav_fault\\uav_fault\\models\\cnn\\lstm.py"
+      },
+      {
+        "module": "uav_fault.online.detection_policy",
+        "file": "D:\\UAV-Fault-Diagnosis\\packages\\uav_fault\\uav_fault\\online\\detection_policy.py"
+      },
+      {
+        "module": "uav_fault.online.event_aggregator",
+        "file": "D:\\UAV-Fault-Diagnosis\\packages\\uav_fault\\uav_fault\\online\\event_aggregator.py"
+      },
+      {
+        "module": "uav_fault.online.monitoring_session",
+        "file": "D:\\UAV-Fault-Diagnosis\\packages\\uav_fault\\uav_fault\\online\\monitoring_session.py"
+      },
+      {
+        "module": "uav_fault.online.fault_detector",
+        "file": "D:\\UAV-Fault-Diagnosis\\packages\\uav_fault\\uav_fault\\online\\fault_detector.py"
+      },
+      {
+        "module": "replay_m1_continuous",
+        "file": "D:\\UAV-Fault-Diagnosis\\scripts\\research\\replay_m1_continuous.py"
+      },
+      {
+        "module": "replay_ens_events_val",
+        "file": "D:\\UAV-Fault-Diagnosis\\scripts\\research\\replay_ens_events_val.py"
+      },
+      {
+        "module": "score_ens_frames",
+        "file": "D:\\UAV-Fault-Diagnosis\\scripts\\research\\score_ens_frames.py"
+      },
+      {
+        "module": "ens_event_threshold",
+        "file": "D:\\UAV-Fault-Diagnosis\\scripts\\research\\ens_event_threshold.py"
+      },
+      {
+        "module": "gbt_event_operating_point_v1",
+        "file": "D:\\UAV-Fault-Diagnosis\\scripts\\research\\gbt_event_operating_point_v1.py"
+      },
+      {
+        "module": "internal_test_final_v1",
+        "file": "D:\\UAV-Fault-Diagnosis\\scripts\\research\\internal_test_final_v1.py"
+      }
+    ],
+    "cases": [
+      {
+        "case_uid": "SIL/acce/GPS/TestCase_107_1406000106",
+        "split": "val",
+        "scored_frames": 3326,
+        "M0_max_abs_difference": 0.0,
+        "M0_limit": 0.002,
+        "GBT_max_abs_difference": 0.0,
+        "GBT_limit": 1e-06,
+        "same_code": "internal_test_final_v1.score_arrays",
+        "cached_score_sha256": "c466ae65be27a6fc26ffad2efb1f995ad543adeea553fe62a434b5bdb57f09c2",
+        "pass": true
+      },
+      {
+        "case_uid": "HIL/acce/GPS/TestCase_107_2406000106",
+        "split": "val",
+        "scored_frames": 3246,
+        "M0_max_abs_difference": 0.0,
+        "M0_limit": 0.002,
+        "GBT_max_abs_difference": 0.0,
+        "GBT_limit": 1e-06,
+        "same_code": "internal_test_final_v1.score_arrays",
+        "cached_score_sha256": "277dc0b324ea7fe05200b6980c2455098e82d91de7ce0ebde6b72bbabb86ed09",
+        "pass": true
+      }
+    ],
+    "blocked_accesses": [],
+    "config_sha256": "7293a62e00f71b98c5fae892148ded486d0438aa832f180d5b32e2e156b5d51d",
+    "models_before": {
+      "GBT": "df468524e2047205dd8422ab3e486ce7692f0ac312276e20394d6f88a1bb6774",
+      "M0_baseline": "ac8596cd2e762a4b50845b79e312b1588e68956839a0e9c3573f88a05b5fc6cb"
+    },
+    "models_after_load": {
+      "GBT": "df468524e2047205dd8422ab3e486ce7692f0ac312276e20394d6f88a1bb6774",
+      "M0_baseline": "ac8596cd2e762a4b50845b79e312b1588e68956839a0e9c3573f88a05b5fc6cb"
+    },
+    "models_after_scoring": {
+      "GBT": "df468524e2047205dd8422ab3e486ce7692f0ac312276e20394d6f88a1bb6774",
+      "M0_baseline": "ac8596cd2e762a4b50845b79e312b1588e68956839a0e9c3573f88a05b5fc6cb"
+    },
+    "test_data_read": false,
+    "no_training_or_fit": true,
+    "scoring_device": "cpu",
+    "torch_threads": 16,
+    "M0_batch": 2048,
+    "GBT_batch": 4096,
+    "wall_time_s": 15.215239599987399
+  },
+  "synthetic_tests": {
+    "passed": 26,
+    "failed": 0,
+    "skipped": 0,
+    "real_access_attempts": 0
+  },
+  "formal_launch": {
+    "pid": 27840,
+    "command": [
+      "D:\\python3.12.4\\python.exe",
+      "-X",
+      "utf8",
+      "-E",
+      "-P",
+      "-B",
+      "D:\\UAV-Fault-Diagnosis\\scripts\\research\\internal_test_final_v1.py"
+    ],
+    "launches_this_authorization": 1,
+    "detached": true,
+    "authority": "内部test最终评价_PI指令_补充1.md",
+    "preflight_pass": true,
+    "no_metric_rerun": true
+  },
+  "formal_exit": {
+    "pid": 27840,
+    "exit_code": 0,
+    "wait_no_polling": true,
+    "no_restart": true
+  },
+  "parity_gate": {
+    "status": "PASS",
+    "expected_windows": 34802,
+    "aligned_windows": 34802,
+    "missing_window_original_indices": [],
+    "labels_equal": true,
+    "GBT_max_abs_difference": 2.9795787059860857e-08,
+    "GBT_limit": 1e-06,
+    "M0_max_abs_difference": 2.384185791015625e-07,
+    "M0_limit": 0.002,
+    "pass": true
+  },
+  "primary": {
+    "F1": {
+      "pass": true,
+      "GBT_events": 5,
+      "M0_events": 24,
+      "GBT_per_h": 5.53478303650497,
+      "M0_per_h": 26.566958575223854
+    },
+    "F2": {
+      "pass": true,
+      "GBT_detected_excluding": 390,
+      "M0_detected_excluding": 345,
+      "scored_fault_cases": 475,
+      "scored_fault_cases_excluding": 465,
+      "allowance_cases": 4.75,
+      "minimum_detected": 340.25,
+      "per_class_deficits": {
+        "GPS": 0,
+        "accelerometer": -1,
+        "barometer": 0,
+        "gyroscope": 2,
+        "magnetometer": 1,
+        "motor": -47
+      },
+      "flagged_classes_deficit_gt2": []
+    },
+    "verdict": "CONFIRMED"
+  },
+  "score_npz_files": 553,
+  "all_score_bytes_match_receipt_sha": true,
+  "score_index_sha_matches": true,
+  "models_saved_predictions_and_config_identity_unchanged": true,
+  "metric_stages_read_from_saved_JSON_only": true,
+  "new_lock_before_any_metric": true,
+  "output_mtime_order": {
+    "parity_gate.json": 1794137076966914200,
+    "TEST_EVALUATED.lock": 1794137076998136300,
+    "events_per_case.csv": 1794137142308702100,
+    "event_metrics.json": 1794137142723518800,
+    "window_metrics.json": 1794137142813817600,
+    "event_bootstrap.json": 1794137142899971000,
+    "window_bootstrap.json": 1794137142947159100,
+    "results.json": 1794137142951873100,
+    "receipt.json": 1794137142991757500
+  },
+  "new_lock_sha256": "bb0053012525fad84dc581270a9e8f0ddfbd35c8d76caa1a63d6a9cc1982537c",
+  "no_training_no_refit_no_other_operating_points": true,
+  "r2_failures": 0,
+  "r2_retries": 0,
+  "test_permanently_closed": true,
+  "full_deviations": "execution_notes.md",
+  "no_closure_report_ledger_golden_or_user_dirty_file_change": true
+}
