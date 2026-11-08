@@ -1,0 +1,53 @@
+{
+  "name": "q1_source_model_selection_v1",
+  "date": "2026-11-08",
+  "status": "frozen before computing any W/S per-class operating-point result",
+  "question": "Under the operating point 'every fault class recall >= T0 baseline', which existing source-domain candidate gives the lowest normal false alarms, and which one should be kept as the stable source model?",
+  "why_new": "E-group post-hoc applied this operating point only to T1/GBT/E0/E1. W1/W2/S1/S2/S3 and their GBT ensembles were never compared under one operating point; the pooled-R97 C3 rule blocked T1/V/E for the same late-hover GPS reason, so the operating point itself is the open decision.",
+  "training": "none; zero-training analysis of existing train-CV held-out predictions",
+  "data_boundary": "train CV held-out only (162069 windows, folds sha256('h1cv|'+association_group)%3). No val, no internal test, no Real.",
+  "disclosure": "Per-class operating-point FP for T1/GBT/E0/E1 was already seen (E-group supplement, 2026-11-08). The train-CV population has been analysed repeatedly. The outcome is a candidate selection, not an independent confirmation.",
+  "reference": {
+    "arm": "T0 (inner-CE early stopping; t_selection_mstca_v1 selections.json T0 epoch)",
+    "seeds": [42, 43, 44, 45, 46],
+    "operating_point": "T0's own FP@R97 threshold per seed; per-class recall r0[c] taken at that threshold",
+    "gate": "T0 FP@R97 seeds 42/43/44 = 3595/3588/4610; S0 best FP for 42/43/44 must equal the same numbers"
+  },
+  "arms": {
+    "single_model": {
+      "T1": "t_selection_mstca_v1, epoch 100, seeds 42-46",
+      "W1": "w_phase_balance_mstca_v1 W1, frozen T0-rule epoch from selections.json, seeds 42-46",
+      "W2": "w_phase_balance_mstca_v1 W2, same rule, seeds 42-46",
+      "S1": "s_ablation_mstca_v1 S1 (no SE), best weights, seeds 42-44",
+      "S2": "s_ablation_mstca_v1 S2 (three-branch k7), best weights, seeds 42-44",
+      "S3": "s_ablation_mstca_v1 S3 (matched CNN), best weights, seeds 42-44",
+      "GBT": "feature_groupcv_v1 gbt_heldout.npz, single fit random_state 0, shared across seeds"
+    },
+    "ensemble": "plain mean of the arm's fault probability and GBT: E0=T0+GBT, E1=T1+GBT, W1+GBT, W2+GBT, S1+GBT, S2+GBT, S3+GBT",
+    "sensitivity_only": "S1/S2/S3 last weights (single and +GBT); never used for selection"
+  },
+  "operating_point": {
+    "main": "per arm and seed, the highest threshold t such that for each of the 6 fault classes the arm's class TP count >= T0's class TP count at T0's R97 threshold (same seed); FP_pc = normal windows with score >= t",
+    "strict_variant": "same plus a 7th stratum: late-hover GPS fault windows (hover, window_end_row*0.02 > 30 s)",
+    "pairing": "each arm is paired with T0 of the same seed; S arms use seeds 42-44 only"
+  },
+  "metrics": {
+    "primary": "FP_pc ratio arm/T0 per seed, geometric mean over the arm's seeds",
+    "ci": "association_group cluster bootstrap, 2000 replicates, rng 20261106; T0 thresholds and class TP targets recomputed inside each replicate",
+    "secondary": [
+      "seed SD and coefficient of variation of FP_pc",
+      "strict-variant ratio",
+      "late-hover GPS recall and late-hover independent-normal FP at the main operating point",
+      "out-of-fold threshold transfer: thresholds (T0 R97 and the arm's per-class threshold) chosen on the other two folds, applied to the held-out fold; report FP ratio and per-class recall difference vs T0"
+    ]
+  },
+  "selection_rule": {
+    "eligible": "geometric-mean ratio < 1, every seed ratio < 1, bootstrap CI upper < 1 (main operating point)",
+    "best": "eligible arm with the lowest ratio, compared on its own seeds",
+    "parsimony": "if a single-model arm is eligible and the paired bootstrap ratio best/single (common seeds) has CI upper >= 1, keep the single model instead of the ensemble",
+    "flags": "report, do not override: strict-variant ratio >= 1; out-of-fold per-class recall deficit > 1 pp for any class; S arms judged on 3 seeds only"
+  },
+  "expected_information_gain": "A single ranking of all existing candidates under one operating point; whether any MSTCA variant (W, S) improves on T0/T1 inside the GBT ensemble; whether the per-class operating point transfers out of fold; a named candidate for the stable source model.",
+  "not_allowed": ["retraining", "changing the operating point or rule after seeing W/S results", "reading val/test/Real"],
+  "outputs": "artifacts/q1_source_model_selection_v1/evaluation.json; report docs/research/2026-11-08/Q1源域候选统一评价_v1.md"
+}
