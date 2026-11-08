@@ -1,6 +1,7 @@
 """One final internal-test evaluation, four fixed operating points only.
 
-Real execution cannot resume: existing output OR score directory is refused.
+Real execution cannot resume: existing output OR nonempty score directory is refused.
+An existing empty score directory is allowed by PI supplement 1.
 No metrics are called until all frame/window parity checks pass and the new
 TEST_EVALUATED.lock has been exclusively created. Synthetic tests call only
 pure helpers, never this entry point or real test data.
@@ -55,8 +56,9 @@ def save(path, value):
 
 
 def fresh_targets(output, scores):
-    if Path(output).exists() or Path(scores).exists():
-        raise FileExistsError('Final test is one-shot: existing output/lock/scores forbid any restart')
+    scores = Path(scores)
+    if Path(output).exists() or (scores.exists() and (not scores.is_dir() or any(scores.iterdir()))):
+        raise FileExistsError('Final test is one-shot: existing output/lock or nonempty scores forbid restart')
 
 
 def align_windows(ledger, original_indices):
@@ -374,7 +376,7 @@ def run_once():
     start = time.perf_counter()
     info, metadata, ledger, saved, mu, sd = startup()
     OUT.mkdir(parents=True, exist_ok=False)
-    SCORES.mkdir(parents=True, exist_ok=False)
+    SCORES.mkdir(parents=True, exist_ok=True)
     input_boundary(metadata)
     stage = 'STARTUP_PASS'
     with (OUT / 'run.log').open('x', encoding='utf-8', newline='\n') as journal:

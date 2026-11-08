@@ -77,8 +77,14 @@ def test_lock_gate_exclusive_creation_and_existing_target_refusal(tmp_path):
     with pytest.raises(FileExistsError):
         final.fresh_targets(out, scores)
     scores.mkdir()
+    final.fresh_targets(tmp_path / 'another', scores)
+    (scores / 'preserved.npz').write_bytes(b'never overwrite')
     with pytest.raises(FileExistsError):
         final.fresh_targets(tmp_path / 'another', scores)
+    not_directory = tmp_path / 'not_directory'
+    not_directory.write_bytes(b'not a score directory')
+    with pytest.raises(FileExistsError):
+        final.fresh_targets(tmp_path / 'another', not_directory)
 
 
 def test_scoring_recipe_raw_gbt_normalized_m0_invalid_and_short_windows():
@@ -227,7 +233,7 @@ assert (f.DATA/'cases/SIL__hover__GPS__synthetic.npz').read_bytes()==b'synthetic
 (f.SCORES/'new.npz').write_bytes(b'new')
 print('SYNTHETIC_BOUNDARY_PASS')
 '''
-    result = subprocess.run([sys.executable, '-X', 'utf8', '-I', '-B', '-c', code,
+    result = subprocess.run([sys.executable, '-X', 'utf8', '-E', '-P', '-B', '-c', code,
         str(final.ROOT / 'scripts/research'), str(tmp_path)], capture_output=True, text=True, encoding='utf-8')
     assert result.returncode == 0, result.stdout + result.stderr
     assert 'SYNTHETIC_BOUNDARY_PASS' in result.stdout
