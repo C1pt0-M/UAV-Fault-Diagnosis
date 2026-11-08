@@ -1,0 +1,68 @@
+{
+  "name": "real_v2_b0_diagnostics",
+  "date": "2026-11-08",
+  "status": "FROZEN_BEFORE_REAL_VALUE_ACCESS",
+  "user_approval": "2026-11-08, explicit answers to the cross-domain draft (docs/research/2026-11-08/跨域阶段草案_v1.md): (1) re-split Real 70/30 by association group with a sealed final-test part; (2) the old rule 'test_fault not for supervised training' is superseded by this protocol line; (3) GBT/CPU route (B0, B1) first, T1 MSTCA later",
+  "purpose": "Zero-risk diagnostics on the Real development pool before any Real-supervised learning curve (B1): (B0-1) is there a Real-internal session shortcut between independent normal flights and pre-fault segments; (B0-2) can Real labels be separated at all by the 130-dim window statistics (Real-only ceiling), and is the separation within the same flight session; (B0-3) label and exposure audit. No operating point, no event metric, no model is kept for deployment.",
+  "history_disclosure": [
+    "All 465 Real cases were evaluated before (10-30 v1, 11-06 M0/ENS events, 11-06 GBT_D2/D3); aggregate results are known. Adapt/calibrate normals were used to fit GBT_D2/D3. The sealed part is therefore 'not used for development on this line', not blind.",
+    "No Real-supervised (fault-label) training has been done on causal_input_v1."
+  ],
+  "split": {
+    "file": "configs/data/real_v2_split.csv",
+    "sha256": "9232ee35e7a59f4fac4534fc8e98fc454380b51e6e5d8439aaa0f769cd1090ee",
+    "generator": "scripts/research/make_real_v2_split.py (tasks.json metadata only)",
+    "rule": "unit association group; stratum (flight directory, family key: motor / sensor / normal_full / normal_segment); within stratum order by sha256('real_v2|'+group), first floor(0.3n+0.5) groups sealed, remaining dev with dev_fold 0..4 round-robin in the same order",
+    "counts": "dev 320 cases (motor-stratum 158, sensor 112, normal_full 33, normal_segment 17), sealed 145 (66, 57, 15, 7); label_quarantine 5 dev / 4 sealed"
+  },
+  "population": {
+    "cases": "partition == dev and label_quarantine == false",
+    "windows": "ledgers/real_included_windows.csv rows of those cases (all supervised_valid); label qualified_y; window tensors from windows/<case>.npz matched by original_cache_index (y must equal qualified_y)",
+    "sealed": "never opened: no cases/ or windows/ npz of sealed cases is loaded; sealed rows are dropped from the ledger before any computation; the script asserts this"
+  },
+  "features_and_model": {
+    "features": "130-dim window statistics (mean, std, min, max, mean |diff| over 26 channels), identical to stats() in artifacts/ens_internal_test_v1_20261105/run_test.py",
+    "recipe": "HistGradientBoostingClassifier(max_iter=400, learning_rate=0.05, max_leaf_nodes=31, l2_regularization=1.0, random_state=0), sklearn defaults otherwise; no hyperparameter search",
+    "frozen_source_model_S": "artifacts/ens_internal_test_v1_20261105/gbt_full_train.pkl, sha256 df468524e2047205dd8422ab3e486ce7692f0ac312276e20394d6f88a1bb6774 (applied, never refit)",
+    "cv": "out-of-fold predictions over dev_fold 0..4 from the split file; group-disjoint by construction"
+  },
+  "reproduction_gate": "before any B0 metric: for every dev case with role_v1 in {adapt_normal, calibrate_normal}, the number of windows and the count of S probabilities >= 0.5 must equal the D0 row (windows, GBT_win_fp05) of artifacts/real_normal_adapt_v2_dev_20261106/real_dev_per_case.csv; any mismatch stops the run",
+  "analyses": {
+    "B0_1_session_shortcut": {
+      "task": "positive = windows of dev normal_full cases with normal_origin normal_flight; negative = windows with phase pre_fault from dev fault cases",
+      "weights": "class-balanced (each class total weight equal)",
+      "metric": "OOF AUC with association-group cluster bootstrap CI (2000, rng 20261108); per flight directory AUC (descriptive)",
+      "sensitivity": "negative restricted to pre_fault windows with window_end_row <= fault_onset_row - 250 (>= 5 s before reference onset)",
+      "descriptive": "S probability distribution on both populations (median, share >= 0.3744, share >= 0.5)",
+      "interpretation": "AUC point >= 0.80 strong session difference; 0.65-0.80 moderate; < 0.65 weak. Consequences are written into the B1 protocol after user review, not changed here."
+    },
+    "B0_2_separability": {
+      "arm_R": "Real-only GBT on dev windows, label qualified_y, weights as in gbt_full_train (fault 1; normal total = number of normal windows, split 50/50 between normal_origin normal_flight and normal_part_of_fault_case)",
+      "arm_S": "frozen source GBT on the same windows",
+      "metrics": {
+        "a_all": "AUC and AP, fault vs all normal windows",
+        "b_within_session": "AUC, fault windows vs pre_fault windows of dev fault cases (main separability number)",
+        "c_vs_normal_flight": "AUC, fault windows vs normal_flight windows; (c) - (b) reported as a session-inflation indicator",
+        "strata": "(a)-(c) separately for motor and sensor fault windows (normal side unchanged)",
+        "fpr_at_recall": "descriptive: thresholds on pooled OOF giving fault recall 0.5 and 0.8; normal FPR per normal population (normal_full flights, supplemental normal segments, pre_fault, post_fault_normal, transition with qualified_y 0); note supplemental segments carry normal_origin normal_flight in the ledger",
+        "ci": "association-group cluster bootstrap (2000, rng 20261108) for every AUC"
+      },
+      "b1_recommendation_rule": "GO if arm R (b) pooled AUC point >= 0.75; STOP (back to data) if arm R (b) pooled CI upper < 0.65; otherwise user decision. Motor and sensor (b) are reported; a stratum with point < 0.65 is flagged as not supported in B1. This is a recommendation to the user, not an automatic launch."
+    },
+    "B0_3_label_and_exposure_audit": [
+      "per family: dev cases, windows by phase and qualified_y, cases with zero pre_fault windows",
+      "per fault case: fault_onset_row x 0.02 s (pre-fault length), distribution per family and flight directory",
+      "post_fault_normal and transition windows: counts and which cases",
+      "valid exposure hours (row_input_valid & row_label_valid, x 0.02 s / 3600) for dev normal_full flights and for pre-fault segments of dev fault cases",
+      "per dev_fold: cases and windows by family"
+    ]
+  },
+  "not_allowed": [
+    "opening any sealed-partition case or window file, or computing anything on sealed ledger rows",
+    "the old internal test; source val/test changes",
+    "hyperparameter or weight search; feature changes; relabelling or excluding cases after seeing results",
+    "event replay, operating-point choice, M0/MSTCA inference, GPU, T1 training",
+    "starting B1"
+  ],
+  "outputs": "artifacts/real_v2_b0_diagnostics/ (results.json, oof_predictions.csv, label_audit.csv, reproduction_gate.json, run.log, execution_notes.md); script scripts/research/real_v2_b0_diagnostics.py; report docs/research/2026-11-08/跨域B0诊断结果_v1.md"
+}
