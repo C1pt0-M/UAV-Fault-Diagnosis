@@ -1,0 +1,35 @@
+{
+  "metadata_note": "All52 selected case_records were read during preparation;61_1 once additionally for schema; all265 eligible fault-case metadata read during audit. No nonselected payloads opened.",
+  "selected_case_record_preparation_unique": 52,
+  "additional_schema_sample": "REAL/hover/gyroscope/61_1",
+  "other_metadata": [
+    {
+      "path": "D:\\UAV-Fault-Diagnosis\\configs\\data\\real_v2_split.csv",
+      "purpose": "eligible whitelist metadata"
+    },
+    {
+      "path": "D:\\UAV-Fault-Diagnosis\\artifacts\\real_labeltime_repair_v1_20261031\\bag_verification\\case_results.jsonl",
+      "purpose": "select only52 case records before consulting reference values"
+    },
+    {
+      "path": "D:\\UAV-Fault-Diagnosis\\docs\\research\\2026-10-31\\real_labeltime_repair_v1.md",
+      "purpose": "label-reference convention and provenance; no performance data"
+    },
+    {
+      "path": "D:\\UAV-Fault-Diagnosis\\scripts\\data\\repair_real_labeltime.py",
+      "purpose": "read label convention only, not executed"
+    },
+    {
+      "path": "D:\\UAV-Fault-Diagnosis\\scripts\\data\\build_full_causal_input.py",
+      "purpose": "read build convention only, not executed"
+    }
+  ],
+  "B1_input_files": [
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\real_v2_b1_learning_curve\\events_per_case.csv",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\real_v2_b1_learning_curve\\results.json",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\real_v2_b1_learning_curve\\paired_case_AUC.csv",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\real_v2_b1_learning_curve\\execution_notes.md",
+    "D:\\UAV-Fault-Diagnosis\\artifacts\\real_v2_b1_learning_curve\\receipt.json"
+  ],
+  "input_contract_read_by_read_tool_once_before_guard": "D:\\UAV-Data\\causal_input_v1\\input_contract.json"
+}

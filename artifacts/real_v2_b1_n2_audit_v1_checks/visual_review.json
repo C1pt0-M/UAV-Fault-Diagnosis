@@ -1,0 +1,15 @@
+{
+  "all_four_reviewed_pass": true,
+  "revision": "r2",
+  "reviewed_cases": ["REAL/waypoint/motor/117_2", "REAL/waypoint/motor/124_1", "REAL/waypoint/motor/114_1", "REAL/waypoint/accelerometer/195_1"],
+  "first_revision_issue": "Machine QA empty but AI review noted first-axis legend could cover control spikes; retained original PNGs and moved shared legend outside all data axes.",
+  "checks": {
+    "glyphs_and_clipping": "PASS",
+    "legend_outside_data": "PASS",
+    "panels_aligned": "PASS",
+    "same_channel_units_and_colors": "PASS",
+    "redundant_encoding": "black solid case, gray dashed control; R/S+R separate labeled score panels",
+    "display_time_range": "pre-reference crop and first 10 seconds post-reference; full arrays remain unchanged",
+    "causal_interpretation": "Plots show recorded dynamics, not physical-fault certification; native barometric level differs from the model's relative-first 3s-window altitude."
+  }
+}

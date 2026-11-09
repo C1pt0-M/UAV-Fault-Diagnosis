@@ -1,0 +1,168 @@
+{
+  "status": "COMPLETE_ROOT_CAUSE_AUDIT_UNRESOLVED_PHYSICAL_CAUSATION",
+  "created_utc": "2026-11-09T04:35:57.191105+00:00",
+  "audited_signal_cases": 52,
+  "alert_cases": 20,
+  "alert_groups": 19,
+  "control_cases": 32,
+  "events": 45,
+  "R_events": 18,
+  "S_plus_R_events": 27,
+  "primary_class_counts": {
+    "R": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0,
+      "E": 18
+    },
+    "S_plus_R": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0,
+      "E": 27
+    }
+  },
+  "possible_D_association_events": {
+    "R": 12,
+    "S_plus_R": 19
+  },
+  "primary_E_not_a_label_or_metric_change": true,
+  "shared_cases": 9,
+  "shared_components": 11,
+  "shared_interval_R_events": 13,
+  "shared_interval_S_plus_R_events": 11,
+  "exclusive_R_events": 5,
+  "exclusive_S_plus_R_events": 16,
+  "exclusive_event_ids": {
+    "R": [
+      "R:REAL/hover/magnetometer/89_1:1",
+      "R:REAL/hover/motor/17_1:1",
+      "R:REAL/velocity/barometer/301_1:1",
+      "R:REAL/waypoint/motor/118_1:1",
+      "R:REAL/waypoint/motor/123_1:2"
+    ],
+    "S_plus_R": [
+      "S_plus_R:REAL/acce/motor/429_1:1",
+      "S_plus_R:REAL/circling/gyroscope/376_1:1",
+      "S_plus_R:REAL/circling/magnetometer/385_1:1",
+      "S_plus_R:REAL/hover/barometer/72_1:1",
+      "S_plus_R:REAL/waypoint/accelerometer/195_1:1",
+      "S_plus_R:REAL/waypoint/motor/114_1:1",
+      "S_plus_R:REAL/waypoint/motor/114_1:2",
+      "S_plus_R:REAL/waypoint/motor/114_1:3",
+      "S_plus_R:REAL/waypoint/motor/116_1:1",
+      "S_plus_R:REAL/waypoint/motor/116_1:2",
+      "S_plus_R:REAL/waypoint/motor/117_1:2",
+      "S_plus_R:REAL/waypoint/motor/117_1:3",
+      "S_plus_R:REAL/waypoint/motor/120_1:1",
+      "S_plus_R:REAL/waypoint/motor/120_1:3",
+      "S_plus_R:REAL/waypoint/motor/124_1:3",
+      "S_plus_R:REAL/waypoint/motor/124_1:4"
+    ]
+  },
+  "reference_checks": {
+    "valid_row_disagreements": 0,
+    "all52_no_prior_received_injection_before_crop": true,
+    "max_reference_minus_ROS_first_s": 0.290308671000048,
+    "max_reference_minus_ULog_first_s": 0.0252929999999196,
+    "min_N2_event_end_before_ROS_first_s": 0.28583444700001337,
+    "physical_onset_certified": false,
+    "original_ROS_bag_redecoded_now": false
+  },
+  "waypoint_motor_date_exposure": [
+    {
+      "directory_date_proxy": "2023-05-22",
+      "cases": 4,
+      "groups": 4,
+      "N2_hours": 0.10597777777777777,
+      "R_event_cases": 1,
+      "S_plus_R_event_cases": 3,
+      "R_events": 1,
+      "S_plus_R_events": 8,
+      "R_events_per_hour": 9.43594044873139,
+      "S_plus_R_events_per_hour": 75.48752358985112
+    },
+    {
+      "directory_date_proxy": "2023-05-23",
+      "cases": 11,
+      "groups": 11,
+      "N2_hours": 0.22162222222222222,
+      "R_event_cases": 6,
+      "S_plus_R_event_cases": 5,
+      "R_events": 11,
+      "S_plus_R_events": 11,
+      "R_events_per_hour": 49.63401183194625,
+      "S_plus_R_events_per_hour": 49.63401183194625
+    },
+    {
+      "directory_date_proxy": "2023-05-24",
+      "cases": 1,
+      "groups": 1,
+      "N2_hours": 0.013555555555555557,
+      "R_event_cases": 0,
+      "S_plus_R_event_cases": 0,
+      "R_events": 0,
+      "S_plus_R_events": 0,
+      "R_events_per_hour": 0.0,
+      "S_plus_R_events_per_hour": 0.0
+    },
+    {
+      "directory_date_proxy": "2023-05-25",
+      "cases": 1,
+      "groups": 1,
+      "N2_hours": 0.013727777777777778,
+      "R_event_cases": 0,
+      "S_plus_R_event_cases": 0,
+      "R_events": 0,
+      "S_plus_R_events": 0,
+      "R_events_per_hour": 0.0,
+      "S_plus_R_events_per_hour": 0.0
+    },
+    {
+      "directory_date_proxy": "2023-05-26",
+      "cases": 34,
+      "groups": 32,
+      "N2_hours": 0.46244444444444444,
+      "R_event_cases": 0,
+      "S_plus_R_event_cases": 0,
+      "R_events": 0,
+      "S_plus_R_events": 0,
+      "R_events_per_hour": 0.0,
+      "S_plus_R_events_per_hour": 0.0
+    }
+  ],
+  "input_unique_counts_guarded": {
+    "input_contract": 1,
+    "B1_metadata": 1,
+    "case_metadata": 265,
+    "canonical_case": 52,
+    "existing_frame_score": 104,
+    "label_reference": 52,
+    "verified_ROS_bag_reference": 52,
+    "raw_ULog_injection_and_flight_status": 52,
+    "TestInfo": 52
+  },
+  "input_open_counts_guarded": {
+    "input_contract": 4,
+    "B1_metadata": 1,
+    "case_metadata": 265,
+    "canonical_case": 116,
+    "existing_frame_score": 232,
+    "label_reference": 52,
+    "verified_ROS_bag_reference": 52,
+    "raw_ULog_injection_and_flight_status": 53,
+    "TestInfo": 52
+  },
+  "input_access_note": "preparation metadata separately listed; log path unique counts can overlap raw ULog roles (124 parameter check rereads same file).",
+  "B1_protected_text_files_unchanged": 79,
+  "blocked_accesses": [],
+  "new_fits": 0,
+  "new_predictions": 0,
+  "new_thresholds": 0,
+  "event_timestamp_replay": "originalaggregate/originalevent_record AST only, saved scores at previously fixed eachfold onset;104 casearm counts matched",
+  "scalar_diagnostic_correction": "original float-boundary tables kept; integer-us variants are authoritative, strict full scored-normal support not mere crop coverage",
+  "tests": "6 initial pass;7 including integer-clock boundary regression pass",
+  "future_experiment_started": false
+}
