@@ -1,0 +1,5251 @@
+{
+  "status": "COMPLETE",
+  "protocol": "configs\\experiments\\real_v2_b1_learning_curve.json",
+  "config_sha256": "114ac5427187a6cb78ed1a77e39d8861194b4d25340f07c1debf43f3d1e1bd3c",
+  "startup": {
+    "dev_before_quarantine": 320,
+    "dev_quarantine": 5,
+    "eligible_cases": 315,
+    "eligible_groups": 288,
+    "split_sha256": "9232ee35e7a59f4fac4534fc8e98fc454380b51e6e5d8439aaa0f769cd1090ee"
+  },
+  "gate": {
+    "windows": 18480,
+    "max_abs_difference": 1.1102230246251565e-16,
+    "limit": 1e-06,
+    "labels_equal": true,
+    "pass": true
+  },
+  "recipe": {
+    "max_iter": 400,
+    "learning_rate": 0.05,
+    "max_leaf_nodes": 31,
+    "l2_regularization": 1.0,
+    "random_state": 0
+  },
+  "fractions": [
+    0.1,
+    0.25,
+    0.5,
+    1.0
+  ],
+  "window_metrics": [
+    {
+      "arm": "R",
+      "fraction": 0.1,
+      "repeat": 0,
+      "AP": 0.8144236980368408,
+      "AUC_b": 0.8911142150384586,
+      "threshold_recall08": 0.024523434128279308,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.21905748316934232,
+      "FPR_normal_segment": 0.2574002574002574,
+      "FPR_pre_fault": 0.19680930371253913,
+      "FPR_post_fault_normal": 0.3032904148783977,
+      "FPR_transition_normal": 0.6806342015855039
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.1,
+      "repeat": 0,
+      "AP": 0.8373282054656976,
+      "AUC_b": 0.9176345639693331,
+      "threshold_recall08": 0.0841771400726889,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.19212843086483689,
+      "FPR_normal_segment": 0.17374517374517376,
+      "FPR_pre_fault": 0.1207693454599672,
+      "FPR_post_fault_normal": 0.24845016690510252,
+      "FPR_transition_normal": 0.6262740656851642
+    },
+    {
+      "arm": "R",
+      "fraction": 0.1,
+      "repeat": 1,
+      "AP": 0.8309851981709234,
+      "AUC_b": 0.905398264901618,
+      "threshold_recall08": 0.03979273957738265,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.2242361470740549,
+      "FPR_normal_segment": 0.07850707850707851,
+      "FPR_pre_fault": 0.14566870433875057,
+      "FPR_post_fault_normal": 0.2608488316642823,
+      "FPR_transition_normal": 0.42242355605889015
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.1,
+      "repeat": 1,
+      "AP": 0.8459511623143496,
+      "AUC_b": 0.9212058582143358,
+      "threshold_recall08": 0.08962962013720135,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.21698601760745728,
+      "FPR_normal_segment": 0.05405405405405406,
+      "FPR_pre_fault": 0.12151483524675712,
+      "FPR_post_fault_normal": 0.2598950882212685,
+      "FPR_transition_normal": 0.45866364665911663
+    },
+    {
+      "arm": "R",
+      "fraction": 0.1,
+      "repeat": 2,
+      "AP": 0.8030756808042061,
+      "AUC_b": 0.8827988124598848,
+      "threshold_recall08": 0.005447708437101933,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.34334541688244435,
+      "FPR_normal_segment": 0.16473616473616473,
+      "FPR_pre_fault": 0.20724616072759802,
+      "FPR_post_fault_normal": 0.25608011444921314,
+      "FPR_transition_normal": 0.46998867497168745
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.1,
+      "repeat": 2,
+      "AP": 0.8375905373915365,
+      "AUC_b": 0.9045619196956196,
+      "threshold_recall08": 0.04487256940708426,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.22734334541688245,
+      "FPR_normal_segment": 0.14157014157014158,
+      "FPR_pre_fault": 0.11659460265394364,
+      "FPR_post_fault_normal": 0.17691940867906533,
+      "FPR_transition_normal": 0.3827859569648924
+    },
+    {
+      "arm": "R",
+      "fraction": 0.1,
+      "repeat": 3,
+      "AP": 0.8182588402594961,
+      "AUC_b": 0.9100357381800664,
+      "threshold_recall08": 0.05653842124099631,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.2713619886069394,
+      "FPR_normal_segment": 0.15958815958815958,
+      "FPR_pre_fault": 0.15103623080363798,
+      "FPR_post_fault_normal": 0.2832618025751073,
+      "FPR_transition_normal": 0.43148357870894677
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.1,
+      "repeat": 3,
+      "AP": 0.8482800695641919,
+      "AUC_b": 0.9295033249334541,
+      "threshold_recall08": 0.14337728564530605,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.20818228896944588,
+      "FPR_normal_segment": 0.07850707850707851,
+      "FPR_pre_fault": 0.11331444759206799,
+      "FPR_post_fault_normal": 0.28516928946113496,
+      "FPR_transition_normal": 0.39977349943374857
+    },
+    {
+      "arm": "R",
+      "fraction": 0.1,
+      "repeat": 4,
+      "AP": 0.8025160086300454,
+      "AUC_b": 0.8996236042281094,
+      "threshold_recall08": 0.030177285263999418,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.2351113412739513,
+      "FPR_normal_segment": 0.14285714285714285,
+      "FPR_pre_fault": 0.15864022662889518,
+      "FPR_post_fault_normal": 0.30042918454935624,
+      "FPR_transition_normal": 0.434881087202718
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.1,
+      "repeat": 4,
+      "AP": 0.8547127239404878,
+      "AUC_b": 0.9370183275325611,
+      "threshold_recall08": 0.1836972881444938,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.16830657690315898,
+      "FPR_normal_segment": 0.0888030888030888,
+      "FPR_pre_fault": 0.09706277024004771,
+      "FPR_post_fault_normal": 0.22079160705770148,
+      "FPR_transition_normal": 0.39637599093997733
+    },
+    {
+      "arm": "R",
+      "fraction": 0.25,
+      "repeat": 0,
+      "AP": 0.8933645577209909,
+      "AUC_b": 0.9496210865920998,
+      "threshold_recall08": 0.17326909525298123,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.1144484722941481,
+      "FPR_normal_segment": 0.07078507078507079,
+      "FPR_pre_fault": 0.0708215297450425,
+      "FPR_post_fault_normal": 0.13257033857892228,
+      "FPR_transition_normal": 0.2536806342015855
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.25,
+      "repeat": 0,
+      "AP": 0.9000625325108184,
+      "AUC_b": 0.9560472453080392,
+      "threshold_recall08": 0.27592210848912396,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.11859140341791817,
+      "FPR_normal_segment": 0.07207207207207207,
+      "FPR_pre_fault": 0.06455941553600715,
+      "FPR_post_fault_normal": 0.13257033857892228,
+      "FPR_transition_normal": 0.2865232163080408
+    },
+    {
+      "arm": "R",
+      "fraction": 0.25,
+      "repeat": 1,
+      "AP": 0.888904170128208,
+      "AUC_b": 0.9517409483634692,
+      "threshold_recall08": 0.17816239457700042,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.13257379596064214,
+      "FPR_normal_segment": 0.03346203346203346,
+      "FPR_pre_fault": 0.0679886685552408,
+      "FPR_post_fault_normal": 0.14067715784453982,
+      "FPR_transition_normal": 0.22310305775764439
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.25,
+      "repeat": 1,
+      "AP": 0.8883089420688735,
+      "AUC_b": 0.9509876422663428,
+      "threshold_recall08": 0.23841093538687796,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.14552045572242361,
+      "FPR_normal_segment": 0.05019305019305019,
+      "FPR_pre_fault": 0.06918145221410467,
+      "FPR_post_fault_normal": 0.15879828326180256,
+      "FPR_transition_normal": 0.2582106455266138
+    },
+    {
+      "arm": "R",
+      "fraction": 0.25,
+      "repeat": 2,
+      "AP": 0.8789668303352696,
+      "AUC_b": 0.9323311631025067,
+      "threshold_recall08": 0.07539761232013215,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.19368203003625065,
+      "FPR_normal_segment": 0.07722007722007722,
+      "FPR_pre_fault": 0.08453854182197704,
+      "FPR_post_fault_normal": 0.11015736766809728,
+      "FPR_transition_normal": 0.232163080407701
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.25,
+      "repeat": 2,
+      "AP": 0.8888731209193478,
+      "AUC_b": 0.9443680359952117,
+      "threshold_recall08": 0.1692365915119349,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.18539616778871051,
+      "FPR_normal_segment": 0.08494208494208494,
+      "FPR_pre_fault": 0.07961830922916356,
+      "FPR_post_fault_normal": 0.11731044349070101,
+      "FPR_transition_normal": 0.21630804077010193
+    },
+    {
+      "arm": "R",
+      "fraction": 0.25,
+      "repeat": 3,
+      "AP": 0.872448748272268,
+      "AUC_b": 0.9387141728450843,
+      "threshold_recall08": 0.17023619815516122,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.17607457276022787,
+      "FPR_normal_segment": 0.05148005148005148,
+      "FPR_pre_fault": 0.09080065603101238,
+      "FPR_post_fault_normal": 0.12923223652837387,
+      "FPR_transition_normal": 0.20271800679501698
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.25,
+      "repeat": 3,
+      "AP": 0.8883892505213217,
+      "AUC_b": 0.9473578604577884,
+      "threshold_recall08": 0.30014111582846514,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.16209218021750388,
+      "FPR_normal_segment": 0.03088803088803089,
+      "FPR_pre_fault": 0.08289846429103921,
+      "FPR_post_fault_normal": 0.12923223652837387,
+      "FPR_transition_normal": 0.21404303510758776
+    },
+    {
+      "arm": "R",
+      "fraction": 0.25,
+      "repeat": 4,
+      "AP": 0.8810380088820906,
+      "AUC_b": 0.9451542735064201,
+      "threshold_recall08": 0.18246194933111556,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.1517348524080787,
+      "FPR_normal_segment": 0.05276705276705277,
+      "FPR_pre_fault": 0.07723274191143581,
+      "FPR_post_fault_normal": 0.14163090128755365,
+      "FPR_transition_normal": 0.2740656851642129
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.25,
+      "repeat": 4,
+      "AP": 0.8898550762475453,
+      "AUC_b": 0.9532937723486138,
+      "threshold_recall08": 0.3151406340474529,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.1258415328845158,
+      "FPR_normal_segment": 0.03732303732303732,
+      "FPR_pre_fault": 0.06679588489637692,
+      "FPR_post_fault_normal": 0.15069146399618502,
+      "FPR_transition_normal": 0.33861834654586637
+    },
+    {
+      "arm": "R",
+      "fraction": 0.5,
+      "repeat": 0,
+      "AP": 0.925597762959691,
+      "AUC_b": 0.9643406936105583,
+      "threshold_recall08": 0.33805688286785546,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.0647332988089073,
+      "FPR_normal_segment": 0.02702702702702703,
+      "FPR_pre_fault": 0.04875503205606083,
+      "FPR_post_fault_normal": 0.07963757749165475,
+      "FPR_transition_normal": 0.16534541336353342
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.5,
+      "repeat": 0,
+      "AP": 0.9281686449458181,
+      "AUC_b": 0.9675727991910241,
+      "threshold_recall08": 0.42897161690121505,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.05955463490419472,
+      "FPR_normal_segment": 0.02574002574002574,
+      "FPR_pre_fault": 0.042194721932309526,
+      "FPR_post_fault_normal": 0.0844062947067239,
+      "FPR_transition_normal": 0.16761041902604756
+    },
+    {
+      "arm": "R",
+      "fraction": 0.5,
+      "repeat": 1,
+      "AP": 0.9269243368700493,
+      "AUC_b": 0.9672547807212544,
+      "threshold_recall08": 0.3832217880938161,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.10253754531330916,
+      "FPR_normal_segment": 0.021879021879021878,
+      "FPR_pre_fault": 0.040405546444013715,
+      "FPR_post_fault_normal": 0.06342393896041965,
+      "FPR_transition_normal": 0.1347678369195923
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.5,
+      "repeat": 1,
+      "AP": 0.9229083110454953,
+      "AUC_b": 0.9668997144106423,
+      "threshold_recall08": 0.40476012736211453,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.07923355774210254,
+      "FPR_normal_segment": 0.029601029601029602,
+      "FPR_pre_fault": 0.04815864022662889,
+      "FPR_post_fault_normal": 0.08488316642823081,
+      "FPR_transition_normal": 0.17893544733861835
+    },
+    {
+      "arm": "R",
+      "fraction": 0.5,
+      "repeat": 2,
+      "AP": 0.9190804408706892,
+      "AUC_b": 0.9608332774879603,
+      "threshold_recall08": 0.26414803359146843,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.11393060590367685,
+      "FPR_normal_segment": 0.029601029601029602,
+      "FPR_pre_fault": 0.04845683614134486,
+      "FPR_post_fault_normal": 0.06247019551740582,
+      "FPR_transition_normal": 0.1710079275198188
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.5,
+      "repeat": 2,
+      "AP": 0.9195572018812113,
+      "AUC_b": 0.9615389751494012,
+      "threshold_recall08": 0.3575155383294399,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.09010875194199897,
+      "FPR_normal_segment": 0.04247104247104247,
+      "FPR_pre_fault": 0.0462203667809751,
+      "FPR_post_fault_normal": 0.0681926561754888,
+      "FPR_transition_normal": 0.159682899207248
+    },
+    {
+      "arm": "R",
+      "fraction": 0.5,
+      "repeat": 3,
+      "AP": 0.9132991448830274,
+      "AUC_b": 0.9634573035273,
+      "threshold_recall08": 0.34981320018834255,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.12635939927498704,
+      "FPR_normal_segment": 0.018018018018018018,
+      "FPR_pre_fault": 0.04666766065304905,
+      "FPR_post_fault_normal": 0.0681926561754888,
+      "FPR_transition_normal": 0.14722536806342015
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.5,
+      "repeat": 3,
+      "AP": 0.9195848600306961,
+      "AUC_b": 0.966070548448934,
+      "threshold_recall08": 0.42703043499057103,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.12739513205592956,
+      "FPR_normal_segment": 0.010296010296010296,
+      "FPR_pre_fault": 0.04651856269569107,
+      "FPR_post_fault_normal": 0.08202193609918931,
+      "FPR_transition_normal": 0.15741789354473387
+    },
+    {
+      "arm": "R",
+      "fraction": 0.5,
+      "repeat": 4,
+      "AP": 0.9194782281156321,
+      "AUC_b": 0.9636151733940637,
+      "threshold_recall08": 0.3415797450494661,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.12221646815121699,
+      "FPR_normal_segment": 0.014157014157014158,
+      "FPR_pre_fault": 0.05039510958699866,
+      "FPR_post_fault_normal": 0.06771578445398188,
+      "FPR_transition_normal": 0.17327293318233294
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.5,
+      "repeat": 4,
+      "AP": 0.9225006760071568,
+      "AUC_b": 0.9653561768882485,
+      "threshold_recall08": 0.44670380787643643,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.11755567063697565,
+      "FPR_normal_segment": 0.029601029601029602,
+      "FPR_pre_fault": 0.04771134635455494,
+      "FPR_post_fault_normal": 0.06676204101096805,
+      "FPR_transition_normal": 0.15628539071347677
+    },
+    {
+      "arm": "R",
+      "fraction": 1.0,
+      "repeat": 0,
+      "AP": 0.9498429507546189,
+      "AUC_b": 0.9750560710005208,
+      "threshold_recall08": 0.5709344777577784,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.033661315380631794,
+      "FPR_normal_segment": 0.010296010296010296,
+      "FPR_pre_fault": 0.02803041598330103,
+      "FPR_post_fault_normal": 0.03338102050548403,
+      "FPR_transition_normal": 0.08380520951302378
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 1.0,
+      "repeat": 0,
+      "AP": 0.9471604966857226,
+      "AUC_b": 0.9738885984657244,
+      "threshold_recall08": 0.576993524649236,
+      "actual_recall": 0.8,
+      "FPR_normal_full": 0.03003625064733299,
+      "FPR_normal_segment": 0.010296010296010296,
+      "FPR_pre_fault": 0.0339943342776204,
+      "FPR_post_fault_normal": 0.04339532665712923,
+      "FPR_transition_normal": 0.10305775764439411
+    }
+  ],
+  "S_window_reference": {
+    "arm": "S",
+    "fraction": 1.0,
+    "repeat": 0,
+    "AP": 0.5107737165599988,
+    "AUC_b": 0.7571190109206597,
+    "threshold_recall08": 0.9982026988922911,
+    "actual_recall": 0.8,
+    "FPR_normal_full": 0.7628171931641636,
+    "FPR_normal_segment": 0.6138996138996139,
+    "FPR_pre_fault": 0.48427016549873264,
+    "FPR_post_fault_normal": 0.8140200286123033,
+    "FPR_transition_normal": 0.9026047565118913
+  },
+  "H1": {
+    "fractions": {
+      "0.1": {
+        "repeat_mean_delta_AP": 0.030920654554950456,
+        "ci95": [
+          0.020727009301199424,
+          0.041931451609280315
+        ],
+        "undefined_replicates": 0,
+        "primary": false,
+        "holds": null
+      },
+      "0.25": {
+        "repeat_mean_delta_AP": 0.00815332138581586,
+        "ci95": [
+          0.002775112482339398,
+          0.013715974146905346
+        ],
+        "undefined_replicates": 0,
+        "primary": true,
+        "holds": true
+      },
+      "0.5": {
+        "repeat_mean_delta_AP": 0.0016679560422578454,
+        "ci95": [
+          -0.0022285431504619436,
+          0.005701377138581954
+        ],
+        "undefined_replicates": 0,
+        "primary": false,
+        "holds": null
+      },
+      "1.0": {
+        "repeat_mean_delta_AP": -0.002682454068896001,
+        "ci95": [
+          -0.006355980726850219,
+          0.0009327428885951914
+        ],
+        "undefined_replicates": 0,
+        "primary": false,
+        "holds": null
+      }
+    },
+    "replicates": 2000,
+    "rng_seed": 20261108,
+    "groups": 288,
+    "statistic": "paired group resampling, AP per arm/repeat recomputed; mean delta over repetitions",
+    "no_drop_redraw_pseudocount": true
+  },
+  "onset_selection": [
+    {
+      "onset_th": 0.85,
+      "no_feasible_onset": false,
+      "tied_onsets_primary": [
+        0.85
+      ],
+      "tied_onsets_after_detection": [
+        0.85
+      ],
+      "inner": {
+        "onset_th": 0.85,
+        "N1": {
+          "events": 11,
+          "normal_frames": 79059,
+          "hours": 0.4392166666666667,
+          "rate": 25.044586954046977
+        },
+        "N2": {
+          "events": 24,
+          "normal_frames": 352733,
+          "hours": 1.9596277777777777,
+          "rate": 12.247223820850332
+        },
+        "post": {
+          "events": 8,
+          "normal_frames": 195761,
+          "hours": 1.0875611111111112,
+          "rate": 7.355908480238658
+        },
+        "supplement": {
+          "events": 1,
+          "normal_frames": 17654,
+          "hours": 0.09807777777777778,
+          "rate": 10.195989577432876
+        },
+        "motor": {
+          "cases": 122,
+          "detected": 113,
+          "detection": 0.9262295081967213,
+          "latency_median_s": 2.960000000000008,
+          "latency_p90_s": 13.783999999999967
+        },
+        "sensor": {
+          "cases": 88,
+          "detected": 71,
+          "detection": 0.8068181818181818,
+          "latency_median_s": 2.3999999999999915,
+          "latency_p90_s": 23.899999999999977
+        }
+      },
+      "supplement1_fallback_A": true,
+      "arm": "R",
+      "outer_fold": 0
+    },
+    {
+      "onset_th": 0.7,
+      "no_feasible_onset": false,
+      "tied_onsets_primary": [
+        0.7
+      ],
+      "tied_onsets_after_detection": [
+        0.7
+      ],
+      "inner": {
+        "onset_th": 0.7,
+        "N1": {
+          "events": 18,
+          "normal_frames": 79059,
+          "hours": 0.4392166666666667,
+          "rate": 40.9820513793496
+        },
+        "N2": {
+          "events": 35,
+          "normal_frames": 352733,
+          "hours": 1.9596277777777777,
+          "rate": 17.860534738740068
+        },
+        "post": {
+          "events": 19,
+          "normal_frames": 195761,
+          "hours": 1.0875611111111112,
+          "rate": 17.470282640566815
+        },
+        "supplement": {
+          "events": 1,
+          "normal_frames": 17654,
+          "hours": 0.09807777777777778,
+          "rate": 10.195989577432876
+        },
+        "motor": {
+          "cases": 122,
+          "detected": 118,
+          "detection": 0.9672131147540983,
+          "latency_median_s": 2.549999999999983,
+          "latency_p90_s": 10.492000000000006
+        },
+        "sensor": {
+          "cases": 88,
+          "detected": 72,
+          "detection": 0.8181818181818182,
+          "latency_median_s": 2.2200000000000273,
+          "latency_p90_s": 22.273999999999994
+        }
+      },
+      "supplement1_fallback_A": true,
+      "arm": "S_plus_R",
+      "outer_fold": 0
+    },
+    {
+      "onset_th": 0.85,
+      "no_feasible_onset": false,
+      "tied_onsets_primary": [
+        0.85
+      ],
+      "tied_onsets_after_detection": [
+        0.85
+      ],
+      "inner": {
+        "onset_th": 0.85,
+        "N1": {
+          "events": 9,
+          "normal_frames": 100613,
+          "hours": 0.5589611111111111,
+          "rate": 16.10129903690378
+        },
+        "N2": {
+          "events": 17,
+          "normal_frames": 353047,
+          "hours": 1.9613722222222223,
+          "rate": 8.667401224199612
+        },
+        "post": {
+          "events": 8,
+          "normal_frames": 196147,
+          "hours": 1.0897055555555555,
+          "rate": 7.341432700984465
+        },
+        "supplement": {
+          "events": 0,
+          "normal_frames": 16976,
+          "hours": 0.09431111111111111,
+          "rate": 0.0
+        },
+        "motor": {
+          "cases": 122,
+          "detected": 115,
+          "detection": 0.9426229508196722,
+          "latency_median_s": 1.9399999999999977,
+          "latency_p90_s": 10.316000000000008
+        },
+        "sensor": {
+          "cases": 88,
+          "detected": 72,
+          "detection": 0.8181818181818182,
+          "latency_median_s": 2.4499999999999886,
+          "latency_p90_s": 25.992000000000004
+        }
+      },
+      "supplement1_fallback_A": true,
+      "arm": "R",
+      "outer_fold": 1
+    },
+    {
+      "onset_th": 0.85,
+      "no_feasible_onset": false,
+      "tied_onsets_primary": [
+        0.85
+      ],
+      "tied_onsets_after_detection": [
+        0.85
+      ],
+      "inner": {
+        "onset_th": 0.85,
+        "N1": {
+          "events": 4,
+          "normal_frames": 100613,
+          "hours": 0.5589611111111111,
+          "rate": 7.156132905290569
+        },
+        "N2": {
+          "events": 11,
+          "normal_frames": 353047,
+          "hours": 1.9613722222222223,
+          "rate": 5.6083184391879835
+        },
+        "post": {
+          "events": 8,
+          "normal_frames": 196147,
+          "hours": 1.0897055555555555,
+          "rate": 7.341432700984465
+        },
+        "supplement": {
+          "events": 0,
+          "normal_frames": 16976,
+          "hours": 0.09431111111111111,
+          "rate": 0.0
+        },
+        "motor": {
+          "cases": 122,
+          "detected": 115,
+          "detection": 0.9426229508196722,
+          "latency_median_s": 3.079999999999984,
+          "latency_p90_s": 12.24
+        },
+        "sensor": {
+          "cases": 88,
+          "detected": 73,
+          "detection": 0.8295454545454546,
+          "latency_median_s": 2.359999999999985,
+          "latency_p90_s": 21.20799999999999
+        }
+      },
+      "supplement1_fallback_A": true,
+      "arm": "S_plus_R",
+      "outer_fold": 1
+    },
+    {
+      "onset_th": 0.85,
+      "no_feasible_onset": false,
+      "tied_onsets_primary": [
+        0.85
+      ],
+      "tied_onsets_after_detection": [
+        0.85
+      ],
+      "inner": {
+        "onset_th": 0.85,
+        "N1": {
+          "events": 11,
+          "normal_frames": 100403,
+          "hours": 0.5577944444444445,
+          "rate": 19.720526279095246
+        },
+        "N2": {
+          "events": 20,
+          "normal_frames": 350759,
+          "hours": 1.9486611111111112,
+          "rate": 10.263457245573171
+        },
+        "post": {
+          "events": 16,
+          "normal_frames": 200514,
+          "hours": 1.1139666666666668,
+          "rate": 14.363086866752447
+        },
+        "supplement": {
+          "events": 0,
+          "normal_frames": 17429,
+          "hours": 0.09682777777777778,
+          "rate": 0.0
+        },
+        "motor": {
+          "cases": 121,
+          "detected": 115,
+          "detection": 0.9504132231404959,
+          "latency_median_s": 3.0,
+          "latency_p90_s": 10.892000000000008
+        },
+        "sensor": {
+          "cases": 91,
+          "detected": 76,
+          "detection": 0.8351648351648352,
+          "latency_median_s": 2.809999999999988,
+          "latency_p90_s": 13.829999999999998
+        }
+      },
+      "supplement1_fallback_A": true,
+      "arm": "R",
+      "outer_fold": 2
+    },
+    {
+      "onset_th": 0.8,
+      "no_feasible_onset": false,
+      "tied_onsets_primary": [
+        0.8
+      ],
+      "tied_onsets_after_detection": [
+        0.8
+      ],
+      "inner": {
+        "onset_th": 0.8,
+        "N1": {
+          "events": 13,
+          "normal_frames": 100403,
+          "hours": 0.5577944444444445,
+          "rate": 23.306076511658016
+        },
+        "N2": {
+          "events": 25,
+          "normal_frames": 350759,
+          "hours": 1.9486611111111112,
+          "rate": 12.829321556966464
+        },
+        "post": {
+          "events": 21,
+          "normal_frames": 200514,
+          "hours": 1.1139666666666668,
+          "rate": 18.851551512612584
+        },
+        "supplement": {
+          "events": 0,
+          "normal_frames": 17429,
+          "hours": 0.09682777777777778,
+          "rate": 0.0
+        },
+        "motor": {
+          "cases": 121,
+          "detected": 115,
+          "detection": 0.9504132231404959,
+          "latency_median_s": 3.0,
+          "latency_p90_s": 12.276000000000002
+        },
+        "sensor": {
+          "cases": 91,
+          "detected": 76,
+          "detection": 0.8351648351648352,
+          "latency_median_s": 1.460000000000008,
+          "latency_p90_s": 11.100000000000023
+        }
+      },
+      "supplement1_fallback_A": true,
+      "arm": "S_plus_R",
+      "outer_fold": 2
+    },
+    {
+      "onset_th": 0.85,
+      "no_feasible_onset": false,
+      "tied_onsets_primary": [
+        0.85
+      ],
+      "tied_onsets_after_detection": [
+        0.85
+      ],
+      "inner": {
+        "onset_th": 0.85,
+        "N1": {
+          "events": 12,
+          "normal_frames": 101685,
+          "hours": 0.5649166666666667,
+          "rate": 21.24207110193244
+        },
+        "N2": {
+          "events": 15,
+          "normal_frames": 352227,
+          "hours": 1.9568166666666666,
+          "rate": 7.665511161835975
+        },
+        "post": {
+          "events": 5,
+          "normal_frames": 176006,
+          "hours": 0.9778111111111111,
+          "rate": 5.113462041066782
+        },
+        "supplement": {
+          "events": 3,
+          "normal_frames": 22259,
+          "hours": 0.12366111111111111,
+          "rate": 24.259849948335503
+        },
+        "motor": {
+          "cases": 125,
+          "detected": 118,
+          "detection": 0.944,
+          "latency_median_s": 3.1500000000000057,
+          "latency_p90_s": 13.928000000000003
+        },
+        "sensor": {
+          "cases": 88,
+          "detected": 73,
+          "detection": 0.8295454545454546,
+          "latency_median_s": 3.219999999999999,
+          "latency_p90_s": 21.28400000000001
+        }
+      },
+      "supplement1_fallback_A": true,
+      "arm": "R",
+      "outer_fold": 3
+    },
+    {
+      "onset_th": 0.85,
+      "no_feasible_onset": false,
+      "tied_onsets_primary": [
+        0.85
+      ],
+      "tied_onsets_after_detection": [
+        0.85
+      ],
+      "inner": {
+        "onset_th": 0.85,
+        "N1": {
+          "events": 6,
+          "normal_frames": 101685,
+          "hours": 0.5649166666666667,
+          "rate": 10.62103555096622
+        },
+        "N2": {
+          "events": 15,
+          "normal_frames": 352227,
+          "hours": 1.9568166666666666,
+          "rate": 7.665511161835975
+        },
+        "post": {
+          "events": 10,
+          "normal_frames": 176006,
+          "hours": 0.9778111111111111,
+          "rate": 10.226924082133564
+        },
+        "supplement": {
+          "events": 1,
+          "normal_frames": 22259,
+          "hours": 0.12366111111111111,
+          "rate": 8.086616649445169
+        },
+        "motor": {
+          "cases": 125,
+          "detected": 116,
+          "detection": 0.928,
+          "latency_median_s": 3.1200000000000045,
+          "latency_p90_s": 12.490000000000009
+        },
+        "sensor": {
+          "cases": 88,
+          "detected": 76,
+          "detection": 0.8636363636363636,
+          "latency_median_s": 2.6899999999999835,
+          "latency_p90_s": 22.89
+        }
+      },
+      "supplement1_fallback_A": true,
+      "arm": "S_plus_R",
+      "outer_fold": 3
+    },
+    {
+      "onset_th": 0.9,
+      "no_feasible_onset": false,
+      "tied_onsets_primary": [
+        0.9
+      ],
+      "tied_onsets_after_detection": [
+        0.9
+      ],
+      "inner": {
+        "onset_th": 0.9,
+        "N1": {
+          "events": 12,
+          "normal_frames": 99276,
+          "hours": 0.5515333333333333,
+          "rate": 21.757524477215036
+        },
+        "N2": {
+          "events": 20,
+          "normal_frames": 351322,
+          "hours": 1.951788888888889,
+          "rate": 10.247009865593387
+        },
+        "post": {
+          "events": 9,
+          "normal_frames": 193024,
+          "hours": 1.0723555555555555,
+          "rate": 8.392738726790451
+        },
+        "supplement": {
+          "events": 1,
+          "normal_frames": 21790,
+          "hours": 0.12105555555555556,
+          "rate": 8.260670032124828
+        },
+        "motor": {
+          "cases": 126,
+          "detected": 120,
+          "detection": 0.9523809523809523,
+          "latency_median_s": 3.0600000000000023,
+          "latency_p90_s": 12.21400000000004
+        },
+        "sensor": {
+          "cases": 89,
+          "detected": 74,
+          "detection": 0.8314606741573034,
+          "latency_median_s": 2.4399999999999977,
+          "latency_p90_s": 19.850000000000005
+        }
+      },
+      "supplement1_fallback_A": true,
+      "arm": "R",
+      "outer_fold": 4
+    },
+    {
+      "onset_th": 0.85,
+      "no_feasible_onset": false,
+      "tied_onsets_primary": [
+        0.85
+      ],
+      "tied_onsets_after_detection": [
+        0.85
+      ],
+      "inner": {
+        "onset_th": 0.85,
+        "N1": {
+          "events": 7,
+          "normal_frames": 99276,
+          "hours": 0.5515333333333333,
+          "rate": 12.691889278375438
+        },
+        "N2": {
+          "events": 15,
+          "normal_frames": 351322,
+          "hours": 1.951788888888889,
+          "rate": 7.685257399195041
+        },
+        "post": {
+          "events": 4,
+          "normal_frames": 193024,
+          "hours": 1.0723555555555555,
+          "rate": 3.730106100795756
+        },
+        "supplement": {
+          "events": 2,
+          "normal_frames": 21790,
+          "hours": 0.12105555555555556,
+          "rate": 16.521340064249657
+        },
+        "motor": {
+          "cases": 126,
+          "detected": 118,
+          "detection": 0.9365079365079365,
+          "latency_median_s": 3.0400000000000205,
+          "latency_p90_s": 12.586000000000027
+        },
+        "sensor": {
+          "cases": 89,
+          "detected": 73,
+          "detection": 0.8202247191011236,
+          "latency_median_s": 2.0,
+          "latency_p90_s": 19.607999999999958
+        }
+      },
+      "supplement1_fallback_A": true,
+      "arm": "S_plus_R",
+      "outer_fold": 4
+    }
+  ],
+  "event": {
+    "R": {
+      "N1": {
+        "events": 8,
+        "normal_frames": 120259,
+        "hours": 0.6681055555555555,
+        "rate": 11.97415578044055
+      },
+      "N2": {
+        "events": 18,
+        "normal_frames": 440022,
+        "hours": 2.4445666666666668,
+        "rate": 7.3632682002263525
+      },
+      "post": {
+        "events": 11,
+        "normal_frames": 240363,
+        "hours": 1.33535,
+        "rate": 8.237540719661512
+      },
+      "supplement": {
+        "events": 2,
+        "normal_frames": 24027,
+        "hours": 0.13348333333333334,
+        "rate": 14.983143963041579
+      },
+      "motor": {
+        "cases": 154,
+        "detected": 146,
+        "detection": 0.948051948051948,
+        "latency_median_s": 2.3700000000000045,
+        "latency_p90_s": 12.799999999999997
+      },
+      "sensor": {
+        "cases": 111,
+        "detected": 93,
+        "detection": 0.8378378378378378,
+        "latency_median_s": 2.319999999999993,
+        "latency_p90_s": 21.192000000000007
+      }
+    },
+    "S_plus_R": {
+      "N1": {
+        "events": 6,
+        "normal_frames": 120259,
+        "hours": 0.6681055555555555,
+        "rate": 8.980616835330412
+      },
+      "N2": {
+        "events": 27,
+        "normal_frames": 440022,
+        "hours": 2.4445666666666668,
+        "rate": 11.044902300339528
+      },
+      "post": {
+        "events": 14,
+        "normal_frames": 240363,
+        "hours": 1.33535,
+        "rate": 10.484142734114652
+      },
+      "supplement": {
+        "events": 2,
+        "normal_frames": 24027,
+        "hours": 0.13348333333333334,
+        "rate": 14.983143963041579
+      },
+      "motor": {
+        "cases": 154,
+        "detected": 149,
+        "detection": 0.9675324675324676,
+        "latency_median_s": 3.039999999999992,
+        "latency_p90_s": 12.596000000000002
+      },
+      "sensor": {
+        "cases": 111,
+        "detected": 95,
+        "detection": 0.8558558558558559,
+        "latency_median_s": 1.9000000000000057,
+        "latency_p90_s": 19.720000000000006
+      }
+    },
+    "S": {
+      "N1": {
+        "events": 76,
+        "normal_frames": 120259,
+        "hours": 0.6681055555555555,
+        "rate": 113.75447991418521
+      },
+      "N2": {
+        "events": 181,
+        "normal_frames": 440022,
+        "hours": 2.4445666666666668,
+        "rate": 74.04175245783165
+      },
+      "post": {
+        "events": 61,
+        "normal_frames": 240363,
+        "hours": 1.33535,
+        "rate": 45.68090762721384
+      },
+      "supplement": {
+        "events": 22,
+        "normal_frames": 24027,
+        "hours": 0.13348333333333334,
+        "rate": 164.81458359345737
+      },
+      "motor": {
+        "cases": 154,
+        "detected": 120,
+        "detection": 0.7792207792207793,
+        "latency_median_s": 18.470000000000013,
+        "latency_p90_s": 45.100000000000016
+      },
+      "sensor": {
+        "cases": 111,
+        "detected": 76,
+        "detection": 0.6846846846846847,
+        "latency_median_s": 20.180000000000007,
+        "latency_p90_s": 38.82000000000001
+      }
+    }
+  },
+  "event_CI": {
+    "replicates": 2000,
+    "rng_seed": 20261108,
+    "groups": 288,
+    "fixed_selected_onsets": true,
+    "no_drop_redraw_pseudocount": true,
+    "arms": {
+      "R": {
+        "N1/rate": {
+          "ci95": [
+            3.214712988448718,
+            22.80802796722235
+          ],
+          "undefined_replicates": 0
+        },
+        "N2/rate": {
+          "ci95": [
+            2.8613251415435834,
+            12.48247392037359
+          ],
+          "undefined_replicates": 0
+        },
+        "motor/detection": {
+          "ci95": [
+            0.9113886600254663,
+            0.980135718020216
+          ],
+          "undefined_replicates": 0
+        },
+        "sensor/detection": {
+          "ci95": [
+            0.7685019841269841,
+            0.9016393442622951
+          ],
+          "undefined_replicates": 0
+        },
+        "motor/latency_median_s": {
+          "ci95": [
+            1.6200000000000045,
+            3.1602500000000098
+          ],
+          "undefined_replicates": 0
+        },
+        "motor/latency_p90_s": {
+          "ci95": [
+            10.220000000000027,
+            20.426000000000016
+          ],
+          "undefined_replicates": 0
+        },
+        "sensor/latency_median_s": {
+          "ci95": [
+            1.660000000000025,
+            4.902999999999996
+          ],
+          "undefined_replicates": 0
+        },
+        "sensor/latency_p90_s": {
+          "ci95": [
+            12.113649999999998,
+            23.931999999999984
+          ],
+          "undefined_replicates": 0
+        }
+      },
+      "S_plus_R": {
+        "N1/rate": {
+          "ci95": [
+            2.1513010937084296,
+            17.376239481109078
+          ],
+          "undefined_replicates": 0
+        },
+        "N2/rate": {
+          "ci95": [
+            5.06342151721669,
+            17.64417852054964
+          ],
+          "undefined_replicates": 0
+        },
+        "motor/detection": {
+          "ci95": [
+            0.9366197183098591,
+            0.9931972789115646
+          ],
+          "undefined_replicates": 0
+        },
+        "sensor/detection": {
+          "ci95": [
+            0.786514126759027,
+            0.9183673469387755
+          ],
+          "undefined_replicates": 0
+        },
+        "motor/latency_median_s": {
+          "ci95": [
+            2.420000000000016,
+            3.8104999999999993
+          ],
+          "undefined_replicates": 0
+        },
+        "motor/latency_p90_s": {
+          "ci95": [
+            9.58999999999999,
+            17.934000000000015
+          ],
+          "undefined_replicates": 0
+        },
+        "sensor/latency_median_s": {
+          "ci95": [
+            1.3900000000000006,
+            3.920000000000016
+          ],
+          "undefined_replicates": 0
+        },
+        "sensor/latency_p90_s": {
+          "ci95": [
+            9.700000000000017,
+            24.480000000000018
+          ],
+          "undefined_replicates": 0
+        }
+      },
+      "S": {
+        "N1/rate": {
+          "ci95": [
+            103.58541517706911,
+            129.1750225048352
+          ],
+          "undefined_replicates": 0
+        },
+        "N2/rate": {
+          "ci95": [
+            68.96906837590628,
+            78.79172908320966
+          ],
+          "undefined_replicates": 0
+        },
+        "motor/detection": {
+          "ci95": [
+            0.7124183006535948,
+            0.8466666666666667
+          ],
+          "undefined_replicates": 0
+        },
+        "sensor/detection": {
+          "ci95": [
+            0.5945945945945946,
+            0.7706422018348624
+          ],
+          "undefined_replicates": 0
+        },
+        "motor/latency_median_s": {
+          "ci95": [
+            13.240000000000009,
+            22.32024999999999
+          ],
+          "undefined_replicates": 0
+        },
+        "motor/latency_p90_s": {
+          "ci95": [
+            38.21714999999998,
+            49.220000000000006
+          ],
+          "undefined_replicates": 0
+        },
+        "sensor/latency_median_s": {
+          "ci95": [
+            15.719999999999999,
+            26.271250000000002
+          ],
+          "undefined_replicates": 0
+        },
+        "sensor/latency_p90_s": {
+          "ci95": [
+            34.52000000000001,
+            44.66
+          ],
+          "undefined_replicates": 0
+        }
+      }
+    }
+  },
+  "H2": {
+    "arms": {
+      "R": {
+        "holds": false,
+        "checks": {
+          "N1": false,
+          "N2": false,
+          "motor": true,
+          "sensor": true
+        },
+        "failed": [
+          "N1",
+          "N2"
+        ]
+      },
+      "S_plus_R": {
+        "holds": false,
+        "checks": {
+          "N1": false,
+          "N2": false,
+          "motor": true,
+          "sensor": true
+        },
+        "failed": [
+          "N1",
+          "N2"
+        ]
+      }
+    },
+    "line_holds": false
+  },
+  "descriptive": {
+    "by_flight": {
+      "R": {
+        "acce": {
+          "N1": {
+            "events": 3,
+            "normal_frames": 12795,
+            "hours": 0.07108333333333333,
+            "rate": 42.20398593200469
+          },
+          "N2": {
+            "events": 0,
+            "normal_frames": 21061,
+            "hours": 0.11700555555555556,
+            "rate": 0.0
+          },
+          "post": {
+            "events": 0,
+            "normal_frames": 10329,
+            "hours": 0.057383333333333335,
+            "rate": 0.0
+          },
+          "supplement": {
+            "events": 0,
+            "normal_frames": 0,
+            "hours": 0.0,
+            "rate": null
+          },
+          "motor": {
+            "cases": 15,
+            "detected": 12,
+            "detection": 0.8,
+            "latency_median_s": 0.5999999999999943,
+            "latency_p90_s": 2.5539999999999967
+          },
+          "sensor": {
+            "cases": 12,
+            "detected": 8,
+            "detection": 0.6666666666666666,
+            "latency_median_s": 1.6800000000000068,
+            "latency_p90_s": 4.122000000000007
+          }
+        },
+        "circling": {
+          "N1": {
+            "events": 2,
+            "normal_frames": 31112,
+            "hours": 0.17284444444444444,
+            "rate": 11.571097968629468
+          },
+          "N2": {
+            "events": 1,
+            "normal_frames": 113436,
+            "hours": 0.6302000000000001,
+            "rate": 1.586797841954935
+          },
+          "post": {
+            "events": 3,
+            "normal_frames": 70261,
+            "hours": 0.3903388888888889,
+            "rate": 7.685629296480267
+          },
+          "supplement": {
+            "events": 0,
+            "normal_frames": 4363,
+            "hours": 0.02423888888888889,
+            "rate": 0.0
+          },
+          "motor": {
+            "cases": 31,
+            "detected": 29,
+            "detection": 0.9354838709677419,
+            "latency_median_s": 2.719999999999999,
+            "latency_p90_s": 6.183999999999991
+          },
+          "sensor": {
+            "cases": 18,
+            "detected": 18,
+            "detection": 1.0,
+            "latency_median_s": 1.490000000000009,
+            "latency_p90_s": 15.96999999999999
+          }
+        },
+        "hover": {
+          "N1": {
+            "events": 0,
+            "normal_frames": 16155,
+            "hours": 0.08975000000000001,
+            "rate": 0.0
+          },
+          "N2": {
+            "events": 3,
+            "normal_frames": 54992,
+            "hours": 0.30551111111111107,
+            "rate": 9.819610125109106
+          },
+          "post": {
+            "events": 3,
+            "normal_frames": 38893,
+            "hours": 0.21607222222222222,
+            "rate": 13.884246522510477
+          },
+          "supplement": {
+            "events": 0,
+            "normal_frames": 0,
+            "hours": 0.0,
+            "rate": null
+          },
+          "motor": {
+            "cases": 29,
+            "detected": 29,
+            "detection": 1.0,
+            "latency_median_s": 2.3800000000000097,
+            "latency_p90_s": 21.895999999999994
+          },
+          "sensor": {
+            "cases": 36,
+            "detected": 28,
+            "detection": 0.7777777777777778,
+            "latency_median_s": 6.9199999999999875,
+            "latency_p90_s": 24.60199999999999
+          }
+        },
+        "velocity": {
+          "N1": {
+            "events": 0,
+            "normal_frames": 11240,
+            "hours": 0.06244444444444445,
+            "rate": 0.0
+          },
+          "N2": {
+            "events": 2,
+            "normal_frames": 27690,
+            "hours": 0.15383333333333335,
+            "rate": 13.001083423618635
+          },
+          "post": {
+            "events": 1,
+            "normal_frames": 18846,
+            "hours": 0.1047,
+            "rate": 9.551098376313275
+          },
+          "supplement": {
+            "events": 0,
+            "normal_frames": 614,
+            "hours": 0.0034111111111111113,
+            "rate": 0.0
+          },
+          "motor": {
+            "cases": 28,
+            "detected": 27,
+            "detection": 0.9642857142857143,
+            "latency_median_s": 2.960000000000008,
+            "latency_p90_s": 6.232000000000028
+          },
+          "sensor": {
+            "cases": 14,
+            "detected": 9,
+            "detection": 0.6428571428571429,
+            "latency_median_s": 2.960000000000008,
+            "latency_p90_s": 9.512000000000006
+          }
+        },
+        "waypoint": {
+          "N1": {
+            "events": 3,
+            "normal_frames": 48957,
+            "hours": 0.27198333333333335,
+            "rate": 11.030087627918377
+          },
+          "N2": {
+            "events": 12,
+            "normal_frames": 222843,
+            "hours": 1.2380166666666665,
+            "rate": 9.692922820102044
+          },
+          "post": {
+            "events": 4,
+            "normal_frames": 102034,
+            "hours": 0.5668555555555556,
+            "rate": 7.056471372287668
+          },
+          "supplement": {
+            "events": 2,
+            "normal_frames": 19050,
+            "hours": 0.10583333333333333,
+            "rate": 18.89763779527559
+          },
+          "motor": {
+            "cases": 51,
+            "detected": 49,
+            "detection": 0.9607843137254902,
+            "latency_median_s": 3.039999999999992,
+            "latency_p90_s": 14.252000000000026
+          },
+          "sensor": {
+            "cases": 31,
+            "detected": 30,
+            "detection": 0.967741935483871,
+            "latency_median_s": 2.1199999999999903,
+            "latency_p90_s": 14.47800000000001
+          }
+        }
+      },
+      "S_plus_R": {
+        "acce": {
+          "N1": {
+            "events": 2,
+            "normal_frames": 12795,
+            "hours": 0.07108333333333333,
+            "rate": 28.13599062133646
+          },
+          "N2": {
+            "events": 1,
+            "normal_frames": 21061,
+            "hours": 0.11700555555555556,
+            "rate": 8.546602725416648
+          },
+          "post": {
+            "events": 0,
+            "normal_frames": 10329,
+            "hours": 0.057383333333333335,
+            "rate": 0.0
+          },
+          "supplement": {
+            "events": 0,
+            "normal_frames": 0,
+            "hours": 0.0,
+            "rate": null
+          },
+          "motor": {
+            "cases": 15,
+            "detected": 15,
+            "detection": 1.0,
+            "latency_median_s": 0.47999999999998977,
+            "latency_p90_s": 3.8639999999999985
+          },
+          "sensor": {
+            "cases": 12,
+            "detected": 7,
+            "detection": 0.5833333333333334,
+            "latency_median_s": 1.3600000000000136,
+            "latency_p90_s": 5.8559999999999945
+          }
+        },
+        "circling": {
+          "N1": {
+            "events": 2,
+            "normal_frames": 31112,
+            "hours": 0.17284444444444444,
+            "rate": 11.571097968629468
+          },
+          "N2": {
+            "events": 3,
+            "normal_frames": 113436,
+            "hours": 0.6302000000000001,
+            "rate": 4.760393525864805
+          },
+          "post": {
+            "events": 4,
+            "normal_frames": 70261,
+            "hours": 0.3903388888888889,
+            "rate": 10.247505728640355
+          },
+          "supplement": {
+            "events": 0,
+            "normal_frames": 4363,
+            "hours": 0.02423888888888889,
+            "rate": 0.0
+          },
+          "motor": {
+            "cases": 31,
+            "detected": 30,
+            "detection": 0.967741935483871,
+            "latency_median_s": 3.0200000000000102,
+            "latency_p90_s": 7.036000000000017
+          },
+          "sensor": {
+            "cases": 18,
+            "detected": 18,
+            "detection": 1.0,
+            "latency_median_s": 1.609999999999971,
+            "latency_p90_s": 18.262000000000004
+          }
+        },
+        "hover": {
+          "N1": {
+            "events": 0,
+            "normal_frames": 16155,
+            "hours": 0.08975000000000001,
+            "rate": 0.0
+          },
+          "N2": {
+            "events": 2,
+            "normal_frames": 54992,
+            "hours": 0.30551111111111107,
+            "rate": 6.546406750072737
+          },
+          "post": {
+            "events": 3,
+            "normal_frames": 38893,
+            "hours": 0.21607222222222222,
+            "rate": 13.884246522510477
+          },
+          "supplement": {
+            "events": 0,
+            "normal_frames": 0,
+            "hours": 0.0,
+            "rate": null
+          },
+          "motor": {
+            "cases": 29,
+            "detected": 28,
+            "detection": 0.9655172413793104,
+            "latency_median_s": 3.279999999999987,
+            "latency_p90_s": 21.619999999999994
+          },
+          "sensor": {
+            "cases": 36,
+            "detected": 29,
+            "detection": 0.8055555555555556,
+            "latency_median_s": 5.9599999999999795,
+            "latency_p90_s": 22.903999999999993
+          }
+        },
+        "velocity": {
+          "N1": {
+            "events": 1,
+            "normal_frames": 11240,
+            "hours": 0.06244444444444445,
+            "rate": 16.01423487544484
+          },
+          "N2": {
+            "events": 1,
+            "normal_frames": 27690,
+            "hours": 0.15383333333333335,
+            "rate": 6.500541711809317
+          },
+          "post": {
+            "events": 2,
+            "normal_frames": 18846,
+            "hours": 0.1047,
+            "rate": 19.10219675262655
+          },
+          "supplement": {
+            "events": 0,
+            "normal_frames": 614,
+            "hours": 0.0034111111111111113,
+            "rate": 0.0
+          },
+          "motor": {
+            "cases": 28,
+            "detected": 27,
+            "detection": 0.9642857142857143,
+            "latency_median_s": 3.019999999999982,
+            "latency_p90_s": 5.820000000000016
+          },
+          "sensor": {
+            "cases": 14,
+            "detected": 10,
+            "detection": 0.7142857142857143,
+            "latency_median_s": 2.839999999999989,
+            "latency_p90_s": 6.698000000000004
+          }
+        },
+        "waypoint": {
+          "N1": {
+            "events": 1,
+            "normal_frames": 48957,
+            "hours": 0.27198333333333335,
+            "rate": 3.6766958759727926
+          },
+          "N2": {
+            "events": 20,
+            "normal_frames": 222843,
+            "hours": 1.2380166666666665,
+            "rate": 16.15487136683674
+          },
+          "post": {
+            "events": 5,
+            "normal_frames": 102034,
+            "hours": 0.5668555555555556,
+            "rate": 8.820589215359586
+          },
+          "supplement": {
+            "events": 2,
+            "normal_frames": 19050,
+            "hours": 0.10583333333333333,
+            "rate": 18.89763779527559
+          },
+          "motor": {
+            "cases": 51,
+            "detected": 49,
+            "detection": 0.9607843137254902,
+            "latency_median_s": 3.6200000000000045,
+            "latency_p90_s": 13.93199999999997
+          },
+          "sensor": {
+            "cases": 31,
+            "detected": 31,
+            "detection": 1.0,
+            "latency_median_s": 1.2600000000000477,
+            "latency_p90_s": 10.71999999999997
+          }
+        }
+      },
+      "S": {
+        "acce": {
+          "N1": {
+            "events": 10,
+            "normal_frames": 12795,
+            "hours": 0.07108333333333333,
+            "rate": 140.6799531066823
+          },
+          "N2": {
+            "events": 6,
+            "normal_frames": 21061,
+            "hours": 0.11700555555555556,
+            "rate": 51.27961635249988
+          },
+          "post": {
+            "events": 6,
+            "normal_frames": 10329,
+            "hours": 0.057383333333333335,
+            "rate": 104.5599767644496
+          },
+          "supplement": {
+            "events": 0,
+            "normal_frames": 0,
+            "hours": 0.0,
+            "rate": null
+          },
+          "motor": {
+            "cases": 15,
+            "detected": 4,
+            "detection": 0.26666666666666666,
+            "latency_median_s": 21.52000000000001,
+            "latency_p90_s": 31.974000000000004
+          },
+          "sensor": {
+            "cases": 12,
+            "detected": 6,
+            "detection": 0.5,
+            "latency_median_s": 11.059999999999988,
+            "latency_p90_s": 27.04
+          }
+        },
+        "circling": {
+          "N1": {
+            "events": 17,
+            "normal_frames": 31112,
+            "hours": 0.17284444444444444,
+            "rate": 98.35433273335047
+          },
+          "N2": {
+            "events": 48,
+            "normal_frames": 113436,
+            "hours": 0.6302000000000001,
+            "rate": 76.16629641383687
+          },
+          "post": {
+            "events": 19,
+            "normal_frames": 70261,
+            "hours": 0.3903388888888889,
+            "rate": 48.67565221104169
+          },
+          "supplement": {
+            "events": 4,
+            "normal_frames": 4363,
+            "hours": 0.02423888888888889,
+            "rate": 165.0240660096264
+          },
+          "motor": {
+            "cases": 31,
+            "detected": 31,
+            "detection": 1.0,
+            "latency_median_s": 24.319999999999993,
+            "latency_p90_s": 45.920000000000016
+          },
+          "sensor": {
+            "cases": 18,
+            "detected": 17,
+            "detection": 0.9444444444444444,
+            "latency_median_s": 19.940000000000026,
+            "latency_p90_s": 45.492
+          }
+        },
+        "hover": {
+          "N1": {
+            "events": 13,
+            "normal_frames": 16155,
+            "hours": 0.08975000000000001,
+            "rate": 144.84679665738162
+          },
+          "N2": {
+            "events": 25,
+            "normal_frames": 54992,
+            "hours": 0.30551111111111107,
+            "rate": 81.83008437590922
+          },
+          "post": {
+            "events": 8,
+            "normal_frames": 38893,
+            "hours": 0.21607222222222222,
+            "rate": 37.024657393361274
+          },
+          "supplement": {
+            "events": 0,
+            "normal_frames": 0,
+            "hours": 0.0,
+            "rate": null
+          },
+          "motor": {
+            "cases": 29,
+            "detected": 26,
+            "detection": 0.896551724137931,
+            "latency_median_s": 22.569999999999993,
+            "latency_p90_s": 45.46
+          },
+          "sensor": {
+            "cases": 36,
+            "detected": 23,
+            "detection": 0.6388888888888888,
+            "latency_median_s": 18.24000000000001,
+            "latency_p90_s": 31.684000000000005
+          }
+        },
+        "velocity": {
+          "N1": {
+            "events": 11,
+            "normal_frames": 11240,
+            "hours": 0.06244444444444445,
+            "rate": 176.15658362989325
+          },
+          "N2": {
+            "events": 10,
+            "normal_frames": 27690,
+            "hours": 0.15383333333333335,
+            "rate": 65.00541711809318
+          },
+          "post": {
+            "events": 5,
+            "normal_frames": 18846,
+            "hours": 0.1047,
+            "rate": 47.75549188156638
+          },
+          "supplement": {
+            "events": 1,
+            "normal_frames": 614,
+            "hours": 0.0034111111111111113,
+            "rate": 293.15960912052117
+          },
+          "motor": {
+            "cases": 28,
+            "detected": 12,
+            "detection": 0.42857142857142855,
+            "latency_median_s": 12.009999999999962,
+            "latency_p90_s": 37.225999999999985
+          },
+          "sensor": {
+            "cases": 14,
+            "detected": 7,
+            "detection": 0.5,
+            "latency_median_s": 6.739999999999981,
+            "latency_p90_s": 17.13199999999999
+          }
+        },
+        "waypoint": {
+          "N1": {
+            "events": 25,
+            "normal_frames": 48957,
+            "hours": 0.27198333333333335,
+            "rate": 91.91739689931981
+          },
+          "N2": {
+            "events": 92,
+            "normal_frames": 222843,
+            "hours": 1.2380166666666665,
+            "rate": 74.31240828744902
+          },
+          "post": {
+            "events": 23,
+            "normal_frames": 102034,
+            "hours": 0.5668555555555556,
+            "rate": 40.5747103906541
+          },
+          "supplement": {
+            "events": 17,
+            "normal_frames": 19050,
+            "hours": 0.10583333333333333,
+            "rate": 160.62992125984252
+          },
+          "motor": {
+            "cases": 51,
+            "detected": 47,
+            "detection": 0.9215686274509803,
+            "latency_median_s": 14.73999999999998,
+            "latency_p90_s": 44.06800000000002
+          },
+          "sensor": {
+            "cases": 31,
+            "detected": 23,
+            "detection": 0.7419354838709677,
+            "latency_median_s": 28.019999999999982,
+            "latency_p90_s": 41.33999999999999
+          }
+        }
+      }
+    },
+    "paired_case_AUC": {
+      "R": {
+        "motor": {
+          "cases": 154,
+          "defined": 150,
+          "undefined": 4,
+          "median": 1.0,
+          "q25": 0.9900142045454545,
+          "q75": 1.0,
+          "min": 0.4791666666666667,
+          "max": 1.0
+        },
+        "sensor": {
+          "cases": 111,
+          "defined": 111,
+          "undefined": 0,
+          "median": 0.9932659932659933,
+          "q25": 0.941796875,
+          "q75": 1.0,
+          "min": 0.7276190476190476,
+          "max": 1.0
+        }
+      },
+      "S_plus_R": {
+        "motor": {
+          "cases": 154,
+          "defined": 150,
+          "undefined": 4,
+          "median": 1.0,
+          "q25": 0.9881618381618382,
+          "q75": 1.0,
+          "min": 0.4791666666666667,
+          "max": 1.0
+        },
+        "sensor": {
+          "cases": 111,
+          "defined": 111,
+          "undefined": 0,
+          "median": 0.9924242424242424,
+          "q25": 0.9513592479674797,
+          "q75": 1.0,
+          "min": 0.7193877551020408,
+          "max": 1.0
+        }
+      }
+    }
+  },
+  "consequences": {
+    "key": "H2_fails",
+    "conclusion": "No B2; back to data/labels with user",
+    "automatic_next_step": false
+  },
+  "fit_count": 200,
+  "runtime_root": "D:\\UAV-Data\\real_v2_b1_learning_curve_runtime",
+  "access": {
+    "recorded_since_supplement2": [
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__GPS__447_1.npz",
+        "time": "2026-11-08T18:14:23.798306+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__GPS__448_1.npz",
+        "time": "2026-11-08T18:14:23.836072+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__GPS__449_1.npz",
+        "time": "2026-11-08T18:14:23.893874+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__barometer__439_1.npz",
+        "time": "2026-11-08T18:14:23.949906+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__barometer__440_1.npz",
+        "time": "2026-11-08T18:14:24.008491+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__barometer__441_1.npz",
+        "time": "2026-11-08T18:14:24.071541+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__barometer__442_1.npz",
+        "time": "2026-11-08T18:14:24.120604+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__gyroscope__435_1.npz",
+        "time": "2026-11-08T18:14:24.170652+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__gyroscope__437_1.npz",
+        "time": "2026-11-08T18:14:24.220180+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__gyroscope__438_1.npz",
+        "time": "2026-11-08T18:14:24.268697+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__magnetometer__445_1.npz",
+        "time": "2026-11-08T18:14:24.314294+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__magnetometer__446_1.npz",
+        "time": "2026-11-08T18:14:24.370334+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__407_1.npz",
+        "time": "2026-11-08T18:14:24.423370+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__408_1.npz",
+        "time": "2026-11-08T18:14:24.453374+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__409_1.npz",
+        "time": "2026-11-08T18:14:24.505504+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__412_1.npz",
+        "time": "2026-11-08T18:14:24.567064+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__413_1.npz",
+        "time": "2026-11-08T18:14:24.633609+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__414_1.npz",
+        "time": "2026-11-08T18:14:24.712649+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__416_1.npz",
+        "time": "2026-11-08T18:14:24.786685+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__416_2.npz",
+        "time": "2026-11-08T18:14:24.862031+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__419_1.npz",
+        "time": "2026-11-08T18:14:24.933638+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__422_1.npz",
+        "time": "2026-11-08T18:14:25.021243+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__423_1.npz",
+        "time": "2026-11-08T18:14:25.083533+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__425_1.npz",
+        "time": "2026-11-08T18:14:25.146589+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__426_1.npz",
+        "time": "2026-11-08T18:14:25.219635+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__428_1.npz",
+        "time": "2026-11-08T18:14:25.290484+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__motor__429_1.npz",
+        "time": "2026-11-08T18:14:25.369755+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__451_1.npz",
+        "time": "2026-11-08T18:14:25.446856+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__452_1.npz",
+        "time": "2026-11-08T18:14:25.514407+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__455_1.npz",
+        "time": "2026-11-08T18:14:25.598274+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__456_1.npz",
+        "time": "2026-11-08T18:14:25.678248+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__457_1.npz",
+        "time": "2026-11-08T18:14:25.750795+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__acce__no_fault__460_1.npz",
+        "time": "2026-11-08T18:14:25.825550+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__GPS__390_1.npz",
+        "time": "2026-11-08T18:14:25.912314+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__GPS__392_1.npz",
+        "time": "2026-11-08T18:14:25.987202+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__GPS__392_2.npz",
+        "time": "2026-11-08T18:14:26.065817+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__GPS__394_1.npz",
+        "time": "2026-11-08T18:14:26.162383+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__accelerometer__367_1.npz",
+        "time": "2026-11-08T18:14:26.243905+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__accelerometer__369_1.npz",
+        "time": "2026-11-08T18:14:26.322502+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__barometer__378_1.npz",
+        "time": "2026-11-08T18:14:26.411056+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__barometer__379_1.npz",
+        "time": "2026-11-08T18:14:26.481619+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__barometer__380_1.npz",
+        "time": "2026-11-08T18:14:26.562679+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__barometer__383_1.npz",
+        "time": "2026-11-08T18:14:26.649762+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__barometer__383_2.npz",
+        "time": "2026-11-08T18:14:26.723321+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__gyroscope__372_1.npz",
+        "time": "2026-11-08T18:14:26.801867+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__gyroscope__373_1.npz",
+        "time": "2026-11-08T18:14:26.879064+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__gyroscope__375_1.npz",
+        "time": "2026-11-08T18:14:26.959194+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__gyroscope__376_1.npz",
+        "time": "2026-11-08T18:14:27.031226+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__gyroscope__377_1.npz",
+        "time": "2026-11-08T18:14:27.115686+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__magnetometer__385_1.npz",
+        "time": "2026-11-08T18:14:27.178458+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__magnetometer__386_1.npz",
+        "time": "2026-11-08T18:14:27.255238+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__magnetometer__388_1.npz",
+        "time": "2026-11-08T18:14:27.334968+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__magnetometer__389_1.npz",
+        "time": "2026-11-08T18:14:27.424380+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__326_1.npz",
+        "time": "2026-11-08T18:14:27.497428+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__326_2.npz",
+        "time": "2026-11-08T18:14:27.580967+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__327_1.npz",
+        "time": "2026-11-08T18:14:27.650949+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__327_2.npz",
+        "time": "2026-11-08T18:14:27.746513+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__329_1.npz",
+        "time": "2026-11-08T18:14:27.821134+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__329_2.npz",
+        "time": "2026-11-08T18:14:27.898433+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__331_1.npz",
+        "time": "2026-11-08T18:14:27.981476+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__331_2.npz",
+        "time": "2026-11-08T18:14:28.062167+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__332_1.npz",
+        "time": "2026-11-08T18:14:28.139992+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__332_2.npz",
+        "time": "2026-11-08T18:14:28.226302+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__333_1.npz",
+        "time": "2026-11-08T18:14:28.300056+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__333_2.npz",
+        "time": "2026-11-08T18:14:28.392534+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__334_1.npz",
+        "time": "2026-11-08T18:14:28.475662+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__334_2.npz",
+        "time": "2026-11-08T18:14:28.546748+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__335_1.npz",
+        "time": "2026-11-08T18:14:28.617675+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__336_1.npz",
+        "time": "2026-11-08T18:14:28.710510+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__338_1.npz",
+        "time": "2026-11-08T18:14:28.779287+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__339_1.npz",
+        "time": "2026-11-08T18:14:28.865105+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__340_1.npz",
+        "time": "2026-11-08T18:14:28.938148+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__341_1.npz",
+        "time": "2026-11-08T18:14:29.024561+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__344_1.npz",
+        "time": "2026-11-08T18:14:29.098729+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__345_1.npz",
+        "time": "2026-11-08T18:14:29.190207+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__347_1.npz",
+        "time": "2026-11-08T18:14:29.251254+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__350_1.npz",
+        "time": "2026-11-08T18:14:29.328383+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__353_1.npz",
+        "time": "2026-11-08T18:14:29.422984+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__354_1.npz",
+        "time": "2026-11-08T18:14:29.494178+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__355_1.npz",
+        "time": "2026-11-08T18:14:29.574587+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__357_1.npz",
+        "time": "2026-11-08T18:14:29.653468+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__358_1.npz",
+        "time": "2026-11-08T18:14:29.741167+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__362_1.npz",
+        "time": "2026-11-08T18:14:29.822095+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__363_1.npz",
+        "time": "2026-11-08T18:14:29.902910+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__motor__364_1.npz",
+        "time": "2026-11-08T18:14:29.992046+00:00"
+      },
+      {
+        "attempt": 1,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__396_1.npz",
+        "time": "2026-11-08T18:14:30.064084+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__398_1.npz",
+        "time": "2026-11-08T18:20:50.604816+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__400_1.npz",
+        "time": "2026-11-08T18:20:50.630783+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__402_1.npz",
+        "time": "2026-11-08T18:20:50.688096+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__404_1.npz",
+        "time": "2026-11-08T18:20:50.740640+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__circling__no_fault__405_1.npz",
+        "time": "2026-11-08T18:20:50.790139+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__92_1.npz",
+        "time": "2026-11-08T18:20:50.842010+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__93_1.npz",
+        "time": "2026-11-08T18:20:50.901820+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__94_1.npz",
+        "time": "2026-11-08T18:20:50.959559+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__95_1.npz",
+        "time": "2026-11-08T18:20:51.019834+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__96_1.npz",
+        "time": "2026-11-08T18:20:51.077126+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__96_2.npz",
+        "time": "2026-11-08T18:20:51.142817+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__97_1.npz",
+        "time": "2026-11-08T18:20:51.182857+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__97_2.npz",
+        "time": "2026-11-08T18:20:51.234363+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__GPS__97_3.npz",
+        "time": "2026-11-08T18:20:51.288549+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__accelerometer__56_1.npz",
+        "time": "2026-11-08T18:20:51.345084+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__accelerometer__60_1.npz",
+        "time": "2026-11-08T18:20:51.401548+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__72_1.npz",
+        "time": "2026-11-08T18:20:51.458289+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__73_1.npz",
+        "time": "2026-11-08T18:20:51.510690+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__74_1.npz",
+        "time": "2026-11-08T18:20:51.565478+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__76_1.npz",
+        "time": "2026-11-08T18:20:51.624599+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__76_2.npz",
+        "time": "2026-11-08T18:20:51.685286+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__76_3.npz",
+        "time": "2026-11-08T18:20:51.744512+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__77_1.npz",
+        "time": "2026-11-08T18:20:51.802846+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__77_2.npz",
+        "time": "2026-11-08T18:20:51.863728+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__78_1.npz",
+        "time": "2026-11-08T18:20:51.917113+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__barometer__79_1.npz",
+        "time": "2026-11-08T18:20:51.966267+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__61_1.npz",
+        "time": "2026-11-08T18:20:52.021187+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__63_1.npz",
+        "time": "2026-11-08T18:20:52.070638+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__64_1.npz",
+        "time": "2026-11-08T18:20:52.137737+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__65_1.npz",
+        "time": "2026-11-08T18:20:52.204549+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__67_1.npz",
+        "time": "2026-11-08T18:20:52.262618+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__68_1.npz",
+        "time": "2026-11-08T18:20:52.320792+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__68_2.npz",
+        "time": "2026-11-08T18:20:52.388664+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__69_1.npz",
+        "time": "2026-11-08T18:20:52.454752+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__gyroscope__70_1.npz",
+        "time": "2026-11-08T18:20:52.486224+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__82_1.npz",
+        "time": "2026-11-08T18:20:52.539888+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__83_1.npz",
+        "time": "2026-11-08T18:20:52.606585+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__85_1.npz",
+        "time": "2026-11-08T18:20:52.672146+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__86_1.npz",
+        "time": "2026-11-08T18:20:52.734716+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__89_1.npz",
+        "time": "2026-11-08T18:20:52.785499+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__magnetometer__90_1.npz",
+        "time": "2026-11-08T18:20:52.848795+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__10_1.npz",
+        "time": "2026-11-08T18:20:52.887651+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__11_1.npz",
+        "time": "2026-11-08T18:20:52.944365+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__13_1.npz",
+        "time": "2026-11-08T18:20:53.006897+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__14_1.npz",
+        "time": "2026-11-08T18:20:53.064751+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__16_1.npz",
+        "time": "2026-11-08T18:20:53.116684+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__17_1.npz",
+        "time": "2026-11-08T18:20:53.171734+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__1_1.npz",
+        "time": "2026-11-08T18:20:53.215414+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__20_1.npz",
+        "time": "2026-11-08T18:20:53.269138+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__21_1.npz",
+        "time": "2026-11-08T18:20:53.334389+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__22_1.npz",
+        "time": "2026-11-08T18:20:53.394286+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__23_1.npz",
+        "time": "2026-11-08T18:20:53.456781+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__23_2.npz",
+        "time": "2026-11-08T18:20:53.497878+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__26_1.npz",
+        "time": "2026-11-08T18:20:53.552216+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__28_1.npz",
+        "time": "2026-11-08T18:20:53.605791+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__29_1.npz",
+        "time": "2026-11-08T18:20:53.660551+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__2_1.npz",
+        "time": "2026-11-08T18:20:53.729556+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__30_1.npz",
+        "time": "2026-11-08T18:20:53.785661+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__32_1.npz",
+        "time": "2026-11-08T18:20:53.839155+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__33_1.npz",
+        "time": "2026-11-08T18:20:53.900737+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__34_1.npz",
+        "time": "2026-11-08T18:20:53.960305+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__35_1.npz",
+        "time": "2026-11-08T18:20:54.018044+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__36_1.npz",
+        "time": "2026-11-08T18:20:54.077864+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__3_1.npz",
+        "time": "2026-11-08T18:20:54.133706+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__4_1.npz",
+        "time": "2026-11-08T18:20:54.189683+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__6_1.npz",
+        "time": "2026-11-08T18:20:54.249981+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__7_1.npz",
+        "time": "2026-11-08T18:20:54.308849+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__7_2.npz",
+        "time": "2026-11-08T18:20:54.365426+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__8_1.npz",
+        "time": "2026-11-08T18:20:54.419464+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__motor__9_1.npz",
+        "time": "2026-11-08T18:20:54.473859+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__101_1.npz",
+        "time": "2026-11-08T18:20:54.523615+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__102_1.npz",
+        "time": "2026-11-08T18:20:54.574130+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__104_1.npz",
+        "time": "2026-11-08T18:20:54.628224+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__105_1.npz",
+        "time": "2026-11-08T18:20:54.685551+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__107_1.npz",
+        "time": "2026-11-08T18:20:54.741444+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__109_1.npz",
+        "time": "2026-11-08T18:20:54.780299+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__hover__no_fault__110_1.npz",
+        "time": "2026-11-08T18:20:54.837241+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__GPS__310_1.npz",
+        "time": "2026-11-08T18:20:54.877391+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__GPS__311_1.npz",
+        "time": "2026-11-08T18:20:54.932356+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__GPS__312_1.npz",
+        "time": "2026-11-08T18:20:54.972582+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__accelerometer__287_1.npz",
+        "time": "2026-11-08T18:20:55.033198+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__accelerometer__288_1.npz",
+        "time": "2026-11-08T18:20:55.089518+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__accelerometer__289_1.npz",
+        "time": "2026-11-08T18:20:55.147050+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__accelerometer__290_1.npz",
+        "time": "2026-11-08T18:20:55.204429+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__accelerometer__291_1.npz",
+        "time": "2026-11-08T18:20:55.243963+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__barometer__300_1.npz",
+        "time": "2026-11-08T18:20:55.295818+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__barometer__301_1.npz",
+        "time": "2026-11-08T18:20:55.344824+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__barometer__302_1.npz",
+        "time": "2026-11-08T18:20:55.402292+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__barometer__303_1.npz",
+        "time": "2026-11-08T18:20:55.455157+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__gyroscope__295_1.npz",
+        "time": "2026-11-08T18:20:55.514866+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__gyroscope__296_1.npz",
+        "time": "2026-11-08T18:20:55.570529+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__gyroscope__297_1.npz",
+        "time": "2026-11-08T18:20:55.622484+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__magnetometer__305_1.npz",
+        "time": "2026-11-08T18:20:55.675876+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__magnetometer__306_1.npz",
+        "time": "2026-11-08T18:20:55.737207+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__magnetometer__307_1.npz",
+        "time": "2026-11-08T18:20:55.781558+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__magnetometer__309_1.npz",
+        "time": "2026-11-08T18:20:55.837046+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__246_1.npz",
+        "time": "2026-11-08T18:20:55.893575+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__248_1.npz",
+        "time": "2026-11-08T18:20:55.942757+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__248_2.npz",
+        "time": "2026-11-08T18:20:56.006413+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__249_1.npz",
+        "time": "2026-11-08T18:20:56.061067+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__249_2.npz",
+        "time": "2026-11-08T18:20:56.125097+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__250_1.npz",
+        "time": "2026-11-08T18:20:56.187655+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__252_1.npz",
+        "time": "2026-11-08T18:20:56.240315+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__253_1.npz",
+        "time": "2026-11-08T18:20:56.299455+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__254_1.npz",
+        "time": "2026-11-08T18:20:56.350657+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__255_1.npz",
+        "time": "2026-11-08T18:20:56.412057+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__256_1.npz",
+        "time": "2026-11-08T18:20:56.475087+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__259_1.npz",
+        "time": "2026-11-08T18:20:56.531184+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__260_1.npz",
+        "time": "2026-11-08T18:20:56.589881+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__261_1.npz",
+        "time": "2026-11-08T18:20:56.645567+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__262_1.npz",
+        "time": "2026-11-08T18:20:56.682130+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__263_1.npz",
+        "time": "2026-11-08T18:20:56.737989+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__264_1.npz",
+        "time": "2026-11-08T18:20:56.794020+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__267_1.npz",
+        "time": "2026-11-08T18:20:56.853804+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__271_1.npz",
+        "time": "2026-11-08T18:20:56.909312+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__272_1.npz",
+        "time": "2026-11-08T18:20:56.962498+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__273_1.npz",
+        "time": "2026-11-08T18:20:57.018774+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__274_1.npz",
+        "time": "2026-11-08T18:20:57.077065+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__275_1.npz",
+        "time": "2026-11-08T18:20:57.134364+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__277_1.npz",
+        "time": "2026-11-08T18:20:57.191387+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__278_1.npz",
+        "time": "2026-11-08T18:20:57.230915+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__280_1.npz",
+        "time": "2026-11-08T18:20:57.281299+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__281_1.npz",
+        "time": "2026-11-08T18:20:57.339422+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__282_1.npz",
+        "time": "2026-11-08T18:20:57.394594+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__motor__284_1.npz",
+        "time": "2026-11-08T18:20:57.452646+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__319_1.npz",
+        "time": "2026-11-08T18:20:57.507913+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__320_1.npz",
+        "time": "2026-11-08T18:20:57.561277+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__321_1.npz",
+        "time": "2026-11-08T18:20:57.597191+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__322_1.npz",
+        "time": "2026-11-08T18:20:57.651342+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__323_1.npz",
+        "time": "2026-11-08T18:20:57.699792+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__324_1.npz",
+        "time": "2026-11-08T18:20:57.755703+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__velocity__no_fault__325_1.npz",
+        "time": "2026-11-08T18:20:57.812817+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__GPS__226_1.npz",
+        "time": "2026-11-08T18:20:57.870227+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__GPS__227_1.npz",
+        "time": "2026-11-08T18:20:57.930647+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__GPS__230_1.npz",
+        "time": "2026-11-08T18:20:57.994520+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__GPS__233_1.npz",
+        "time": "2026-11-08T18:20:58.058671+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__GPS__235_1.npz",
+        "time": "2026-11-08T18:20:58.126166+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__accelerometer__186_1.npz",
+        "time": "2026-11-08T18:20:58.190690+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__accelerometer__188_1.npz",
+        "time": "2026-11-08T18:20:58.246459+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__accelerometer__189_1.npz",
+        "time": "2026-11-08T18:20:58.311034+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__accelerometer__195_1.npz",
+        "time": "2026-11-08T18:20:58.373073+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__206_1.npz",
+        "time": "2026-11-08T18:20:58.434037+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__207_1.npz",
+        "time": "2026-11-08T18:20:58.487302+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__208_1.npz",
+        "time": "2026-11-08T18:20:58.542200+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__210_1.npz",
+        "time": "2026-11-08T18:20:58.600775+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__212_1.npz",
+        "time": "2026-11-08T18:20:58.659568+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__213_1.npz",
+        "time": "2026-11-08T18:20:58.720287+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__214_1.npz",
+        "time": "2026-11-08T18:20:58.784766+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__215_1.npz",
+        "time": "2026-11-08T18:20:58.844262+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__barometer__215_2.npz",
+        "time": "2026-11-08T18:20:58.888603+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__196_1.npz",
+        "time": "2026-11-08T18:20:58.950678+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__196_2.npz",
+        "time": "2026-11-08T18:20:59.011888+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__197_1.npz",
+        "time": "2026-11-08T18:20:59.077849+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__198_1.npz",
+        "time": "2026-11-08T18:20:59.140522+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__199_1.npz",
+        "time": "2026-11-08T18:20:59.186152+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__200_1.npz",
+        "time": "2026-11-08T18:20:59.240495+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__201_1.npz",
+        "time": "2026-11-08T18:20:59.304216+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__202_1.npz",
+        "time": "2026-11-08T18:20:59.370981+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__203_1.npz",
+        "time": "2026-11-08T18:20:59.429919+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__gyroscope__205_1.npz",
+        "time": "2026-11-08T18:20:59.494457+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__216_1.npz",
+        "time": "2026-11-08T18:20:59.560270+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__217_1.npz",
+        "time": "2026-11-08T18:20:59.623548+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__218_1.npz",
+        "time": "2026-11-08T18:20:59.684394+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__220_1.npz",
+        "time": "2026-11-08T18:20:59.734128+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__221_1.npz",
+        "time": "2026-11-08T18:20:59.790218+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__223_1.npz",
+        "time": "2026-11-08T18:20:59.857961+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__magnetometer__225_1.npz",
+        "time": "2026-11-08T18:20:59.920953+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__112_1.npz",
+        "time": "2026-11-08T18:20:59.988117+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__114_1.npz",
+        "time": "2026-11-08T18:21:00.054359+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__116_1.npz",
+        "time": "2026-11-08T18:21:00.123806+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__117_1.npz",
+        "time": "2026-11-08T18:21:00.186612+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__117_2.npz",
+        "time": "2026-11-08T18:21:00.250138+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__118_1.npz",
+        "time": "2026-11-08T18:21:00.285627+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__120_1.npz",
+        "time": "2026-11-08T18:21:00.346718+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__122_1.npz",
+        "time": "2026-11-08T18:21:00.404050+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__123_1.npz",
+        "time": "2026-11-08T18:21:00.467076+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__124_1.npz",
+        "time": "2026-11-08T18:21:00.535594+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__125_1.npz",
+        "time": "2026-11-08T18:21:00.595386+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__127_1.npz",
+        "time": "2026-11-08T18:21:00.652012+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__128_1.npz",
+        "time": "2026-11-08T18:21:00.707421+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__131_1.npz",
+        "time": "2026-11-08T18:21:00.766597+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__132_1.npz",
+        "time": "2026-11-08T18:21:00.815052+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__133_1.npz",
+        "time": "2026-11-08T18:21:00.876713+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__134_1.npz",
+        "time": "2026-11-08T18:21:00.939934+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__135_1.npz",
+        "time": "2026-11-08T18:21:01.001696+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__140_1.npz",
+        "time": "2026-11-08T18:21:01.047645+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__142_1.npz",
+        "time": "2026-11-08T18:21:01.113843+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__142_2.npz",
+        "time": "2026-11-08T18:21:01.177691+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__144_1.npz",
+        "time": "2026-11-08T18:21:01.231310+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__145_1.npz",
+        "time": "2026-11-08T18:21:01.284956+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__147_1.npz",
+        "time": "2026-11-08T18:21:01.330031+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__150_2.npz",
+        "time": "2026-11-08T18:21:01.390677+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__151_1.npz",
+        "time": "2026-11-08T18:21:01.448173+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__152_1.npz",
+        "time": "2026-11-08T18:21:01.503691+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__153_1.npz",
+        "time": "2026-11-08T18:21:01.561690+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__154_1.npz",
+        "time": "2026-11-08T18:21:01.609136+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__155_1.npz",
+        "time": "2026-11-08T18:21:01.671718+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__156_1.npz",
+        "time": "2026-11-08T18:21:01.731140+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__157_1.npz",
+        "time": "2026-11-08T18:21:01.797487+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__159_1.npz",
+        "time": "2026-11-08T18:21:01.858533+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__162_1.npz",
+        "time": "2026-11-08T18:21:01.918869+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__163_1.npz",
+        "time": "2026-11-08T18:21:01.982370+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__164_1.npz",
+        "time": "2026-11-08T18:21:02.031024+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__165_1.npz",
+        "time": "2026-11-08T18:21:02.089305+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__166_1.npz",
+        "time": "2026-11-08T18:21:02.147114+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__167_1.npz",
+        "time": "2026-11-08T18:21:02.199296+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__168_1.npz",
+        "time": "2026-11-08T18:21:02.253565+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__170_1.npz",
+        "time": "2026-11-08T18:21:02.318392+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__171_2.npz",
+        "time": "2026-11-08T18:21:02.377054+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__172_1.npz",
+        "time": "2026-11-08T18:21:02.432770+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__173_1.npz",
+        "time": "2026-11-08T18:21:02.498681+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__173_2.npz",
+        "time": "2026-11-08T18:21:02.540205+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__174_1.npz",
+        "time": "2026-11-08T18:21:02.591660+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__174_2.npz",
+        "time": "2026-11-08T18:21:02.646355+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__175_1.npz",
+        "time": "2026-11-08T18:21:02.704000+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__176_1.npz",
+        "time": "2026-11-08T18:21:02.765497+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__177_1.npz",
+        "time": "2026-11-08T18:21:02.833691+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__179_1.npz",
+        "time": "2026-11-08T18:21:02.900198+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__180_1.npz",
+        "time": "2026-11-08T18:21:02.960553+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__181_1.npz",
+        "time": "2026-11-08T18:21:03.008241+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__183_1.npz",
+        "time": "2026-11-08T18:21:03.075857+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__184_1.npz",
+        "time": "2026-11-08T18:21:03.137784+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__motor__185_1.npz",
+        "time": "2026-11-08T18:21:03.200053+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__236_1.npz",
+        "time": "2026-11-08T18:21:03.253949+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__238_1.npz",
+        "time": "2026-11-08T18:21:03.314123+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__239_1.npz",
+        "time": "2026-11-08T18:21:03.367837+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__241_1.npz",
+        "time": "2026-11-08T18:21:03.424510+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__243_1.npz",
+        "time": "2026-11-08T18:21:03.487003+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\windows\\REAL__waypoint__no_fault__244_1.npz",
+        "time": "2026-11-08T18:21:03.542653+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__GPS__447_1.npz",
+        "time": "2026-11-08T18:58:36.671407+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__GPS__448_1.npz",
+        "time": "2026-11-08T18:58:36.802697+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__GPS__449_1.npz",
+        "time": "2026-11-08T18:58:36.943499+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__barometer__439_1.npz",
+        "time": "2026-11-08T18:58:37.107898+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__barometer__440_1.npz",
+        "time": "2026-11-08T18:58:37.321081+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__barometer__441_1.npz",
+        "time": "2026-11-08T18:58:37.560309+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__barometer__442_1.npz",
+        "time": "2026-11-08T18:58:37.682548+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__gyroscope__435_1.npz",
+        "time": "2026-11-08T18:58:37.797634+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__gyroscope__437_1.npz",
+        "time": "2026-11-08T18:58:37.932918+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__gyroscope__438_1.npz",
+        "time": "2026-11-08T18:58:38.140383+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__magnetometer__445_1.npz",
+        "time": "2026-11-08T18:58:38.377643+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__magnetometer__446_1.npz",
+        "time": "2026-11-08T18:58:38.572236+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__407_1.npz",
+        "time": "2026-11-08T18:58:38.706640+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__408_1.npz",
+        "time": "2026-11-08T18:58:38.872052+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__409_1.npz",
+        "time": "2026-11-08T18:58:39.101746+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__412_1.npz",
+        "time": "2026-11-08T18:58:39.299599+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__413_1.npz",
+        "time": "2026-11-08T18:58:39.439398+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__414_1.npz",
+        "time": "2026-11-08T18:58:39.580420+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__416_1.npz",
+        "time": "2026-11-08T18:58:39.741255+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__416_2.npz",
+        "time": "2026-11-08T18:58:39.909801+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__419_1.npz",
+        "time": "2026-11-08T18:58:40.061435+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__422_1.npz",
+        "time": "2026-11-08T18:58:40.313904+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__423_1.npz",
+        "time": "2026-11-08T18:58:40.569185+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__425_1.npz",
+        "time": "2026-11-08T18:58:40.725818+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__426_1.npz",
+        "time": "2026-11-08T18:58:40.924214+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__428_1.npz",
+        "time": "2026-11-08T18:58:41.074285+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__motor__429_1.npz",
+        "time": "2026-11-08T18:58:41.192757+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__451_1.npz",
+        "time": "2026-11-08T18:58:41.337521+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__452_1.npz",
+        "time": "2026-11-08T18:58:41.524163+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__455_1.npz",
+        "time": "2026-11-08T18:58:41.763031+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__456_1.npz",
+        "time": "2026-11-08T18:58:42.037246+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__457_1.npz",
+        "time": "2026-11-08T18:58:42.176180+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__acce__no_fault__460_1.npz",
+        "time": "2026-11-08T18:58:42.446203+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__GPS__390_1.npz",
+        "time": "2026-11-08T18:58:42.597618+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__GPS__392_1.npz",
+        "time": "2026-11-08T18:58:43.195760+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__GPS__392_2.npz",
+        "time": "2026-11-08T18:58:43.797628+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__GPS__394_1.npz",
+        "time": "2026-11-08T18:58:44.415380+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__accelerometer__367_1.npz",
+        "time": "2026-11-08T18:58:44.962935+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__accelerometer__369_1.npz",
+        "time": "2026-11-08T18:58:45.143834+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__barometer__378_1.npz",
+        "time": "2026-11-08T18:58:45.530366+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__barometer__379_1.npz",
+        "time": "2026-11-08T18:58:45.845190+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__barometer__380_1.npz",
+        "time": "2026-11-08T18:58:46.230034+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__barometer__383_1.npz",
+        "time": "2026-11-08T18:58:46.597810+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__barometer__383_2.npz",
+        "time": "2026-11-08T18:58:46.857995+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__gyroscope__372_1.npz",
+        "time": "2026-11-08T18:58:47.495814+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__gyroscope__373_1.npz",
+        "time": "2026-11-08T18:58:48.026611+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__gyroscope__375_1.npz",
+        "time": "2026-11-08T18:58:48.424268+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__gyroscope__376_1.npz",
+        "time": "2026-11-08T18:58:48.958971+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__gyroscope__377_1.npz",
+        "time": "2026-11-08T18:58:49.524139+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__magnetometer__385_1.npz",
+        "time": "2026-11-08T18:58:50.127907+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__magnetometer__386_1.npz",
+        "time": "2026-11-08T18:58:50.646183+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__magnetometer__388_1.npz",
+        "time": "2026-11-08T18:58:51.202702+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__magnetometer__389_1.npz",
+        "time": "2026-11-08T18:58:51.753978+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__326_1.npz",
+        "time": "2026-11-08T18:58:51.891854+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__326_2.npz",
+        "time": "2026-11-08T18:58:52.328234+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__327_1.npz",
+        "time": "2026-11-08T18:58:52.852696+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__327_2.npz",
+        "time": "2026-11-08T18:58:53.286358+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__329_1.npz",
+        "time": "2026-11-08T18:58:53.805977+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__329_2.npz",
+        "time": "2026-11-08T18:58:54.110450+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__331_1.npz",
+        "time": "2026-11-08T18:58:54.555193+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__331_2.npz",
+        "time": "2026-11-08T18:58:54.956006+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__332_1.npz",
+        "time": "2026-11-08T18:58:55.353427+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__332_2.npz",
+        "time": "2026-11-08T18:58:55.747231+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__333_1.npz",
+        "time": "2026-11-08T18:58:56.154273+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__333_2.npz",
+        "time": "2026-11-08T18:58:56.602345+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__334_1.npz",
+        "time": "2026-11-08T18:58:57.053082+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__334_2.npz",
+        "time": "2026-11-08T18:58:57.469897+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__335_1.npz",
+        "time": "2026-11-08T18:58:57.845101+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__336_1.npz",
+        "time": "2026-11-08T18:58:58.315790+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__338_1.npz",
+        "time": "2026-11-08T18:58:58.802956+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__339_1.npz",
+        "time": "2026-11-08T18:58:59.233622+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__340_1.npz",
+        "time": "2026-11-08T18:58:59.624780+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__341_1.npz",
+        "time": "2026-11-08T18:59:00.137240+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__344_1.npz",
+        "time": "2026-11-08T18:59:00.618888+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__345_1.npz",
+        "time": "2026-11-08T18:59:01.109908+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__347_1.npz",
+        "time": "2026-11-08T18:59:01.574807+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__350_1.npz",
+        "time": "2026-11-08T18:59:02.109098+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__353_1.npz",
+        "time": "2026-11-08T18:59:02.573263+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__354_1.npz",
+        "time": "2026-11-08T18:59:02.996947+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__355_1.npz",
+        "time": "2026-11-08T18:59:03.421438+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__357_1.npz",
+        "time": "2026-11-08T18:59:03.988202+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__358_1.npz",
+        "time": "2026-11-08T18:59:04.425951+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__362_1.npz",
+        "time": "2026-11-08T18:59:04.868923+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__363_1.npz",
+        "time": "2026-11-08T18:59:05.410971+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__motor__364_1.npz",
+        "time": "2026-11-08T18:59:05.556622+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__396_1.npz",
+        "time": "2026-11-08T18:59:06.113900+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__398_1.npz",
+        "time": "2026-11-08T18:59:06.623751+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__400_1.npz",
+        "time": "2026-11-08T18:59:07.108758+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__402_1.npz",
+        "time": "2026-11-08T18:59:07.605587+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__404_1.npz",
+        "time": "2026-11-08T18:59:08.136337+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__circling__no_fault__405_1.npz",
+        "time": "2026-11-08T18:59:08.340084+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__92_1.npz",
+        "time": "2026-11-08T18:59:08.813889+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__93_1.npz",
+        "time": "2026-11-08T18:59:09.103685+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__94_1.npz",
+        "time": "2026-11-08T18:59:09.356805+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__95_1.npz",
+        "time": "2026-11-08T18:59:09.607410+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__96_1.npz",
+        "time": "2026-11-08T18:59:09.858014+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__96_2.npz",
+        "time": "2026-11-08T18:59:10.093643+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__97_1.npz",
+        "time": "2026-11-08T18:59:10.361554+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__97_2.npz",
+        "time": "2026-11-08T18:59:10.603546+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__GPS__97_3.npz",
+        "time": "2026-11-08T18:59:10.850587+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__accelerometer__56_1.npz",
+        "time": "2026-11-08T18:59:11.010438+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__accelerometer__60_1.npz",
+        "time": "2026-11-08T18:59:11.257260+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__72_1.npz",
+        "time": "2026-11-08T18:59:11.361860+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__73_1.npz",
+        "time": "2026-11-08T18:59:11.475009+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__74_1.npz",
+        "time": "2026-11-08T18:59:11.769003+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__76_1.npz",
+        "time": "2026-11-08T18:59:11.887886+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__76_2.npz",
+        "time": "2026-11-08T18:59:12.125211+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__76_3.npz",
+        "time": "2026-11-08T18:59:12.544806+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__77_1.npz",
+        "time": "2026-11-08T18:59:12.659929+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__77_2.npz",
+        "time": "2026-11-08T18:59:12.783365+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__78_1.npz",
+        "time": "2026-11-08T18:59:13.042045+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__barometer__79_1.npz",
+        "time": "2026-11-08T18:59:13.254286+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__61_1.npz",
+        "time": "2026-11-08T18:59:13.731233+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__63_1.npz",
+        "time": "2026-11-08T18:59:13.980189+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__64_1.npz",
+        "time": "2026-11-08T18:59:14.208122+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__65_1.npz",
+        "time": "2026-11-08T18:59:14.432363+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__67_1.npz",
+        "time": "2026-11-08T18:59:14.659179+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__68_1.npz",
+        "time": "2026-11-08T18:59:14.908880+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__68_2.npz",
+        "time": "2026-11-08T18:59:15.145190+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__69_1.npz",
+        "time": "2026-11-08T18:59:15.391400+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__gyroscope__70_1.npz",
+        "time": "2026-11-08T18:59:15.614389+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__82_1.npz",
+        "time": "2026-11-08T18:59:15.885833+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__83_1.npz",
+        "time": "2026-11-08T18:59:16.130487+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__85_1.npz",
+        "time": "2026-11-08T18:59:16.362015+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__86_1.npz",
+        "time": "2026-11-08T18:59:16.556185+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__89_1.npz",
+        "time": "2026-11-08T18:59:16.808817+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__magnetometer__90_1.npz",
+        "time": "2026-11-08T18:59:17.062124+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__10_1.npz",
+        "time": "2026-11-08T18:59:17.315187+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__11_1.npz",
+        "time": "2026-11-08T18:59:17.644317+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__13_1.npz",
+        "time": "2026-11-08T18:59:17.919375+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__14_1.npz",
+        "time": "2026-11-08T18:59:18.195524+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__16_1.npz",
+        "time": "2026-11-08T18:59:18.617736+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__17_1.npz",
+        "time": "2026-11-08T18:59:19.050421+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__1_1.npz",
+        "time": "2026-11-08T18:59:19.402043+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__20_1.npz",
+        "time": "2026-11-08T18:59:19.671763+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__21_1.npz",
+        "time": "2026-11-08T18:59:20.070110+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__22_1.npz",
+        "time": "2026-11-08T18:59:20.294071+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__23_1.npz",
+        "time": "2026-11-08T18:59:20.645495+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__23_2.npz",
+        "time": "2026-11-08T18:59:20.845948+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__26_1.npz",
+        "time": "2026-11-08T18:59:21.043753+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__28_1.npz",
+        "time": "2026-11-08T18:59:21.456908+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__29_1.npz",
+        "time": "2026-11-08T18:59:21.847346+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__2_1.npz",
+        "time": "2026-11-08T18:59:22.221296+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__30_1.npz",
+        "time": "2026-11-08T18:59:22.507155+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__32_1.npz",
+        "time": "2026-11-08T18:59:22.889977+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__33_1.npz",
+        "time": "2026-11-08T18:59:23.147346+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__34_1.npz",
+        "time": "2026-11-08T18:59:23.350150+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__35_1.npz",
+        "time": "2026-11-08T18:59:23.731075+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__36_1.npz",
+        "time": "2026-11-08T18:59:24.079667+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__3_1.npz",
+        "time": "2026-11-08T18:59:24.427797+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__4_1.npz",
+        "time": "2026-11-08T18:59:24.705616+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__6_1.npz",
+        "time": "2026-11-08T18:59:25.121421+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__7_1.npz",
+        "time": "2026-11-08T18:59:25.523548+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__7_2.npz",
+        "time": "2026-11-08T18:59:25.789832+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__8_1.npz",
+        "time": "2026-11-08T18:59:26.074529+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__motor__9_1.npz",
+        "time": "2026-11-08T18:59:26.487835+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__101_1.npz",
+        "time": "2026-11-08T18:59:26.887703+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__102_1.npz",
+        "time": "2026-11-08T18:59:27.123997+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__104_1.npz",
+        "time": "2026-11-08T18:59:27.346147+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__105_1.npz",
+        "time": "2026-11-08T18:59:27.572306+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__107_1.npz",
+        "time": "2026-11-08T18:59:27.801179+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__109_1.npz",
+        "time": "2026-11-08T18:59:28.010229+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__hover__no_fault__110_1.npz",
+        "time": "2026-11-08T18:59:28.219026+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__GPS__310_1.npz",
+        "time": "2026-11-08T18:59:28.427380+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__GPS__311_1.npz",
+        "time": "2026-11-08T18:59:28.642478+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__GPS__312_1.npz",
+        "time": "2026-11-08T18:59:28.692463+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__accelerometer__287_1.npz",
+        "time": "2026-11-08T18:59:28.909295+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__accelerometer__288_1.npz",
+        "time": "2026-11-08T18:59:29.012801+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__accelerometer__289_1.npz",
+        "time": "2026-11-08T18:59:29.148197+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__accelerometer__290_1.npz",
+        "time": "2026-11-08T18:59:29.343315+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__accelerometer__291_1.npz",
+        "time": "2026-11-08T18:59:29.392578+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__barometer__300_1.npz",
+        "time": "2026-11-08T18:59:29.457412+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__barometer__301_1.npz",
+        "time": "2026-11-08T18:59:29.601644+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__barometer__302_1.npz",
+        "time": "2026-11-08T18:59:29.708528+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__barometer__303_1.npz",
+        "time": "2026-11-08T18:59:29.822318+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__gyroscope__295_1.npz",
+        "time": "2026-11-08T18:59:29.942612+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__gyroscope__296_1.npz",
+        "time": "2026-11-08T18:59:30.027004+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__gyroscope__297_1.npz",
+        "time": "2026-11-08T18:59:30.258594+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__magnetometer__305_1.npz",
+        "time": "2026-11-08T18:59:30.391903+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__magnetometer__306_1.npz",
+        "time": "2026-11-08T18:59:30.441102+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__magnetometer__307_1.npz",
+        "time": "2026-11-08T18:59:30.648540+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__magnetometer__309_1.npz",
+        "time": "2026-11-08T18:59:30.817955+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__246_1.npz",
+        "time": "2026-11-08T18:59:30.957037+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__248_1.npz",
+        "time": "2026-11-08T18:59:31.150586+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__248_2.npz",
+        "time": "2026-11-08T18:59:31.279680+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__249_1.npz",
+        "time": "2026-11-08T18:59:31.328048+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__249_2.npz",
+        "time": "2026-11-08T18:59:31.505933+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__250_1.npz",
+        "time": "2026-11-08T18:59:31.626690+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__252_1.npz",
+        "time": "2026-11-08T18:59:31.818881+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__253_1.npz",
+        "time": "2026-11-08T18:59:31.995161+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__254_1.npz",
+        "time": "2026-11-08T18:59:32.114443+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__255_1.npz",
+        "time": "2026-11-08T18:59:32.349964+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__256_1.npz",
+        "time": "2026-11-08T18:59:32.625064+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__259_1.npz",
+        "time": "2026-11-08T18:59:32.710873+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__260_1.npz",
+        "time": "2026-11-08T18:59:32.908262+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__261_1.npz",
+        "time": "2026-11-08T18:59:33.044122+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__262_1.npz",
+        "time": "2026-11-08T18:59:33.148998+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__263_1.npz",
+        "time": "2026-11-08T18:59:33.403295+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__264_1.npz",
+        "time": "2026-11-08T18:59:33.608732+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__267_1.npz",
+        "time": "2026-11-08T18:59:33.728464+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__271_1.npz",
+        "time": "2026-11-08T18:59:34.094200+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__272_1.npz",
+        "time": "2026-11-08T18:59:34.222256+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__273_1.npz",
+        "time": "2026-11-08T18:59:34.354521+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__274_1.npz",
+        "time": "2026-11-08T18:59:34.710848+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__275_1.npz",
+        "time": "2026-11-08T18:59:34.813217+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__277_1.npz",
+        "time": "2026-11-08T18:59:35.014544+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__278_1.npz",
+        "time": "2026-11-08T18:59:35.343112+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__280_1.npz",
+        "time": "2026-11-08T18:59:35.487348+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__281_1.npz",
+        "time": "2026-11-08T18:59:35.630167+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__282_1.npz",
+        "time": "2026-11-08T18:59:35.762837+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__motor__284_1.npz",
+        "time": "2026-11-08T18:59:35.971987+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__319_1.npz",
+        "time": "2026-11-08T18:59:36.088140+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__320_1.npz",
+        "time": "2026-11-08T18:59:36.248900+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__321_1.npz",
+        "time": "2026-11-08T18:59:36.494567+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__322_1.npz",
+        "time": "2026-11-08T18:59:36.693704+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__323_1.npz",
+        "time": "2026-11-08T18:59:36.880720+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__324_1.npz",
+        "time": "2026-11-08T18:59:36.995630+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__velocity__no_fault__325_1.npz",
+        "time": "2026-11-08T18:59:37.113411+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__GPS__226_1.npz",
+        "time": "2026-11-08T18:59:37.213704+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__GPS__227_1.npz",
+        "time": "2026-11-08T18:59:37.751255+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__GPS__230_1.npz",
+        "time": "2026-11-08T18:59:38.320836+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__GPS__233_1.npz",
+        "time": "2026-11-08T18:59:38.872604+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__GPS__235_1.npz",
+        "time": "2026-11-08T18:59:39.421515+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__accelerometer__186_1.npz",
+        "time": "2026-11-08T18:59:39.987775+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__accelerometer__188_1.npz",
+        "time": "2026-11-08T18:59:40.247989+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__accelerometer__189_1.npz",
+        "time": "2026-11-08T18:59:40.505328+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__accelerometer__195_1.npz",
+        "time": "2026-11-08T18:59:40.676857+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__206_1.npz",
+        "time": "2026-11-08T18:59:41.053416+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__207_1.npz",
+        "time": "2026-11-08T18:59:41.347712+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__208_1.npz",
+        "time": "2026-11-08T18:59:41.688606+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__210_1.npz",
+        "time": "2026-11-08T18:59:42.103204+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__212_1.npz",
+        "time": "2026-11-08T18:59:42.547337+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__213_1.npz",
+        "time": "2026-11-08T18:59:42.755736+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__214_1.npz",
+        "time": "2026-11-08T18:59:43.535057+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__215_1.npz",
+        "time": "2026-11-08T18:59:43.743350+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__barometer__215_2.npz",
+        "time": "2026-11-08T18:59:44.247831+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__196_1.npz",
+        "time": "2026-11-08T18:59:44.493464+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__196_2.npz",
+        "time": "2026-11-08T18:59:45.074611+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__197_1.npz",
+        "time": "2026-11-08T18:59:45.678984+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__198_1.npz",
+        "time": "2026-11-08T18:59:45.855708+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__199_1.npz",
+        "time": "2026-11-08T18:59:46.130226+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__200_1.npz",
+        "time": "2026-11-08T18:59:46.416074+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__201_1.npz",
+        "time": "2026-11-08T18:59:46.858560+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__202_1.npz",
+        "time": "2026-11-08T18:59:47.338244+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__203_1.npz",
+        "time": "2026-11-08T18:59:47.888811+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__gyroscope__205_1.npz",
+        "time": "2026-11-08T18:59:48.465848+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__216_1.npz",
+        "time": "2026-11-08T18:59:48.986897+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__217_1.npz",
+        "time": "2026-11-08T18:59:49.569964+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__218_1.npz",
+        "time": "2026-11-08T18:59:50.144667+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__220_1.npz",
+        "time": "2026-11-08T18:59:50.741980+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__221_1.npz",
+        "time": "2026-11-08T18:59:51.289258+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__223_1.npz",
+        "time": "2026-11-08T18:59:51.876457+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__magnetometer__225_1.npz",
+        "time": "2026-11-08T18:59:52.417324+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__112_1.npz",
+        "time": "2026-11-08T18:59:52.910122+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__114_1.npz",
+        "time": "2026-11-08T18:59:53.766596+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__116_1.npz",
+        "time": "2026-11-08T18:59:54.580223+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__117_1.npz",
+        "time": "2026-11-08T18:59:55.499039+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__117_2.npz",
+        "time": "2026-11-08T18:59:56.051001+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__118_1.npz",
+        "time": "2026-11-08T18:59:56.902853+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__120_1.npz",
+        "time": "2026-11-08T18:59:57.849341+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__122_1.npz",
+        "time": "2026-11-08T18:59:58.189614+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__123_1.npz",
+        "time": "2026-11-08T18:59:59.045853+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__124_1.npz",
+        "time": "2026-11-08T18:59:59.687893+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__125_1.npz",
+        "time": "2026-11-08T19:00:00.464331+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__127_1.npz",
+        "time": "2026-11-08T19:00:00.811111+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__128_1.npz",
+        "time": "2026-11-08T19:00:01.272016+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__131_1.npz",
+        "time": "2026-11-08T19:00:01.498028+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__132_1.npz",
+        "time": "2026-11-08T19:00:02.052295+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__133_1.npz",
+        "time": "2026-11-08T19:00:02.553236+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__134_1.npz",
+        "time": "2026-11-08T19:00:02.800407+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__135_1.npz",
+        "time": "2026-11-08T19:00:03.280133+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__140_1.npz",
+        "time": "2026-11-08T19:00:03.809304+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__142_1.npz",
+        "time": "2026-11-08T19:00:04.425170+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__142_2.npz",
+        "time": "2026-11-08T19:00:04.611070+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__144_1.npz",
+        "time": "2026-11-08T19:00:04.794437+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__145_1.npz",
+        "time": "2026-11-08T19:00:05.271763+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__147_1.npz",
+        "time": "2026-11-08T19:00:05.857681+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__150_2.npz",
+        "time": "2026-11-08T19:00:06.372488+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__151_1.npz",
+        "time": "2026-11-08T19:00:06.837132+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__152_1.npz",
+        "time": "2026-11-08T19:00:07.424935+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__153_1.npz",
+        "time": "2026-11-08T19:00:07.993838+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__154_1.npz",
+        "time": "2026-11-08T19:00:08.585071+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__155_1.npz",
+        "time": "2026-11-08T19:00:09.081892+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__156_1.npz",
+        "time": "2026-11-08T19:00:09.658374+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__157_1.npz",
+        "time": "2026-11-08T19:00:10.248982+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__159_1.npz",
+        "time": "2026-11-08T19:00:10.705795+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__162_1.npz",
+        "time": "2026-11-08T19:00:11.330751+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__163_1.npz",
+        "time": "2026-11-08T19:00:11.892814+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__164_1.npz",
+        "time": "2026-11-08T19:00:12.431791+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__165_1.npz",
+        "time": "2026-11-08T19:00:12.879030+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__166_1.npz",
+        "time": "2026-11-08T19:00:13.421448+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__167_1.npz",
+        "time": "2026-11-08T19:00:13.948638+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__168_1.npz",
+        "time": "2026-11-08T19:00:14.461109+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__170_1.npz",
+        "time": "2026-11-08T19:00:15.053949+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__171_2.npz",
+        "time": "2026-11-08T19:00:15.579419+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__172_1.npz",
+        "time": "2026-11-08T19:00:16.150894+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__173_1.npz",
+        "time": "2026-11-08T19:00:16.709783+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__173_2.npz",
+        "time": "2026-11-08T19:00:17.186344+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__174_1.npz",
+        "time": "2026-11-08T19:00:17.694202+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__174_2.npz",
+        "time": "2026-11-08T19:00:18.003327+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__175_1.npz",
+        "time": "2026-11-08T19:00:18.642853+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__176_1.npz",
+        "time": "2026-11-08T19:00:19.144163+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__177_1.npz",
+        "time": "2026-11-08T19:00:19.235237+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__179_1.npz",
+        "time": "2026-11-08T19:00:19.721442+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__180_1.npz",
+        "time": "2026-11-08T19:00:20.197178+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__181_1.npz",
+        "time": "2026-11-08T19:00:20.680435+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__183_1.npz",
+        "time": "2026-11-08T19:00:21.224729+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__184_1.npz",
+        "time": "2026-11-08T19:00:21.659475+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__motor__185_1.npz",
+        "time": "2026-11-08T19:00:22.223476+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__236_1.npz",
+        "time": "2026-11-08T19:00:22.568082+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__238_1.npz",
+        "time": "2026-11-08T19:00:23.264412+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__239_1.npz",
+        "time": "2026-11-08T19:00:23.970201+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__241_1.npz",
+        "time": "2026-11-08T19:00:24.643872+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__243_1.npz",
+        "time": "2026-11-08T19:00:25.297593+00:00"
+      },
+      {
+        "attempt": 2,
+        "path": "D:\\UAV-Data\\causal_input_v1\\cases\\REAL__waypoint__no_fault__244_1.npz",
+        "time": "2026-11-08T19:00:25.963517+00:00"
+      }
+    ],
+    "unique_windows": 315,
+    "unique_cases": 315,
+    "raw_open_calls": 630,
+    "dev_only": true,
+    "initial_attempt_access_counter_lost_in_RAM": "Code path loaded315 dev windows; no raw cases before interruption. Not added as measured open calls."
+  },
+  "resume_attempt": 2,
+  "retained_model_count_first_resume": 122,
+  "physical_restart_slot123": "本机重启后的基础设施恢复，不是重跑指标",
+  "wall_time_this_resume_s": 30880.683426800002,
+  "no_sealed_internal_test_or_GPU": true,
+  "no_automatic_B2": true
+}

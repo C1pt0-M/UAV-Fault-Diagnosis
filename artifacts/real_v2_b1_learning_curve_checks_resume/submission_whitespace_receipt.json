@@ -1,0 +1,16 @@
+{
+  "initial_exit_code": 2,
+  "initial_failure": "CR at EOL in byte-preserved Windows artifact evidence; .gitattributes artifacts/** -text",
+  "second_command": [
+    "git",
+    "-c",
+    "core.whitespace=trailing-space,space-before-tab,cr-at-eol",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "second_exit_code": 0,
+  "artifact_bytes_rewritten": false,
+  "git_configuration_modified": false,
+  "no_training_prediction_metric_retry": true
+}

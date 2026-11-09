@@ -1,0 +1,253 @@
+{
+  "review_utc": "2026-11-08T17:44:18.612933+00:00",
+  "operation": "read-only checkpoint inventory; no fit/predict/metric computation",
+  "formal_launches": 1,
+  "execution_command": [
+    "D:\\python3.12.4\\python.exe",
+    "-X",
+    "utf8",
+    "-E",
+    "-P",
+    "-B",
+    "D:\\UAV-Fault-Diagnosis\\scripts\\research\\real_v2_b1_learning_curve.py"
+  ],
+  "code_sha_match": true,
+  "complete_fits": 122,
+  "by_arm_fraction": [
+    {
+      "arm": "R",
+      "fraction": 0.1,
+      "fits": 25,
+      "n_iter_counts": {
+        "400": 25
+      }
+    },
+    {
+      "arm": "R",
+      "fraction": 0.25,
+      "fits": 25,
+      "n_iter_counts": {
+        "400": 25
+      }
+    },
+    {
+      "arm": "R",
+      "fraction": 0.5,
+      "fits": 10,
+      "n_iter_counts": {
+        "400": 10
+      }
+    },
+    {
+      "arm": "R",
+      "fraction": 1.0,
+      "fits": 5,
+      "n_iter_counts": {
+        "400": 5
+      }
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.1,
+      "fits": 25,
+      "n_iter_counts": {
+        "304": 1,
+        "400": 20,
+        "317": 1,
+        "346": 1,
+        "333": 1,
+        "370": 1
+      }
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.25,
+      "fits": 25,
+      "n_iter_counts": {
+        "400": 25
+      }
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.5,
+      "fits": 7,
+      "n_iter_counts": {
+        "400": 7
+      }
+    }
+  ],
+  "completed_model_sha_all_match": true,
+  "registered_artifact_sha_all_match": true,
+  "registered_artifacts": 145,
+  "unregistered_model_files": [],
+  "runtime_directories": {
+    "models": {
+      "files": 122,
+      "bytes": 202009458
+    },
+    "oof": {
+      "files": 23,
+      "bytes": 3866011
+    },
+    "features": {
+      "files": 0,
+      "bytes": 0
+    },
+    "scores": {
+      "files": 0,
+      "bytes": 0
+    },
+    "inner_events": {
+      "files": 0,
+      "bytes": 0
+    }
+  },
+  "completed_window_metric_keys": [
+    {
+      "arm": "R",
+      "fraction": 0.1,
+      "repeat": 0
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.1,
+      "repeat": 0
+    },
+    {
+      "arm": "R",
+      "fraction": 0.1,
+      "repeat": 1
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.1,
+      "repeat": 1
+    },
+    {
+      "arm": "R",
+      "fraction": 0.1,
+      "repeat": 2
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.1,
+      "repeat": 2
+    },
+    {
+      "arm": "R",
+      "fraction": 0.1,
+      "repeat": 3
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.1,
+      "repeat": 3
+    },
+    {
+      "arm": "R",
+      "fraction": 0.1,
+      "repeat": 4
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.1,
+      "repeat": 4
+    },
+    {
+      "arm": "R",
+      "fraction": 0.25,
+      "repeat": 0
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.25,
+      "repeat": 0
+    },
+    {
+      "arm": "R",
+      "fraction": 0.25,
+      "repeat": 1
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.25,
+      "repeat": 1
+    },
+    {
+      "arm": "R",
+      "fraction": 0.25,
+      "repeat": 2
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.25,
+      "repeat": 2
+    },
+    {
+      "arm": "R",
+      "fraction": 0.25,
+      "repeat": 3
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.25,
+      "repeat": 3
+    },
+    {
+      "arm": "R",
+      "fraction": 0.25,
+      "repeat": 4
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.25,
+      "repeat": 4
+    },
+    {
+      "arm": "R",
+      "fraction": 0.5,
+      "repeat": 0
+    },
+    {
+      "arm": "S_plus_R",
+      "fraction": 0.5,
+      "repeat": 0
+    },
+    {
+      "arm": "R",
+      "fraction": 0.5,
+      "repeat": 1
+    }
+  ],
+  "source_feature_cache_persisted": false,
+  "canonical_files": [
+    "fit_receipts.jsonl",
+    "interruption_receipt.json",
+    "local_artifacts.jsonl",
+    "reproduction_gate.json",
+    "run.log",
+    "source_train_receipt.json",
+    "window_metrics.csv"
+  ],
+  "missing_required_final_files": [
+    "results.json",
+    "receipt.json",
+    "onset_selection.csv",
+    "events_per_case.csv",
+    "execution_notes.md"
+  ],
+  "stage_flags": {
+    "H1.json": false,
+    "window_summary.json": false,
+    "subsets.json": false,
+    "inner_selection.json": false,
+    "event_points.json": false,
+    "event_CI.json": false,
+    "paired_case_AUC.csv": false,
+    "failure.json": false
+  },
+  "protected_files": 19,
+  "protected_changed": [],
+  "D_free_bytes": 197129273344,
+  "no_training_or_reprediction_during_review": true
+}

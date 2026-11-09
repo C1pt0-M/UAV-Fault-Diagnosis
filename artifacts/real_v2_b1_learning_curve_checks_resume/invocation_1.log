@@ -1,0 +1,35 @@
+RESUME_START 1 retained_fits 122 PI补充2; numerical protocol unchanged
+RESUME_FAILED_STOP rehydrate_features PermissionError(13, '拒绝访问。')
+Traceback (most recent call last):
+  File "D:\UAV-Fault-Diagnosis\scripts\research\resume_real_v2_b1_learning_curve.py", line 419, in <module>
+    raise SystemExit(run())
+                     ^^^^^
+  File "D:\UAV-Fault-Diagnosis\scripts\research\resume_real_v2_b1_learning_curve.py", line 197, in run
+    cached=files.npz(path,make)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "D:\UAV-Fault-Diagnosis\scripts\research\resume_real_v2_b1_learning_curve.py", line 105, in npz
+    if not path.exists():atomic_write(path,lambda f:np.savez_compressed(f,**compute()))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\UAV-Fault-Diagnosis\scripts\research\resume_real_v2_b1_learning_curve.py", line 37, in atomic_write
+    pending=Path(f.name);writer(f);f.flush();os.fsync(f.fileno())
+                         ^^^^^^^^^
+  File "D:\UAV-Fault-Diagnosis\scripts\research\resume_real_v2_b1_learning_curve.py", line 105, in <lambda>
+    if not path.exists():atomic_write(path,lambda f:np.savez_compressed(f,**compute()))
+                                                                            ^^^^^^^^^
+  File "D:\UAV-Fault-Diagnosis\scripts\research\resume_real_v2_b1_learning_curve.py", line 195, in make
+    return {'features':b.b0.window_features(DATA/'windows'/(uid.replace('/','__')+'.npz'),part),
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\UAV-Fault-Diagnosis\scripts\research\real_v2_b0_diagnostics.py", line 141, in window_features
+    with np.load(path, allow_pickle=False) as z:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python3.12.4\Lib\site-packages\numpy\lib\_npyio_impl.py", line 454, in load
+    fid = stack.enter_context(open(os.fspath(file), "rb"))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\UAV-Fault-Diagnosis\scripts\research\resume_real_v2_b1_learning_curve.py", line 181, in access_log
+    if p in raw_paths:append_jsonl(OUT/'resume_input_access.jsonl',{'attempt':attempt,'path':p,'time':datetime.now(timezone.utc).isoformat()})
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\UAV-Fault-Diagnosis\scripts\research\resume_real_v2_b1_learning_curve.py", line 51, in append_jsonl
+    atomic_write(path,lambda f:f.write(old+payload),replace=path.exists())
+  File "D:\UAV-Fault-Diagnosis\scripts\research\resume_real_v2_b1_learning_curve.py", line 39, in atomic_write
+    os.replace(pending,path)
+PermissionError: [WinError 5] 拒绝访问。: 'D:\\UAV-Fault-Diagnosis\\artifacts\\real_v2_b1_learning_curve\\resume_input_access.jsonl.f1qwmc4k.partial' -> 'D:\\UAV-Fault-Diagnosis\\artifacts\\real_v2_b1_learning_curve\\resume_input_access.jsonl'

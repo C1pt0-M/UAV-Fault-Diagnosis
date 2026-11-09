@@ -1,0 +1,133 @@
+{
+  "status": "COMPLETE",
+  "built_from_completed_JSON_CSV_only": true,
+  "no_analysis_rerun": true,
+  "scientific_fits": 200,
+  "reused_completed_fits": 122,
+  "new_fits": 78,
+  "old_first_122_fit_records_equal": true,
+  "old_completed_fit_names_restarted": [],
+  "first_restart_physical_start": {
+    "name": "outer_S_plus_R_f0.50_rep1_k2",
+    "physical_start_number": 2,
+    "resume_attempt": 2,
+    "reason": "本机重启后的基础设施恢复"
+  },
+  "resume1": "PermissionError during feature/audit cache; 86 cached, no fits; retained failure and partial",
+  "resume2_exit_code": 0,
+  "resume2_wall_time_s": 30880.683426800002,
+  "io_events": [],
+  "python": "D:/python3.12.4/python.exe",
+  "python_version": "3.12.4",
+  "sklearn": "1.7.1",
+  "flags": [
+    "-X",
+    "utf8",
+    "-E",
+    "-P",
+    "-B"
+  ],
+  "CPU_native_threads": 16,
+  "config_sha256": "114ac5427187a6cb78ed1a77e39d8861194b4d25340f07c1debf43f3d1e1bd3c",
+  "split_sha256": "9232ee35e7a59f4fac4534fc8e98fc454380b51e6e5d8439aaa0f769cd1090ee",
+  "original_B1_code_sha256": "312b4c70b647dffb4c7aa4113df1fb6af3ec1d496d9f71db389571a216ed7d12",
+  "resume_code_sha256": "198b4bb9e7fe850c54221eddb3854c9941ee97c347094a1209e4f63466186dcf",
+  "recorded_payload_access": {
+    "unique_windows": 315,
+    "unique_cases": 315,
+    "raw_open_calls": 630,
+    "dev_only": true,
+    "initial_attempt_access_counter_lost_in_RAM": "Code path loaded315 dev windows; no raw cases before interruption. Not added as measured open calls."
+  },
+  "local_artifact_counts": {
+    "models": 200,
+    "oof": 33,
+    "window_features": 316,
+    "window_predictions": 160,
+    "state": 21,
+    "features": 315,
+    "scores": 3465,
+    "event_records": 3465,
+    "inner_events": 10
+  },
+  "old_122_models_and_23_OOF_not_rehashed": true,
+  "raw_real_npz_identity_rescan": false,
+  "original_access_counter_not_reconstructed": true,
+  "protected_user_files_and_frozen_reports_not_modified_by_task": true,
+  "internal_test_not_read": true,
+  "no_sealed_quarantine_payload": true,
+  "no_GPU_T1_B2_or_full_restart": true,
+  "H1": {
+    "repeat_mean_delta_AP": 0.00815332138581586,
+    "ci95": [
+      0.002775112482339398,
+      0.013715974146905346
+    ],
+    "undefined_replicates": 0,
+    "primary": true,
+    "holds": true
+  },
+  "H2": {
+    "arms": {
+      "R": {
+        "holds": false,
+        "checks": {
+          "N1": false,
+          "N2": false,
+          "motor": true,
+          "sensor": true
+        },
+        "failed": [
+          "N1",
+          "N2"
+        ]
+      },
+      "S_plus_R": {
+        "holds": false,
+        "checks": {
+          "N1": false,
+          "N2": false,
+          "motor": true,
+          "sensor": true
+        },
+        "failed": [
+          "N1",
+          "N2"
+        ]
+      }
+    },
+    "line_holds": false
+  },
+  "consequences": {
+    "key": "H2_fails",
+    "conclusion": "No B2; back to data/labels with user",
+    "automatic_next_step": false
+  },
+  "results_sha256": "cb8310a2ad7e329e2028b91e474452464d45cb11f66a74e4d578fd1759c29af9",
+  "receipt_sha256": "353fb9e82de6ecd3193b7bc24a9e6e87f4e1c7d5e14dc86c7a164a0c0dead4ac",
+  "report_sha256": "be709d293f4c5d8e96cd74a9f3dd6e5dbbb3eadbeb95029365375e7c5ee315ce",
+  "tests": [
+    "original 28 passed",
+    "resume initial21 passed",
+    "resume fix22 passed"
+  ],
+  "all_synthetic_access_attempts": [],
+  "submission_whitespace_check": {
+    "initial_exit_code": 2,
+    "initial_failure": "CR at EOL in byte-preserved Windows artifact evidence; .gitattributes artifacts/** -text",
+    "second_command": [
+      "git",
+      "-c",
+      "core.whitespace=trailing-space,space-before-tab,cr-at-eol",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "second_exit_code": 0,
+    "artifact_bytes_rewritten": false,
+    "git_configuration_modified": false,
+    "no_training_prediction_metric_retry": true
+  },
+  "report_created_utc": "2026-11-09T03:17:45.268888+00:00",
+  "formal_result_created_utc": "2026-11-09T02:55:24.036670+00:00"
+}
