@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "D:\UAV-Fault-Diagnosis\artifacts\real_n2_provenance_review_v1\inspect.py", line 304, in <module>
+    run()
+  File "D:\UAV-Fault-Diagnosis\artifacts\real_n2_provenance_review_v1\inspect.py", line 199, in run
+    metadata[uid] = dict(**allow[uid], TestInfo=meta, **command_summary(meta), directory_date_proxy=date,
+                                                        ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\UAV-Fault-Diagnosis\artifacts\real_n2_provenance_review_v1\inspect.py", line 51, in command_summary
+    seq = commands(meta['Control Sequence'])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\UAV-Fault-Diagnosis\artifacts\real_n2_provenance_review_v1\inspect.py", line 43, in commands
+    values = [float(x) for x in command.split(',')]
+              ^^^^^^^^
+ValueError: could not convert string to float: '0.0.66'

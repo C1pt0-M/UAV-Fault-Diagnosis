@@ -1,0 +1,376 @@
+[
+  {
+    "root": "D:/BuaaAutoTestPlatForm",
+    "head": {
+      "args": [
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "ebb334abe6784c59415a48b4a91e2f17bce99862\n",
+      "stderr": ""
+    },
+    "last_commit": {
+      "args": [
+        "log",
+        "-1",
+        "--format=%H %aI %s"
+      ],
+      "exit_code": 0,
+      "stdout": "ebb334abe6784c59415a48b4a91e2f17bce99862 2024-04-09T21:08:10+08:00 add readme\n",
+      "stderr": ""
+    },
+    "candidate_path_status": {
+      "args": [
+        "status",
+        "--short",
+        "--untracked-files=no",
+        "--",
+        "README.md",
+        "AutoTestAPI/AutoTestAPI.py",
+        "AutoTestAPI/command.py",
+        "AutoTestAPI/PX4MavCtrlV4.py",
+        "AutoTestAPI/data_recorder.py"
+      ],
+      "exit_code": 0,
+      "stdout": " M AutoTestAPI/AutoTestAPI.py\n M AutoTestAPI/PX4MavCtrlV4.py\n",
+      "stderr": ""
+    },
+    "files": [
+      {
+        "path": "D:\\BuaaAutoTestPlatForm\\README.md",
+        "bytes": 804,
+        "sha256": "4ddc97d559eed5c04bed45a753357c37a585849224f374d7e55a167dd9efb5e3",
+        "matching_source_lines": []
+      },
+      {
+        "path": "D:\\BuaaAutoTestPlatForm\\AutoTestAPI\\AutoTestAPI.py",
+        "bytes": 17714,
+        "sha256": "2e5c45eab0e0bf5a3a5908db4cd819bd52fac1e71e7b431b3b8a949d86c19fc5",
+        "matching_source_lines": [
+          {
+            "line": 95,
+            "text": "    fault_inject_time = 0"
+          },
+          {
+            "line": 128,
+            "text": "    FaultParam = []"
+          },
+          {
+            "line": 135,
+            "text": "    start_time = time.time()"
+          },
+          {
+            "line": 298,
+            "text": "            fault_inject_time = round(time.time() - start_time)"
+          },
+          {
+            "line": 409,
+            "text": "    FaultParam = ['Fault Parameter', str(CID2obj.FaultParam)]"
+          },
+          {
+            "line": 414,
+            "text": "    TestInfo = [TestCaseID, CtrlSeq, FaultID, FaultParam, FaultInjectinfo, Endinfo, Otherinfo, Otherinfo2]"
+          }
+        ]
+      },
+      {
+        "path": "D:\\BuaaAutoTestPlatForm\\AutoTestAPI\\command.py",
+        "bytes": 20565,
+        "sha256": "af5acb251ab4d43e9670ee078e3a7b40eb53f1a3f3cad0b5eaf7ef5f5ef778ba",
+        "matching_source_lines": [
+          {
+            "line": 24,
+            "text": "        self.wp_start_time = whole_program_start_time"
+          },
+          {
+            "line": 30,
+            "text": "            self.start_time = time.time() + times[0]"
+          },
+          {
+            "line": 39,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 55,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 65,
+            "text": "        self.wp_start_time = whole_program_start_time"
+          },
+          {
+            "line": 77,
+            "text": "        self.FaultParam = np.array([])"
+          },
+          {
+            "line": 109,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 118,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 131,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 144,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 160,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 223,
+            "text": "        # self.FaultParam = inFloats"
+          },
+          {
+            "line": 224,
+            "text": "        self.FaultParam = np.concatenate([self.FaultParam, inFloats])"
+          },
+          {
+            "line": 239,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 266,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 286,
+            "text": "        start_time = time.time()"
+          },
+          {
+            "line": 292,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 309,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 330,
+            "text": "        self.mav.SendOffbInformation(float(time.time() - self.wp_start_time), self.mav.flight_status_param[0], self.mav.flight_status_param[1])"
+          },
+          {
+            "line": 350,
+            "text": "        start_time = time.time()"
+          },
+          {
+            "line": 380,
+            "text": "        c_mode = self.silFloats[0] - 10"
+          },
+          {
+            "line": 387,
+            "text": "        CTime = self.silFloats[0]"
+          },
+          {
+            "line": 388,
+            "text": "        Duration = self.silFloats[1]"
+          },
+          {
+            "line": 393,
+            "text": "            fault_vec[i] = self.silFloats[2+i]"
+          },
+          {
+            "line": 399,
+            "text": "        start_time = time.time()"
+          },
+          {
+            "line": 412,
+            "text": "                start_time = time.time()"
+          }
+        ]
+      },
+      {
+        "path": "D:\\BuaaAutoTestPlatForm\\AutoTestAPI\\PX4MavCtrlV4.py",
+        "bytes": 116820,
+        "sha256": "88eaeeeafe7c9cead1efa9cb0a2d49a111cc1d979fc9c0a9929a3cc1fc3e2dfc",
+        "matching_source_lines": [
+          {
+            "line": 1590,
+            "text": "        https://mavlink.io/en/messages/common.html#HIL_ACTUATOR_CONTROLS"
+          },
+          {
+            "line": 1939,
+            "text": "                        type=['ATTITUDE', 'LOCAL_POSITION_NED',\"ATTITUDE_QUATERNION\",'HEARTBEAT','HOME_POSITION','GLOBAL_POSITION_INT','HIL_ACTUATOR_CONTROLS','STATUSTEXT'],"
+          },
+          {
+            "line": 1998,
+            "text": "                        if msg.get_type() == \"HIL_ACTUATOR_CONTROLS\":"
+          }
+        ]
+      },
+      {
+        "path": "D:\\BuaaAutoTestPlatForm\\AutoTestAPI\\data_recorder.py",
+        "bytes": 9497,
+        "sha256": "ffe8f9295701b761296a74f138625f70bc2825310db6bbc308692d90812269ab",
+        "matching_source_lines": []
+      }
+    ]
+  },
+  {
+    "root": "D:/RflyMAD/Data_processing_tools",
+    "head": {
+      "args": [
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "3b5b326da73890efb3bae120e75e16a5ea03293c\n",
+      "stderr": ""
+    },
+    "last_commit": {
+      "args": [
+        "log",
+        "-1",
+        "--format=%H %aI %s"
+      ],
+      "exit_code": 0,
+      "stdout": "3b5b326da73890efb3bae120e75e16a5ea03293c 2024-10-18T11:03:50+08:00 Modified with addition of sim with ROS\n",
+      "stderr": ""
+    },
+    "candidate_path_status": {
+      "args": [
+        "status",
+        "--short",
+        "--untracked-files=no",
+        "--",
+        "README.md",
+        "timetrans.py",
+        "data_real_ROS.json",
+        "OtherTools/windextract.py",
+        "OtherTools/bag2csv.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "files": [
+      {
+        "path": "D:\\RflyMAD\\Data_processing_tools\\README.md",
+        "bytes": 15318,
+        "sha256": "feacb5eaf3207e572d7d1b5d6a2d36765de2e4e49a977a39bf72d86632e1f856",
+        "matching_source_lines": []
+      },
+      {
+        "path": "D:\\RflyMAD\\Data_processing_tools\\timetrans.py",
+        "bytes": 2580,
+        "sha256": "582e2984977958270dc935a9df03177f294db02051a56e5474fcc37f86047a1f",
+        "matching_source_lines": [
+          {
+            "line": 8,
+            "text": "class TimeBridgeofPX4andROS:"
+          }
+        ]
+      },
+      {
+        "path": "D:\\RflyMAD\\Data_processing_tools\\data_real_ROS.json",
+        "bytes": 22162,
+        "sha256": "73b0330eef18b1d46342195e235043164b4cc9775cbe455434cdccd9f5e85681",
+        "matching_source_lines": []
+      },
+      {
+        "path": "D:\\RflyMAD\\Data_processing_tools\\OtherTools\\windextract.py",
+        "bytes": 6889,
+        "sha256": "b2c2e56312d6389472a07f52d9acf6fd9e7fe37bc363cf37dbd455b7c524bd2d",
+        "matching_source_lines": [
+          {
+            "line": 9,
+            "text": "from timetrans import TimeBridgeofPX4andROS"
+          },
+          {
+            "line": 79,
+            "text": "        Wind_title = ['timestamp', 'sampletime', 'wind_speed', 'wind_scale', 'wind_direction_angle', 'wind_direction']"
+          },
+          {
+            "line": 80,
+            "text": "        selected_data.append(Wind_title)"
+          },
+          {
+            "line": 138,
+            "text": "        TimeTool = TimeBridgeofPX4andROS(ros_t=start_time[0], px4_t=start_time[1]//1000)"
+          },
+          {
+            "line": 152,
+            "text": "                    sentence = 'This flight has no wind data'"
+          },
+          {
+            "line": 157,
+            "text": "                sentence = 'This flight has no wind data'"
+          }
+        ]
+      },
+      {
+        "path": "D:\\RflyMAD\\Data_processing_tools\\OtherTools\\bag2csv.py",
+        "bytes": 3564,
+        "sha256": "9c16058203299cd53914fce3d7e35271b4f200ecf8dadc413c06c47620de82cd",
+        "matching_source_lines": []
+      }
+    ]
+  },
+  {
+    "root": "D:/PX4PSP/Firmware",
+    "head": {
+      "args": [
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "2e8918da66af37922ededee1cc2d2efffec4cfb2\n",
+      "stderr": ""
+    },
+    "last_commit": {
+      "args": [
+        "log",
+        "-1",
+        "--format=%H %aI %s"
+      ],
+      "exit_code": 0,
+      "stdout": "2e8918da66af37922ededee1cc2d2efffec4cfb2 2021-09-06T11:52:58-04:00 boards: cubepilot_cubeorange only start ADSB mavlink if console not present\n",
+      "stderr": ""
+    },
+    "candidate_path_status": {
+      "args": [
+        "status",
+        "--short",
+        "--untracked-files=no",
+        "--",
+        "msg/CMakeLists.txt",
+        "src/modules/mavlink/mavlink_receiver.cpp",
+        "BkFile/EnvFault.sh"
+      ],
+      "exit_code": 0,
+      "stdout": " M msg/CMakeLists.txt\n M src/modules/mavlink/mavlink_receiver.cpp\n",
+      "stderr": ""
+    },
+    "files": [
+      {
+        "path": "D:\\PX4PSP\\Firmware\\msg\\CMakeLists.txt",
+        "bytes": 8895,
+        "sha256": "aa7bafea7060203bfc25d81bdec08a4b90b41702e7716bcd68263ba14a7ca3ce",
+        "matching_source_lines": []
+      },
+      {
+        "path": "D:\\PX4PSP\\Firmware\\src\\modules\\mavlink\\mavlink_receiver.cpp",
+        "bytes": 107437,
+        "sha256": "925fc103d1aa5b126c5fdb1c143efa00c1472056ae8b6dc1d7d24c6d347b3312",
+        "matching_source_lines": [
+          {
+            "line": 112,
+            "text": "\tcase MAVLINK_MSG_ID_HIL_ACTUATOR_CONTROLS:{"
+          }
+        ]
+      },
+      {
+        "path": "D:\\PX4PSP\\Firmware\\BkFile\\EnvFault.sh",
+        "bytes": 1591,
+        "sha256": "f3108103b744dcd3ef835ec58e61b3e11a063c9a2b5ac9360cd1498f51d1725e",
+        "matching_source_lines": []
+      }
+    ]
+  }
+]

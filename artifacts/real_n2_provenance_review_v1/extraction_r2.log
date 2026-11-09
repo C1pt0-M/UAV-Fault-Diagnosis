@@ -1,0 +1,51 @@
+1/76 REAL/acce/motor/429_1
+2/76 REAL/acce/no_fault/451_1
+3/76 REAL/acce/no_fault/452_1
+4/76 REAL/acce/no_fault/455_1
+5/76 REAL/acce/no_fault/456_1
+6/76 REAL/acce/no_fault/457_1
+7/76 REAL/acce/no_fault/460_1
+8/76 REAL/circling/accelerometer/367_1
+9/76 REAL/circling/gyroscope/376_1
+10/76 REAL/circling/magnetometer/385_1
+11/76 REAL/circling/magnetometer/386_1
+12/76 REAL/circling/magnetometer/389_1
+13/76 REAL/circling/motor/363_1
+14/76 REAL/circling/no_fault/396_1
+15/76 REAL/circling/no_fault/398_1
+16/76 REAL/circling/no_fault/400_1
+17/76 REAL/circling/no_fault/402_1
+18/76 REAL/circling/no_fault/404_1
+19/76 REAL/circling/no_fault/405_1
+20/76 REAL/hover/barometer/72_1
+21/76 REAL/hover/gyroscope/61_1
+22/76 REAL/hover/magnetometer/89_1
+23/76 REAL/hover/motor/17_1
+24/76 REAL/hover/no_fault/101_1
+25/76 REAL/hover/no_fault/102_1
+26/76 REAL/hover/no_fault/104_1
+27/76 REAL/hover/no_fault/105_1
+28/76 REAL/hover/no_fault/107_1
+29/76 REAL/hover/no_fault/109_1
+30/76 REAL/hover/no_fault/110_1
+31/76 REAL/velocity/GPS/311_1
+32/76 REAL/velocity/accelerometer/290_1
+33/76 REAL/velocity/accelerometer/291_1
+34/76 REAL/velocity/barometer/301_1
+35/76 REAL/velocity/gyroscope/295_1
+36/76 REAL/velocity/magnetometer/305_1
+37/76 REAL/velocity/motor/248_2
+38/76 REAL/velocity/motor/267_1
+39/76 REAL/velocity/no_fault/319_1
+40/76 REAL/velocity/no_fault/320_1
+41/76 REAL/velocity/no_fault/321_1
+Traceback (most recent call last):
+  File "D:\UAV-Fault-Diagnosis\artifacts\real_n2_provenance_review_v1\inspect.py", line 320, in <module>
+    run()
+  File "D:\UAV-Fault-Diagnosis\artifacts\real_n2_provenance_review_v1\inspect.py", line 256, in run
+    ROS_export_program_time_min=min(float(r['program_time']) for r in off_rows),
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\UAV-Fault-Diagnosis\artifacts\real_n2_provenance_review_v1\inspect.py", line 256, in <genexpr>
+    ROS_export_program_time_min=min(float(r['program_time']) for r in off_rows),
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
