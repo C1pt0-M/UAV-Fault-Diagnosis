@@ -4,12 +4,12 @@ from flask import jsonify, request
 
 from uav_dashboard_api import db
 from uav_dashboard_api.models.asset import Asset
-from uav_dashboard_api.routes.dashboard_asset_input import (
+from uav_dashboard_api.services.flight_log_asset_input import (
     AssetNotPreparedError,
-    _read_fault_prob_curve_csv,
-    _read_fault_prob_curve_json,
-    _resolve_asset_telemetry_session,
-    _resolved_csv_path,
+    read_fault_prob_curve_csv,
+    read_fault_prob_curve_json,
+    resolve_asset_telemetry_session,
+    resolve_csv_path,
 )
 from uav_dashboard_api.services.analysis import build_fields_response, build_timeseries_response
 from uav_dashboard_api.utils.jwt_utils import token_required, is_admin
@@ -43,7 +43,7 @@ def get_analysis_fields(current_user):
         return denied
 
     try:
-        csv_path = _resolved_csv_path(asset, strict_prepare=True)
+        csv_path = resolve_csv_path(asset, strict_prepare=True)
     except AssetNotPreparedError:
         return jsonify(
             {
@@ -77,7 +77,7 @@ def get_analysis_timeseries(current_user):
         return denied
 
     try:
-        csv_path = _resolved_csv_path(asset, strict_prepare=True)
+        csv_path = resolve_csv_path(asset, strict_prepare=True)
     except AssetNotPreparedError:
         return jsonify(
             {
@@ -107,7 +107,7 @@ def get_fault_prob_curve(current_user):
     if denied:
         return denied
 
-    session = _resolve_asset_telemetry_session(asset)
+    session = resolve_asset_telemetry_session(asset)
     if session is None:
         return jsonify(
             {
@@ -122,10 +122,10 @@ def get_fault_prob_curve(current_user):
         )
 
     meta = session.get_meta()
-    curve = _read_fault_prob_curve_json(meta.get("fault_prob_curve_path"))
+    curve = read_fault_prob_curve_json(meta.get("fault_prob_curve_path"))
     source = "fault_prob_curve_file"
     if not curve:
-        curve = _read_fault_prob_curve_csv(session.csv_path)
+        curve = read_fault_prob_curve_csv(session.csv_path)
         source = "session_csv"
 
     return jsonify(

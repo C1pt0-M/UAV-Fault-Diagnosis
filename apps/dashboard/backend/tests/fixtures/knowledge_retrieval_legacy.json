@@ -1,0 +1,683 @@
+{
+  "source_sha256": {
+    "apps/dashboard/backend/uav_dashboard_api/services/knowledge_base.py": "ba96eb15297dfb8a9a938c41a43e90a2f321abe99fdbd1ef63c858672e300d63",
+    "apps/dashboard/backend/uav_dashboard_api/services/ai_assistant.py": "4bcd9d3a6c7d82a590ea782d0177ac823cf930b57b313822bfe8a88488b8ff79"
+  },
+  "cases": {
+    "bm25": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "bad",
+          "title": "motor ",
+          "path": "manuals/motor.md",
+          "snippet": "motor motor motor maintenance",
+          "score": 0.2012,
+          "retrieval_mode": "bm25",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.2012,
+            "semantic": 0.0
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.1392,
+          "retrieval_mode": "bm25",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.0
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "third",
+          "title": "motor notes",
+          "path": "manuals/motor.md",
+          "snippet": "motor winding inspection",
+          "score": 0.1392,
+          "retrieval_mode": "bm25",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.0
+          }
+        }
+      ],
+      "hits": [],
+      "prompt_blocks": []
+    },
+    "bm25_positive": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "bad",
+          "title": "motor ",
+          "path": "manuals/motor.md",
+          "snippet": "motor motor motor maintenance",
+          "score": 1.0311,
+          "retrieval_mode": "bm25",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 1.0311,
+            "semantic": 0.0
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.7084,
+          "retrieval_mode": "bm25",
+          "score_breakdown": {
+            "lexical": 0.687,
+            "lexical_raw": 0.7084,
+            "semantic": 0.0
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "third",
+          "title": "motor notes",
+          "path": "manuals/motor.md",
+          "snippet": "motor winding inspection",
+          "score": 0.7084,
+          "retrieval_mode": "bm25",
+          "score_breakdown": {
+            "lexical": 0.687,
+            "lexical_raw": 0.7084,
+            "semantic": 0.0
+          }
+        }
+      ],
+      "hits": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.7084,
+          "retrieval_mode": "bm25",
+          "score_breakdown": {
+            "lexical": 0.687,
+            "lexical_raw": 0.7084,
+            "semantic": 0.0
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "third",
+          "title": "motor notes",
+          "path": "manuals/motor.md",
+          "snippet": "motor winding inspection",
+          "score": 0.7084,
+          "retrieval_mode": "bm25",
+          "score_breakdown": {
+            "lexical": 0.687,
+            "lexical_raw": 0.7084,
+            "semantic": 0.0
+          }
+        }
+      ],
+      "prompt_blocks": [
+        "【补充背景 1】\n来源类型: knowledge_base\n标题: motor guide\n内容: motor bearing maintenance",
+        "【补充背景 2】\n来源类型: knowledge_base\n标题: motor notes\n内容: motor winding inspection"
+      ]
+    },
+    "semantic": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "bad",
+          "title": "motor ",
+          "path": "manuals/motor.md",
+          "snippet": "motor motor motor maintenance",
+          "score": 0.99,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.2012,
+            "semantic": 0.99
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.8,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.8
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "third",
+          "title": "motor notes",
+          "path": "manuals/motor.md",
+          "snippet": "motor winding inspection",
+          "score": 0.65,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.65
+          }
+        }
+      ],
+      "hits": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.8,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.8
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "third",
+          "title": "motor notes",
+          "path": "manuals/motor.md",
+          "snippet": "motor winding inspection",
+          "score": 0.65,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.65
+          }
+        }
+      ],
+      "prompt_blocks": [
+        "【补充背景 1】\n来源类型: knowledge_base\n标题: motor guide\n内容: motor bearing maintenance",
+        "【补充背景 2】\n来源类型: knowledge_base\n标题: motor notes\n内容: motor winding inspection"
+      ]
+    },
+    "hybrid": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "bad",
+          "title": "motor ",
+          "path": "manuals/motor.md",
+          "snippet": "motor motor motor maintenance",
+          "score": 0.9945,
+          "retrieval_mode": "hybrid",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.2012,
+            "semantic": 0.99
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.7514,
+          "retrieval_mode": "hybrid",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.8
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "third",
+          "title": "motor notes",
+          "path": "manuals/motor.md",
+          "snippet": "motor winding inspection",
+          "score": 0.6689,
+          "retrieval_mode": "hybrid",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.65
+          }
+        }
+      ],
+      "hits": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.7514,
+          "retrieval_mode": "hybrid",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.8
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "third",
+          "title": "motor notes",
+          "path": "manuals/motor.md",
+          "snippet": "motor winding inspection",
+          "score": 0.6689,
+          "retrieval_mode": "hybrid",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.65
+          }
+        }
+      ],
+      "prompt_blocks": [
+        "【补充背景 1】\n来源类型: knowledge_base\n标题: motor guide\n内容: motor bearing maintenance",
+        "【补充背景 2】\n来源类型: knowledge_base\n标题: motor notes\n内容: motor winding inspection"
+      ]
+    },
+    "candidate_one": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "bad",
+          "title": "motor ",
+          "path": "manuals/motor.md",
+          "snippet": "motor motor motor maintenance",
+          "score": 0.99,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.2012,
+            "semantic": 0.99
+          }
+        }
+      ],
+      "hits": [],
+      "prompt_blocks": []
+    },
+    "candidate_two": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "bad",
+          "title": "motor ",
+          "path": "manuals/motor.md",
+          "snippet": "motor motor motor maintenance",
+          "score": 0.99,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.2012,
+            "semantic": 0.99
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.8,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.8
+          }
+        }
+      ],
+      "hits": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.8,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.8
+          }
+        }
+      ],
+      "prompt_blocks": [
+        "【补充背景 1】\n来源类型: knowledge_base\n标题: motor guide\n内容: motor bearing maintenance"
+      ]
+    },
+    "quality_before_threshold": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "bad",
+          "title": "motor ",
+          "path": "manuals/motor.md",
+          "snippet": "motor motor motor maintenance",
+          "score": 0.99,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.2012,
+            "semantic": 0.99
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.55,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.55
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "third",
+          "title": "motor notes",
+          "path": "manuals/motor.md",
+          "snippet": "motor winding inspection",
+          "score": 0.54,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.54
+          }
+        }
+      ],
+      "hits": [],
+      "prompt_blocks": []
+    },
+    "rounding": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "one",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor maintenance",
+          "score": 0.35,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.1823,
+            "semantic": 0.35
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "two",
+          "title": "motor notes",
+          "path": "manuals/motor.md",
+          "snippet": "motor inspection",
+          "score": 0.3499,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.1823,
+            "semantic": 0.3499
+          }
+        }
+      ],
+      "hits": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "one",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor maintenance",
+          "score": 0.35,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.1823,
+            "semantic": 0.35
+          }
+        }
+      ],
+      "prompt_blocks": [
+        "【补充背景 1】\n来源类型: knowledge_base\n标题: motor guide\n内容: motor maintenance"
+      ]
+    },
+    "source_order": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "other",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor maintenance",
+          "score": 0.8,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.1487,
+            "semantic": 0.8
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "shared",
+          "title": "motor first",
+          "path": "manuals/motor.md",
+          "snippet": "motor first section",
+          "score": 0.5,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.8541,
+            "lexical_raw": 0.127,
+            "semantic": 0.5
+          }
+        }
+      ],
+      "hits": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "other",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor maintenance",
+          "score": 0.8,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.1487,
+            "semantic": 0.8
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "shared",
+          "title": "motor first",
+          "path": "manuals/motor.md",
+          "snippet": "motor first section",
+          "score": 0.5,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.8541,
+            "lexical_raw": 0.127,
+            "semantic": 0.5
+          }
+        }
+      ],
+      "prompt_blocks": [
+        "【补充背景 1】\n来源类型: knowledge_base\n标题: motor guide\n内容: motor maintenance",
+        "【补充背景 2】\n来源类型: knowledge_base\n标题: motor first\n内容: motor first section"
+      ]
+    },
+    "ties": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "one",
+          "title": "motor first",
+          "path": "manuals/motor.md",
+          "snippet": "motor maintenance",
+          "score": 0.7,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.1823,
+            "semantic": 0.7
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "two",
+          "title": "motor second",
+          "path": "manuals/motor.md",
+          "snippet": "motor inspection",
+          "score": 0.7,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.1823,
+            "semantic": 0.7
+          }
+        }
+      ],
+      "hits": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "one",
+          "title": "motor first",
+          "path": "manuals/motor.md",
+          "snippet": "motor maintenance",
+          "score": 0.7,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.1823,
+            "semantic": 0.7
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "two",
+          "title": "motor second",
+          "path": "manuals/motor.md",
+          "snippet": "motor inspection",
+          "score": 0.7,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.1823,
+            "semantic": 0.7
+          }
+        }
+      ],
+      "prompt_blocks": [
+        "【补充背景 1】\n来源类型: knowledge_base\n标题: motor first\n内容: motor maintenance",
+        "【补充背景 2】\n来源类型: knowledge_base\n标题: motor second\n内容: motor inspection"
+      ]
+    },
+    "context_one": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "bad",
+          "title": "motor ",
+          "path": "manuals/motor.md",
+          "snippet": "motor motor motor maintenance",
+          "score": 0.99,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.2012,
+            "semantic": 0.99
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.8,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.8
+          }
+        },
+        {
+          "source_type": "knowledge_base",
+          "source_id": "third",
+          "title": "motor notes",
+          "path": "manuals/motor.md",
+          "snippet": "motor winding inspection",
+          "score": 0.65,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.65
+          }
+        }
+      ],
+      "hits": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "clean",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor bearing maintenance",
+          "score": 0.8,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 0.6919,
+            "lexical_raw": 0.1392,
+            "semantic": 0.8
+          }
+        }
+      ],
+      "prompt_blocks": [
+        "【补充背景 1】\n来源类型: knowledge_base\n标题: motor guide\n内容: motor bearing maintenance"
+      ]
+    },
+    "all_low": {
+      "candidates": [
+        {
+          "source_type": "knowledge_base",
+          "source_id": "low",
+          "title": "motor guide",
+          "path": "manuals/motor.md",
+          "snippet": "motor maintenance",
+          "score": 0.3,
+          "retrieval_mode": "semantic",
+          "score_breakdown": {
+            "lexical": 1.0,
+            "lexical_raw": 0.2877,
+            "semantic": 0.3
+          }
+        }
+      ],
+      "hits": [],
+      "prompt_blocks": []
+    }
+  }
+}

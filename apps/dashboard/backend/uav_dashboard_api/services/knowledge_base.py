@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import dataclass, replace
 from datetime import datetime
 import json
 import math
@@ -34,6 +35,20 @@ INTENT_SYNONYMS = {
     'reason': ('原因', '起因', '导致', '为什么', '为何'),
     'prevention': ('预防', '避免', '防止', '降低'),
 }
+
+
+@dataclass(frozen=True)
+class KnowledgeContextResult:
+    """Hits and metadata from one retrieval, independent of later queries.
+
+    actual_mode is None when retrieval was skipped (disabled, blank query or
+    empty index). index_embedding_enabled describes index capability, not the
+    success of this query's embedding request.
+    """
+
+    hits: list[dict]
+    actual_mode: str | None
+    index_embedding_enabled: bool
 
 
 class KnowledgeBaseService:
@@ -659,16 +674,60 @@ class KnowledgeBaseService:
         return scores, self._index_meta(index)['retrieval_mode']
 
     def search(self, query: str, *, top_k: int = 5) -> list[dict]:
-        if not self._enabled():
-            return []
-        clean_query = str(query or '').strip()
-        if not clean_query:
+        """Return candidates, retaining the existing search interface."""
+        return self._search_once(query, top_k=top_k).hits
+
+    def retrieve_for_interpretation(
+        self, query: str, *, candidate_limit: int = 5, max_items: int = 2,
+    ) -> KnowledgeContextResult:
+        """Return usable interpretation context and this query's actual mode.
+
+        Keep candidate truncation before admission, and compute the score
+        threshold before quality filtering. Rejected candidates are not
+        replaced with hits outside candidate_limit.
+        """
+        result = self._search_once(query, top_k=candidate_limit)
+        return replace(
+            result,
+            hits=self._select_interpretation_hits(result.hits, max_items=max_items),
+        )
+
+    def _select_interpretation_hits(
+        self, hits: list[dict], *, max_items: int = 2
+    ) -> list[dict]:
+        if not hits:
             return []
 
+        top_score = max(float(item.get("score") or 0.0) for item in hits)
+        threshold = max(0.35, top_score * 0.6)
+        selected = []
+
+        for item in hits:
+            score = float(item.get("score") or 0.0)
+            snippet = str(item.get("snippet") or "")
+            title = str(item.get("title") or "")
+            if score < threshold:
+                continue
+            if not self._is_text_quality_acceptable(f"{title}\n{snippet}"):
+                continue
+            selected.append(item)
+            if len(selected) >= max_items:
+                break
+
+        return selected
+
+    def _search_once(self, query: str, *, top_k: int) -> KnowledgeContextResult:
+        if not self._enabled():
+            return KnowledgeContextResult([], None, False)
+        clean_query = str(query or '').strip()
+        if not clean_query:
+            return KnowledgeContextResult([], None, False)
+
         index = self._load_index()
+        embedding_enabled = bool(index.get('embedding_enabled', False))
         chunks = index.get('chunks', [])
         if not chunks:
-            return []
+            return KnowledgeContextResult([], None, embedding_enabled)
 
         lexical_scores = self._bm25_scores(index, self._tokenize(clean_query))
         retrieval_mode = self._index_meta(index)['retrieval_mode']
@@ -734,7 +793,9 @@ class KnowledgeBaseService:
                 }
             )
         results.sort(key=lambda item: item['score'], reverse=True)
-        return results[: max(1, int(top_k))]
+        return KnowledgeContextResult(
+            results[: max(1, int(top_k))], retrieval_mode, embedding_enabled,
+        )
 
 
 knowledge_base = KnowledgeBaseService()

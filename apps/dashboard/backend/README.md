@@ -61,6 +61,31 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start_dashboard_backend.ps1
 
 运行时权重和 metadata 在 `assets/models/`，由 `assets/models/manifest.json` 控制注册清单。模型结构代码仍在 `uav_fault.models`。
 
+## 离线诊断执行
+
+`uav_dashboard_api.services.offline_diagnosis` 是离线诊断 Module，公开
+`submit_offline_diagnosis(...)` Interface，负责输入校验、监测会话承接、创建和提交任务，以及后台推理、严重度与决策拼装。调用需要 Flask application context；成功返回 `RunRecord` 表示任务已提交，最终结果通过现有任务查询获取。
+
+路由负责请求解析和 HTTP 响应。共享资产输入逻辑位于
+`services/flight_log_asset_input.py`，供资产、分析与诊断使用。提交前检查和后台执行前复查使用相同输入规则，保留排队期间文件或模型发生变化的失败语义。
+
+`task_manager` 继续管理 executor、任务状态和结果落库，`bridge` 保留推理子进程 Adapter，报告由成功诊断结果单独生成。编排回归测试位于
+`tests/dashboard_flows/test_offline_diagnosis.py`：使用临时数据库和 CSV、真实规则与决策计算，仅替代耗时推理，并覆盖真实 executor。
+
+## AI 知识检索
+
+`knowledge_base.retrieve_for_interpretation(query, candidate_limit=5, max_items=2)`
+返回同一次查询的 `KnowledgeContextResult`：`hits`、`actual_mode` 和
+`index_embedding_enabled`。AI 解释流程使用这些命中和元数据，不再自行解释检索分数或再次读取索引状态；原 `search(query, top_k=5)` 继续返回候选列表。
+
+筛选保持原有顺序：检索侧执行意图约束、来源限额、四位分数舍入、排序与候选截断，再以
+`max(0.35, top_score * 0.6)` 筛选分数、检查标题与 snippet 质量，最后应用上下文上限。计算最高分时仍包含随后可能因质量被拒绝的候选，过滤后不额外补足候选。
+
+`used_context.knowledge_retrieval_mode` 记录本次实际模式，因此语义查询降级到 BM25 后即使零命中也记录为 `bm25`；知识库关闭、空查询或空索引未执行检索时为 `null`。
+`knowledge_embedding_enabled` 仍表示索引能力，`fallback_used` 仍仅表示回答模型的降级。
+
+`tests/test_knowledge_retrieval_context.py` 使用合成索引与固定 embedding/chat Adapter，对照重构前快照验证命中、引用和提示词上下文，并覆盖降级、零命中及并发查询元数据。测试不调用真实外部提供方。
+
 ## RflySim 运行边界
 
 - Dashboard backend/frontend 从 Windows PowerShell 启动。

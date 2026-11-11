@@ -1,3 +1,8 @@
+"""Shared flight log input, quality metadata and monitoring-session association.
+
+Requires a Flask application context. Session asset creation only flushes;
+the caller owns the transaction that associates the asset with its operation.
+"""
 from __future__ import annotations
 
 import csv
@@ -21,7 +26,7 @@ class AssetNotPreparedError(RuntimeError):
 class SessionCsvUnavailableError(RuntimeError):
     """遥测会话未提供可分析CSV。"""
 
-def _sha256_file(path: Path) -> str:
+def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as fp:
         while True:
@@ -31,7 +36,7 @@ def _sha256_file(path: Path) -> str:
             digest.update(chunk)
     return digest.hexdigest()
 
-def _resolved_csv_path(asset: Asset, *, strict_prepare: bool = True) -> str:
+def resolve_csv_path(asset: Asset, *, strict_prepare: bool = True) -> str:
     if asset.kind == "csv":
         return resolve_local_path(asset.stored_path, current_app.config)
     meta = asset.get_meta()
@@ -48,7 +53,7 @@ def _format_percent(value: float) -> str:
         return f"{int(rounded)}%"
     return f"{rounded}%"
 
-def _build_csv_quality_meta(csv_path: str | Path | None) -> dict:
+def build_csv_quality_meta(csv_path: str | Path | None) -> dict:
     if not csv_path:
         return {}
     path = Path(csv_path)
@@ -115,7 +120,7 @@ def _downsample_curve(curve: list[dict], max_points: int = 1000) -> list[dict]:
     step = max(1, len(curve) // max_points)
     return curve[::step]
 
-def _read_fault_prob_curve_json(path_value: str | Path | None) -> list[dict]:
+def read_fault_prob_curve_json(path_value: str | Path | None) -> list[dict]:
     resolved = resolve_local_path(path_value, current_app.config)
     if not resolved:
         return []
@@ -139,7 +144,7 @@ def _read_fault_prob_curve_json(path_value: str | Path | None) -> list[dict]:
         curve.append({"time_s": time_s, "fault_prob": fault_prob})
     return _downsample_curve(curve)
 
-def _read_fault_prob_curve_csv(path_value: str | Path | None) -> list[dict]:
+def read_fault_prob_curve_csv(path_value: str | Path | None) -> list[dict]:
     resolved = resolve_local_path(path_value, current_app.config)
     if not resolved:
         return []
@@ -172,7 +177,7 @@ def _read_fault_prob_curve_csv(path_value: str | Path | None) -> list[dict]:
         return []
     return _downsample_curve(curve)
 
-def _resolve_asset_telemetry_session(asset: Asset):
+def resolve_asset_telemetry_session(asset: Asset):
     meta = asset.get_meta()
     session_id = str(meta.get("session_id") or "").strip()
     if session_id:
@@ -243,7 +248,7 @@ def _resolve_asset_telemetry_session(asset: Asset):
                 return session
     return None
 
-def _asset_payload_with_quality(asset: Asset, *, fill_missing_quality: bool = True) -> dict:
+def asset_payload_with_quality(asset: Asset, *, fill_missing_quality: bool = True) -> dict:
     payload = asset.to_dict()
     meta = dict(payload.get("meta") or {})
     source_type = meta.get("source_type")
@@ -254,16 +259,16 @@ def _asset_payload_with_quality(asset: Asset, *, fill_missing_quality: bool = Tr
     )
     if fill_missing_quality and asset.kind == "csv" and not meta.get("field_completeness"):
         try:
-            csv_path = _resolved_csv_path(asset, strict_prepare=False)
+            csv_path = resolve_csv_path(asset, strict_prepare=False)
         except Exception:
             csv_path = ""
-        quality_meta = _build_csv_quality_meta(csv_path)
+        quality_meta = build_csv_quality_meta(csv_path)
         if quality_meta:
             meta.update(quality_meta)
             payload["meta"] = meta
     return payload
 
-def _get_or_create_session_asset(session, created_by: int | None):
+def get_or_create_session_asset(session, created_by: int | None):
     csv_path = resolve_local_path(session.csv_path, current_app.config)
     if not csv_path:
         raise SessionCsvUnavailableError("session_csv_unavailable")
@@ -281,7 +286,7 @@ def _get_or_create_session_asset(session, created_by: int | None):
         kind="csv",
         stored_path=serialized_csv_path,
         size_bytes=csv_file.stat().st_size,
-        sha256=_sha256_file(csv_file),
+        sha256=sha256_file(csv_file),
         created_by=created_by,
     )
     meta = {
@@ -289,7 +294,7 @@ def _get_or_create_session_asset(session, created_by: int | None):
         "source_type": "telemetry_session",
         "session_id": session.id,
     }
-    meta.update(_build_csv_quality_meta(csv_file))
+    meta.update(build_csv_quality_meta(csv_file))
     asset.set_meta(meta)
     db.session.add(asset)
     db.session.flush()

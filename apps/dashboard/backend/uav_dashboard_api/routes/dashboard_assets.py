@@ -11,10 +11,10 @@ from werkzeug.utils import secure_filename
 from uav_dashboard_api import db
 from uav_dashboard_api.models.asset import Asset
 from uav_dashboard_api.models.run_record import RunRecord
-from uav_dashboard_api.routes.dashboard_asset_input import (
-    _asset_payload_with_quality,
-    _build_csv_quality_meta,
-    _sha256_file,
+from uav_dashboard_api.services.flight_log_asset_input import (
+    asset_payload_with_quality,
+    build_csv_quality_meta,
+    sha256_file,
 )
 from uav_dashboard_api.services.bridge import run_ulg_to_csv
 from uav_dashboard_api.services.task_manager import mark_run_progress, submit_background_run
@@ -53,7 +53,7 @@ def _prepare_ulg_worker(run_id: int, asset_id: int):
     meta = asset.get_meta()
     meta["prepared_csv_path"] = str(output_csv)
     meta["prepared_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    meta.update(_build_csv_quality_meta(output_csv))
+    meta.update(build_csv_quality_meta(output_csv))
     asset.set_meta(meta)
     db.session.commit()
 
@@ -99,7 +99,7 @@ def upload_asset(current_user):
     stored_path = save_dir / stored_name
     try:
         file.save(stored_path)
-        sha256 = _sha256_file(stored_path)
+        sha256 = sha256_file(stored_path)
 
         existing_asset = Asset.query.filter_by(sha256=sha256).first()
         if existing_asset:
@@ -108,7 +108,7 @@ def upload_asset(current_user):
                 {
                     "success": False,
                     "message": "文件已存在(文件指纹雷同)，跳过上传",
-                    "data": _asset_payload_with_quality(existing_asset),
+                    "data": asset_payload_with_quality(existing_asset),
                 }
             ), 409
 
@@ -123,7 +123,7 @@ def upload_asset(current_user):
         meta = {}
         if kind == "csv":
             meta["prepared_csv_path"] = str(stored_path)
-            meta.update(_build_csv_quality_meta(stored_path))
+            meta.update(build_csv_quality_meta(stored_path))
         asset.set_meta(meta)
         db.session.add(asset)
         db.session.commit()
@@ -164,7 +164,7 @@ def list_assets(current_user):
         {
             "success": True,
             "data": [
-                _asset_payload_with_quality(item, fill_missing_quality=False)
+                asset_payload_with_quality(item, fill_missing_quality=False)
                 for item in assets
             ],
         }
@@ -174,7 +174,7 @@ def get_asset(current_user, asset_id: int):
     asset, error = _get_asset_or_404(asset_id, current_user)
     if error:
         return error
-    return jsonify({"success": True, "data": _asset_payload_with_quality(asset)})
+    return jsonify({"success": True, "data": asset_payload_with_quality(asset)})
 
 def download_asset(current_user, asset_id: int):
     asset, error = _get_asset_or_404(asset_id, current_user)

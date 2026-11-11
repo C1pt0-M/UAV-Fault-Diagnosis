@@ -16,7 +16,7 @@ from uav_dashboard_api.models.diagnosis_report import DiagnosisReport
 from uav_dashboard_api.models.run_record import RunRecord
 from uav_dashboard_api.services.ai_provider import AIProviderError, OpenAICompatibleProvider
 from uav_dashboard_api.services.ai_settings import ai_settings_service
-from uav_dashboard_api.services.knowledge_base import knowledge_base
+from uav_dashboard_api.services.knowledge_base import KnowledgeContextResult, knowledge_base
 
 
 _AI_CHAT_EXECUTOR = ThreadPoolExecutor(max_workers=4, thread_name_prefix="ai-chat")
@@ -750,59 +750,22 @@ class AIAssistantService:
             )
         return blocks
 
-    def _select_knowledge_hits(
-        self, *, query: str, hits: list[dict], max_items: int = 2
-    ) -> list[dict]:
-        if not hits:
-            return []
-
-        top_score = max(float(item.get("score") or 0.0) for item in hits)
-        threshold = max(0.35, top_score * 0.6)
-        selected = []
-
-        for item in hits:
-            score = float(item.get("score") or 0.0)
-            snippet = str(item.get("snippet") or "")
-            title = str(item.get("title") or "")
-            if score < threshold:
-                continue
-            if not knowledge_base._is_text_quality_acceptable(f"{title}\n{snippet}"):
-                continue
-            selected.append(item)
-            if len(selected) >= max_items:
-                break
-
-        return selected
-
     def _used_context_payload(
         self,
         *,
         scene_context: SceneContext,
-        knowledge_hits: list[dict],
+        knowledge_context: KnowledgeContextResult,
         provider: str,
         model: str,
         fallback_used: bool,
     ) -> dict:
-        knowledge_info = knowledge_base.retrieval_info()
-        knowledge_retrieval_mode = None
-        if knowledge_hits:
-            knowledge_retrieval_mode = str(
-                knowledge_hits[0].get("retrieval_mode") or ""
-            ).strip() or None
-        if knowledge_retrieval_mode is None and knowledge_info.get("enabled"):
-            knowledge_retrieval_mode = str(
-                knowledge_info.get("retrieval_mode") or ""
-            ).strip() or None
-
         return {
             "scene": scene_context.scene,
             "report_id": scene_context.report.id if scene_context.report else None,
             "run_id": scene_context.run.id if scene_context.run else None,
-            "knowledge_hits": len(knowledge_hits),
-            "knowledge_retrieval_mode": knowledge_retrieval_mode,
-            "knowledge_embedding_enabled": bool(
-                knowledge_info.get("embedding_enabled", False)
-            ),
+            "knowledge_hits": len(knowledge_context.hits),
+            "knowledge_retrieval_mode": knowledge_context.actual_mode,
+            "knowledge_embedding_enabled": knowledge_context.index_embedding_enabled,
             "provider": provider,
             "model": model,
             "fallback_used": fallback_used,
@@ -1138,15 +1101,12 @@ class AIAssistantService:
             int(self._config().get("AI_TOP_K", 5)),
             int(self._config().get("AI_MAX_CONTEXT_CHUNKS", 6)),
         )
-        knowledge_hits = knowledge_base.search(
+        knowledge_context = knowledge_base.retrieve_for_interpretation(
             self._knowledge_query(scene_context, clean_message),
-            top_k=top_k,
-        )
-        knowledge_hits = self._select_knowledge_hits(
-            query=clean_message,
-            hits=knowledge_hits,
+            candidate_limit=top_k,
             max_items=min(2, top_k),
         )
+        knowledge_hits = knowledge_context.hits
         prompt_messages = self._build_prompt_messages(
             scene_context=scene_context,
             knowledge_hits=knowledge_hits,
@@ -1162,7 +1122,7 @@ class AIAssistantService:
         combined_citations = list(scene_context.citations) + knowledge_hits
         used_context = self._used_context_payload(
             scene_context=scene_context,
-            knowledge_hits=knowledge_hits,
+            knowledge_context=knowledge_context,
             provider=provider_name,
             model=model_name,
             fallback_used=fallback_used,

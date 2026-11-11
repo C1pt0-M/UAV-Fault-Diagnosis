@@ -110,8 +110,10 @@ def app(tmp_path: Path, monkeypatch):
     with flask_app.app_context():
         db.create_all()
         yield flask_app
+        from uav_dashboard_api.services.task_manager import shutdown_executor
         from uav_dashboard_api.services.telemetry_manager import shutdown_telemetry_manager
 
+        shutdown_executor(flask_app, wait=True)
         shutdown_telemetry_manager(flask_app)
         db.session.remove()
         db.drop_all()

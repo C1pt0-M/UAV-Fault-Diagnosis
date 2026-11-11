@@ -33,7 +33,7 @@ Supplemental metadata that distinguishes a candidate event's original interval, 
 _Avoid_: Physical detection latency, end-to-end notification latency, treating the candidate start as the actual alert time
 
 **Offline diagnosis**:
-A follow-up analysis flow that classifies a selected flight log asset or monitoring session output into the current supported fault categories and prepares evidence for reporting.
+A follow-up analysis flow that classifies a selected flight log asset or monitoring session output into the current supported fault categories and prepares evidence for reporting. Its execution module owns input admission, queued-task creation and submission, and prediction/rule/decision orchestration; routes map requests and outcomes to HTTP, the task execution module owns final task status and result persistence, and reports are generated separately from successful diagnosis results.
 _Avoid_: Real-time control, simulator validation
 
 **Sensor fault**:
@@ -51,6 +51,10 @@ _Avoid_: Raw model output, automatic maintenance order
 **AI-assisted interpretation**:
 An auxiliary explanation capability that helps users understand an existing diagnosis report, its evidence, risk level, and recommendations without replacing human review or maintenance decisions.
 _Avoid_: Automatic root-cause authority, autonomous repair decision
+
+**Knowledge retrieval context**:
+Supplemental knowledge hits selected for AI-assisted interpretation together with the actual retrieval mode and index embedding capability captured from that query; skipped retrieval has no actual mode. Knowledge retrieval owns score-based admission and text-quality selection, while interpretation owns query enrichment, scene context, prompts and answers; retrieval fallback is separate from answer-model fallback.
+_Avoid_: A new diagnosis, calibrated prediction confidence, index configuration as proof of a query's actual mode
 
 **System initialization**:
 The first-use step that creates the administrator account before protected runtime modules can be accessed.
@@ -97,6 +101,10 @@ An experimental or future integration boundary for simulator or PX4 telemetry so
 _Avoid_: Core diagnosis capability, required runtime dependency, V1.0 documented feature
 
 ## Research Language
+
+**Score event replay**:
+The conversion of an already-produced, time-ordered fault-probability sequence into confirmation and finalized event timing records under its declared online detection policy, including unavailable-score gaps and end-of-stream flush. New or versioned research callers use the lightweight package module; frozen entrypoints retain their original implementation and code identities, and model inference and research metric definitions remain separate.
+_Avoid_: Model inference, threshold selection, physical detection latency
 
 **Window operating state**:
 The local flight behavior represented by an available history window, such as climbing, near-steady flight, or maneuvering. It is distinct from a log-level scenario category and is not established by the window position in a retained crop.

@@ -63,96 +63,29 @@ def test_asset_upload_cleans_file_when_database_commit_fails(
 
 
 def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypatch):
-    from uav_dashboard_api.routes import dashboard_assets, dashboard_runs
+    from uav_dashboard_api.routes import dashboard_assets
+    from uav_dashboard_api.services import offline_diagnosis, task_manager
 
-    def fake_submit(app_obj, run_id, worker_fn, *args, **kwargs):
-        with app_obj.app_context():
-            run = db.session.get(RunRecord, run_id)
-            run.status = "success"
-            run.progress = 1.0
-            run.finished_at = datetime.now()
-            if run.task == "convert_ulg":
-                asset = db.session.get(Asset, run.asset_id)
-                prepared = (
-                    Path(app_obj.config["DERIVED_DIR"])
-                    / f"asset_{asset.id}"
-                    / "prepared.csv"
-                )
-                prepared.parent.mkdir(parents=True, exist_ok=True)
-                prepared.write_text(
-                    "timestamp,motor1,battery_voltage\n0,0.1,11.1\n", encoding="utf-8"
-                )
-                meta = asset.get_meta()
-                meta["prepared_csv_path"] = str(prepared)
-                asset.set_meta(meta)
-                run.set_result({"asset_id": asset.id, "output_csv": str(prepared)})
-            else:
-                run.set_result(
-                    {
-                        "prediction": {"label": "motor", "confidence": 0.91},
-                        "probs": {"motor": 0.91, "normal": 0.09},
-                        "severity": {
-                            "level": "heavy",
-                            "score": 0.88,
-                            "method": "rule_v1",
-                        },
-                        "recommendations": [
-                                    {"title": "立即检查电机", "priority": "P1"}
-                        ],
-                        "diagnosis": {
-                            "source": "offline",
-                            "label": "motor",
-                            "probability": 0.91,
-                            "severity": "heavy",
-                            "decision": {
-                                "episode_id": "ep_test_001",
-                                "state": "DECIDED",
-                                "fault_label": "motor",
-                                "severity": "heavy",
-                                "evidence_summary": {
-                                    "source": "offline",
-                                    "fault_label": "motor",
-                                    "severity": {
-                                        "level": "heavy",
-                                        "score": 0.88,
-                                        "method": "rule_v1",
-                                    },
-                                    "top_evidence": [
-                                        {"metric": "motor_imbalance", "status": "used"}
-                                    ],
-                                },
-                                "recommendations": [
-                                    {"title": "立即检查电机", "priority": "P1"}
-                                ],
-                            },
-                        },
-                        "unified_decision": {
-                            "episode_id": "ep_test_001",
-                            "state": "DECIDED",
-                            "fault_label": "motor",
-                            "severity": "heavy",
-                            "evidence_summary": {
-                                "source": "offline",
-                                "fault_label": "motor",
-                                "severity": {
-                                    "level": "heavy",
-                                    "score": 0.88,
-                                    "method": "rule_v1",
-                                },
-                                "top_evidence": [
-                                    {"metric": "motor_imbalance", "status": "used"}
-                                ],
-                            },
-                            "recommendations": [
-                                    {"title": "立即检查电机", "priority": "P1"}
-                            ],
-                        },
-                    }
-                )
-            db.session.commit()
+    class ImmediateExecutor:
+        def submit(self, function, *args, **kwargs):
+            function(*args, **kwargs)
 
-    monkeypatch.setattr(dashboard_assets, "submit_background_run", fake_submit)
-    monkeypatch.setattr(dashboard_runs, "submit_background_run", fake_submit)
+    def prepare(ulg_path, output_csv):
+        Path(output_csv).write_text(
+            "timestamp,motor1,battery_voltage,fault_severity\n0,0.1,11.1,0.88\n",
+            encoding="utf-8",
+        )
+        return {"output_csv": output_csv}
+
+    def infer(*, csv_path, model_dir, output_json):
+        return {
+            "prediction": {"label": "motor", "confidence": 0.91},
+            "probs": {"motor": 0.91, "normal": 0.09},
+        }
+
+    monkeypatch.setattr(task_manager, "get_executor", lambda app: ImmediateExecutor())
+    monkeypatch.setattr(dashboard_assets, "run_ulg_to_csv", prepare)
+    monkeypatch.setattr(offline_diagnosis, "run_offline_multiclass", infer)
     upload = client.post(
         "/api/assets/upload",
         headers=auth_header,
@@ -160,10 +93,11 @@ def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypa
     )
     asset_id = upload.get_json()["data"]["id"]
     assert upload.status_code == 201
-    assert (
-        client.post(f"/api/assets/{asset_id}/prepare", headers=auth_header).status_code
-        == 202
-    )
+    prepared = client.post(f"/api/assets/{asset_id}/prepare", headers=auth_header)
+    assert prepared.status_code == 202
+    db.session.expire_all()
+    prepare_run = db.session.get(RunRecord, prepared.get_json()["data"]["id"])
+    assert prepare_run.status == "success", prepare_run.error
     asset_detail = client.get(
         f"/api/assets/{asset_id}", headers=auth_header
     ).get_json()["data"]
@@ -184,7 +118,7 @@ def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypa
     assert result["diagnosis"]["severity"] == "heavy"
     assert result["unified_decision"]["state"] == "DECIDED"
     assert result["diagnosis"]["decision"]["fault_label"] == "motor"
-    assert result["unified_decision"]["episode_id"] == "ep_test_001"
+    assert result["unified_decision"]["episode_id"].startswith("ep_")
     assert result["unified_decision"]["evidence_summary"]["source"] == "offline"
 
     report = client.post(
@@ -199,7 +133,7 @@ def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypa
     assert report_detail["diagnosis"]["severity"] == "heavy"
     assert report_detail["diagnosis"]["model"]["task"] == "offline_multiclass"
     assert report_detail["summary"]["decision"]["state"] == "DECIDED"
-    assert report_detail["summary"]["decision"]["episode_id"] == "ep_test_001"
+    assert report_detail["summary"]["decision"]["episode_id"] == result["unified_decision"]["episode_id"]
     assert report_detail["summary"]["data_quality"]["level"] in {
         "good",
         "warning",
@@ -229,7 +163,7 @@ def test_offline_prepare_run_report_main_flow(app, client, auth_header, monkeypa
 def test_offline_task_requires_canonical_name_and_filters_legacy_records(
     app, client, auth_header, monkeypatch
 ):
-    from uav_dashboard_api.routes import dashboard_runs
+    from uav_dashboard_api.services import offline_diagnosis
 
     def fake_submit(app_obj, run_id, worker_fn, *args, **kwargs):
         with app_obj.app_context():
@@ -245,7 +179,7 @@ def test_offline_task_requires_canonical_name_and_filters_legacy_records(
             )
             db.session.commit()
 
-    monkeypatch.setattr(dashboard_runs, "submit_background_run", fake_submit)
+    monkeypatch.setattr(offline_diagnosis, "submit_background_run", fake_submit)
     upload = client.post(
         "/api/assets/upload",
         headers=auth_header,
@@ -311,14 +245,14 @@ def test_offline_task_requires_canonical_name_and_filters_legacy_records(
 def test_offline_run_accepts_telemetry_session_bridge(
     app, client, auth_header, monkeypatch, tmp_path: Path
 ):
-    from uav_dashboard_api.routes import dashboard_runs
+    from uav_dashboard_api.services import offline_diagnosis
 
     submit_calls = []
 
     def fake_submit(app_obj, run_id, worker_fn, *args, **kwargs):
-        submit_calls.append((run_id, worker_fn.__name__, args, kwargs))
+        submit_calls.append(run_id)
 
-    monkeypatch.setattr(dashboard_runs, "submit_background_run", fake_submit)
+    monkeypatch.setattr(offline_diagnosis, "submit_background_run", fake_submit)
     csv_path = tmp_path / "telemetry_bridge.csv"
     csv_path.write_text("timestamp,motor1\n0,1\n", encoding="utf-8")
 
@@ -347,14 +281,7 @@ def test_offline_run_accepts_telemetry_session_bridge(
     assert payload["params"]["session_id"] == "TS-BRIDGE-001"
     assert payload["params"]["source_type"] == "telemetry_session"
     assert payload["params"]["model"] == "lstm"
-    assert submit_calls == [
-        (
-            payload["id"],
-            "_offline_multiclass_worker",
-            (payload["asset_id"], "lstm"),
-            {},
-        )
-    ]
+    assert submit_calls == [payload["id"]]
 
     with app.app_context():
         run = db.session.get(RunRecord, payload["id"])

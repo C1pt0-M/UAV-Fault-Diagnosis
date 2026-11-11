@@ -1,0 +1,3 @@
+# Preserve Frozen Event Replay Entrypoints
+
+Reusable score event replay lives in `uav_fault.online.event_replay` for new or versioned research callers. Published research entrypoints, audit code and protocol identities remain unchanged, so their frozen `aggregate_scores` implementation is intentionally retained as a historical reference rather than replaced by a forwarding import. Synthetic differential tests pin the reference source SHA256 and compare every output field under a reset host clock; the GBT online inference path, deployment configuration and prior experiment results are outside this migration.
